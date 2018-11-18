@@ -1,0 +1,143 @@
+package io.kanuka.web.javlin;
+
+import io.kanuka.web.Delete;
+import io.kanuka.web.Get;
+import io.kanuka.web.Patch;
+import io.kanuka.web.Post;
+import io.kanuka.web.Put;
+
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+class MethodReader {
+
+  private final BeanReader bean;
+  private final ProcessingContext ctx;
+  private final ExecutableElement element;
+
+  private final TypeMirror returnType;
+  private final String returnTypeRaw;
+  private final boolean isVoid;
+  private final List<MethodParam> params = new ArrayList<>();
+  private final String beanPath;
+
+  private WebMethod webMethod;
+  private String webMethodPath;
+
+  MethodReader(BeanReader bean, ExecutableElement element) {
+    this.bean = bean;
+    this.ctx = bean.getContext();
+    this.beanPath = bean.getPath();
+    this.element = element;
+    this.returnType = element.getReturnType();
+    this.returnTypeRaw = returnType.toString();
+//    this.factoryType = bean.getBeanType().getQualifiedName().toString();
+    this.isVoid = returnTypeRaw.equals("void");
+  }
+
+  void read() {
+    for (VariableElement p : element.getParameters()) {
+      MethodParam param = new MethodParam(p);
+      params.add(param);
+      param.addImports(bean);
+    }
+  }
+
+  void addRoute(Append writer) {
+
+    readMethodAnnotation();
+
+    if (webMethod != null) {
+
+      String fullPath = Util.combinePath(beanPath, webMethodPath);
+      Set<String> pathParams = Util.pathParams(fullPath);
+
+      writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
+      for (MethodParam param : params) {
+        param.buildCtxGet(writer, pathParams);
+      }
+      writer.append("      ");
+
+      if (isReturnJson()) {
+        writer.append("ctx.json(");
+      }
+      writer.append("controller.");
+      writer.append(element.getSimpleName().toString()).append("(");
+      for (int i = 0; i < params.size(); i++) {
+        if (i > 0) {
+          writer.append(", ");
+        }
+        writer.append(params.get(i).getName());
+      }
+      writer.append(")");
+      if (isReturnJson()) {
+        writer.append(")");
+      }
+      writer.append(";").eol();
+
+      writer.append("      ctx.status(%s);", httpStatusCode()).eol();
+
+      writer.append("    });");
+      writer.eol().eol();
+
+//
+//
+//        int id  = asInt(ctx.pathParam("id"));
+//        String name = ctx.queryParam("name");
+//
+//        ctx.json(controller.sayHello(id, name));
+////      ctx.status(200);
+//      });
+
+    }
+
+  }
+
+  private int httpStatusCode() {
+    return webMethod.statusCode();
+  }
+
+  private boolean isReturnJson() {
+    // TODO: ... returning non-object types?
+    return !isVoid;
+  }
+
+
+  private boolean readMethodAnnotation() {
+
+    Get get = element.getAnnotation(Get.class);
+    if (get != null) {
+      return setWebMethod(WebMethod.GET, get.value());
+    }
+
+    Put put = element.getAnnotation(Put.class);
+    if (put != null) {
+      return setWebMethod(WebMethod.PUT, put.value());
+    }
+
+    Post post = element.getAnnotation(Post.class);
+    if (post != null) {
+      return setWebMethod(WebMethod.POST, post.value());
+    }
+    Patch patch = element.getAnnotation(Patch.class);
+    if (patch != null) {
+      return setWebMethod(WebMethod.PATCH, patch.value());
+    }
+    Delete delete = element.getAnnotation(Delete.class);
+    if (delete != null) {
+      return setWebMethod(WebMethod.DELETE, delete.value());
+    }
+
+    return false;
+  }
+
+  private boolean setWebMethod(WebMethod webMethod, String value) {
+    this.webMethod = webMethod;
+    this.webMethodPath = value;
+    return true;
+  }
+}
