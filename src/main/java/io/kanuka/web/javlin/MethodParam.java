@@ -6,6 +6,7 @@ import java.util.Set;
 
 class MethodParam {
 
+  private static final String IO_JAVALIN_CONTEXT = "io.javalin.Context";
   private final TypeMirror typeMirror;
   private final String rawType;
   private final TypeHandler typeHandler;
@@ -19,9 +20,16 @@ class MethodParam {
     this.typeHandler = TypeMap.get(rawType);
   }
 
+  private boolean isJavlinContext() {
+    return IO_JAVALIN_CONTEXT.equals(rawType);
+  }
+
   void buildCtxGet(Append writer, Set<String> pathParams) {
 
-    //TODO: Handle passing io.javalin.Context ...
+    if (isJavlinContext()) {
+      // no conversion for this parameter
+      return;
+    }
 
     String shortType;
     if (typeHandler != null) {
@@ -31,12 +39,17 @@ class MethodParam {
     }
 
     writer.append("      %s %s = ", shortType, name);
-    String asMethod = (typeHandler == null) ? null : typeHandler.asMethod();
+
+    // path parameters are expected to be not nullable
+    // ... with query parameters nullable
+    boolean isPathParam = pathParams.contains(name);
+
+    String asMethod = (typeHandler == null) ? null : (isPathParam) ? typeHandler.asMethod() : typeHandler.toMethod();
 
     if (asMethod != null) {
       writer.append(asMethod);
     }
-    if (pathParams.contains(name)) {
+    if (isPathParam) {
       writer.append("ctx.pathParam(\"%s\")", name);
 
     } else {
@@ -65,26 +78,11 @@ class MethodParam {
     }
   }
 
-  String getName() {
-    return name;
+  void buildParamName(Append writer) {
+    if (isJavlinContext()) {
+      writer.append("ctx");
+    } else {
+      writer.append(name);
+    }
   }
-
-
-//
-//  String builderGetDependency() {
-//    StringBuilder sb = new StringBuilder();
-//    if (listType) {
-//      sb.append("builder.getList(");
-//    } else if (optionalType) {
-//      sb.append("builder.getOptional(");
-//    } else {
-//      sb.append("builder.get(");
-//    }
-//
-//    sb.append(paramType).append(".class");
-//
-//    sb.append(")");
-//    return sb.toString();
-//  }
-
 }

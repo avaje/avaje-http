@@ -71,30 +71,17 @@ class MethodReader {
         if (i > 0) {
           writer.append(", ");
         }
-        writer.append(params.get(i).getName());
+        params.get(i).buildParamName(writer);
       }
       writer.append(")");
       if (isReturnJson()) {
         writer.append(")");
       }
       writer.append(";").eol();
-
       writer.append("      ctx.status(%s);", httpStatusCode()).eol();
-
       writer.append("    });");
       writer.eol().eol();
-
-//
-//
-//        int id  = asInt(ctx.pathParam("id"));
-//        String name = ctx.queryParam("name");
-//
-//        ctx.json(controller.sayHello(id, name));
-////      ctx.status(200);
-//      });
-
     }
-
   }
 
   private int httpStatusCode() {

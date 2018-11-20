@@ -41,14 +41,14 @@ public class ControllerRouteWriter {
   }
 
   private void writeAddRoutes() {
-    writer.append("  @Override").eol().eol();
+    writer.append("  @Override").eol();
     writer.append("  public void registerRoutes() {").eol().eol();
 
     for (MethodReader method : reader.getMethods()) {
       method.addRoute(writer);
     }
 
-    writer.eol().append("  }").eol().eol();
+    writer.append("  }").eol().eol();
   }
 
   private void writeImports() {
