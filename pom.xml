@@ -23,8 +23,8 @@
 
     <dependency>
       <groupId>io.kanuka</groupId>
-      <artifactId>kanuka-web</artifactId>
-      <version>0.1</version>
+      <artifactId>kanuka-controller</artifactId>
+      <version>0.2-SNAPSHOT</version>
     </dependency>
 
     <dependency>

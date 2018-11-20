@@ -1,6 +1,6 @@
 package io.kanuka.web.javlin;
 
-import io.kanuka.web.Path;
+import io.dinject.controller.Path;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -30,10 +30,10 @@ class BeanReader {
     this.beanType = beanType;
     this.ctx = ctx;
 
-    importTypes.add("javax.annotation.Generated");
-    importTypes.add("javax.inject.Singleton");
-    importTypes.add("io.javalin.apibuilder.ApiBuilder");
-    importTypes.add("io.kanuka.web.WebRoutes");
+    importTypes.add(Constants.GENERATED);
+    importTypes.add(Constants.SINGLETON);
+    importTypes.add(Constants.API_BUILDER);
+    importTypes.add(Constants.WEB_ROUTES);
     importTypes.add(beanType.getQualifiedName().toString());
   }
 

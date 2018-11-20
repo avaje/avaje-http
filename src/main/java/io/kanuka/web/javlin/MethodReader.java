@@ -1,10 +1,10 @@
 package io.kanuka.web.javlin;
 
-import io.kanuka.web.Delete;
-import io.kanuka.web.Get;
-import io.kanuka.web.Patch;
-import io.kanuka.web.Post;
-import io.kanuka.web.Put;
+import io.dinject.controller.Delete;
+import io.dinject.controller.Get;
+import io.dinject.controller.Patch;
+import io.dinject.controller.Post;
+import io.dinject.controller.Put;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;

@@ -1,6 +1,6 @@
 package io.kanuka.web.javlin;
 
-import io.kanuka.web.Controller;
+import io.dinject.controller.Controller;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;

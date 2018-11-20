@@ -53,7 +53,7 @@ public class ControllerRouteWriter {
 
   private void writeImports() {
 
-    writer.append("import static io.kanuka.web.PathTypeConversion.*;").eol();
+    writer.append(Constants.IMPORT_PATH_TYPE_CONVERT).eol();
     for (String type : reader.getImportTypes()) {
       writer.append("import %s;", type).eol();
     }
@@ -67,7 +67,7 @@ public class ControllerRouteWriter {
 
   private void writeClassStart() {
 
-    writer.append("@Generated(\"io.kanuka.web.javlin\")").eol();
+    writer.append(Constants.AT_GENERATED).eol();
     writer.append("@Singleton").eol();
     writer.append("public class ").append(shortName).append("$route implements WebRoutes {").eol().eol();
 
