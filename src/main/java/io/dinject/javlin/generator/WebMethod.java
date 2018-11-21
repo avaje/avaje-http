@@ -1,13 +1,13 @@
 package io.dinject.javlin.generator;
 
-public enum WebMethod {
+enum WebMethod {
   GET(200),
   PUT(200),
   POST(201),
   PATCH(200),
   DELETE(200);
 
-  int statusCode;
+  private int statusCode;
 
   WebMethod(int statusCode) {
     this.statusCode = statusCode;

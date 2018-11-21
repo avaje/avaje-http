@@ -20,8 +20,6 @@ class BeanReader {
 
   private final ProcessingContext ctx;
 
-  private String name;
-
   private final List<MethodReader> methods = new ArrayList<>();
 
   private final Set<String> importTypes = new TreeSet<>();
@@ -40,10 +38,6 @@ class BeanReader {
   TypeElement getBeanType() {
     return beanType;
   }
-
-//  String getName() {
-//    return name;
-//  }
 
   void read() {
     for (Element element : beanType.getEnclosedElements()) {

@@ -5,7 +5,7 @@ import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
 
-public class ControllerRouteWriter {
+class ControllerRouteWriter {
 
   private final BeanReader reader;
 
@@ -17,7 +17,7 @@ public class ControllerRouteWriter {
   private String packageName;
   private final String fullName;
 
-  public ControllerRouteWriter(BeanReader reader, ProcessingContext ctx) {
+  ControllerRouteWriter(BeanReader reader, ProcessingContext ctx) {
     this.reader = reader;
     this.ctx = ctx;
 
@@ -27,7 +27,7 @@ public class ControllerRouteWriter {
     fullName = originName + "$route";
   }
 
-  public void write() throws IOException {
+  void write() throws IOException {
 
     this.writer = new Append(createFileWriter());
     writePackage();

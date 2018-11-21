@@ -1,22 +1,19 @@
 package io.dinject.javlin.generator;
 
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
 import java.util.Set;
 
 class MethodParam {
 
   private static final String IO_JAVALIN_CONTEXT = "io.javalin.Context";
-  private final TypeMirror typeMirror;
   private final String rawType;
   private final TypeHandler typeHandler;
   private final String name;
 
 
   MethodParam(VariableElement param) {
-    this.typeMirror = param.asType();
     this.name = param.getSimpleName().toString();
-    this.rawType = typeMirror.toString();
+    this.rawType = param.asType().toString();
     this.typeHandler = TypeMap.get(rawType);
   }
 

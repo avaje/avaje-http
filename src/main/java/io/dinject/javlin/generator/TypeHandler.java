@@ -3,7 +3,7 @@ package io.dinject.javlin.generator;
 /**
  * Handles type conversion for path and query parameters.
  */
-public interface TypeHandler {
+interface TypeHandler {
 
   /**
    * Return the non-nullable type conversion method.

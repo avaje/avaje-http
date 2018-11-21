@@ -8,7 +8,6 @@ import io.dinject.controller.Put;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,11 +15,8 @@ import java.util.Set;
 class MethodReader {
 
   private final BeanReader bean;
-  private final ProcessingContext ctx;
   private final ExecutableElement element;
 
-  private final TypeMirror returnType;
-  private final String returnTypeRaw;
   private final boolean isVoid;
   private final List<MethodParam> params = new ArrayList<>();
   private final String beanPath;
@@ -30,13 +26,9 @@ class MethodReader {
 
   MethodReader(BeanReader bean, ExecutableElement element) {
     this.bean = bean;
-    this.ctx = bean.getContext();
     this.beanPath = bean.getPath();
     this.element = element;
-    this.returnType = element.getReturnType();
-    this.returnTypeRaw = returnType.toString();
-//    this.factoryType = bean.getBeanType().getQualifiedName().toString();
-    this.isVoid = returnTypeRaw.equals("void");
+    this.isVoid = element.getReturnType().toString().equals("void");
   }
 
   void read() {
