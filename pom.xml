@@ -4,11 +4,11 @@
 
   <groupId>io.dinject</groupId>
   <artifactId>javlin-generator</artifactId>
-  <version>0.2</version>
+  <version>0.3-SNAPSHOT</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:dinject/javlin-generator.git</developerConnection>
-    <tag>javlin-generator-0.2</tag>
+    <tag>javlin-generator-0.1</tag>
   </scm>
 
   <dependencies>
