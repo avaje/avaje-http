@@ -6,9 +6,15 @@
   <artifactId>javlin-generator</artifactId>
   <version>0.3-SNAPSHOT</version>
 
+  <parent>
+    <groupId>org.avaje</groupId>
+    <artifactId>java8-parent</artifactId>
+    <version>1.3</version>
+  </parent>
+
   <scm>
     <developerConnection>scm:git:git@github.com:dinject/javlin-generator.git</developerConnection>
-    <tag>javlin-generator-0.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencies>
