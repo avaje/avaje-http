@@ -9,7 +9,7 @@
   <version>0.1-SNAPSHOT</version>
 
   <scm>
-    <developerConnection>scm:git:git@github.com:kanuka/kanuka-web-javlin.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:dinject/javlin-generator.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
