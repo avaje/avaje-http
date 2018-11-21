@@ -1,4 +1,4 @@
-package io.kanuka.web.javlin;
+package io.dinject.javlin.generator;
 
 import java.io.IOException;
 import java.io.Writer;

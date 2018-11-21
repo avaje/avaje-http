@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.kanuka</groupId>
-  <artifactId>kanuka-web-javlin</artifactId>
+  <groupId>io.dinject</groupId>
+  <artifactId>javlin-generator</artifactId>
   <version>0.1-SNAPSHOT</version>
 
   <scm>
@@ -22,9 +22,9 @@
     </dependency>
 
     <dependency>
-      <groupId>io.kanuka</groupId>
-      <artifactId>kanuka-controller</artifactId>
-      <version>0.2-SNAPSHOT</version>
+      <groupId>io.dinject</groupId>
+      <artifactId>dinject-controller</artifactId>
+      <version>0.1</version>
     </dependency>
 
     <dependency>

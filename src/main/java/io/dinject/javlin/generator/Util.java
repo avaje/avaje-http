@@ -1,4 +1,4 @@
-package io.kanuka.web.javlin;
+package io.dinject.javlin.generator;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
