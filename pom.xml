@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.dinject</groupId>
-  <artifactId>javlin-generator</artifactId>
+  <artifactId>javalin-generator</artifactId>
   <version>0.4-SNAPSHOT</version>
 
   <parent>
@@ -28,7 +28,7 @@
     <dependency>
       <groupId>io.dinject</groupId>
       <artifactId>dinject-controller</artifactId>
-      <version>0.1</version>
+      <version>0.9</version>
     </dependency>
 
     <dependency>
