@@ -105,3 +105,7 @@ public class WidgetController$route implements WebRoutes {
   }
 }
 ```
+
+Note that this APT processor works with both Java and Kotlin.
+
+
