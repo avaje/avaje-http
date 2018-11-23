@@ -13,7 +13,7 @@
   </parent>
 
   <scm>
-    <developerConnection>scm:git:git@github.com:dinject/javlin-generator.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:dinject/javalin-generator.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
