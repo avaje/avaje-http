@@ -5,25 +5,26 @@ import java.util.Set;
 
 class MethodParam {
 
-  private static final String IO_JAVALIN_CONTEXT = "io.javalin.Context";
   private final String rawType;
   private final TypeHandler typeHandler;
   private final String name;
+  private final String snakeName;
 
 
   MethodParam(VariableElement param) {
     this.name = param.getSimpleName().toString();
+    this.snakeName = Util.snakeCase(name);
     this.rawType = param.asType().toString();
     this.typeHandler = TypeMap.get(rawType);
   }
 
-  private boolean isJavlinContext() {
-    return IO_JAVALIN_CONTEXT.equals(rawType);
+  private boolean isJavalinContext() {
+    return Constants.IO_JAVALIN_CONTEXT.equals(rawType);
   }
 
   void buildCtxGet(Append writer, Set<String> pathParams) {
 
-    if (isJavlinContext()) {
+    if (isJavalinContext()) {
       // no conversion for this parameter
       return;
     }
@@ -39,16 +40,14 @@ class MethodParam {
 
     // path parameters are expected to be not nullable
     // ... with query parameters nullable
-    boolean isPathParam = pathParams.contains(name);
-
-    String asMethod = (typeHandler == null) ? null : (isPathParam) ? typeHandler.asMethod() : typeHandler.toMethod();
+    String pathParameter = derivePathParam(pathParams);
+    String asMethod = (typeHandler == null) ? null : (pathParameter != null) ? typeHandler.asMethod() : typeHandler.toMethod();
 
     if (asMethod != null) {
       writer.append(asMethod);
     }
-    if (isPathParam) {
-      writer.append("ctx.pathParam(\"%s\")", name);
-
+    if (pathParameter != null) {
+      writer.append("ctx.pathParam(\"%s\")", pathParameter);
     } else {
       if (typeHandler == null) {
         // assuming this is a body (POST, PATCH)
@@ -64,6 +63,16 @@ class MethodParam {
     writer.append(";").eol();
   }
 
+  private String derivePathParam(Set<String> pathParams) {
+    if (pathParams.contains(name)) {
+      return name;
+    }
+    if (pathParams.contains(snakeName)){
+      return snakeName;
+    }
+    return null;
+  }
+
   void addImports(BeanReader bean) {
     if (typeHandler != null) {
       String importType = typeHandler.getImportType();
@@ -76,7 +85,7 @@ class MethodParam {
   }
 
   void buildParamName(Append writer) {
-    if (isJavlinContext()) {
+    if (isJavalinContext()) {
       writer.append("ctx");
     } else {
       writer.append(name);

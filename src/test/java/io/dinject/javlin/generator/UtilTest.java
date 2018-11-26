@@ -36,4 +36,16 @@ public class UtilTest {
     assertThat(Util.pathParams("/:id/odd:foo")).contains("id");
 
   }
+
+  @Test
+  public void snakeCase() {
+
+    assertThat(Util.snakeCase("lower")).isEqualTo("lower");
+    assertThat(Util.snakeCase("fooId")).isEqualTo("foo-id");
+    assertThat(Util.snakeCase("_fooId")).isEqualTo("_foo-id");
+    assertThat(Util.snakeCase("fooBarBazUuid")).isEqualTo("foo-bar-baz-uuid");
+    assertThat(Util.snakeCase("aDTo")).isEqualTo("a-d-to");
+    assertThat(Util.snakeCase("DTo")).isEqualTo("d-to");
+    assertThat(Util.snakeCase("_DTo")).isEqualTo("_-d-to");
+  }
 }

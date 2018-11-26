@@ -43,4 +43,23 @@ class Util {
       return fullType.substring(p + 1);
     }
   }
+
+  static String snakeCase(String name) {
+
+    StringBuilder sb = new StringBuilder(name.length() + 5);
+
+    int len = name.length();
+    for (int i = 0; i < len; i++) {
+      char ch = name.charAt(i);
+      if (Character.isUpperCase(ch)) {
+        if (i > 0) {
+          sb.append("-");
+        }
+        sb.append(Character.toLowerCase(ch));
+      } else {
+        sb.append(ch);
+      }
+    }
+    return sb.toString();
+  }
 }
