@@ -1,4 +1,4 @@
-package io.dinject.javlin.generator;
+package io.dinject.javalin.generator;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

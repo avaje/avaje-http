@@ -1,4 +1,4 @@
-package io.dinject.javlin.generator;
+package io.dinject.javalin.generator;
 
 /**
  * Handles type conversion for path and query parameters.

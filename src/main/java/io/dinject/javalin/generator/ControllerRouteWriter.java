@@ -1,4 +1,4 @@
-package io.dinject.javlin.generator;
+package io.dinject.javalin.generator;
 
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;

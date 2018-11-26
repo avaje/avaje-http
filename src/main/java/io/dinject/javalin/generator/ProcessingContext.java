@@ -1,4 +1,4 @@
-package io.dinject.javlin.generator;
+package io.dinject.javalin.generator;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
