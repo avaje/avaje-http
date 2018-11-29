@@ -54,6 +54,10 @@ class ControllerRouteWriter {
   private void writeImports() {
 
     writer.append(Constants.IMPORT_PATH_TYPE_CONVERT).eol();
+    for (String type : reader.getStaticImportTypes()) {
+      writer.append("import static %s;", type).eol();
+    }
+    writer.eol();
     for (String type : reader.getImportTypes()) {
       writer.append("import %s;", type).eol();
     }

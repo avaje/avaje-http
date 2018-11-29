@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static io.dinject.javalin.generator.Constants.JAVALIN_ROLES;
+
 class MethodReader {
 
   private final BeanReader bean;
@@ -24,14 +26,27 @@ class MethodReader {
   private WebMethod webMethod;
   private String webMethodPath;
 
+  /**
+   * Holds enum Roles that are required for the method.
+   */
+  private final List<String> methodRoles;
+
   MethodReader(BeanReader bean, ExecutableElement element) {
     this.bean = bean;
     this.beanPath = bean.getPath();
     this.element = element;
     this.isVoid = element.getReturnType().toString().equals("void");
+    this.methodRoles = Util.findRoles(element);
   }
 
   void read() {
+    if (!methodRoles.isEmpty()) {
+      bean.addStaticImportType(JAVALIN_ROLES);
+      for (String role : methodRoles) {
+        bean.addStaticImportType(role);
+      }
+    }
+
     for (VariableElement p : element.getParameters()) {
       MethodParam param = new MethodParam(p);
       params.add(param);
@@ -71,9 +86,26 @@ class MethodReader {
       }
       writer.append(";").eol();
       writer.append("      ctx.status(%s);", httpStatusCode()).eol();
-      writer.append("    });");
+      writer.append("    }");
+
+      List<String> roles = roles();
+      if (!roles.isEmpty()) {
+        writer.append(", roles(");
+        for (int i = 0; i < roles.size(); i++) {
+          if (i > 0) {
+            writer.append(", ");
+          }
+          writer.append(Util.shortName(roles.get(i)));
+        }
+        writer.append(")");
+      }
+      writer.append(");");
       writer.eol().eol();
     }
+  }
+
+  private List<String> roles() {
+    return methodRoles.isEmpty() ? bean.getRoles() : methodRoles;
   }
 
   private int httpStatusCode() {

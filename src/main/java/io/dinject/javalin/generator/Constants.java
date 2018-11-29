@@ -2,7 +2,9 @@ package io.dinject.javalin.generator;
 
 class Constants {
 
-  static final String IO_JAVALIN_CONTEXT = "io.javalin.Context";
+  static final String JAVALIN_CONTEXT = "io.javalin.Context";
+
+  static final String JAVALIN_ROLES = "io.javalin.security.SecurityUtil.roles";
 
   static final String SINGLETON = "javax.inject.Singleton";
   static final String GENERATED = "javax.annotation.Generated";

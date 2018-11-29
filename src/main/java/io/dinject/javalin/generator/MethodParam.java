@@ -19,7 +19,7 @@ class MethodParam {
   }
 
   private boolean isJavalinContext() {
-    return Constants.IO_JAVALIN_CONTEXT.equals(rawType);
+    return Constants.JAVALIN_CONTEXT.equals(rawType);
   }
 
   void buildCtxGet(Append writer, Set<String> pathParams) {

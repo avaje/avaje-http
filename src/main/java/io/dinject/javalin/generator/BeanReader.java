@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static io.dinject.javalin.generator.Constants.JAVALIN_ROLES;
+
 /**
  * Reads the type information for the Controller (bean).
  */
@@ -18,15 +20,17 @@ class BeanReader {
 
   private final TypeElement beanType;
 
-  private final ProcessingContext ctx;
+  private final List<String> roles;
 
   private final List<MethodReader> methods = new ArrayList<>();
 
+  private final Set<String> staticImportTypes = new TreeSet<>();
+
   private final Set<String> importTypes = new TreeSet<>();
 
-  BeanReader(TypeElement beanType, ProcessingContext ctx) {
+  BeanReader(TypeElement beanType) {
     this.beanType = beanType;
-    this.ctx = ctx;
+    this.roles = Util.findRoles(beanType);
 
     importTypes.add(Constants.GENERATED);
     importTypes.add(Constants.SINGLETON);
@@ -40,12 +44,16 @@ class BeanReader {
   }
 
   void read() {
+    if (!roles.isEmpty()) {
+      addStaticImportType(JAVALIN_ROLES);
+      for (String role : roles) {
+        addStaticImportType(role);
+      }
+    }
+
     for (Element element : beanType.getEnclosedElements()) {
-      ElementKind kind = element.getKind();
-      switch (kind) {
-        case METHOD:
-          readMethod(element);
-          break;
+      if (element.getKind() == ElementKind.METHOD) {
+        readMethod(element);
       }
     }
   }
@@ -59,13 +67,12 @@ class BeanReader {
     methods.add(methodReader);
   }
 
+  List<String> getRoles() {
+    return roles;
+  }
 
   List<MethodReader> getMethods() {
     return methods;
-  }
-
-  ProcessingContext getContext() {
-    return ctx;
   }
 
   String getPath() {
@@ -80,7 +87,16 @@ class BeanReader {
     importTypes.add(rawType);
   }
 
+  void addStaticImportType(String rawType) {
+    staticImportTypes.add(rawType);
+  }
+
+  Set<String> getStaticImportTypes() {
+    return staticImportTypes;
+  }
+
   Set<String> getImportTypes() {
     return importTypes;
   }
+
 }

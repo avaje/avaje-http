@@ -47,8 +47,7 @@ public class Processor extends AbstractProcessor {
 
   private void writeControllerAdapter(Element controller) {
     if (controller instanceof TypeElement) {
-      TypeElement te = (TypeElement) controller;
-      BeanReader reader = new BeanReader(te, processingContext);
+      BeanReader reader = new BeanReader((TypeElement) controller);
       reader.read();
       try {
         ControllerRouteWriter writer = new ControllerRouteWriter(reader, processingContext);
