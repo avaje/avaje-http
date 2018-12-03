@@ -28,11 +28,12 @@ class BeanReader {
 
   private final Set<String> importTypes = new TreeSet<>();
 
-  BeanReader(TypeElement beanType) {
+  BeanReader(TypeElement beanType, ProcessingContext ctx) {
     this.beanType = beanType;
     this.roles = Util.findRoles(beanType);
-
-    importTypes.add(Constants.GENERATED);
+    if (ctx.isGeneratedAvailable()) {
+      importTypes.add(Constants.GENERATED);
+    }
     importTypes.add(Constants.SINGLETON);
     importTypes.add(Constants.API_BUILDER);
     importTypes.add(Constants.WEB_ROUTES);

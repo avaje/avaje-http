@@ -71,7 +71,9 @@ class ControllerRouteWriter {
 
   private void writeClassStart() {
 
-    writer.append(Constants.AT_GENERATED).eol();
+    if (ctx.isGeneratedAvailable()) {
+      writer.append(Constants.AT_GENERATED).eol();
+    }
     writer.append("@Singleton").eol();
     writer.append("public class ").append(shortName).append("$route implements WebRoutes {").eol().eol();
 
