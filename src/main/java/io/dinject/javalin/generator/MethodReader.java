@@ -64,6 +64,7 @@ class MethodReader {
       Set<String> pathParams = Util.pathParams(fullPath);
 
       writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
+      writer.append("      ctx.status(%s);", httpStatusCode()).eol();
       for (MethodParam param : params) {
         param.buildCtxGet(writer, pathParams);
       }
@@ -85,7 +86,6 @@ class MethodReader {
         writer.append(")");
       }
       writer.append(";").eol();
-      writer.append("      ctx.status(%s);", httpStatusCode()).eol();
       writer.append("    }");
 
       List<String> roles = roles();
