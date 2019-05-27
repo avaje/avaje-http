@@ -48,4 +48,14 @@ public class UtilTest {
     assertThat(Util.snakeCase("DTo")).isEqualTo("d-to");
     assertThat(Util.snakeCase("_DTo")).isEqualTo("_-d-to");
   }
+
+  @Test
+  public void initcapSnake() {
+
+    assertThat(Util.initcapSnake("lower")).isEqualTo("Lower");
+    assertThat(Util.initcapSnake("foo-id")).isEqualTo("Foo-Id");
+    assertThat(Util.initcapSnake("foo-bar-baz-uuid")).isEqualTo("Foo-Bar-Baz-Uuid");
+    assertThat(Util.initcapSnake("a-d-to")).isEqualTo("A-D-To");
+    assertThat(Util.initcapSnake("proxy-authenticate")).isEqualTo("Proxy-Authenticate");
+  }
 }

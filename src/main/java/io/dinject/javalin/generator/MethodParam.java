@@ -1,5 +1,9 @@
 package io.dinject.javalin.generator;
 
+import io.dinject.controller.Cookie;
+import io.dinject.controller.Default;
+import io.dinject.controller.FormParam;
+import io.dinject.controller.Header;
 import io.dinject.controller.QueryParam;
 
 import javax.lang.model.element.VariableElement;
@@ -10,27 +14,50 @@ class MethodParam {
   private final String rawType;
   private final TypeHandler typeHandler;
   private final String varName;
-  private final String paramName;
   private final String snakeName;
-
-  private final String paramDefault;
   private final String docComment;
+  private String paramName;
+  private String paramDefault;
+  private String paramType;
 
   MethodParam(VariableElement param, ProcessingContext ctx) {
     this.rawType = param.asType().toString();
     this.typeHandler = TypeMap.get(rawType);
     this.varName = param.getSimpleName().toString();
+    this.snakeName = Util.snakeCase(varName);
+    this.paramName = varName;
     this.docComment = ctx.docComment(param);
+
+    Default defaultVal = param.getAnnotation(Default.class);
+    if (defaultVal != null) {
+      this.paramDefault = defaultVal.value();
+    }
 
     QueryParam queryParam = param.getAnnotation(QueryParam.class);
     if (queryParam != null) {
-      this.paramName = nameFrom(queryParam.name(), param.getSimpleName().toString());
-      this.paramDefault = queryParam.defaultValue();
-    } else {
-      this.paramName = varName;
-      this.paramDefault = "";
+      this.paramName = nameFrom(queryParam.value(), varName);
+      this.paramType = "queryParam";
     }
-    this.snakeName = Util.snakeCase(varName);
+    FormParam formParam = param.getAnnotation(FormParam.class);
+    if (formParam != null) {
+      this.paramName = nameFrom(formParam.value(), varName);
+      this.paramType = "formParam";
+    }
+    Cookie cookieParam = param.getAnnotation(Cookie.class);
+    if (cookieParam != null) {
+      this.paramName = nameFrom(cookieParam.value(), varName);
+      this.paramType = "cookie";
+      this.paramDefault = null;
+    }
+    Header headerParam = param.getAnnotation(Header.class);
+    if (headerParam != null) {
+      this.paramName = nameFrom(headerParam.value(), Util.initcapSnake(snakeName));
+      this.paramType = "header";
+      this.paramDefault = null;
+    }
+    if (paramType == null) {
+      this.paramType = "queryParam";
+    }
   }
 
   private String nameFrom(String name, String defaultName) {
@@ -80,9 +107,9 @@ class MethodParam {
         writer.append("ctx.bodyAsClass(%s.class)", shortType);
       } else {
         if (hasParamDefault()) {
-          writer.append("ctx.queryParam(\"%s\",\"%s\")", paramName, paramDefault);
+          writer.append("ctx.%s(\"%s\",\"%s\")", paramType, paramName, paramDefault);
         } else {
-          writer.append("ctx.queryParam(\"%s\")", paramName);
+          writer.append("ctx.%s(\"%s\")", paramType, paramName);
         }
       }
     }

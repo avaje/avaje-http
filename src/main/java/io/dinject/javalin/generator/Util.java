@@ -69,6 +69,29 @@ class Util {
     return sb.toString();
   }
 
+  static String initcapSnake(String input) {
+    StringBuilder sb = new StringBuilder(input.length());
+    int len = input.length();
+
+    boolean upper = true;
+
+    for (int i = 0; i < len; i++) {
+      char ch = input.charAt(i);
+      if (ch == '-') {
+        sb.append(ch);
+        upper = true;
+      } else {
+        if (upper) {
+          sb.append(Character.toUpperCase(ch));
+          upper = false;
+        } else {
+          sb.append(ch);
+        }
+      }
+    }
+    return sb.toString();
+  }
+
   /**
    * Find and return the list of roles on the given element.
    * <p>
