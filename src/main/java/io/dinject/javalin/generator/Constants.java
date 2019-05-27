@@ -10,7 +10,7 @@ class Constants {
   static final String GENERATED = "javax.annotation.Generated";
   static final String API_BUILDER = "io.javalin.apibuilder.ApiBuilder";
 
-  static final String AT_GENERATED = "@Generated(\"io.dinject.javlin.generator\")";
+  static final String AT_GENERATED = "@Generated(\"io.dinject.javalin.generator\")";
 
   static final String IMPORT_PATH_TYPE_CONVERT = "import static io.dinject.controller.PathTypeConversion.*;";
 
