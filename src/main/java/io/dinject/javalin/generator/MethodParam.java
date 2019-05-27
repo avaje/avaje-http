@@ -1,5 +1,7 @@
 package io.dinject.javalin.generator;
 
+import io.dinject.controller.QueryParam;
+
 import javax.lang.model.element.VariableElement;
 import java.util.Set;
 
@@ -7,15 +9,39 @@ class MethodParam {
 
   private final String rawType;
   private final TypeHandler typeHandler;
-  private final String name;
+  private final String varName;
+  private final String paramName;
   private final String snakeName;
 
+  private final String paramDefault;
+  private final String docComment;
 
-  MethodParam(VariableElement param) {
-    this.name = param.getSimpleName().toString();
-    this.snakeName = Util.snakeCase(name);
+  MethodParam(VariableElement param, ProcessingContext ctx) {
     this.rawType = param.asType().toString();
     this.typeHandler = TypeMap.get(rawType);
+    this.varName = param.getSimpleName().toString();
+    this.docComment = ctx.docComment(param);
+
+    QueryParam queryParam = param.getAnnotation(QueryParam.class);
+    if (queryParam != null) {
+      this.paramName = nameFrom(queryParam.name(), param.getSimpleName().toString());
+      this.paramDefault = queryParam.defaultValue();
+    } else {
+      this.paramName = varName;
+      this.paramDefault = "";
+    }
+    this.snakeName = Util.snakeCase(varName);
+  }
+
+  private String nameFrom(String name, String defaultName) {
+    if (name != null && !name.isEmpty()) {
+      return name;
+    }
+    return defaultName;
+  }
+
+  private boolean hasParamDefault() {
+    return paramDefault != null && !paramDefault.isEmpty();
   }
 
   private boolean isJavalinContext() {
@@ -36,7 +62,7 @@ class MethodParam {
       shortType = Util.shortName(rawType);
     }
 
-    writer.append("      %s %s = ", shortType, name);
+    writer.append("      %s %s = ", shortType, varName);
 
     // path parameters are expected to be not nullable
     // ... with query parameters nullable
@@ -51,9 +77,13 @@ class MethodParam {
     } else {
       if (typeHandler == null) {
         // assuming this is a body (POST, PATCH)
-        writer.append("ctx.bodyAsClass(%s.class)", shortType, name, shortType);
+        writer.append("ctx.bodyAsClass(%s.class)", shortType);
       } else {
-        writer.append("ctx.queryParam(\"%s\")", name);
+        if (hasParamDefault()) {
+          writer.append("ctx.queryParam(\"%s\",\"%s\")", paramName, paramDefault);
+        } else {
+          writer.append("ctx.queryParam(\"%s\")", paramName);
+        }
       }
     }
 
@@ -64,8 +94,8 @@ class MethodParam {
   }
 
   private String derivePathParam(Set<String> pathParams) {
-    if (pathParams.contains(name)) {
-      return name;
+    if (pathParams.contains(varName)) {
+      return varName;
     }
     if (pathParams.contains(snakeName)){
       return snakeName;
@@ -88,7 +118,7 @@ class MethodParam {
     if (isJavalinContext()) {
       writer.append("ctx");
     } else {
-      writer.append(name);
+      writer.append(varName);
     }
   }
 }

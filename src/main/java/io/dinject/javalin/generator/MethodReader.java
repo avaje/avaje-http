@@ -16,6 +16,7 @@ import static io.dinject.javalin.generator.Constants.JAVALIN_ROLES;
 
 class MethodReader {
 
+  private final ProcessingContext ctx;
   private final BeanReader bean;
   private final ExecutableElement element;
 
@@ -31,7 +32,8 @@ class MethodReader {
    */
   private final List<String> methodRoles;
 
-  MethodReader(BeanReader bean, ExecutableElement element) {
+  MethodReader(BeanReader bean, ExecutableElement element, ProcessingContext ctx) {
+    this.ctx = ctx;
     this.bean = bean;
     this.beanPath = bean.getPath();
     this.element = element;
@@ -48,7 +50,7 @@ class MethodReader {
     }
 
     for (VariableElement p : element.getParameters()) {
-      MethodParam param = new MethodParam(p);
+      MethodParam param = new MethodParam(p, ctx);
       params.add(param);
       param.addImports(bean);
     }

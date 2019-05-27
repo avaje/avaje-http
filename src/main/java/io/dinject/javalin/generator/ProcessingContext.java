@@ -43,4 +43,8 @@ class ProcessingContext {
   JavaFileObject createWriter(String cls, Element origin) throws IOException {
     return filer.createSourceFile(cls, origin);
   }
+
+  public String docComment(Element param) {
+    return elementUtils.getDocComment(param);
+  }
 }

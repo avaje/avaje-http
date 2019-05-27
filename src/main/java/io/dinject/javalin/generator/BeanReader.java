@@ -18,6 +18,8 @@ import static io.dinject.javalin.generator.Constants.JAVALIN_ROLES;
  */
 class BeanReader {
 
+  private final ProcessingContext ctx;
+
   private final TypeElement beanType;
 
   private final List<String> roles;
@@ -30,6 +32,7 @@ class BeanReader {
 
   BeanReader(TypeElement beanType, ProcessingContext ctx) {
     this.beanType = beanType;
+    this.ctx = ctx;
     this.roles = Util.findRoles(beanType);
     if (ctx.isGeneratedAvailable()) {
       importTypes.add(Constants.GENERATED);
@@ -63,7 +66,7 @@ class BeanReader {
   private void readMethod(Element element) {
 
     ExecutableElement methodElement = (ExecutableElement) element;
-    MethodReader methodReader = new MethodReader(this, methodElement);
+    MethodReader methodReader = new MethodReader(this, methodElement, ctx);
     methodReader.read();
     methods.add(methodReader);
   }
