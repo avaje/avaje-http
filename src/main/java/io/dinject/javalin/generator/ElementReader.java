@@ -127,7 +127,7 @@ class ElementReader {
     return null;
   }
 
-  void addImports(BeanReader bean) {
+  void addImports(ControllerReader bean) {
     if (typeHandler != null) {
       String importType = typeHandler.getImportType();
       if (importType != null) {
@@ -209,7 +209,7 @@ class ElementReader {
 
     TypeElement formBeanType = ctx.getTypeElement(rawType);
 
-    FormBeanReader form = new FormBeanReader(ctx, formBeanType, varName, shortType, defaultParamType);
+    BeanParamReader form = new BeanParamReader(ctx, formBeanType, varName, shortType, defaultParamType);
     form.write(writer);
   }
 }

@@ -16,7 +16,7 @@ import static io.dinject.javalin.generator.Constants.JAVALIN_ROLES;
 /**
  * Reads the type information for the Controller (bean).
  */
-class BeanReader {
+class ControllerReader {
 
   private final ProcessingContext ctx;
 
@@ -30,7 +30,7 @@ class BeanReader {
 
   private final Set<String> importTypes = new TreeSet<>();
 
-  BeanReader(TypeElement beanType, ProcessingContext ctx) {
+  ControllerReader(TypeElement beanType, ProcessingContext ctx) {
     this.beanType = beanType;
     this.ctx = ctx;
     this.roles = Util.findRoles(beanType);

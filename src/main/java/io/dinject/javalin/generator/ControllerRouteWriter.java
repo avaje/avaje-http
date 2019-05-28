@@ -7,7 +7,7 @@ import java.io.Writer;
 
 class ControllerRouteWriter {
 
-  private final BeanReader reader;
+  private final ControllerReader reader;
 
   private final ProcessingContext ctx;
 
@@ -17,7 +17,7 @@ class ControllerRouteWriter {
   private String packageName;
   private final String fullName;
 
-  ControllerRouteWriter(BeanReader reader, ProcessingContext ctx) {
+  ControllerRouteWriter(ControllerReader reader, ProcessingContext ctx) {
     this.reader = reader;
     this.ctx = ctx;
 

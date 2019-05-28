@@ -17,7 +17,7 @@ import static io.dinject.javalin.generator.Constants.JAVALIN_ROLES;
 class MethodReader {
 
   private final ProcessingContext ctx;
-  private final BeanReader bean;
+  private final ControllerReader bean;
   private final ExecutableElement element;
 
   private final boolean isVoid;
@@ -32,7 +32,7 @@ class MethodReader {
    */
   private final List<String> methodRoles;
 
-  MethodReader(BeanReader bean, ExecutableElement element, ProcessingContext ctx) {
+  MethodReader(ControllerReader bean, ExecutableElement element, ProcessingContext ctx) {
     this.ctx = ctx;
     this.bean = bean;
     this.beanPath = bean.getPath();

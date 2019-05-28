@@ -16,7 +16,7 @@ class MethodParam {
     elementParam.writeCtxGet(writer, pathParams);
   }
 
-  void addImports(BeanReader bean) {
+  void addImports(ControllerReader bean) {
     elementParam.addImports(bean);
   }
 

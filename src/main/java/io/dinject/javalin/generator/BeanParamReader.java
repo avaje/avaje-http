@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-class FormBeanReader {
+class BeanParamReader {
 
   private final ProcessingContext ctx;
   private final String beanVarName;
@@ -21,7 +21,7 @@ class FormBeanReader {
 
   private final Map<String, FieldReader> fieldMap = new LinkedHashMap<>();
 
-  FormBeanReader(ProcessingContext ctx, TypeElement beanType, String beanVarName, String beanShortType, ParamType defaultParamType) {
+  BeanParamReader(ProcessingContext ctx, TypeElement beanType, String beanVarName, String beanShortType, ParamType defaultParamType) {
     this.ctx = ctx;
     this.beanType = beanType;
     this.beanVarName = beanVarName;
