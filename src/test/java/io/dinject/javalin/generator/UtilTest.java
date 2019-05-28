@@ -58,4 +58,10 @@ public class UtilTest {
     assertThat(Util.initcapSnake("a-d-to")).isEqualTo("A-D-To");
     assertThat(Util.initcapSnake("proxy-authenticate")).isEqualTo("Proxy-Authenticate");
   }
+
+  @Test
+  public void propertyName() {
+    assertThat(Util.propertyName("setLower")).isEqualTo("lower");
+    assertThat(Util.propertyName("setFooBar")).isEqualTo("fooBar");
+  }
 }

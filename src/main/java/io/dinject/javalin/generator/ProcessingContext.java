@@ -4,6 +4,7 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
@@ -26,7 +27,11 @@ class ProcessingContext {
   }
 
   private boolean isTypeAvailable(String canonicalName) {
-    return null != elementUtils.getTypeElement(canonicalName);
+    return null != getTypeElement(canonicalName);
+  }
+
+  TypeElement getTypeElement(String canonicalName) {
+    return elementUtils.getTypeElement(canonicalName);
   }
 
   boolean isGeneratedAvailable() {
@@ -44,7 +49,7 @@ class ProcessingContext {
     return filer.createSourceFile(cls, origin);
   }
 
-  public String docComment(Element param) {
+  String docComment(Element param) {
     return elementUtils.getDocComment(param);
   }
 }

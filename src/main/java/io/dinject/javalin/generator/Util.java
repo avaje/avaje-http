@@ -126,4 +126,13 @@ class Util {
     String name = annotationType.asElement().getSimpleName().toString();
     return name.endsWith("Roles") || name.endsWith("PermittedRoles");
   }
+
+  /**
+   * Return the bean property name given the setter method.
+   */
+  static String propertyName(String setterMethod) {
+
+    String prop = setterMethod.substring(3);
+    return Character.toLowerCase(prop.charAt(0)) + prop.substring(1);
+  }
 }
