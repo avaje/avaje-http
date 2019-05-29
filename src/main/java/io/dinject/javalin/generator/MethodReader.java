@@ -1,6 +1,7 @@
 package io.dinject.javalin.generator;
 
 import io.dinject.controller.Delete;
+import io.dinject.controller.Form;
 import io.dinject.controller.Get;
 import io.dinject.controller.Patch;
 import io.dinject.controller.Post;
@@ -27,6 +28,8 @@ class MethodReader {
   private WebMethod webMethod;
   private String webMethodPath;
 
+  private boolean formMarker;
+
   /**
    * Holds enum Roles that are required for the method.
    */
@@ -39,6 +42,8 @@ class MethodReader {
     this.element = element;
     this.isVoid = element.getReturnType().toString().equals("void");
     this.methodRoles = Util.findRoles(element);
+
+    readMethodAnnotation();
   }
 
   void read() {
@@ -49,16 +54,18 @@ class MethodReader {
       }
     }
 
+    // non-path parameters default to form or query parameters based on the
+    // existence of @Form annotation on the method
+    ParamType defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
+
     for (VariableElement p : element.getParameters()) {
-      MethodParam param = new MethodParam(p, ctx);
+      MethodParam param = new MethodParam(p, ctx, defaultParamType);
       params.add(param);
       param.addImports(bean);
     }
   }
 
   void addRoute(Append writer) {
-
-    readMethodAnnotation();
 
     if (webMethod != null) {
 
@@ -121,6 +128,11 @@ class MethodReader {
 
 
   private boolean readMethodAnnotation() {
+
+    Form form = element.getAnnotation(Form.class);
+    if (form != null) {
+      this.formMarker = true;
+    }
 
     Get get = element.getAnnotation(Get.class);
     if (get != null) {

@@ -7,8 +7,8 @@ class MethodParam {
 
   private final ElementReader elementParam;
 
-  MethodParam(VariableElement param, ProcessingContext ctx) {
-    this.elementParam = new ElementReader(param, ctx, ParamType.QUERYPARAM);
+  MethodParam(VariableElement param, ProcessingContext ctx, ParamType defaultParamType) {
+    this.elementParam = new ElementReader(param, ctx, defaultParamType);
   }
 
   void buildCtxGet(Append writer, Set<String> pathParams) {
