@@ -18,6 +18,7 @@ class ElementReader {
   private final TypeHandler typeHandler;
   private final String varName;
   private final String snakeName;
+  private final boolean formMarker;
 
   private String paramName;
   private ParamType paramType;
@@ -25,10 +26,11 @@ class ElementReader {
   private String paramDefault;
   private String docComment;
 
-  ElementReader(Element element, ProcessingContext ctx, ParamType defaultType) {
+  ElementReader(Element element, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
     this.ctx = ctx;
     this.rawType = element.asType().toString();
     this.typeHandler = TypeMap.get(rawType);
+    this.formMarker = formMarker;
 
     this.varName = element.getSimpleName().toString();
     this.snakeName = Util.snakeCase(varName);
@@ -156,6 +158,12 @@ class ElementReader {
   }
 
   private boolean setValue(Append writer, PathSegments segments, String shortType) {
+
+    if (formMarker && impliedParamType && typeHandler == null) {
+      // @Form on method and this type is a "bean" so treat is as a form bean
+      writeForm(writer, shortType, varName, ParamType.FORMPARAM);
+      return false;
+    }
 
     if (ParamType.FORM == paramType) {
       writeForm(writer, shortType, varName, ParamType.FORMPARAM);

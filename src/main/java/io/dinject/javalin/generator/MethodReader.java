@@ -58,7 +58,7 @@ class MethodReader {
     ParamType defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
 
     for (VariableElement p : element.getParameters()) {
-      MethodParam param = new MethodParam(p, ctx, defaultParamType);
+      MethodParam param = new MethodParam(p, ctx, defaultParamType, formMarker);
       params.add(param);
       param.addImports(bean);
     }

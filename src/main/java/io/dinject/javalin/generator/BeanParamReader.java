@@ -84,7 +84,7 @@ class BeanParamReader {
     private String setterMethod;
 
     FieldReader(ProcessingContext ctx, Element enclosedElement, ParamType defaultParamType) {
-      this.element = new ElementReader(enclosedElement, ctx, defaultParamType);
+      this.element = new ElementReader(enclosedElement, ctx, defaultParamType, false);
     }
 
     String getVarName() {
