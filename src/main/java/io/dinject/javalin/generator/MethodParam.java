@@ -1,7 +1,6 @@
 package io.dinject.javalin.generator;
 
 import javax.lang.model.element.VariableElement;
-import java.util.Set;
 
 class MethodParam {
 
@@ -11,9 +10,8 @@ class MethodParam {
     this.elementParam = new ElementReader(param, ctx, defaultParamType);
   }
 
-  void buildCtxGet(Append writer, Set<String> pathParams) {
-
-    elementParam.writeCtxGet(writer, pathParams);
+  void buildCtxGet(Append writer, PathSegments segments) {
+    elementParam.writeCtxGet(writer, segments);
   }
 
   void addImports(ControllerReader bean) {

@@ -10,8 +10,6 @@ import io.dinject.controller.QueryParam;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import java.util.Collections;
-import java.util.Set;
 
 class ElementReader {
 
@@ -23,6 +21,7 @@ class ElementReader {
 
   private String paramName;
   private ParamType paramType;
+  private boolean impliedParamType;
   private String paramDefault;
   private String docComment;
 
@@ -82,6 +81,7 @@ class ElementReader {
     }
     if (paramType == null) {
       this.paramType = defaultType;
+      this.impliedParamType = true;
     }
   }
 
@@ -117,16 +117,6 @@ class ElementReader {
     }
   }
 
-  private String derivePathParam(Set<String> pathParams) {
-    if (pathParams.contains(varName)) {
-      return varName;
-    }
-    if (pathParams.contains(snakeName)) {
-      return snakeName;
-    }
-    return null;
-  }
-
   void addImports(ControllerReader bean) {
     if (typeHandler != null) {
       String importType = typeHandler.getImportType();
@@ -146,7 +136,7 @@ class ElementReader {
     }
   }
 
-  void writeCtxGet(Append writer, Set<String> pathParams) {
+  void writeCtxGet(Append writer, PathSegments segments) {
 
     if (isJavalinContext()) {
       // no conversion for this parameter
@@ -155,17 +145,17 @@ class ElementReader {
 
     String shortType = shortType();
     writer.append("      %s %s = ", shortType, varName);
-    if (setValue(writer, pathParams, shortType)) {
+    if (setValue(writer, segments, shortType)) {
       writer.append(";").eol();
     }
   }
 
   void setValue(Append writer) {
     String shortType = shortType();
-    setValue(writer, Collections.emptySet(), shortType);
+    setValue(writer, PathSegments.EMPTY, shortType);
   }
 
-  private boolean setValue(Append writer, Set<String> pathParams, String shortType) {
+  private boolean setValue(Append writer, PathSegments segments, String shortType) {
 
     if (ParamType.FORM == paramType) {
       writeForm(writer, shortType, varName, ParamType.FORMPARAM);
@@ -176,26 +166,38 @@ class ElementReader {
       return false;
     }
 
-    // path parameters are expected to be not nullable
-    // ... with query parameters nullable
-    String pathParameter = derivePathParam(pathParams);
-    String asMethod = (typeHandler == null) ? null : (pathParameter != null) ? typeHandler.asMethod() : typeHandler.toMethod();
+    if (impliedParamType) {
+      PathSegments.Segment segment = segments.segment(varName);
+      if (segment != null) {
+        // path or metric parameter
+        boolean requiredParam = segment.isRequired(varName);
+        String asMethod = (typeHandler == null) ? null : (requiredParam) ? typeHandler.asMethod() : typeHandler.toMethod();
+
+        if (asMethod != null) {
+          writer.append(asMethod);
+        }
+        segment.writeGetVal(writer, varName);
+        if (asMethod != null) {
+          writer.append(")");
+        }
+        return true;
+      }
+    }
+
+    String asMethod = (typeHandler == null) ? null : typeHandler.toMethod();
 
     if (asMethod != null) {
       writer.append(asMethod);
     }
-    if (pathParameter != null) {
-      writer.append("ctx.pathParam(\"%s\")", pathParameter);
+
+    if (typeHandler == null) {
+      // assuming this is a body (POST, PATCH)
+      writer.append("ctx.bodyAsClass(%s.class)", shortType);
     } else {
-      if (typeHandler == null) {
-        // assuming this is a body (POST, PATCH)
-        writer.append("ctx.bodyAsClass(%s.class)", shortType);
+      if (hasParamDefault()) {
+        writer.append("ctx.%s(\"%s\",\"%s\")", paramType, paramName, paramDefault);
       } else {
-        if (hasParamDefault()) {
-          writer.append("ctx.%s(\"%s\",\"%s\")", paramType, paramName, paramDefault);
-        } else {
-          writer.append("ctx.%s(\"%s\")", paramType, paramName);
-        }
+        writer.append("ctx.%s(\"%s\")", paramType, paramName);
       }
     }
 

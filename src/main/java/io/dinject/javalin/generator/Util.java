@@ -30,17 +30,6 @@ class Util {
     return sb.toString();
   }
 
-  static Set<String> pathParams(String fullPath) {
-
-    Set<String> paramNames = new LinkedHashSet<>();
-    for (String section : fullPath.split("/")) {
-      if (section.startsWith(":")) {
-        paramNames.add(section.substring(1));
-      }
-    }
-    return paramNames;
-  }
-
   static String shortName(String fullType) {
     int p = fullType.lastIndexOf('.');
     if (p == -1) {

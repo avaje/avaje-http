@@ -11,7 +11,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static io.dinject.javalin.generator.Constants.JAVALIN_ROLES;
 
@@ -70,12 +69,18 @@ class MethodReader {
     if (webMethod != null) {
 
       String fullPath = Util.combinePath(beanPath, webMethodPath);
-      Set<String> pathParams = Util.pathParams(fullPath);
+      PathSegments segments = PathSegments.parse(fullPath);
 
-      writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
+      writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), segments.fullPath()).eol();
       writer.append("      ctx.status(%s);", httpStatusCode()).eol();
+
+      List<PathSegments.Segment> metricSegments = segments.metricSegments();
+      for (PathSegments.Segment metricSegment : metricSegments) {
+        metricSegment.writeCreateSegment(writer);
+      }
+
       for (MethodParam param : params) {
-        param.buildCtxGet(writer, pathParams);
+        param.buildCtxGet(writer, segments);
       }
       writer.append("      ");
 

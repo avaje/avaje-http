@@ -27,17 +27,6 @@ public class UtilTest {
   }
 
   @Test
-  public void pathParams() {
-
-    assertThat(Util.pathParams("/hello")).isEmpty();
-    assertThat(Util.pathParams("/a/:id/:foo")).contains("id", "foo");
-    assertThat(Util.pathParams("/:id/:foo")).contains("id", "foo");
-    assertThat(Util.pathParams("/odd:id/:foo")).contains("foo");
-    assertThat(Util.pathParams("/:id/odd:foo")).contains("id");
-
-  }
-
-  @Test
   public void snakeCase() {
 
     assertThat(Util.snakeCase("lower")).isEqualTo("lower");

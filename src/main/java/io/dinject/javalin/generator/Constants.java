@@ -14,6 +14,6 @@ class Constants {
 
   static final String IMPORT_PATH_TYPE_CONVERT = "import static io.dinject.controller.PathTypeConversion.*;";
 
-  static String WEB_ROUTES = "io.dinject.controller.WebRoutes";
+  static final String IMPORT_CONTROLLER = "io.dinject.controller.*";
 
 }

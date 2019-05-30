@@ -39,7 +39,7 @@ class ControllerReader {
     }
     importTypes.add(Constants.SINGLETON);
     importTypes.add(Constants.API_BUILDER);
-    importTypes.add(Constants.WEB_ROUTES);
+    importTypes.add(Constants.IMPORT_CONTROLLER);
     importTypes.add(beanType.getQualifiedName().toString());
   }
 
