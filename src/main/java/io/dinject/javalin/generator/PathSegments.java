@@ -18,16 +18,21 @@ class PathSegments {
 
     StringBuilder path = new StringBuilder();
 
-    for (String section : fullPath.split("/")) {
-      if (!section.isEmpty()) {
-        path.append("/");
-        if (section.startsWith(":")) {
-          Segment segment = createSegment(section.substring(1));
-          segments.add(segment);
-          path.append(segment.path(section));
+    if ("/".equals(fullPath)) {
+      path.append("/");
 
-        } else {
-          path.append(section);
+    } else {
+      for (String section : fullPath.split("/")) {
+        if (!section.isEmpty()) {
+          path.append("/");
+          if (section.startsWith(":")) {
+            Segment segment = createSegment(section.substring(1));
+            segments.add(segment);
+            path.append(segment.path(section));
+
+          } else {
+            path.append(section);
+          }
         }
       }
     }

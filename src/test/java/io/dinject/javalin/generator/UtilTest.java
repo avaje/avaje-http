@@ -27,6 +27,19 @@ public class UtilTest {
   }
 
   @Test
+  public void combinePath_forRoot() {
+    assertEquals(Util.combinePath("/", ""), "/");
+    assertEquals(Util.combinePath("", "/"), "");
+  }
+
+  @Test
+  public void trimPath() {
+    assertEquals(Util.trimPath("/"), "/");
+    assertEquals(Util.trimPath("/foo"), "/foo");
+    assertEquals(Util.trimPath("/foo/"), "/foo");
+  }
+
+  @Test
   public void snakeCase() {
 
     assertThat(Util.snakeCase("lower")).isEqualTo("lower");

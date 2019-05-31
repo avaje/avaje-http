@@ -84,7 +84,7 @@ class ControllerReader {
     if (path == null) {
       return null;
     }
-    return Util.trimTrailingSlash(path.value());
+    return Util.trimPath(path.value());
   }
 
   void addImportType(String rawType) {

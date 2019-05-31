@@ -5,13 +5,15 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 class Util {
 
-  static String trimTrailingSlash(String value) {
+  static String trimPath(String value) {
+    return value.length() <= 1 ? value : trimTrailingSlash(value);
+  }
+
+  private static String trimTrailingSlash(String value) {
     if (value.endsWith("/")) {
       return value.substring(0, value.length() - 1);
     }
