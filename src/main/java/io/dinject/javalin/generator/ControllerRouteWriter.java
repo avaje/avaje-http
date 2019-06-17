@@ -46,7 +46,9 @@ class ControllerRouteWriter {
 
     for (MethodReader method : reader.getMethods()) {
       method.addRoute(writer);
-      method.addMeta(ctx);
+      if (!reader.isDocHidden()) {
+        method.addMeta(ctx);
+      }
     }
 
     writer.append("  }").eol().eol();

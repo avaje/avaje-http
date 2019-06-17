@@ -1,6 +1,7 @@
 package io.dinject.javalin.generator;
 
 import io.dinject.controller.Path;
+import io.swagger.v3.oas.annotations.Hidden;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -30,15 +31,17 @@ class ControllerReader {
 
   private final Set<String> importTypes = new TreeSet<>();
 
-//  private final String docComment;
+  private boolean docHidden;
 
   ControllerReader(TypeElement beanType, ProcessingContext ctx) {
     this.beanType = beanType;
     this.ctx = ctx;
-//    this.docComment = ctx.getDocComment(beanType);
     this.roles = Util.findRoles(beanType);
     if (ctx.isGeneratedAvailable()) {
       importTypes.add(Constants.GENERATED);
+    }
+    if (ctx.isOpenApiAvailable()) {
+      docHidden = isDocHidden(beanType);
     }
     importTypes.add(Constants.SINGLETON);
     importTypes.add(Constants.API_BUILDER);
@@ -46,13 +49,17 @@ class ControllerReader {
     importTypes.add(beanType.getQualifiedName().toString());
   }
 
+  private boolean isDocHidden(TypeElement beanType) {
+    return beanType.getAnnotation(Hidden.class) != null;
+  }
+
   TypeElement getBeanType() {
     return beanType;
   }
 
-//  String getDocComment() {
-//    return docComment;
-//  }
+  boolean isDocHidden() {
+    return docHidden;
+  }
 
   void read() {
     if (!roles.isEmpty()) {

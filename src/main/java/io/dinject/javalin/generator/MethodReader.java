@@ -7,6 +7,7 @@ import io.dinject.controller.Patch;
 import io.dinject.controller.Post;
 import io.dinject.controller.Put;
 import io.dinject.javalin.generator.javadoc.Javadoc;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
@@ -77,7 +78,7 @@ class MethodReader {
 
   public void addMeta(ProcessingContext ctx) {
 
-    if (webMethod != null) {
+    if (webMethod != null && notHidden()) {
 
       Paths paths = ctx.getOpenAPI().getPaths();
 
@@ -91,7 +92,7 @@ class MethodReader {
       //operation.setOperationId();
       operation.setSummary(javadoc.getSummary());
       operation.setDescription(javadoc.getDescription());
-      
+
       if (javadoc.isDeprecated()) {
         operation.setDeprecated(true);
       } else if (element.getAnnotation(Deprecated.class) != null) {
@@ -112,6 +113,12 @@ class MethodReader {
     }
   }
 
+  /**
+   * Return true if the method is included in documentation.
+   */
+  private boolean notHidden() {
+    return !ctx.isOpenApiAvailable() || element.getAnnotation(Hidden.class) == null;
+  }
 
   void addRoute(Append writer) {
 
