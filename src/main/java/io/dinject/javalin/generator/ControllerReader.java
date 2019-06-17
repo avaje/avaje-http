@@ -30,9 +30,12 @@ class ControllerReader {
 
   private final Set<String> importTypes = new TreeSet<>();
 
+//  private final String docComment;
+
   ControllerReader(TypeElement beanType, ProcessingContext ctx) {
     this.beanType = beanType;
     this.ctx = ctx;
+//    this.docComment = ctx.getDocComment(beanType);
     this.roles = Util.findRoles(beanType);
     if (ctx.isGeneratedAvailable()) {
       importTypes.add(Constants.GENERATED);
@@ -46,6 +49,10 @@ class ControllerReader {
   TypeElement getBeanType() {
     return beanType;
   }
+
+//  String getDocComment() {
+//    return docComment;
+//  }
 
   void read() {
     if (!roles.isEmpty()) {

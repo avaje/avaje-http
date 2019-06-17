@@ -1,5 +1,8 @@
 package io.dinject.javalin.generator;
 
+import io.dinject.javalin.generator.javadoc.Javadoc;
+import io.swagger.v3.oas.models.Operation;
+
 import javax.lang.model.element.VariableElement;
 
 class MethodParam {
@@ -20,5 +23,9 @@ class MethodParam {
 
   void buildParamName(Append writer) {
     elementParam.writeParamName(writer);
+  }
+
+  void addMeta(Javadoc javadoc, Operation operation) {
+    elementParam.addMeta(javadoc, operation);
   }
 }

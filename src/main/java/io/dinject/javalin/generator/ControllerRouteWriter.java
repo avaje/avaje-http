@@ -11,11 +11,11 @@ class ControllerRouteWriter {
 
   private final ProcessingContext ctx;
 
-  private Append writer;
-  private String originName;
-  private String shortName;
-  private String packageName;
+  private final String originName;
+  private final String shortName;
   private final String fullName;
+  private String packageName;
+  private Append writer;
 
   ControllerRouteWriter(ControllerReader reader, ProcessingContext ctx) {
     this.reader = reader;
@@ -29,7 +29,7 @@ class ControllerRouteWriter {
 
   void write() throws IOException {
 
-    this.writer = new Append(createFileWriter());
+    writer = new Append(createFileWriter());
     writePackage();
     writeImports();
     writeClassStart();
@@ -46,6 +46,7 @@ class ControllerRouteWriter {
 
     for (MethodReader method : reader.getMethods()) {
       method.addRoute(writer);
+      method.addMeta(ctx);
     }
 
     writer.append("  }").eol().eol();
@@ -89,7 +90,6 @@ class ControllerRouteWriter {
       writer.append("package %s;", packageName).eol().eol();
     }
   }
-
 
   private Writer createFileWriter() throws IOException {
 

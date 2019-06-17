@@ -2,17 +2,25 @@ package io.dinject.javalin.generator;
 
 enum ParamType {
 
-  FORM("form"),
-  BEANPARAM("beanParam"),
-  QUERYPARAM("queryParam"),
-  FORMPARAM("formParam"),
-  COOKIE("cookie"),
-  HEADER("header");
+  BODY("body", "body"),
+  PATHPARAM("pathParam", "path"),
+  FORM("form", "form"),
+  BEANPARAM("beanParam", "bean"),
+  QUERYPARAM("queryParam", "query"),
+  FORMPARAM("formParam", "form"),
+  COOKIE("cookie", "cookie"),
+  HEADER("header", "header");
 
   private String code;
+  private String type;
 
-  ParamType(String code) {
+  ParamType(String code, String type) {
     this.code = code;
+    this.type = type;
+  }
+
+  public String getType() {
+    return type;
   }
 
   @Override

@@ -6,6 +6,8 @@ class Constants {
 
   static final String JAVALIN_ROLES = "io.javalin.security.SecurityUtil.roles";
 
+  static final String OPENAPIDEFINITION = "io.swagger.v3.oas.annotations.OpenAPIDefinition";
+
   static final String SINGLETON = "javax.inject.Singleton";
   static final String GENERATED = "javax.annotation.Generated";
   static final String API_BUILDER = "io.javalin.apibuilder.ApiBuilder";

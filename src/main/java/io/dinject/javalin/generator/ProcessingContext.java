@@ -1,5 +1,7 @@
 package io.dinject.javalin.generator;
 
+import io.swagger.v3.oas.models.OpenAPI;
+
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -7,10 +9,13 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
+import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 import java.io.IOException;
 
 import static io.dinject.javalin.generator.Constants.GENERATED;
+import static io.dinject.javalin.generator.Constants.OPENAPIDEFINITION;
 
 class ProcessingContext {
 
@@ -18,12 +23,16 @@ class ProcessingContext {
   private final Filer filer;
   private final Elements elementUtils;
   private final boolean generatedAvailable;
+  private final boolean openApiAvailable;
+
+  private OpenAPI openAPI;
 
   ProcessingContext(ProcessingEnvironment env) {
     this.messager = env.getMessager();
     this.filer = env.getFiler();
     this.elementUtils = env.getElementUtils();
     this.generatedAvailable = isTypeAvailable(GENERATED);
+    this.openApiAvailable = isTypeAvailable(OPENAPIDEFINITION);
   }
 
   private boolean isTypeAvailable(String canonicalName) {
@@ -38,8 +47,16 @@ class ProcessingContext {
     return generatedAvailable;
   }
 
+  boolean isOpenApiAvailable() {
+    return openApiAvailable;
+  }
+
   void logError(Element e, String msg, Object... args) {
     messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
+  }
+
+  void logDebug(String msg, Object... args) {
+    messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
   }
 
   /**
@@ -49,7 +66,20 @@ class ProcessingContext {
     return filer.createSourceFile(cls, origin);
   }
 
-  String docComment(Element param) {
+  FileObject createResource(String path, String name, Element origin) throws IOException {
+    return filer.createResource(StandardLocation.CLASS_OUTPUT, path, name, origin);
+  }
+
+  String getDocComment(Element param) {
     return elementUtils.getDocComment(param);
   }
+
+  OpenAPI getOpenAPI() {
+    return openAPI;
+  }
+
+  void setOpenAPI(OpenAPI openAPI) {
+    this.openAPI = openAPI;
+  }
+
 }

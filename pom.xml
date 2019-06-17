@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.dinject</groupId>
@@ -17,6 +18,10 @@
     <tag>HEAD</tag>
   </scm>
 
+  <properties>
+    <swagger.version>2.0.8</swagger.version>
+  </properties>
+
   <dependencies>
 
     <dependency>
@@ -30,6 +35,26 @@
       <artifactId>dinject-controller</artifactId>
       <version>1.6</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.8</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-models</artifactId>
+      <version>${swagger.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swagger.version}</version>
+    </dependency>
+
+    <!-- test dependencies -->
 
     <dependency>
       <groupId>org.avaje.composite</groupId>

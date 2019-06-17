@@ -6,6 +6,10 @@ import io.dinject.controller.Get;
 import io.dinject.controller.Patch;
 import io.dinject.controller.Post;
 import io.dinject.controller.Put;
+import io.dinject.javalin.generator.javadoc.Javadoc;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -24,6 +28,8 @@ class MethodReader {
   private final List<MethodParam> params = new ArrayList<>();
   private final String beanPath;
 
+  private final Javadoc javadoc;
+
   private WebMethod webMethod;
   private String webMethodPath;
 
@@ -34,6 +40,10 @@ class MethodReader {
    */
   private final List<String> methodRoles;
 
+  private String fullPath;
+
+  private PathSegments segments;
+
   MethodReader(ControllerReader bean, ExecutableElement element, ProcessingContext ctx) {
     this.ctx = ctx;
     this.bean = bean;
@@ -41,6 +51,7 @@ class MethodReader {
     this.element = element;
     this.isVoid = element.getReturnType().toString().equals("void");
     this.methodRoles = Util.findRoles(element);
+    this.javadoc = Javadoc.parse(ctx.getDocComment(element));
 
     readMethodAnnotation();
   }
@@ -64,12 +75,45 @@ class MethodReader {
     }
   }
 
+  public void addMeta(ProcessingContext ctx) {
+
+    if (webMethod != null) {
+
+      Paths paths = ctx.getOpenAPI().getPaths();
+
+      PathItem pathItem = paths.get(fullPath);
+      if (pathItem == null) {
+        pathItem = new PathItem();
+        paths.addPathItem(fullPath, pathItem);
+      }
+
+      Operation operation = new Operation();
+      //operation.setDeprecated();
+      //operation.setOperationId();
+      operation.setSummary(javadoc.getSummary());
+      operation.setDescription(javadoc.getDescription());
+
+      switch (webMethod) {
+        case GET: pathItem.setGet(operation); break;
+        case PUT: pathItem.setPut(operation); break;
+        case POST: pathItem.setPost(operation); break;
+        case DELETE: pathItem.setDelete(operation); break;
+        case PATCH: pathItem.setPatch(operation); break;
+      }
+
+      for (MethodParam param : params) {
+        param.addMeta(javadoc, operation);
+      }
+    }
+  }
+
+
   void addRoute(Append writer) {
 
     if (webMethod != null) {
 
-      String fullPath = Util.combinePath(beanPath, webMethodPath);
-      PathSegments segments = PathSegments.parse(fullPath);
+      fullPath = Util.combinePath(beanPath, webMethodPath);
+      segments = PathSegments.parse(fullPath);
 
       writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), segments.fullPath()).eol();
       writer.append("      ctx.status(%s);", httpStatusCode()).eol();
@@ -143,12 +187,10 @@ class MethodReader {
     if (get != null) {
       return setWebMethod(WebMethod.GET, get.value());
     }
-
     Put put = element.getAnnotation(Put.class);
     if (put != null) {
       return setWebMethod(WebMethod.PUT, put.value());
     }
-
     Post post = element.getAnnotation(Post.class);
     if (post != null) {
       return setWebMethod(WebMethod.POST, post.value());
@@ -161,7 +203,6 @@ class MethodReader {
     if (delete != null) {
       return setWebMethod(WebMethod.DELETE, delete.value());
     }
-
     return false;
   }
 

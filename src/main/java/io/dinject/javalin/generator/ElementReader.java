@@ -7,6 +7,10 @@ import io.dinject.controller.Form;
 import io.dinject.controller.FormParam;
 import io.dinject.controller.Header;
 import io.dinject.controller.QueryParam;
+import io.dinject.javalin.generator.javadoc.Javadoc;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -24,7 +28,7 @@ class ElementReader {
   private ParamType paramType;
   private boolean impliedParamType;
   private String paramDefault;
-  private String docComment;
+//  private String docComment;
 
   ElementReader(Element element, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
     this.ctx = ctx;
@@ -35,7 +39,7 @@ class ElementReader {
     this.varName = element.getSimpleName().toString();
     this.snakeName = Util.snakeCase(varName);
     this.paramName = varName;
-    this.docComment = ctx.docComment(element);
+//    this.docComment = ctx.getDocComment(element);
 
     readAnnotations(element, defaultType);
   }
@@ -138,6 +142,22 @@ class ElementReader {
     }
   }
 
+  void addMeta(Javadoc javadoc, Operation operation) {
+    if (!isJavalinContext()) {
+
+      Parameter param = new Parameter();
+      param.setName(varName);
+      param.setDescription(javadoc.getParams().get(paramName));
+      param.setIn(paramType.getType());
+
+      Schema schema = new Schema();
+      schema.setType("string");
+      param.setSchema(schema);
+
+      operation.addParametersItem(param);
+    }
+  }
+
   void writeCtxGet(Append writer, PathSegments segments) {
 
     if (isJavalinContext()) {
@@ -162,6 +182,7 @@ class ElementReader {
     if (formMarker && impliedParamType && typeHandler == null) {
       // @Form on method and this type is a "bean" so treat is as a form bean
       writeForm(writer, shortType, varName, ParamType.FORMPARAM);
+      paramType = ParamType.FORM;
       return false;
     }
 
@@ -188,6 +209,7 @@ class ElementReader {
         if (asMethod != null) {
           writer.append(")");
         }
+        paramType = ParamType.PATHPARAM;
         return true;
       }
     }
@@ -201,6 +223,8 @@ class ElementReader {
     if (typeHandler == null) {
       // assuming this is a body (POST, PATCH)
       writer.append("ctx.bodyAsClass(%s.class)", shortType);
+      paramType = ParamType.BODY;
+
     } else {
       if (hasParamDefault()) {
         writer.append("ctx.%s(\"%s\",\"%s\")", paramType, paramName, paramDefault);
@@ -222,4 +246,5 @@ class ElementReader {
     BeanParamReader form = new BeanParamReader(ctx, formBeanType, varName, shortType, defaultParamType);
     form.write(writer);
   }
+
 }
