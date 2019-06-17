@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class JavadocParserTest {
@@ -83,10 +84,44 @@ public class JavadocParserTest {
 
     assertEquals("This is a description", doc.getSummary());
     assertEquals("With bold and some code", doc.getDescription());
+    assertFalse(doc.isDeprecated());
     assertTrue(doc.getParams().isEmpty());
     assertEquals("", doc.getReturnDescription());
   }
 
+  @Test
+  public void parse_with_deprecated() {
+
+    JavadocParser parser = new JavadocParser();
+
+    Javadoc doc = parser.parse(
+      "Summary. Description\n" +
+        "@deprecated\n");
+
+    assertEquals("Summary", doc.getSummary());
+    assertEquals("Description", doc.getDescription());
+    assertTrue(doc.isDeprecated());
+    assertTrue(doc.getParams().isEmpty());
+    assertEquals("", doc.getReturnDescription());
+  }
+
+
+  @Test
+  public void parse_with_deprecatedWithComment() {
+
+    JavadocParser parser = new JavadocParser();
+
+    Javadoc doc = parser.parse(
+      "Summary. Description\n" +
+        "@since 1.0\n" +
+        "@deprecated Migration to something else\n");
+
+    assertEquals("Summary", doc.getSummary());
+    assertEquals("Description", doc.getDescription());
+    assertTrue(doc.isDeprecated());
+    assertTrue(doc.getParams().isEmpty());
+    assertEquals("", doc.getReturnDescription());
+  }
   @Test
   public void parse_returnNoEOL() {
 

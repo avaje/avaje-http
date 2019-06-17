@@ -19,6 +19,8 @@ public class Javadoc {
 
   private final String returnDescription;
 
+  private final boolean deprecated;
+
   /**
    * Parse and return the Javadoc.
    */
@@ -26,11 +28,12 @@ public class Javadoc {
     return new JavadocParser().parse(content);
   }
 
-  Javadoc(String summary, String description, Map<String, String> params, String returnDescription) {
+  Javadoc(String summary, String description, Map<String, String> params, String returnDescription, boolean deprecated) {
     this.summary = summary;
     this.description = description;
     this.params = params;
     this.returnDescription = returnDescription;
+    this.deprecated = deprecated;
   }
 
   private Javadoc() {
@@ -38,6 +41,7 @@ public class Javadoc {
     this.description = "";
     this.returnDescription = "";
     this.params = Collections.emptyMap();
+    this.deprecated = false;
   }
 
   public String getSummary() {
@@ -54,5 +58,9 @@ public class Javadoc {
 
   public String getReturnDescription() {
     return returnDescription;
+  }
+
+  public boolean isDeprecated() {
+    return deprecated;
   }
 }

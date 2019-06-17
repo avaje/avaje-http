@@ -88,10 +88,15 @@ class MethodReader {
       }
 
       Operation operation = new Operation();
-      //operation.setDeprecated();
       //operation.setOperationId();
       operation.setSummary(javadoc.getSummary());
       operation.setDescription(javadoc.getDescription());
+      
+      if (javadoc.isDeprecated()) {
+        operation.setDeprecated(true);
+      } else if (element.getAnnotation(Deprecated.class) != null) {
+        operation.setDeprecated(true);
+      }
 
       switch (webMethod) {
         case GET: pathItem.setGet(operation); break;

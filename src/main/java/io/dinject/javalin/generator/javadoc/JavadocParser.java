@@ -19,6 +19,7 @@ class JavadocParser {
   private static final int PARAM_DESC = 7;
   private static final int RETURN_DESC = 8;
   private static final int IGNORE = 9;
+  private static final String DEPRECATED = "deprecated";
 
   private int previousState = TEXT;
 
@@ -31,6 +32,8 @@ class JavadocParser {
   private String returnDesc = "";
 
   private Map<String, String> params = new LinkedHashMap<>();
+
+  private boolean deprecated;
 
   /**
    * Parse the javadoc.
@@ -121,10 +124,13 @@ class JavadocParser {
   }
 
   private void processDocletStart(char c) {
-    if (c == ' ') {
+    if (c == ' ' || c == '\n') {
       state = previousState;
       String docletName = currentDoclet.toString();
       if (IGNORED.contains(docletName)) {
+        if (DEPRECATED.equals(docletName)) {
+          deprecated = true;
+        }
         state = IGNORE;
       } else {
         if (docletName.equals("param")) {
@@ -154,7 +160,7 @@ class JavadocParser {
       desc = mergeLines(mainText.substring(pos + 1).trim());
     }
 
-    return new Javadoc(summary, desc, params, returnDesc);
+    return new Javadoc(summary, desc, params, returnDesc, deprecated);
   }
 
   String mergeLines(String multiline) {

@@ -82,6 +82,9 @@ public class Processor extends AbstractProcessor {
 
       OpenAPIDefinition openApi = element.getAnnotation(OpenAPIDefinition.class);
       io.swagger.v3.oas.annotations.info.Info info = openApi.info();
+
+      logDebug("reading OpenAPIDefinition " + openApi + " info:" + info);
+
       if (!info.title().isEmpty()) {
         info1.setTitle(info.title());
       }
