@@ -3,8 +3,10 @@ package io.dinject.javalin.generator;
 import io.dinject.controller.Delete;
 import io.dinject.controller.Form;
 import io.dinject.controller.Get;
+import io.dinject.controller.MediaType;
 import io.dinject.controller.Patch;
 import io.dinject.controller.Post;
+import io.dinject.controller.Produces;
 import io.dinject.controller.Put;
 import io.dinject.javalin.generator.javadoc.Javadoc;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -45,6 +47,8 @@ class MethodReader {
    */
   private final List<String> methodRoles;
 
+  private final String produces;
+
   private String fullPath;
 
   private PathSegments segments;
@@ -57,8 +61,14 @@ class MethodReader {
     this.isVoid = element.getReturnType().toString().equals("void");
     this.methodRoles = Util.findRoles(element);
     this.javadoc = Javadoc.parse(ctx.getDocComment(element));
+    this.produces = produces(element, bean);
 
     readMethodAnnotation();
+  }
+
+  private String produces(ExecutableElement element, ControllerReader bean) {
+    final Produces produces = element.getAnnotation(Produces.class);
+    return (produces != null) ? produces.value() : bean.getProduces();
   }
 
   void read() {
@@ -129,7 +139,8 @@ class MethodReader {
         responses.addApiResponse("204", response);
       } else {
         responses.addApiResponse(ApiResponses.DEFAULT, response);
-        response.setContent(ctx.createContent(returnType, "application/json"));
+        String contentMediaType = (produces == null) ? MediaType.APPLICATION_JSON : produces;
+        response.setContent(ctx.createContent(returnType, contentMediaType));
       }
     }
   }
@@ -169,8 +180,8 @@ class MethodReader {
       }
       writer.append("      ");
 
-      if (isReturnJson()) {
-        writer.append("ctx.json(");
+      if (isReturnContent()) {
+        writeContextReturn(writer);
       }
       writer.append("controller.");
       writer.append(element.getSimpleName().toString()).append("(");
@@ -181,7 +192,7 @@ class MethodReader {
         params.get(i).buildParamName(writer);
       }
       writer.append(")");
-      if (isReturnJson()) {
+      if (isReturnContent()) {
         writer.append(")");
       }
       writer.append(";").eol();
@@ -203,6 +214,18 @@ class MethodReader {
     }
   }
 
+  private void writeContextReturn(Append writer) {
+    if (produces == null || produces.equalsIgnoreCase(MediaType.APPLICATION_JSON)) {
+      writer.append("ctx.json(");
+    } else if (produces.equalsIgnoreCase(MediaType.TEXT_HTML)) {
+      writer.append("ctx.html(");
+    } else if (produces.equalsIgnoreCase(MediaType.TEXT_PLAIN)) {
+      writer.append("ctx.contentType(\"text/plain\").result(");
+    } else {
+      writer.append("ctx.contentType(\"%s\").result(", produces);
+    }
+  }
+
   private List<String> roles() {
     return methodRoles.isEmpty() ? bean.getRoles() : methodRoles;
   }
@@ -211,11 +234,9 @@ class MethodReader {
     return webMethod.statusCode();
   }
 
-  private boolean isReturnJson() {
-    // TODO: ... returning non-object types?
+  private boolean isReturnContent() {
     return !isVoid;
   }
-
 
   private boolean readMethodAnnotation() {
 

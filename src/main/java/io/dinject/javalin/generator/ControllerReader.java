@@ -1,6 +1,7 @@
 package io.dinject.javalin.generator;
 
 import io.dinject.controller.Path;
+import io.dinject.controller.Produces;
 import io.swagger.v3.oas.annotations.Hidden;
 
 import javax.lang.model.element.Element;
@@ -31,12 +32,18 @@ class ControllerReader {
 
   private final Set<String> importTypes = new TreeSet<>();
 
+  /**
+   * The produces media type for the controller. Null implies JSON.
+   */
+  private final String produces;
+
   private boolean docHidden;
 
   ControllerReader(TypeElement beanType, ProcessingContext ctx) {
     this.beanType = beanType;
     this.ctx = ctx;
     this.roles = Util.findRoles(beanType);
+    this.produces = produces(beanType);
     if (ctx.isGeneratedAvailable()) {
       importTypes.add(Constants.GENERATED);
     }
@@ -49,8 +56,17 @@ class ControllerReader {
     importTypes.add(beanType.getQualifiedName().toString());
   }
 
+  private String produces(TypeElement beanType) {
+    final Produces produces = beanType.getAnnotation(Produces.class);
+    return (produces == null) ? null : produces.value();
+  }
+
   private boolean isDocHidden(TypeElement beanType) {
     return beanType.getAnnotation(Hidden.class) != null;
+  }
+
+  String getProduces() {
+    return produces;
   }
 
   TypeElement getBeanType() {

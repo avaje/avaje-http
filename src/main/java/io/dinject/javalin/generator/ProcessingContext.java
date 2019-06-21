@@ -12,7 +12,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
@@ -22,11 +21,10 @@ import java.io.IOException;
 import static io.dinject.javalin.generator.Constants.GENERATED;
 import static io.dinject.javalin.generator.Constants.OPENAPIDEFINITION;
 
-public class ProcessingContext {
+class ProcessingContext {
 
   private final Messager messager;
   private final Filer filer;
-  private final Types types;
   private final Elements elements;
   private final SchemaBuilder schemaBuilder;
   private final boolean generatedAvailable;
@@ -38,8 +36,7 @@ public class ProcessingContext {
     this.messager = env.getMessager();
     this.filer = env.getFiler();
     this.elements = env.getElementUtils();
-    this.types = env.getTypeUtils();
-    this.schemaBuilder = new SchemaBuilder(types, elements);//, this);
+    this.schemaBuilder = new SchemaBuilder(env.getTypeUtils(), elements);
     this.generatedAvailable = isTypeAvailable(GENERATED);
     this.openApiAvailable = isTypeAvailable(OPENAPIDEFINITION);
   }

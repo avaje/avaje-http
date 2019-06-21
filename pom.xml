@@ -20,6 +20,7 @@
 
   <properties>
     <swagger.version>2.0.8</swagger.version>
+    <jackson-databind.version>2.9.8</jackson-databind.version>
   </properties>
 
   <dependencies>
@@ -33,13 +34,13 @@
     <dependency>
       <groupId>io.dinject</groupId>
       <artifactId>dinject-controller</artifactId>
-      <version>1.6</version>
+      <version>1.7-SNAPSHOT</version>
     </dependency>
 
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.9.8</version>
+      <version>${jackson-databind.version}</version>
     </dependency>
 
     <dependency>
