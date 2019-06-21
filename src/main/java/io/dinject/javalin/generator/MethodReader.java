@@ -16,6 +16,8 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,11 +119,27 @@ class MethodReader {
       operation.setResponses(responses);
 
       ApiResponse response = new ApiResponse();
-      responses.addApiResponse(ApiResponses.DEFAULT, response);
       response.setDescription(javadoc.getReturnDescription());
 
-      response.setContent(ctx.createContent(element.getReturnType(), "application/json"));
+      TypeMirror returnType = element.getReturnType();
+      if (isNoResponse(returnType)) {
+        if (isEmpty(response.getDescription())) {
+          response.setDescription("No content");
+        }
+        responses.addApiResponse("204", response);
+      } else {
+        responses.addApiResponse(ApiResponses.DEFAULT, response);
+        response.setContent(ctx.createContent(returnType, "application/json"));
+      }
     }
+  }
+
+  private boolean isEmpty(String value) {
+    return value == null || value.isEmpty();
+  }
+
+  private boolean isNoResponse(TypeMirror returnType) {
+    return returnType.getKind() == TypeKind.VOID;
   }
 
   /**
