@@ -9,7 +9,6 @@ import io.dinject.controller.Header;
 import io.dinject.controller.QueryParam;
 import io.dinject.javalin.generator.javadoc.Javadoc;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 
 import javax.lang.model.element.Element;
@@ -18,6 +17,7 @@ import javax.lang.model.element.TypeElement;
 class ElementReader {
 
   private final ProcessingContext ctx;
+  private final Element element;
   private final String rawType;
   private final TypeHandler typeHandler;
   private final String varName;
@@ -28,10 +28,10 @@ class ElementReader {
   private ParamType paramType;
   private boolean impliedParamType;
   private String paramDefault;
-//  private String docComment;
 
   ElementReader(Element element, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
     this.ctx = ctx;
+    this.element = element;
     this.rawType = element.asType().toString();
     this.typeHandler = TypeMap.get(rawType);
     this.formMarker = formMarker;
@@ -39,7 +39,6 @@ class ElementReader {
     this.varName = element.getSimpleName().toString();
     this.snakeName = Util.snakeCase(varName);
     this.paramName = varName;
-//    this.docComment = ctx.getDocComment(element);
 
     readAnnotations(element, defaultType);
   }
@@ -142,17 +141,14 @@ class ElementReader {
     }
   }
 
-  void addMeta(Javadoc javadoc, Operation operation) {
+  void addMeta(ProcessingContext ctx, Javadoc javadoc, Operation operation) {
     if (!isJavalinContext()) {
 
       Parameter param = new Parameter();
       param.setName(varName);
       param.setDescription(javadoc.getParams().get(paramName));
       param.setIn(paramType.getType());
-
-      Schema schema = new Schema();
-      schema.setType("string");
-      param.setSchema(schema);
+      param.setSchema(ctx.toSchema(element.asType()));
 
       operation.addParametersItem(param);
     }

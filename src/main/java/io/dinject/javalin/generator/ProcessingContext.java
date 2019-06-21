@@ -1,13 +1,18 @@
 package io.dinject.javalin.generator;
 
+import io.dinject.javalin.generator.openapi.SchemaBuilder;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.Schema;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
@@ -17,11 +22,13 @@ import java.io.IOException;
 import static io.dinject.javalin.generator.Constants.GENERATED;
 import static io.dinject.javalin.generator.Constants.OPENAPIDEFINITION;
 
-class ProcessingContext {
+public class ProcessingContext {
 
   private final Messager messager;
   private final Filer filer;
-  private final Elements elementUtils;
+  private final Types types;
+  private final Elements elements;
+  private final SchemaBuilder schemaBuilder;
   private final boolean generatedAvailable;
   private final boolean openApiAvailable;
 
@@ -30,7 +37,9 @@ class ProcessingContext {
   ProcessingContext(ProcessingEnvironment env) {
     this.messager = env.getMessager();
     this.filer = env.getFiler();
-    this.elementUtils = env.getElementUtils();
+    this.elements = env.getElementUtils();
+    this.types = env.getTypeUtils();
+    this.schemaBuilder = new SchemaBuilder(types, elements);//, this);
     this.generatedAvailable = isTypeAvailable(GENERATED);
     this.openApiAvailable = isTypeAvailable(OPENAPIDEFINITION);
   }
@@ -40,7 +49,7 @@ class ProcessingContext {
   }
 
   TypeElement getTypeElement(String canonicalName) {
-    return elementUtils.getTypeElement(canonicalName);
+    return elements.getTypeElement(canonicalName);
   }
 
   boolean isGeneratedAvailable() {
@@ -59,6 +68,10 @@ class ProcessingContext {
     messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
   }
 
+//  public void logWarn(String msg, Object... args) {
+//    messager.printMessage(Diagnostic.Kind.WARNING, String.format(msg, args));
+//  }
+
   /**
    * Create a file writer for the given class name.
    */
@@ -71,7 +84,7 @@ class ProcessingContext {
   }
 
   String getDocComment(Element param) {
-    return elementUtils.getDocComment(param);
+    return elements.getDocComment(param);
   }
 
   OpenAPI getOpenAPI() {
@@ -80,6 +93,14 @@ class ProcessingContext {
 
   void setOpenAPI(OpenAPI openAPI) {
     this.openAPI = openAPI;
+    this.schemaBuilder.setOpenAPI(openAPI);
   }
 
+  Schema toSchema(TypeMirror asType) {
+    return schemaBuilder.toSchema(asType);
+  }
+
+  Content createContent(TypeMirror returnType, String mediaType) {
+    return schemaBuilder.createContent(returnType, mediaType);
+  }
 }

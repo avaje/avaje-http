@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -76,7 +78,7 @@ class MethodReader {
     }
   }
 
-  public void addMeta(ProcessingContext ctx) {
+  void addMeta(ProcessingContext ctx) {
 
     if (webMethod != null && notHidden()) {
 
@@ -108,8 +110,17 @@ class MethodReader {
       }
 
       for (MethodParam param : params) {
-        param.addMeta(javadoc, operation);
+        param.addMeta(ctx, javadoc, operation);
       }
+
+      ApiResponses responses = new ApiResponses();
+      operation.setResponses(responses);
+
+      ApiResponse response = new ApiResponse();
+      responses.addApiResponse(ApiResponses.DEFAULT, response);
+      response.setDescription(javadoc.getReturnDescription());
+
+      response.setContent(ctx.createContent(element.getReturnType(), "application/json"));
     }
   }
 

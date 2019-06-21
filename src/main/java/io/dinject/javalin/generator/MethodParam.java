@@ -25,7 +25,7 @@ class MethodParam {
     elementParam.writeParamName(writer);
   }
 
-  void addMeta(Javadoc javadoc, Operation operation) {
-    elementParam.addMeta(javadoc, operation);
+  void addMeta(ProcessingContext ctx, Javadoc javadoc, Operation operation) {
+    elementParam.addMeta(ctx, javadoc, operation);
   }
 }
