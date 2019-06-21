@@ -2,18 +2,25 @@ package io.dinject.javalin.generator;
 
 enum WebMethod {
   GET(200),
-  PUT(200),
   POST(201),
-  PATCH(200),
-  DELETE(200);
+  PUT(200, 204),
+  PATCH(200, 204),
+  DELETE(200, 204);
 
   private int statusCode;
+  private int voidStatusCode;
+
+  WebMethod(int statusCode, int voidStatusCode) {
+    this.statusCode = statusCode;
+    this.voidStatusCode = voidStatusCode;
+  }
 
   WebMethod(int statusCode) {
     this.statusCode = statusCode;
+    this.voidStatusCode = statusCode;
   }
 
-  int statusCode() {
-    return statusCode;
+  int statusCode(boolean isVoid) {
+    return isVoid ? voidStatusCode : statusCode;
   }
 }

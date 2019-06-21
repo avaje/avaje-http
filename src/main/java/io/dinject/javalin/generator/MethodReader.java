@@ -59,7 +59,7 @@ class MethodReader {
     this.bean = bean;
     this.beanPath = bean.getPath();
     this.element = element;
-    this.isVoid = element.getReturnType().toString().equals("void");
+    this.isVoid = element.getReturnType().getKind() == TypeKind.VOID;
     this.methodRoles = Util.findRoles(element);
     this.javadoc = Javadoc.parse(ctx.getDocComment(element));
     this.produces = produces(bean);
@@ -142,11 +142,11 @@ class MethodReader {
       response.setDescription(javadoc.getReturnDescription());
 
       TypeMirror returnType = element.getReturnType();
-      if (isNoResponse(returnType)) {
+      if (isVoid) {
         if (isEmpty(response.getDescription())) {
           response.setDescription("No content");
         }
-        responses.addApiResponse("204", response);
+        responses.addApiResponse(Integer.toString(httpStatusCode()), response);
       } else {
         responses.addApiResponse(ApiResponses.DEFAULT, response);
         String contentMediaType = (produces == null) ? MediaType.APPLICATION_JSON : produces;
@@ -157,10 +157,6 @@ class MethodReader {
 
   private boolean isEmpty(String value) {
     return value == null || value.isEmpty();
-  }
-
-  private boolean isNoResponse(TypeMirror returnType) {
-    return returnType.getKind() == TypeKind.VOID;
   }
 
   /**
@@ -241,7 +237,7 @@ class MethodReader {
   }
 
   private int httpStatusCode() {
-    return webMethod.statusCode();
+    return webMethod.statusCode(isVoid);
   }
 
   private boolean isReturnContent() {
