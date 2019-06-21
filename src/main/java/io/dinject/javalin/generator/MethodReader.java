@@ -20,6 +20,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,14 +62,23 @@ class MethodReader {
     this.isVoid = element.getReturnType().toString().equals("void");
     this.methodRoles = Util.findRoles(element);
     this.javadoc = Javadoc.parse(ctx.getDocComment(element));
-    this.produces = produces(element, bean);
+    this.produces = produces(bean);
 
     readMethodAnnotation();
   }
 
-  private String produces(ExecutableElement element, ControllerReader bean) {
-    final Produces produces = element.getAnnotation(Produces.class);
+  private String produces(ControllerReader bean) {
+    final Produces produces = findAnnotation(Produces.class);
     return (produces != null) ? produces.value() : bean.getProduces();
+  }
+
+  <A extends Annotation> A findAnnotation(Class<A> type) {
+    A annotation = element.getAnnotation(type);
+    if (annotation != null) {
+      return annotation;
+    }
+
+    return bean.findMethodAnnotation(type, element);
   }
 
   void read() {
@@ -109,7 +119,7 @@ class MethodReader {
 
       if (javadoc.isDeprecated()) {
         operation.setDeprecated(true);
-      } else if (element.getAnnotation(Deprecated.class) != null) {
+      } else if (findAnnotation(Deprecated.class) != null) {
         operation.setDeprecated(true);
       }
 
@@ -157,7 +167,7 @@ class MethodReader {
    * Return true if the method is included in documentation.
    */
   private boolean notHidden() {
-    return !ctx.isOpenApiAvailable() || element.getAnnotation(Hidden.class) == null;
+    return !ctx.isOpenApiAvailable() || findAnnotation(Hidden.class) == null;
   }
 
   void addRoute(Append writer) {
@@ -240,28 +250,28 @@ class MethodReader {
 
   private boolean readMethodAnnotation() {
 
-    Form form = element.getAnnotation(Form.class);
+    Form form = findAnnotation(Form.class);
     if (form != null) {
       this.formMarker = true;
     }
 
-    Get get = element.getAnnotation(Get.class);
+    Get get = findAnnotation(Get.class);
     if (get != null) {
       return setWebMethod(WebMethod.GET, get.value());
     }
-    Put put = element.getAnnotation(Put.class);
+    Put put = findAnnotation(Put.class);
     if (put != null) {
       return setWebMethod(WebMethod.PUT, put.value());
     }
-    Post post = element.getAnnotation(Post.class);
+    Post post = findAnnotation(Post.class);
     if (post != null) {
       return setWebMethod(WebMethod.POST, post.value());
     }
-    Patch patch = element.getAnnotation(Patch.class);
+    Patch patch = findAnnotation(Patch.class);
     if (patch != null) {
       return setWebMethod(WebMethod.PATCH, patch.value());
     }
-    Delete delete = element.getAnnotation(Delete.class);
+    Delete delete = findAnnotation(Delete.class);
     if (delete != null) {
       return setWebMethod(WebMethod.DELETE, delete.value());
     }

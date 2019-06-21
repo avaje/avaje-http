@@ -8,6 +8,9 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +26,10 @@ class ControllerReader {
   private final ProcessingContext ctx;
 
   private final TypeElement beanType;
+
+  private final List<Element> interfaces;
+
+  private final List<ExecutableElement> interfaceMethods;
 
   private final List<String> roles;
 
@@ -42,27 +49,85 @@ class ControllerReader {
   ControllerReader(TypeElement beanType, ProcessingContext ctx) {
     this.beanType = beanType;
     this.ctx = ctx;
+    this.interfaces = initInterfaces();
+    this.interfaceMethods = initInterfaceMethods();
     this.roles = Util.findRoles(beanType);
-    this.produces = produces(beanType);
     if (ctx.isGeneratedAvailable()) {
       importTypes.add(Constants.GENERATED);
     }
     if (ctx.isOpenApiAvailable()) {
-      docHidden = isDocHidden(beanType);
+      docHidden = initDocHidden();
     }
     importTypes.add(Constants.SINGLETON);
     importTypes.add(Constants.API_BUILDER);
     importTypes.add(Constants.IMPORT_CONTROLLER);
     importTypes.add(beanType.getQualifiedName().toString());
+
+    this.produces = initProduces();
   }
 
-  private String produces(TypeElement beanType) {
-    final Produces produces = beanType.getAnnotation(Produces.class);
+  private List<Element> initInterfaces() {
+
+    List<Element> interfaces = new ArrayList<>();
+
+    for (TypeMirror anInterface : beanType.getInterfaces()) {
+      final Element ifaceElement = ctx.asElement(anInterface);
+      if (ifaceElement.getAnnotation(Path.class) != null) {
+        interfaces.add(ifaceElement);
+      }
+    }
+    return interfaces;
+  }
+
+  private List<ExecutableElement> initInterfaceMethods() {
+
+    List<ExecutableElement> ifaceMethods = new ArrayList<>();
+    for (Element anInterface : interfaces) {
+      ifaceMethods.addAll(ElementFilter.methodsIn(anInterface.getEnclosedElements()));
+    }
+    return ifaceMethods;
+  }
+
+  <A extends Annotation> A findAnnotation(Class<A> type) {
+    A annotation = beanType.getAnnotation(type);
+    if (annotation != null) {
+      return annotation;
+    }
+    for (Element anInterface : interfaces) {
+      annotation = anInterface.getAnnotation(type);
+      if (annotation != null) {
+        return annotation;
+      }
+    }
+    return null;
+  }
+
+  <A extends Annotation> A findMethodAnnotation(Class<A> type, ExecutableElement element) {
+
+    for (ExecutableElement interfaceMethod : interfaceMethods) {
+      if (matchMethod(interfaceMethod, element)) {
+        final A annotation = interfaceMethod.getAnnotation(type);
+        if (annotation != null) {
+          ctx.logDebug("found interface method annotation : " + annotation + " 2:" + interfaceMethod);
+          return annotation;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  private boolean matchMethod(ExecutableElement interfaceMethod, ExecutableElement element) {
+    return interfaceMethod.toString().equals(element.toString());
+  }
+
+  private String initProduces() {
+    final Produces produces = findAnnotation(Produces.class);
     return (produces == null) ? null : produces.value();
   }
 
-  private boolean isDocHidden(TypeElement beanType) {
-    return beanType.getAnnotation(Hidden.class) != null;
+  private boolean initDocHidden() {
+    return findAnnotation(Hidden.class) != null;
   }
 
   String getProduces() {
@@ -110,7 +175,7 @@ class ControllerReader {
   }
 
   String getPath() {
-    Path path = beanType.getAnnotation(Path.class);
+    Path path = findAnnotation(Path.class);
     if (path == null) {
       return null;
     }

@@ -12,6 +12,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
@@ -26,6 +27,7 @@ class ProcessingContext {
   private final Messager messager;
   private final Filer filer;
   private final Elements elements;
+  private final Types types;
   private final SchemaBuilder schemaBuilder;
   private final boolean generatedAvailable;
   private final boolean openApiAvailable;
@@ -36,6 +38,7 @@ class ProcessingContext {
     this.messager = env.getMessager();
     this.filer = env.getFiler();
     this.elements = env.getElementUtils();
+    this.types = env.getTypeUtils();
     this.schemaBuilder = new SchemaBuilder(env.getTypeUtils(), elements);
     this.generatedAvailable = isTypeAvailable(GENERATED);
     this.openApiAvailable = isTypeAvailable(OPENAPIDEFINITION);
@@ -99,5 +102,9 @@ class ProcessingContext {
 
   Content createContent(TypeMirror returnType, String mediaType) {
     return schemaBuilder.createContent(returnType, mediaType);
+  }
+
+  Element asElement(TypeMirror typeMirror) {
+    return types.asElement(typeMirror);
   }
 }
