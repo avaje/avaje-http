@@ -29,24 +29,19 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *
+ * Help build OpenAPI Schema objects.
  */
 public class SchemaBuilder {
 
   private final Types types;
   private final KnownTypes knownTypes;
-  //private final Elements elementUtils;
-  //private final ProcessingContext ctx;
-
   private final TypeMirror iterableType;
   private final TypeMirror mapType;
 
   private OpenAPI openAPI;
 
-  public SchemaBuilder(Types types, Elements elements) {//}, ProcessingContext ctx) {
+  public SchemaBuilder(Types types, Elements elements) {
     this.types = types;
-    //this.ctx = ctx;
-    //this.elementUtils = elementUtils;
     this.knownTypes = new KnownTypes();
     this.iterableType = types.erasure(elements.getTypeElement("java.lang.Iterable").asType());
     this.mapType = types.erasure(elements.getTypeElement("java.util.Map").asType());
@@ -57,12 +52,11 @@ public class SchemaBuilder {
   }
 
   public Content createContent(TypeMirror returnType, String mediaType) {
-    Content content = new Content();
     MediaType mt = new MediaType();
     mt.setSchema(toSchema(returnType));
+    Content content = new Content();
     content.addMediaType(mediaType, mt);
     return content;
-
   }
 
   public Schema<?> toSchema(TypeMirror type) {

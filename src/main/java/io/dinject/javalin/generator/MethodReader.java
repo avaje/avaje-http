@@ -19,7 +19,6 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,11 +123,21 @@ class MethodReader {
       }
 
       switch (webMethod) {
-        case GET: pathItem.setGet(operation); break;
-        case PUT: pathItem.setPut(operation); break;
-        case POST: pathItem.setPost(operation); break;
-        case DELETE: pathItem.setDelete(operation); break;
-        case PATCH: pathItem.setPatch(operation); break;
+        case GET:
+          pathItem.setGet(operation);
+          break;
+        case PUT:
+          pathItem.setPut(operation);
+          break;
+        case POST:
+          pathItem.setPost(operation);
+          break;
+        case DELETE:
+          pathItem.setDelete(operation);
+          break;
+        case PATCH:
+          pathItem.setPatch(operation);
+          break;
       }
 
       for (MethodParam param : params) {
@@ -141,17 +150,15 @@ class MethodReader {
       ApiResponse response = new ApiResponse();
       response.setDescription(javadoc.getReturnDescription());
 
-      TypeMirror returnType = element.getReturnType();
       if (isVoid) {
         if (isEmpty(response.getDescription())) {
           response.setDescription("No content");
         }
-        responses.addApiResponse(Integer.toString(httpStatusCode()), response);
       } else {
-        responses.addApiResponse(ApiResponses.DEFAULT, response);
         String contentMediaType = (produces == null) ? MediaType.APPLICATION_JSON : produces;
-        response.setContent(ctx.createContent(returnType, contentMediaType));
+        response.setContent(ctx.createContent(element.getReturnType(), contentMediaType));
       }
+      responses.addApiResponse(httpStatusCode(), response);
     }
   }
 
@@ -236,8 +243,8 @@ class MethodReader {
     return methodRoles.isEmpty() ? bean.getRoles() : methodRoles;
   }
 
-  private int httpStatusCode() {
-    return webMethod.statusCode(isVoid);
+  private String httpStatusCode() {
+    return Integer.toString(webMethod.statusCode(isVoid));
   }
 
   private boolean isReturnContent() {
