@@ -53,10 +53,7 @@ public class Processor extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
 
-    loadOpenAPI();
-
-    logDebug("process controllers ...");
-
+    initOpenAPI();
     if (ctx.isOpenApiAvailable()) {
       readOpenApiDefinition(round);
     }
@@ -67,7 +64,6 @@ public class Processor extends AbstractProcessor {
     }
 
     if (round.processingOver()) {
-      logDebug("processingOver ...");
       writeOpenAPI();
     }
     return false;
@@ -82,9 +78,6 @@ public class Processor extends AbstractProcessor {
 
       OpenAPIDefinition openApi = element.getAnnotation(OpenAPIDefinition.class);
       io.swagger.v3.oas.annotations.info.Info info = openApi.info();
-
-      logDebug("reading OpenAPIDefinition " + openApi + " info:" + info);
-
       if (!info.title().isEmpty()) {
         info1.setTitle(info.title());
       }
@@ -98,9 +91,7 @@ public class Processor extends AbstractProcessor {
 
     try (Writer metaWriter = createMetaWriter()) {
 
-      OpenAPI openAPI = ctx.getOpenAPI();
-      logDebug("openAPI writing paths: " + openAPI.getPaths().keySet());
-
+      OpenAPI openAPI = ctx.getOpenAPIForWriting();
       ObjectMapper mapper = createObjectMapper();
       mapper.writeValue(metaWriter, openAPI);
 
@@ -141,24 +132,14 @@ public class Processor extends AbstractProcessor {
     }
   }
 
-  private void loadOpenAPI() {
-    logDebug("loading openAPI ...");
-    OpenAPI openAPI = ctx.getOpenAPI();
-    if (openAPI != null && !openAPI.getPaths().isEmpty()) {
-      logDebug("openAPI already loaded ... " + openAPI.getPaths().keySet());
-      return;
-    }
-    initOpenAPI();
-  }
-
   private void initOpenAPI() {
 
-    OpenAPI openAPI;
-    openAPI = new OpenAPI();
-    openAPI.setPaths(new Paths());
-    openAPI.setInfo(new Info());
-
-    ctx.logDebug("initialise empty OpenAPI");
-    ctx.setOpenAPI(openAPI);
+    OpenAPI openAPI = ctx.getOpenAPI();
+    if (openAPI == null) {
+      openAPI = new OpenAPI();
+      openAPI.setPaths(new Paths());
+      openAPI.setInfo(new Info());
+      ctx.setOpenAPI(openAPI);
+    }
   }
 }

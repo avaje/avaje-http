@@ -2,6 +2,8 @@ package io.dinject.javalin.generator;
 
 import io.dinject.javalin.generator.openapi.SchemaBuilder;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
 
@@ -10,6 +12,7 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -18,6 +21,8 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static io.dinject.javalin.generator.Constants.GENERATED;
 import static io.dinject.javalin.generator.Constants.OPENAPIDEFINITION;
@@ -33,6 +38,8 @@ class ProcessingContext {
   private final boolean openApiAvailable;
 
   private OpenAPI openAPI;
+
+  private final Map<String, PathItem> pathMap = new TreeMap<>();
 
   ProcessingContext(ProcessingEnvironment env) {
     this.messager = env.getMessager();
@@ -91,13 +98,32 @@ class ProcessingContext {
     return openAPI;
   }
 
+  OpenAPI getOpenAPIForWriting() {
+    Paths paths = openAPI.getPaths();
+    if (paths == null) {
+      paths = new Paths();
+      openAPI.setPaths(paths);
+    }
+    // add paths by natural order
+    for (Map.Entry<String, PathItem> entry : pathMap.entrySet()) {
+      paths.addPathItem(entry.getKey(), entry.getValue());
+    }
+    return openAPI;
+  }
+
   void setOpenAPI(OpenAPI openAPI) {
     this.openAPI = openAPI;
     this.schemaBuilder.setOpenAPI(openAPI);
   }
 
-  Schema toSchema(TypeMirror asType) {
-    return schemaBuilder.toSchema(asType);
+  Schema toSchema(String rawType, Element element) {
+    TypeElement typeElement = elements.getTypeElement(rawType);
+    if (typeElement == null) {
+      // primitive types etc
+      return schemaBuilder.toSchema(element.asType());
+    } else {
+      return schemaBuilder.toSchema(typeElement.asType());
+    }
   }
 
   Content createContent(TypeMirror returnType, String mediaType) {
@@ -106,5 +132,13 @@ class ProcessingContext {
 
   Element asElement(TypeMirror typeMirror) {
     return types.asElement(typeMirror);
+  }
+
+  TypeMirror asMemberOf(DeclaredType declaredType, Element element) {
+    return types.asMemberOf(declaredType, element);
+  }
+
+  PathItem pathItem(String fullPath) {
+    return pathMap.computeIfAbsent(fullPath, s -> new PathItem());
   }
 }

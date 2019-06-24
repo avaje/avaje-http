@@ -30,9 +30,13 @@ class ElementReader {
   private String paramDefault;
 
   ElementReader(Element element, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
+    this(element, element.asType().toString(), ctx, defaultType, formMarker);
+  }
+
+  ElementReader(Element element, String rawType, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
     this.ctx = ctx;
     this.element = element;
-    this.rawType = element.asType().toString();
+    this.rawType = rawType;
     this.typeHandler = TypeMap.get(rawType);
     this.formMarker = formMarker;
 
@@ -148,7 +152,7 @@ class ElementReader {
       param.setName(varName);
       param.setDescription(javadoc.getParams().get(paramName));
       param.setIn(paramType.getType());
-      param.setSchema(ctx.toSchema(element.asType()));
+      param.setSchema(ctx.toSchema(rawType, element));
 
       operation.addParametersItem(param);
     }
@@ -169,8 +173,7 @@ class ElementReader {
   }
 
   void setValue(Append writer) {
-    String shortType = shortType();
-    setValue(writer, PathSegments.EMPTY, shortType);
+    setValue(writer, PathSegments.EMPTY, shortType());
   }
 
   private boolean setValue(Append writer, PathSegments segments, String shortType) {

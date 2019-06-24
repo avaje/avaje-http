@@ -8,6 +8,9 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import java.lang.annotation.Annotation;
@@ -152,18 +155,53 @@ class ControllerReader {
 
     for (Element element : beanType.getEnclosedElements()) {
       if (element.getKind() == ElementKind.METHOD) {
-        readMethod(element);
+        readMethod((ExecutableElement)element);
+      }
+    }
+
+    readSuper(beanType);
+  }
+
+  /**
+   * Read methods from superclasses taking into account generics.
+   */
+  private void readSuper(TypeElement beanType) {
+
+    TypeMirror superclass = beanType.getSuperclass();
+    if (superclass.getKind() != TypeKind.NONE) {
+      DeclaredType declaredType = (DeclaredType)superclass;
+
+      final Element superElement = ctx.asElement(superclass);
+      if (!"java.lang.Object".equals(superElement.toString())) {
+        for (Element element : superElement.getEnclosedElements()) {
+          if (element.getKind() == ElementKind.METHOD) {
+            readMethod((ExecutableElement)element, declaredType);
+          }
+        }
+        if (superElement instanceof TypeElement) {
+          readSuper((TypeElement) superElement);
+        }
       }
     }
   }
 
+  private void readMethod(ExecutableElement element) {
+    readMethod(element, null);
+  }
 
-  private void readMethod(Element element) {
+  private void readMethod(ExecutableElement method, DeclaredType declaredType) {
 
-    ExecutableElement methodElement = (ExecutableElement) element;
-    MethodReader methodReader = new MethodReader(this, methodElement, ctx);
-    methodReader.read();
-    methods.add(methodReader);
+    ExecutableType actualExecutable = null;
+    if (declaredType != null) {
+      // actual taking into account generics
+      actualExecutable = (ExecutableType)ctx.asMemberOf(declaredType, method);
+    }
+
+    MethodReader methodReader = new MethodReader(this, method, actualExecutable, ctx);
+    if (methodReader.isWebMethod()) {
+      methodReader.read();
+      methods.add(methodReader);
+    }
   }
 
   List<String> getRoles() {

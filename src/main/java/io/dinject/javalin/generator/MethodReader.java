@@ -12,13 +12,14 @@ import io.dinject.javalin.generator.javadoc.Javadoc;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
-import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,21 +50,30 @@ class MethodReader {
 
   private final String produces;
 
+  private final ExecutableType actualExecutable;
+  private final List<? extends TypeMirror> actualParams;
+
   private String fullPath;
 
   private PathSegments segments;
 
-  MethodReader(ControllerReader bean, ExecutableElement element, ProcessingContext ctx) {
+  MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable, ProcessingContext ctx) {
     this.ctx = ctx;
     this.bean = bean;
     this.beanPath = bean.getPath();
     this.element = element;
+    this.actualExecutable = actualExecutable;
+    this.actualParams = (actualExecutable == null) ? null :actualExecutable.getParameterTypes();
     this.isVoid = element.getReturnType().getKind() == TypeKind.VOID;
     this.methodRoles = Util.findRoles(element);
     this.javadoc = Javadoc.parse(ctx.getDocComment(element));
     this.produces = produces(bean);
 
     readMethodAnnotation();
+  }
+
+  boolean isWebMethod() {
+    return webMethod != null;
   }
 
   private String produces(ControllerReader bean) {
@@ -92,8 +102,19 @@ class MethodReader {
     // existence of @Form annotation on the method
     ParamType defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
 
-    for (VariableElement p : element.getParameters()) {
-      MethodParam param = new MethodParam(p, ctx, defaultParamType, formMarker);
+    final List<? extends VariableElement> parameters = element.getParameters();
+    for (int i = 0; i < parameters.size(); i++) {
+
+      VariableElement p = parameters.get(i);
+
+      String rawType;
+      if (actualParams != null) {
+        rawType = actualParams.get(i).toString();
+      } else {
+        rawType = p.asType().toString();
+      }
+
+      MethodParam param = new MethodParam(p, rawType, ctx, defaultParamType, formMarker);
       params.add(param);
       param.addImports(bean);
     }
@@ -102,14 +123,6 @@ class MethodReader {
   void addMeta(ProcessingContext ctx) {
 
     if (webMethod != null && notHidden()) {
-
-      Paths paths = ctx.getOpenAPI().getPaths();
-
-      PathItem pathItem = paths.get(fullPath);
-      if (pathItem == null) {
-        pathItem = new PathItem();
-        paths.addPathItem(fullPath, pathItem);
-      }
 
       Operation operation = new Operation();
       //operation.setOperationId();
@@ -122,6 +135,7 @@ class MethodReader {
         operation.setDeprecated(true);
       }
 
+      PathItem pathItem = ctx.pathItem(fullPath);
       switch (webMethod) {
         case GET:
           pathItem.setGet(operation);
@@ -156,10 +170,17 @@ class MethodReader {
         }
       } else {
         String contentMediaType = (produces == null) ? MediaType.APPLICATION_JSON : produces;
-        response.setContent(ctx.createContent(element.getReturnType(), contentMediaType));
+        response.setContent(ctx.createContent(returnType(), contentMediaType));
       }
       responses.addApiResponse(httpStatusCode(), response);
     }
+  }
+
+  private TypeMirror returnType() {
+    if (actualExecutable != null) {
+      return actualExecutable.getReturnType();
+    }
+    return element.getReturnType();
   }
 
   private boolean isEmpty(String value) {

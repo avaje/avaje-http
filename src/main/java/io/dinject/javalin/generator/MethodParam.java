@@ -9,8 +9,8 @@ class MethodParam {
 
   private final ElementReader elementParam;
 
-  MethodParam(VariableElement param, ProcessingContext ctx, ParamType defaultParamType, boolean formMarker) {
-    this.elementParam = new ElementReader(param, ctx, defaultParamType, formMarker);
+  MethodParam(VariableElement param, String rawType, ProcessingContext ctx, ParamType defaultParamType, boolean formMarker) {
+    this.elementParam = new ElementReader(param, rawType, ctx, defaultParamType, formMarker);
   }
 
   void buildCtxGet(Append writer, PathSegments segments) {

@@ -23,10 +23,10 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Help build OpenAPI Schema objects.
@@ -60,7 +60,6 @@ public class SchemaBuilder {
   }
 
   public Schema<?> toSchema(TypeMirror type) {
-
 
     Schema<?> schema = knownTypes.createSchema(type.toString());
     if (schema != null) {
@@ -184,13 +183,15 @@ public class SchemaBuilder {
     if (element == null) {
       return;
     }
-    Element mappedSuper = types.asElement(((TypeElement) element).getSuperclass());
-    if (mappedSuper != null && !"java.lang.Object".equals(mappedSuper.toString())) {
-      gatherProperties(fields, mappedSuper);
-    }
-    for (VariableElement field : ElementFilter.fieldsIn(element.getEnclosedElements())) {
-      if (!ignoreField(field)) {
-        fields.add(field);
+    if (element instanceof TypeElement) {
+      Element mappedSuper = types.asElement(((TypeElement) element).getSuperclass());
+      if (mappedSuper != null && !"java.lang.Object".equals(mappedSuper.toString())) {
+        gatherProperties(fields, mappedSuper);
+      }
+      for (VariableElement field : ElementFilter.fieldsIn(element.getEnclosedElements())) {
+        if (!ignoreField(field)) {
+          fields.add(field);
+        }
       }
     }
   }
@@ -202,7 +203,7 @@ public class SchemaBuilder {
     Components components = components();
     Map<String, Schema> schemas = components.getSchemas();
     if (schemas == null) {
-      schemas = new LinkedHashMap<>();
+      schemas = new TreeMap<>();
       components.setSchemas(schemas);
     }
     return schemas;

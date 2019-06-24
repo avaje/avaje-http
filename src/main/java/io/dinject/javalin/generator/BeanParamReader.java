@@ -33,8 +33,7 @@ class BeanParamReader {
 
   private void read() {
 
-    final List<? extends Element> enclosedElements = beanType.getEnclosedElements();
-    for (Element enclosedElement : enclosedElements) {
+    for (Element enclosedElement : beanType.getEnclosedElements()) {
       switch (enclosedElement.getKind()) {
         case METHOD:
           readMethod(enclosedElement);
