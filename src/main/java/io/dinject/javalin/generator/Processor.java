@@ -30,10 +30,6 @@ public class Processor extends AbstractProcessor {
     return annotations;
   }
 
-  void logDebug(String msg, Object... args) {
-    ctx.logDebug(msg, args);
-  }
-
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);

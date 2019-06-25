@@ -119,7 +119,6 @@ class ControllerReader {
       if (matchMethod(interfaceMethod, element)) {
         final A annotation = interfaceMethod.getAnnotation(type);
         if (annotation != null) {
-          ctx.logDebug("found interface method annotation : " + annotation + " 2:" + interfaceMethod);
           return annotation;
         }
       }

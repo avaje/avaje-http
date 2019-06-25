@@ -66,9 +66,9 @@ public class ProcessingContext {
     messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
 
-  void logDebug(String msg, Object... args) {
-    messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
-  }
+//  void logDebug(String msg, Object... args) {
+//    messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
+//  }
 
   /**
    * Create a file writer for the given class name.
