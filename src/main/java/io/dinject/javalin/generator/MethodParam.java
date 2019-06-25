@@ -12,12 +12,16 @@ public class MethodParam {
     this.elementParam = new ElementReader(param, rawType, ctx, defaultParamType, formMarker);
   }
 
-  void buildCtxGet(Append writer, PathSegments segments) {
+  void writeCtxGet(Append writer, PathSegments segments) {
     elementParam.writeCtxGet(writer, segments);
   }
 
   void addImports(ControllerReader bean) {
     elementParam.addImports(bean);
+  }
+
+  void writeValidate(Append writer) {
+    elementParam.writeValidate(writer);
   }
 
   void buildParamName(Append writer) {

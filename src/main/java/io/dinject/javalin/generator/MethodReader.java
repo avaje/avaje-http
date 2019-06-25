@@ -148,13 +148,20 @@ public class MethodReader {
       }
 
       for (MethodParam param : params) {
-        param.buildCtxGet(writer, segments);
+        param.writeCtxGet(writer, segments);
       }
       writer.append("      ");
 
       if (!isVoid()) {
         writeContextReturn(writer);
       }
+
+      if (bean.isIncludeValidator() && webMethod != WebMethod.GET) {
+        for (MethodParam param : params) {
+          param.writeValidate(writer);
+        }
+      }
+
       writer.append("controller.");
       writer.append(element.getSimpleName().toString()).append("(");
       for (int i = 0; i < params.size(); i++) {

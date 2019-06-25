@@ -80,11 +80,22 @@ class ControllerRouteWriter {
     writer.append("@Singleton").eol();
     writer.append("public class ").append(shortName).append("$route implements WebRoutes {").eol().eol();
 
-    writer.append(" private final %s controller;", shortName).eol().eol();
+    writer.append(" private final %s controller;", shortName).eol();
+    if (reader.isIncludeValidator()) {
+      writer.append(" private final Validator validator;").eol();
+    }
+    writer.eol();
 
-    writer.append(" public %s$route(%s controller) {", shortName, shortName).eol();
-    writer.append("   this.controller = controller;", shortName, shortName).eol();
-    writer.append(" }", shortName, shortName).eol().eol();
+    writer.append(" public %s$route(%s controller", shortName, shortName);
+    if (reader.isIncludeValidator()) {
+      writer.append(", Validator validator");
+    }
+    writer.append(") {").eol();
+    writer.append("   this.controller = controller;").eol();
+    if (reader.isIncludeValidator()) {
+      writer.append("   this.validator = validator;").eol();
+    }
+    writer.append(" }").eol().eol();
   }
 
   private void writePackage() {

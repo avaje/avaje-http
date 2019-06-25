@@ -157,6 +157,13 @@ public class ElementReader {
     }
   }
 
+  void writeValidate(Append writer) {
+    if (!isJavalinContext() && typeHandler == null) {
+      writer.append("validator.validate(%s);", varName).eol();
+      writer.append("      ");
+    }
+  }
+
   void writeCtxGet(Append writer, PathSegments segments) {
 
     if (isJavalinContext()) {

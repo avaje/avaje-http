@@ -13,6 +13,7 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import javax.validation.Valid;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,8 @@ class ControllerReader {
 
   private boolean docHidden;
 
+  private final boolean includeValidator;
+
   ControllerReader(TypeElement beanType, ProcessingContext ctx) {
     this.beanType = beanType;
     this.ctx = ctx;
@@ -62,10 +65,14 @@ class ControllerReader {
     if (ctx.isOpenApiAvailable()) {
       docHidden = initDocHidden();
     }
+    includeValidator = initIncludeValidator();
     importTypes.add(Constants.SINGLETON);
     importTypes.add(Constants.API_BUILDER);
     importTypes.add(Constants.IMPORT_CONTROLLER);
     importTypes.add(beanType.getQualifiedName().toString());
+    if (includeValidator) {
+      importTypes.add(Constants.VALIDATOR);
+    }
 
     this.produces = initProduces();
   }
@@ -134,6 +141,10 @@ class ControllerReader {
     return findAnnotation(Hidden.class) != null;
   }
 
+  private boolean initIncludeValidator() {
+    return findAnnotation(Valid.class) != null;
+  }
+
   String getProduces() {
     return produces;
   }
@@ -146,6 +157,10 @@ class ControllerReader {
     return docHidden;
   }
 
+  boolean isIncludeValidator() {
+    return includeValidator;
+  }
+
   void read() {
     if (!roles.isEmpty()) {
       addStaticImportType(ctx.isJavalin3() ? JAVALIN3_ROLES : JAVALIN2_ROLES);
@@ -156,7 +171,7 @@ class ControllerReader {
 
     for (Element element : beanType.getEnclosedElements()) {
       if (element.getKind() == ElementKind.METHOD) {
-        readMethod((ExecutableElement)element);
+        readMethod((ExecutableElement) element);
       }
     }
 
@@ -170,13 +185,13 @@ class ControllerReader {
 
     TypeMirror superclass = beanType.getSuperclass();
     if (superclass.getKind() != TypeKind.NONE) {
-      DeclaredType declaredType = (DeclaredType)superclass;
+      DeclaredType declaredType = (DeclaredType) superclass;
 
       final Element superElement = ctx.asElement(superclass);
       if (!"java.lang.Object".equals(superElement.toString())) {
         for (Element element : superElement.getEnclosedElements()) {
           if (element.getKind() == ElementKind.METHOD) {
-            readMethod((ExecutableElement)element, declaredType);
+            readMethod((ExecutableElement) element, declaredType);
           }
         }
         if (superElement instanceof TypeElement) {
@@ -195,7 +210,7 @@ class ControllerReader {
     ExecutableType actualExecutable = null;
     if (declaredType != null) {
       // actual taking into account generics
-      actualExecutable = (ExecutableType)ctx.asMemberOf(declaredType, method);
+      actualExecutable = (ExecutableType) ctx.asMemberOf(declaredType, method);
     }
 
     MethodReader methodReader = new MethodReader(this, method, actualExecutable, ctx);
