@@ -39,7 +39,7 @@ class KnownTypes {
   private final Map<String, KnownType> typeMap = new HashMap<>();
 
   KnownTypes() {
-    add(new StringType(), String.class);
+    add(new StringType(), String.class, char[].class, CharSequence.class);
     add(new BoolType(), boolean.class, Boolean.class);
     add(new IntegerType(), int.class, Integer.class);
     add(new LongType(), long.class, Long.class);

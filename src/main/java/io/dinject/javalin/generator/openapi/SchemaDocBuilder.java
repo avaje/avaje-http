@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import static io.dinject.javalin.generator.Util.typeDef;
+
 /**
  * Help build OpenAPI Schema objects.
  */
@@ -119,7 +121,7 @@ class SchemaDocBuilder {
 
   Schema<?> toSchema(TypeMirror type) {
 
-    Schema<?> schema = knownTypes.createSchema(type.toString());
+    Schema<?> schema = knownTypes.createSchema(typeDef(type));
     if (schema != null) {
       return schema;
     }

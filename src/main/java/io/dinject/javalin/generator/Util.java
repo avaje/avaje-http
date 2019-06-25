@@ -4,10 +4,24 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.List;
 
-class Util {
+public class Util {
+
+  /**
+   * Return the type removing validation annotations etc.
+   */
+  public static String typeDef(TypeMirror typeMirror) {
+    if (typeMirror.getKind() == TypeKind.DECLARED) {
+      DeclaredType declaredType = (DeclaredType) typeMirror;
+      return declaredType.asElement().toString();
+    } else {
+      return typeMirror.toString();
+    }
+  }
 
   static String trimPath(String value) {
     return value.length() <= 1 ? value : trimTrailingSlash(value);

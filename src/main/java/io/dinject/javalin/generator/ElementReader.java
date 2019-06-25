@@ -13,6 +13,10 @@ import io.dinject.javalin.generator.openapi.MethodParamDocBuilder;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
+import static io.dinject.javalin.generator.Constants.JAVALIN2_CONTEXT;
+import static io.dinject.javalin.generator.Constants.JAVALIN3_CONTEXT;
+import static io.dinject.javalin.generator.Util.typeDef;
+
 public class ElementReader {
 
   private final ProcessingContext ctx;
@@ -29,7 +33,7 @@ public class ElementReader {
   private String paramDefault;
 
   ElementReader(Element element, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
-    this(element, element.asType().toString(), ctx, defaultType, formMarker);
+    this(element, typeDef(element.asType()), ctx, defaultType, formMarker);
   }
 
   ElementReader(Element element, String rawType, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
@@ -114,7 +118,7 @@ public class ElementReader {
   }
 
   private boolean isJavalinContext() {
-    return Constants.JAVALIN_CONTEXT.equals(rawType);
+    return JAVALIN3_CONTEXT.equals(rawType) || JAVALIN2_CONTEXT.equals(rawType);
   }
 
   private String shortType() {

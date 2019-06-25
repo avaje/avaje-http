@@ -19,7 +19,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static io.dinject.javalin.generator.Constants.JAVALIN_ROLES;
+import static io.dinject.javalin.generator.Constants.JAVALIN2_ROLES;
+import static io.dinject.javalin.generator.Constants.JAVALIN3_ROLES;
 
 /**
  * Reads the type information for the Controller (bean).
@@ -147,7 +148,7 @@ class ControllerReader {
 
   void read() {
     if (!roles.isEmpty()) {
-      addStaticImportType(JAVALIN_ROLES);
+      addStaticImportType(ctx.isJavalin3() ? JAVALIN3_ROLES : JAVALIN2_ROLES);
       for (String role : roles) {
         addStaticImportType(role);
       }

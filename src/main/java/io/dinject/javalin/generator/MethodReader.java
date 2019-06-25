@@ -20,7 +20,9 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.dinject.javalin.generator.Constants.JAVALIN_ROLES;
+import static io.dinject.javalin.generator.Constants.JAVALIN2_ROLES;
+import static io.dinject.javalin.generator.Constants.JAVALIN3_ROLES;
+import static io.dinject.javalin.generator.Util.typeDef;
 
 public class MethodReader {
 
@@ -92,7 +94,7 @@ public class MethodReader {
 
   void read() {
     if (!methodRoles.isEmpty()) {
-      bean.addStaticImportType(JAVALIN_ROLES);
+      bean.addStaticImportType(ctx.isJavalin3() ? JAVALIN3_ROLES : JAVALIN2_ROLES);
       for (String role : methodRoles) {
         bean.addStaticImportType(role);
       }
@@ -109,9 +111,9 @@ public class MethodReader {
 
       String rawType;
       if (actualParams != null) {
-        rawType = actualParams.get(i).toString();
+        rawType = typeDef(actualParams.get(i));
       } else {
-        rawType = p.asType().toString();
+        rawType = typeDef(p.asType());
       }
 
       MethodParam param = new MethodParam(p, rawType, ctx, defaultParamType, formMarker);

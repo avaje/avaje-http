@@ -16,6 +16,7 @@ import javax.tools.JavaFileObject;
 import java.io.IOException;
 
 import static io.dinject.javalin.generator.Constants.GENERATED;
+import static io.dinject.javalin.generator.Constants.JAVALIN3_CONTEXT;
 import static io.dinject.javalin.generator.Constants.OPENAPIDEFINITION;
 
 public class ProcessingContext {
@@ -26,6 +27,7 @@ public class ProcessingContext {
   private final Types types;
   private final boolean generatedAvailable;
   private final boolean openApiAvailable;
+  private final boolean javalin3;
 
   private final DocContext docContext;
 
@@ -36,6 +38,7 @@ public class ProcessingContext {
     this.types = env.getTypeUtils();
     this.generatedAvailable = isTypeAvailable(GENERATED);
     this.openApiAvailable = isTypeAvailable(OPENAPIDEFINITION);
+    this.javalin3 = isTypeAvailable(JAVALIN3_CONTEXT);
     this.docContext = new DocContext(env, openApiAvailable);
   }
 
@@ -53,6 +56,10 @@ public class ProcessingContext {
 
   boolean isOpenApiAvailable() {
     return openApiAvailable;
+  }
+
+  boolean isJavalin3() {
+    return javalin3;
   }
 
   void logError(Element e, String msg, Object... args) {
