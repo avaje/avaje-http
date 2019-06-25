@@ -91,7 +91,7 @@ class ControllerReader {
     return ifaceMethods;
   }
 
-  <A extends Annotation> A findAnnotation(Class<A> type) {
+  private <A extends Annotation> A findAnnotation(Class<A> type) {
     A annotation = beanType.getAnnotation(type);
     if (annotation != null) {
       return annotation;

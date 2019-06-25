@@ -1,6 +1,6 @@
 package io.dinject.javalin.generator;
 
-enum ParamType {
+public enum ParamType {
 
   BODY("body", "body"),
   PATHPARAM("pathParam", "path"),

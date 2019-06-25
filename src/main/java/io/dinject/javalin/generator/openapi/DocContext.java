@@ -1,0 +1,174 @@
+package io.dinject.javalin.generator.openapi;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.Schema;
+
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
+import javax.tools.Diagnostic;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Map;
+import java.util.TreeMap;
+
+/**
+ * Context for building the OpenAPI documentation.
+ */
+public class DocContext {
+
+  private final boolean openApiAvailable;
+
+  private final Elements elements;
+
+  private final Filer filer;
+
+  private final Messager messager;
+
+  private final Map<String, PathItem> pathMap = new TreeMap<>();
+
+  private final SchemaDocBuilder schemaBuilder;
+
+  private final OpenAPI openAPI;
+
+  public DocContext(ProcessingEnvironment env, boolean openApiAvailable) {
+    this.openApiAvailable = openApiAvailable;
+    this.elements = env.getElementUtils();
+    this.filer = env.getFiler();
+    this.messager = env.getMessager();
+    this.schemaBuilder = new SchemaDocBuilder(env.getTypeUtils(), env.getElementUtils());
+    this.openAPI = initOpenAPI();
+  }
+
+  public boolean isOpenApiAvailable() {
+    return openApiAvailable;
+  }
+
+  private OpenAPI initOpenAPI() {
+
+    OpenAPI openAPI = new OpenAPI();
+    openAPI.setPaths(new Paths());
+    openAPI.setInfo(new Info());
+
+    return openAPI;
+  }
+
+  Schema toSchema(String rawType, Element element) {
+    TypeElement typeElement = elements.getTypeElement(rawType);
+    if (typeElement == null) {
+      // primitive types etc
+      return schemaBuilder.toSchema(element.asType());
+    } else {
+      return schemaBuilder.toSchema(typeElement.asType());
+    }
+  }
+
+  Content createContent(TypeMirror returnType, String mediaType) {
+    return schemaBuilder.createContent(returnType, mediaType);
+  }
+
+  PathItem pathItem(String fullPath) {
+    return pathMap.computeIfAbsent(fullPath, s -> new PathItem());
+  }
+
+  void addFormParam(Operation operation, String varName, Schema schema) {
+    schemaBuilder.addFormParam(operation, varName, schema);
+  }
+
+  void addRequestBody(Operation operation, Schema schema, boolean asForm, String description) {
+    schemaBuilder.addRequestBody(operation, schema, asForm, description);
+  }
+
+  /**
+   * Return the OpenAPI adding the paths and schemas.
+   */
+  private OpenAPI getApiForWriting() {
+
+    Paths paths = openAPI.getPaths();
+    if (paths == null) {
+      paths = new Paths();
+      openAPI.setPaths(paths);
+    }
+    // add paths by natural order
+    for (Map.Entry<String, PathItem> entry : pathMap.entrySet()) {
+      paths.addPathItem(entry.getKey(), entry.getValue());
+    }
+
+    components().setSchemas(schemaBuilder.getSchemas());
+    return openAPI;
+  }
+
+  /**
+   * Return the components creating if needed.
+   */
+  private Components components() {
+    Components components = openAPI.getComponents();
+    if (components == null) {
+      components = new Components();
+      openAPI.setComponents(components);
+    }
+    return components;
+  }
+
+  public void readApiDefinition(Element element) {
+
+    OpenAPIDefinition openApi = element.getAnnotation(OpenAPIDefinition.class);
+    io.swagger.v3.oas.annotations.info.Info info = openApi.info();
+    if (!info.title().isEmpty()) {
+      openAPI.getInfo().setTitle(info.title());
+    }
+    if (!info.description().isEmpty()) {
+      openAPI.getInfo().setDescription(info.description());
+    }
+  }
+
+  public void writeApi() {
+    try (Writer metaWriter = createMetaWriter()) {
+
+      OpenAPI openAPI = getApiForWriting();
+      ObjectMapper mapper = createObjectMapper();
+      mapper.writeValue(metaWriter, openAPI);
+
+    } catch (IOException e) {
+      logError(null, "Error writing openapi file" + e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
+  private ObjectMapper createObjectMapper() {
+
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY)
+      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+      .enable(SerializationFeature.INDENT_OUTPUT);
+
+    return mapper;
+  }
+
+  private Writer createMetaWriter() throws IOException {
+    FileObject writer = filer.createResource(StandardLocation.CLASS_OUTPUT, "META-INF", "openapi.json", null);
+    return writer.openWriter();
+  }
+
+  private void logError(Element e, String msg, Object... args) {
+    messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
+  }
+
+}

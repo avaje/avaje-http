@@ -9,11 +9,7 @@ import io.dinject.controller.Post;
 import io.dinject.controller.Produces;
 import io.dinject.controller.Put;
 import io.dinject.javalin.generator.javadoc.Javadoc;
-import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.PathItem;
-import io.swagger.v3.oas.models.responses.ApiResponse;
-import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.dinject.javalin.generator.openapi.MethodDocBuilder;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -26,7 +22,7 @@ import java.util.List;
 
 import static io.dinject.javalin.generator.Constants.JAVALIN_ROLES;
 
-class MethodReader {
+public class MethodReader {
 
   private final ProcessingContext ctx;
   private final ControllerReader bean;
@@ -76,12 +72,16 @@ class MethodReader {
     return webMethod != null;
   }
 
+  public Javadoc getJavadoc() {
+    return javadoc;
+  }
+
   private String produces(ControllerReader bean) {
     final Produces produces = findAnnotation(Produces.class);
     return (produces != null) ? produces.value() : bean.getProduces();
   }
 
-  <A extends Annotation> A findAnnotation(Class<A> type) {
+  public <A extends Annotation> A findAnnotation(Class<A> type) {
     A annotation = element.getAnnotation(type);
     if (annotation != null) {
       return annotation;
@@ -120,79 +120,15 @@ class MethodReader {
     }
   }
 
-  void addMeta(ProcessingContext ctx) {
-
-    if (webMethod != null && notHidden()) {
-
-      Operation operation = new Operation();
-      //operation.setOperationId();
-      operation.setSummary(javadoc.getSummary());
-      operation.setDescription(javadoc.getDescription());
-
-      if (javadoc.isDeprecated()) {
-        operation.setDeprecated(true);
-      } else if (findAnnotation(Deprecated.class) != null) {
-        operation.setDeprecated(true);
-      }
-
-      PathItem pathItem = ctx.pathItem(fullPath);
-      switch (webMethod) {
-        case GET:
-          pathItem.setGet(operation);
-          break;
-        case PUT:
-          pathItem.setPut(operation);
-          break;
-        case POST:
-          pathItem.setPost(operation);
-          break;
-        case DELETE:
-          pathItem.setDelete(operation);
-          break;
-        case PATCH:
-          pathItem.setPatch(operation);
-          break;
-      }
-
-      for (MethodParam param : params) {
-        param.addMeta(ctx, javadoc, operation);
-      }
-
-      ApiResponses responses = new ApiResponses();
-      operation.setResponses(responses);
-
-      ApiResponse response = new ApiResponse();
-      response.setDescription(javadoc.getReturnDescription());
-
-      if (isVoid) {
-        if (isEmpty(response.getDescription())) {
-          response.setDescription("No content");
-        }
-      } else {
-        String contentMediaType = (produces == null) ? MediaType.APPLICATION_JSON : produces;
-        response.setContent(ctx.createContent(returnType(), contentMediaType));
-      }
-      responses.addApiResponse(httpStatusCode(), response);
-    }
-  }
-
-  private TypeMirror returnType() {
-    if (actualExecutable != null) {
-      return actualExecutable.getReturnType();
-    }
-    return element.getReturnType();
-  }
-
-  private boolean isEmpty(String value) {
-    return value == null || value.isEmpty();
-  }
-
   /**
-   * Return true if the method is included in documentation.
+   * Build the OpenAPI documentation for the method / operation.
    */
-  private boolean notHidden() {
-    return !ctx.isOpenApiAvailable() || findAnnotation(Hidden.class) == null;
+  void buildApiDocumentation(ProcessingContext ctx) {
+    if (webMethod != null) {
+      new MethodDocBuilder(this, ctx.doc()).build();
+    }
   }
+
 
   void addRoute(Append writer) {
 
@@ -202,7 +138,7 @@ class MethodReader {
       segments = PathSegments.parse(fullPath);
 
       writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), segments.fullPath()).eol();
-      writer.append("      ctx.status(%s);", httpStatusCode()).eol();
+      writer.append("      ctx.status(%s);", getStatusCode()).eol();
 
       List<PathSegments.Segment> metricSegments = segments.metricSegments();
       for (PathSegments.Segment metricSegment : metricSegments) {
@@ -214,7 +150,7 @@ class MethodReader {
       }
       writer.append("      ");
 
-      if (isReturnContent()) {
+      if (!isVoid()) {
         writeContextReturn(writer);
       }
       writer.append("controller.");
@@ -226,7 +162,7 @@ class MethodReader {
         params.get(i).buildParamName(writer);
       }
       writer.append(")");
-      if (isReturnContent()) {
+      if (!isVoid()) {
         writer.append(")");
       }
       writer.append(";").eol();
@@ -264,14 +200,6 @@ class MethodReader {
     return methodRoles.isEmpty() ? bean.getRoles() : methodRoles;
   }
 
-  private String httpStatusCode() {
-    return Integer.toString(webMethod.statusCode(isVoid));
-  }
-
-  private boolean isReturnContent() {
-    return !isVoid;
-  }
-
   private boolean readMethodAnnotation() {
 
     Form form = findAnnotation(Form.class);
@@ -307,4 +235,36 @@ class MethodReader {
     this.webMethodPath = value;
     return true;
   }
+
+  public WebMethod getWebMethod() {
+    return webMethod;
+  }
+
+  public String getFullPath() {
+    return fullPath;
+  }
+
+  public List<MethodParam> getParams() {
+    return params;
+  }
+
+  public boolean isVoid() {
+    return isVoid;
+  }
+
+  public String getProduces() {
+    return produces;
+  }
+
+  public TypeMirror getReturnType() {
+    if (actualExecutable != null) {
+      return actualExecutable.getReturnType();
+    }
+    return element.getReturnType();
+  }
+
+  public String getStatusCode() {
+    return Integer.toString(webMethod.statusCode(isVoid));
+  }
+
 }

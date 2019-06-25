@@ -47,7 +47,7 @@ class ControllerRouteWriter {
     for (MethodReader method : reader.getMethods()) {
       method.addRoute(writer);
       if (!reader.isDocHidden()) {
-        method.addMeta(ctx);
+        method.buildApiDocumentation(ctx);
       }
     }
 

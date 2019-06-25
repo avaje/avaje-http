@@ -1,11 +1,10 @@
 package io.dinject.javalin.generator;
 
-import io.dinject.javalin.generator.javadoc.Javadoc;
-import io.swagger.v3.oas.models.Operation;
+import io.dinject.javalin.generator.openapi.MethodDocBuilder;
 
 import javax.lang.model.element.VariableElement;
 
-class MethodParam {
+public class MethodParam {
 
   private final ElementReader elementParam;
 
@@ -25,7 +24,7 @@ class MethodParam {
     elementParam.writeParamName(writer);
   }
 
-  void addMeta(ProcessingContext ctx, Javadoc javadoc, Operation operation) {
-    elementParam.addMeta(ctx, javadoc, operation);
+  public void buildApiDocumentation(MethodDocBuilder methodDoc) {
+    elementParam.buildApiDocumentation(methodDoc);
   }
 }

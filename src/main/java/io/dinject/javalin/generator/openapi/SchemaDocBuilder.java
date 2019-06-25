@@ -1,8 +1,6 @@
 package io.dinject.javalin.generator.openapi;
 
 import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Content;
@@ -33,7 +31,7 @@ import java.util.TreeMap;
 /**
  * Help build OpenAPI Schema objects.
  */
-public class SchemaBuilder {
+class SchemaDocBuilder {
 
   private static final String APP_FORM = "application/x-www-form-urlencoded";
   private static final String APP_JSON = "application/json";
@@ -43,20 +41,20 @@ public class SchemaBuilder {
   private final TypeMirror iterableType;
   private final TypeMirror mapType;
 
-  private OpenAPI openAPI;
+  private final Map<String, Schema> schemas = new TreeMap<>();
 
-  public SchemaBuilder(Types types, Elements elements) {
+  SchemaDocBuilder(Types types, Elements elements) {
     this.types = types;
     this.knownTypes = new KnownTypes();
     this.iterableType = types.erasure(elements.getTypeElement("java.lang.Iterable").asType());
     this.mapType = types.erasure(elements.getTypeElement("java.util.Map").asType());
   }
 
-  public void setOpenAPI(OpenAPI openAPI) {
-    this.openAPI = openAPI;
+  Map<String, Schema> getSchemas() {
+    return schemas;
   }
 
-  public Content createContent(TypeMirror returnType, String mediaType) {
+  Content createContent(TypeMirror returnType, String mediaType) {
     MediaType mt = new MediaType();
     mt.setSchema(toSchema(returnType));
     Content content = new Content();
@@ -67,7 +65,7 @@ public class SchemaBuilder {
   /**
    * Add parameter as a form parameter.
    */
-  public void addFormParam(Operation operation, String varName, Schema schema) {
+  void addFormParam(Operation operation, String varName, Schema schema) {
     RequestBody body = requestBody(operation);
     Schema formSchema = requestFormParamSchema(body);
     formSchema.addProperties(varName, schema);
@@ -94,7 +92,7 @@ public class SchemaBuilder {
   /**
    * Add as request body.
    */
-  public void addRequestBody(Operation operation, Schema schema, boolean asForm, String description) {
+  void addRequestBody(Operation operation, Schema schema, boolean asForm, String description) {
 
     RequestBody body = requestBody(operation);
     body.setDescription(description);
@@ -119,7 +117,7 @@ public class SchemaBuilder {
     return body;
   }
 
-  public Schema<?> toSchema(TypeMirror type) {
+  Schema<?> toSchema(TypeMirror type) {
 
     Schema<?> schema = knownTypes.createSchema(type.toString());
     if (schema != null) {
@@ -144,11 +142,10 @@ public class SchemaBuilder {
 
     String objectSchemaKey = getObjectSchemaName(type);
 
-    Map<String, Schema> schemaMap = schemas();
-    Schema objectSchema = schemaMap.get(objectSchemaKey);
+    Schema objectSchema = schemas.get(objectSchemaKey);
     if (objectSchema == null) {
       objectSchema = createObjectSchema(type);
-      schemaMap.put(objectSchemaKey, objectSchema);
+      schemas.put(objectSchemaKey, objectSchema);
     }
 
     ObjectSchema obRef = new ObjectSchema();
@@ -254,31 +251,6 @@ public class SchemaBuilder {
         }
       }
     }
-  }
-
-  /**
-   * Return the schema map creating if needed.
-   */
-  private Map<String, Schema> schemas() {
-    Components components = components();
-    Map<String, Schema> schemas = components.getSchemas();
-    if (schemas == null) {
-      schemas = new TreeMap<>();
-      components.setSchemas(schemas);
-    }
-    return schemas;
-  }
-
-  /**
-   * Return the components creating if needed.
-   */
-  private Components components() {
-    Components components = openAPI.getComponents();
-    if (components == null) {
-      components = new Components();
-      openAPI.setComponents(components);
-    }
-    return components;
   }
 
   /**

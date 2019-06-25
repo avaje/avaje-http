@@ -1,6 +1,6 @@
 package io.dinject.javalin.generator;
 
-enum WebMethod {
+public enum WebMethod {
   GET(200),
   POST(201),
   PUT(200, 204),

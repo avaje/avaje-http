@@ -7,15 +7,13 @@ import io.dinject.controller.Form;
 import io.dinject.controller.FormParam;
 import io.dinject.controller.Header;
 import io.dinject.controller.QueryParam;
-import io.dinject.javalin.generator.javadoc.Javadoc;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
+import io.dinject.javalin.generator.openapi.MethodDocBuilder;
+import io.dinject.javalin.generator.openapi.MethodParamDocBuilder;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-class ElementReader {
+public class ElementReader {
 
   private final ProcessingContext ctx;
   private final Element element;
@@ -107,7 +105,7 @@ class ElementReader {
     return defaultName;
   }
 
-  String getVarName() {
+  public String getVarName() {
     return varName;
   }
 
@@ -146,36 +144,13 @@ class ElementReader {
     }
   }
 
-  void addMeta(ProcessingContext ctx, Javadoc javadoc, Operation operation) {
+  /**
+   * Build the OpenAPI documentation for this parameter.
+   */
+  void buildApiDocumentation(MethodDocBuilder methodDoc) {
     if (!isJavalinContext()) {
-      if (paramType == ParamType.FORM || paramType == ParamType.BODY) {
-        addMetaRequestBody(ctx, javadoc, operation);
-
-      } else {
-        Parameter param = new Parameter();
-        param.setName(varName);
-        param.setDescription(javadoc.getParams().get(paramName));
-
-        Schema schema = ctx.toSchema(rawType, element);
-        if (paramType == ParamType.FORMPARAM) {
-          ctx.addFormParam(operation, varName, schema);
-
-        } else {
-          param.setSchema(schema);
-          param.setIn(paramType.getType());
-          operation.addParametersItem(param);
-        }
-      }
+      new MethodParamDocBuilder(methodDoc, this).build();
     }
-  }
-
-  private void addMetaRequestBody(ProcessingContext ctx, Javadoc javadoc, Operation operation) {
-
-    Schema schema = ctx.toSchema(rawType, element);
-    String description = javadoc.getParams().get(paramName);
-
-    boolean asForm = (paramType == ParamType.FORM);
-    ctx.addRequestBody(operation, schema, asForm, description);
   }
 
   void writeCtxGet(Append writer, PathSegments segments) {
@@ -266,4 +241,19 @@ class ElementReader {
     form.write(writer);
   }
 
+  public ParamType getParamType() {
+    return paramType;
+  }
+
+  public String getParamName() {
+    return paramName;
+  }
+
+  public String getRawType() {
+    return rawType;
+  }
+
+  public Element getElement() {
+    return element;
+  }
 }
