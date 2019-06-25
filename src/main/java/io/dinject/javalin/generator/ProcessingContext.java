@@ -2,6 +2,7 @@ package io.dinject.javalin.generator;
 
 import io.dinject.javalin.generator.openapi.SchemaBuilder;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.Content;
@@ -140,5 +141,13 @@ class ProcessingContext {
 
   PathItem pathItem(String fullPath) {
     return pathMap.computeIfAbsent(fullPath, s -> new PathItem());
+  }
+
+  void addFormParam(Operation operation, String varName, Schema schema) {
+    schemaBuilder.addFormParam(operation, varName, schema);
+  }
+
+  void addRequestBody(Operation operation, Schema schema, boolean asForm, String description) {
+    schemaBuilder.addRequestBody(operation, schema, asForm, description);
   }
 }

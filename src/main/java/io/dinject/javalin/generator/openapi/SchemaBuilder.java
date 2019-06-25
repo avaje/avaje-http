@@ -3,12 +3,14 @@ package io.dinject.javalin.generator.openapi;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -32,6 +34,9 @@ import java.util.TreeMap;
  * Help build OpenAPI Schema objects.
  */
 public class SchemaBuilder {
+
+  private static final String APP_FORM = "application/x-www-form-urlencoded";
+  private static final String APP_JSON = "application/json";
 
   private final Types types;
   private final KnownTypes knownTypes;
@@ -57,6 +62,61 @@ public class SchemaBuilder {
     Content content = new Content();
     content.addMediaType(mediaType, mt);
     return content;
+  }
+
+  /**
+   * Add parameter as a form parameter.
+   */
+  public void addFormParam(Operation operation, String varName, Schema schema) {
+    RequestBody body = requestBody(operation);
+    Schema formSchema = requestFormParamSchema(body);
+    formSchema.addProperties(varName, schema);
+  }
+
+  private Schema requestFormParamSchema(RequestBody body) {
+
+    final Content content = body.getContent();
+    MediaType mediaType = content.get(APP_FORM);
+
+    Schema schema;
+    if (mediaType != null) {
+      schema = mediaType.getSchema();
+    } else {
+      schema = new Schema();
+      schema.setType("object");
+      mediaType = new MediaType();
+      mediaType.schema(schema);
+      content.addMediaType(APP_FORM, mediaType);
+    }
+    return schema;
+  }
+
+  /**
+   * Add as request body.
+   */
+  public void addRequestBody(Operation operation, Schema schema, boolean asForm, String description) {
+
+    RequestBody body = requestBody(operation);
+    body.setDescription(description);
+
+    MediaType mt = new MediaType();
+    mt.schema(schema);
+
+    String mime = asForm ? APP_FORM : APP_JSON;
+    body.getContent().addMediaType(mime, mt);
+  }
+
+  private RequestBody requestBody(Operation operation) {
+
+    RequestBody body = operation.getRequestBody();
+    if (body == null) {
+      body = new RequestBody();
+      body.setRequired(true);
+      Content content = new Content();
+      body.setContent(content);
+      operation.setRequestBody(body);
+    }
+    return body;
   }
 
   public Schema<?> toSchema(TypeMirror type) {

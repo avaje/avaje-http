@@ -9,6 +9,7 @@ import io.dinject.controller.Header;
 import io.dinject.controller.QueryParam;
 import io.dinject.javalin.generator.javadoc.Javadoc;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 
 import javax.lang.model.element.Element;
@@ -147,15 +148,34 @@ class ElementReader {
 
   void addMeta(ProcessingContext ctx, Javadoc javadoc, Operation operation) {
     if (!isJavalinContext()) {
+      if (paramType == ParamType.FORM || paramType == ParamType.BODY) {
+        addMetaRequestBody(ctx, javadoc, operation);
 
-      Parameter param = new Parameter();
-      param.setName(varName);
-      param.setDescription(javadoc.getParams().get(paramName));
-      param.setIn(paramType.getType());
-      param.setSchema(ctx.toSchema(rawType, element));
+      } else {
+        Parameter param = new Parameter();
+        param.setName(varName);
+        param.setDescription(javadoc.getParams().get(paramName));
 
-      operation.addParametersItem(param);
+        Schema schema = ctx.toSchema(rawType, element);
+        if (paramType == ParamType.FORMPARAM) {
+          ctx.addFormParam(operation, varName, schema);
+
+        } else {
+          param.setSchema(schema);
+          param.setIn(paramType.getType());
+          operation.addParametersItem(param);
+        }
+      }
     }
+  }
+
+  private void addMetaRequestBody(ProcessingContext ctx, Javadoc javadoc, Operation operation) {
+
+    Schema schema = ctx.toSchema(rawType, element);
+    String description = javadoc.getParams().get(paramName);
+
+    boolean asForm = (paramType == ParamType.FORM);
+    ctx.addRequestBody(operation, schema, asForm, description);
   }
 
   void writeCtxGet(Append writer, PathSegments segments) {
