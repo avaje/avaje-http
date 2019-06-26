@@ -65,7 +65,11 @@ public class DocContext {
 
     OpenAPI openAPI = new OpenAPI();
     openAPI.setPaths(new Paths());
-    openAPI.setInfo(new Info());
+
+    Info info = new Info();
+    info.setTitle("");
+    info.setVersion("");
+    openAPI.setInfo(info);
 
     return openAPI;
   }
@@ -137,6 +141,10 @@ public class DocContext {
     if (!info.description().isEmpty()) {
       openAPI.getInfo().setDescription(info.description());
     }
+    if (!info.version().isEmpty()) {
+      openAPI.getInfo().setVersion(info.version());
+    }
+
   }
 
   public void writeApi() {
@@ -155,7 +163,7 @@ public class DocContext {
   private ObjectMapper createObjectMapper() {
 
     ObjectMapper mapper = new ObjectMapper();
-    mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY)
+    mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
       .enable(SerializationFeature.INDENT_OUTPUT);
 
