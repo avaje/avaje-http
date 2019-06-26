@@ -150,9 +150,9 @@ class SchemaDocBuilder {
       schemas.put(objectSchemaKey, objectSchema);
     }
 
-    ObjectSchema obRef = new ObjectSchema();
-    obRef.$ref("#/components/schemas/" + objectSchemaKey);
-    return obRef;
+    Schema ref = new Schema();
+    ref.$ref("#/components/schemas/" + objectSchemaKey);
+    return ref;
   }
 
   private Schema<?> buildIterableSchema(TypeMirror type) {
