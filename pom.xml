@@ -19,7 +19,7 @@
 
   <properties>
     <swagger.version>2.0.8</swagger.version>
-    <jackson-databind.version>2.9.8</jackson-databind.version>
+    <jackson-databind.version>2.9.9</jackson-databind.version>
   </properties>
 
   <dependencies>
