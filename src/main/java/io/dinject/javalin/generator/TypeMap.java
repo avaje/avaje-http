@@ -130,6 +130,11 @@ class TypeMap {
     }
 
     @Override
+    public boolean isPrimitive() {
+      return false;
+    }
+
+    @Override
     public String shortName() {
       return shortName;
     }
@@ -154,6 +159,11 @@ class TypeMap {
     Primitive(String asMethod, String type) {
       this.asMethod = asMethod;
       this.type = type;
+    }
+
+    @Override
+    public boolean isPrimitive() {
+      return true;
     }
 
     @Override
@@ -232,6 +242,11 @@ class TypeMap {
       this.shortName = shortName;
       this.asMethod = "as" + shortName + "(";
       this.toMethod = "to" + shortName + "(";
+    }
+
+    @Override
+    public boolean isPrimitive() {
+      return false;
     }
 
     @Override

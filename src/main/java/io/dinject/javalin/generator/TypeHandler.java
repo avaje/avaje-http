@@ -24,4 +24,9 @@ interface TypeHandler {
    * The short name.
    */
   String shortName();
+
+  /**
+   * Return true if this is a primitive type.
+   */
+  boolean isPrimitive();
 }

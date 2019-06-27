@@ -32,6 +32,9 @@ public class ElementReader {
   private boolean impliedParamType;
   private String paramDefault;
 
+  private boolean notNullKotlin;
+  private boolean notNullJavax;
+
   ElementReader(Element element, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
     this(element, typeDef(element.asType()), ctx, defaultType, formMarker);
   }
@@ -51,6 +54,10 @@ public class ElementReader {
   }
 
   private void readAnnotations(Element element, ParamType defaultType) {
+
+    notNullKotlin = (element.getAnnotation(org.jetbrains.annotations.NotNull.class) != null);
+    notNullJavax = (element.getAnnotation(javax.validation.constraints.NotNull.class) != null);
+
     Default defaultVal = element.getAnnotation(Default.class);
     if (defaultVal != null) {
       this.paramDefault = defaultVal.value();
@@ -234,7 +241,14 @@ public class ElementReader {
       if (hasParamDefault()) {
         writer.append("ctx.%s(\"%s\",\"%s\")", paramType, paramName, paramDefault);
       } else {
+        boolean checkNull = notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
+        if (checkNull) {
+          writer.append("checkNull(");
+        }
         writer.append("ctx.%s(\"%s\")", paramType, paramName);
+        if (checkNull) {
+          writer.append(", \"%s\")", paramName);
+        }
       }
     }
 
