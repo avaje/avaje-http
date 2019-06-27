@@ -1,7 +1,10 @@
 package io.dinject.javalin.generator;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,6 +24,8 @@ class BeanParamReader {
 
   private final Map<String, FieldReader> fieldMap = new LinkedHashMap<>();
 
+  private final List<ExecutableElement> constructors = new ArrayList<>();
+
   BeanParamReader(ProcessingContext ctx, TypeElement beanType, String beanVarName, String beanShortType, ParamType defaultParamType) {
     this.ctx = ctx;
     this.beanType = beanType;
@@ -35,6 +40,9 @@ class BeanParamReader {
 
     for (Element enclosedElement : beanType.getEnclosedElements()) {
       switch (enclosedElement.getKind()) {
+        case CONSTRUCTOR:
+          constructors.add((ExecutableElement) enclosedElement);
+          break;
         case METHOD:
           readMethod(enclosedElement);
           break;
@@ -60,20 +68,49 @@ class BeanParamReader {
 
   void write(Append writer) {
 
-    writer.append(" new %s();", beanShortType).eol();
+    writer.append(" new %s(", beanShortType);
+    final Set<String> constructorParams = writeConstructorParams(writer);
+    writer.append(");").eol();
 
     for (String setterMethod : setterMethods) {
       String propName = Util.propertyName(setterMethod);
-      FieldReader field = fieldMap.get(propName);
-      if (field != null) {
-        field.setUseSetter(setterMethod);
+      if (!constructorParams.contains(propName)) {
+        FieldReader field = fieldMap.get(propName);
+        if (field != null) {
+          field.setUseSetter(setterMethod);
+        }
       }
     }
 
     for (FieldReader field : fieldMap.values()) {
-      field.writeSet(writer, beanVarName);
+      if (!field.isConstructorParam()) {
+        field.writeSet(writer, beanVarName);
+      }
     }
     writer.eol();
+  }
+
+  private Set<String> writeConstructorParams(Append writer) {
+    Set<String> paramsUsed = new HashSet<>();
+    if (constructors.size() == 1) {
+      int count = 0;
+      for (VariableElement parameter : constructors.get(0).getParameters()) {
+        final String paramName = parameter.getSimpleName().toString();
+        final FieldReader field = fieldMap.get(paramName);
+        if (field != null) {
+          if (count++ > 0) {
+            writer.append(", ");
+          }
+          writer.eol().append("        ");
+          field.writeConstructorParam(writer);
+          paramsUsed.add(paramName);
+        }
+      }
+      if (count > 0) {
+        writer.eol().append("      ");
+      }
+    }
+    return paramsUsed;
   }
 
   static class FieldReader {
@@ -81,6 +118,8 @@ class BeanParamReader {
     private final ElementReader element;
 
     private String setterMethod;
+
+    private boolean constructorParam;
 
     FieldReader(ProcessingContext ctx, Element enclosedElement, ParamType defaultParamType) {
       this.element = new ElementReader(enclosedElement, ctx, defaultParamType, false);
@@ -95,13 +134,25 @@ class BeanParamReader {
       return element.toString();
     }
 
+    void writeConstructorParam(Append writer) {
+      // populate in constructor
+      constructorParam = true;
+      element.setValue(writer);
+    }
+
+    boolean isConstructorParam() {
+      return constructorParam;
+    }
+
     void writeSet(Append writer, String beanVarName) {
       if (setterMethod != null) {
+        // populate via setter method
         writer.append("      %s.%s(", beanVarName, setterMethod);
         element.setValue(writer);
         writer.append(");").eol();
 
       } else {
+        // populate via field put
         writer.append("      %s.%s = ", beanVarName, getVarName());
         element.setValue(writer);
         writer.append(";").eol();
@@ -112,6 +163,5 @@ class BeanParamReader {
       this.setterMethod = setterMethod;
     }
   }
-
 
 }
