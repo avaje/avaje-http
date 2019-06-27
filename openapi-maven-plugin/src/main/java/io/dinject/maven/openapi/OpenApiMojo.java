@@ -64,15 +64,38 @@ public class OpenApiMojo extends AbstractMojo {
         getLog().error("Failed to make directory " + destDir);
       } else {
         try {
-          // copy into src/main/resources ...
-          Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-          getLog().info("copied openapi file to " + destFile);
-
+          moveToMainResources(sourceFile, destFile);
         } catch (IOException e) {
           getLog().error("Failed to copy openapi file", e);
         }
       }
     }
+  }
 
+  /**
+   * Copy the file to src/main/resources ...
+   */
+  private void moveToMainResources(File sourceFile, File destFile) throws IOException {
+    // copy into src/main/resources ...
+    Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    getLog().info("copied openapi file to " + destFile);
+    if (!sourceFile.delete()) {
+      getLog().warn("Failed to delete the temporary openapi file " + sourceFile);
+    } else {
+      deleteParentIfEmpty(sourceFile);
+    }
+  }
+
+  /**
+   * Delete the parent meta directory if it is empty.
+   */
+  private void deleteParentIfEmpty(File sourceFile) {
+    final File meta = sourceFile.getParentFile();
+    final String[] list = meta.list();
+    if (list != null && list.length == 0) {
+      if (meta.delete()) {
+        getLog().debug("deleted empty meta directory");
+      }
+    }
   }
 }
