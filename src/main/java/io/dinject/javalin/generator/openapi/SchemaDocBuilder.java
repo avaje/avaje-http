@@ -196,9 +196,6 @@ class SchemaDocBuilder {
     }
 
     MapSchema mapSchema = new MapSchema();
-//      mapSchema.type();
-//      mapSchema.set$ref();
-//      mapSchema.setFormat();
     mapSchema.setAdditionalProperties(valueSchema);
     return mapSchema;
   }
@@ -248,13 +245,8 @@ class SchemaDocBuilder {
   }
 
   private boolean isNotNullable(Element element) {
-    if (element.getAnnotation(org.jetbrains.annotations.NotNull.class) != null) {
-      return true;
-    }
-    if (element.getAnnotation(javax.validation.constraints.NotNull.class) != null) {
-      return true;
-    }
-    return false;
+    return element.getAnnotation(org.jetbrains.annotations.NotNull.class) != null
+      || element.getAnnotation(javax.validation.constraints.NotNull.class) != null;
   }
 
   /**
