@@ -22,6 +22,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -217,12 +219,43 @@ class SchemaDocBuilder {
     Element element = types.asElement(objectType);
     for (VariableElement field : allFields(element)) {
       Schema<?> propSchema = toSchema(field.asType());
-      // max,min,required,deprecated ?
+      if (isNotNullable(field)) {
+        propSchema.setNullable(Boolean.FALSE);
+      }
+      setLengthMinMax(field, propSchema);
+      setFormatFromValidation(field, propSchema);
       objectSchema.addProperties(field.getSimpleName().toString(), propSchema);
     }
     return objectSchema;
   }
 
+  private void setFormatFromValidation(Element element, Schema<?> propSchema) {
+    if (element.getAnnotation(Email.class) != null) {
+      propSchema.setFormat("email");
+    }
+  }
+
+  private void setLengthMinMax(Element element, Schema<?> propSchema) {
+    final Size size = element.getAnnotation(Size.class);
+    if (size != null) {
+      if (size.min() > 0) {
+        propSchema.setMinLength(size.min());
+      }
+      if (size.max() > 0) {
+        propSchema.setMaxLength(size.max());
+      }
+    }
+  }
+
+  private boolean isNotNullable(Element element) {
+    if (element.getAnnotation(org.jetbrains.annotations.NotNull.class) != null) {
+      return true;
+    }
+    if (element.getAnnotation(javax.validation.constraints.NotNull.class) != null) {
+      return true;
+    }
+    return false;
+  }
 
   /**
    * Gather all the fields (properties) for the given bean element.

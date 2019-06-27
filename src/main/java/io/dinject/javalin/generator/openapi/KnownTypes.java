@@ -40,10 +40,15 @@ class KnownTypes {
 
   KnownTypes() {
     add(new StringType(), String.class, char[].class, CharSequence.class);
-    add(new BoolType(), boolean.class, Boolean.class);
-    add(new IntegerType(), int.class, Integer.class);
-    add(new LongType(), long.class, Long.class);
-    add(new NumberType(), double.class, Double.class, float.class, Float.class, BigDecimal.class, BigInteger.class);
+    add(new BoolType(), boolean.class);
+    add(new BooleanType(), Boolean.class);
+    add(new IntType(), int.class);
+    add(new IntegerType(), Integer.class);
+    add(new PLongType(), long.class);
+    add(new LongType(), Long.class);
+
+    add(new PNumberType(), double.class, float.class);
+    add(new NumberType(), Double.class, Float.class, BigDecimal.class, BigInteger.class);
     add(new DateType(), LocalDate.class, java.sql.Date.class);
     add(new DateTimeType(), Instant.class, OffsetDateTime.class, ZonedDateTime.class, Timestamp.class, java.util.Date.class, LocalDateTime.class);
 
@@ -84,7 +89,21 @@ class KnownTypes {
   private class BoolType implements KnownType {
     @Override
     public Schema<?> createSchema() {
+      return new BooleanSchema().nullable(Boolean.FALSE);
+    }
+  }
+
+  private class BooleanType implements KnownType {
+    @Override
+    public Schema<?> createSchema() {
       return new BooleanSchema();
+    }
+  }
+
+  private class IntType implements KnownType {
+    @Override
+    public Schema<?> createSchema() {
+      return new IntegerSchema().nullable(Boolean.FALSE);
     }
   }
 
@@ -95,10 +114,24 @@ class KnownTypes {
     }
   }
 
+  private class PLongType implements KnownType {
+    @Override
+    public Schema<?> createSchema() {
+      return new IntegerSchema().format("int64").nullable(Boolean.FALSE);
+    }
+  }
+
   private class LongType implements KnownType {
     @Override
     public Schema<?> createSchema() {
       return new IntegerSchema().format("int64");
+    }
+  }
+
+  private class PNumberType implements KnownType {
+    @Override
+    public Schema<?> createSchema() {
+      return new NumberSchema().nullable(Boolean.FALSE);
     }
   }
 
