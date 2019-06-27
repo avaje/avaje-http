@@ -22,6 +22,7 @@ import java.util.List;
 
 import static io.dinject.javalin.generator.Constants.JAVALIN2_ROLES;
 import static io.dinject.javalin.generator.Constants.JAVALIN3_ROLES;
+import static io.dinject.javalin.generator.Util.combinePath;
 import static io.dinject.javalin.generator.Util.typeDef;
 
 public class MethodReader {
@@ -52,8 +53,6 @@ public class MethodReader {
   private final List<? extends TypeMirror> actualParams;
 
   private String fullPath;
-
-  private PathSegments segments;
 
   MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable, ProcessingContext ctx) {
     this.ctx = ctx;
@@ -136,10 +135,10 @@ public class MethodReader {
 
     if (webMethod != null) {
 
-      fullPath = Util.combinePath(beanPath, webMethodPath);
-      segments = PathSegments.parse(fullPath);
+      PathSegments segments = PathSegments.parse(combinePath(beanPath, webMethodPath));
+      fullPath = segments.fullPath();
 
-      writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), segments.fullPath()).eol();
+      writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
       writer.append("      ctx.status(%s);", getStatusCode()).eol();
 
       List<PathSegments.Segment> metricSegments = segments.metricSegments();
