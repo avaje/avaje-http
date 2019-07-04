@@ -5,6 +5,7 @@ import io.dinject.javalin.generator.openapi.DocContext;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -15,7 +16,8 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 
-import static io.dinject.javalin.generator.Constants.GENERATED;
+import static io.dinject.javalin.generator.Constants.GENERATED_8;
+import static io.dinject.javalin.generator.Constants.GENERATED_9;
 import static io.dinject.javalin.generator.Constants.JAVALIN3_CONTEXT;
 import static io.dinject.javalin.generator.Constants.OPENAPIDEFINITION;
 
@@ -25,7 +27,7 @@ public class ProcessingContext {
   private final Filer filer;
   private final Elements elements;
   private final Types types;
-  private final boolean generatedAvailable;
+  private final String generatedAnnotation;
   private final boolean openApiAvailable;
   private final boolean javalin3;
 
@@ -36,10 +38,18 @@ public class ProcessingContext {
     this.filer = env.getFiler();
     this.elements = env.getElementUtils();
     this.types = env.getTypeUtils();
-    this.generatedAvailable = isTypeAvailable(GENERATED);
     this.openApiAvailable = isTypeAvailable(OPENAPIDEFINITION);
     this.javalin3 = isTypeAvailable(JAVALIN3_CONTEXT);
     this.docContext = new DocContext(env, openApiAvailable);
+    boolean jdk8 = env.getSourceVersion().compareTo(SourceVersion.RELEASE_8) <= 0;
+    this.generatedAnnotation = generatedAnnotation(jdk8);
+  }
+
+  private String generatedAnnotation(boolean jdk8) {
+    if (jdk8) {
+      return isTypeAvailable(GENERATED_8) ? GENERATED_8 : null;
+    }
+    return isTypeAvailable(GENERATED_9) ? GENERATED_9 : null;
   }
 
   private boolean isTypeAvailable(String canonicalName) {
@@ -51,7 +61,11 @@ public class ProcessingContext {
   }
 
   boolean isGeneratedAvailable() {
-    return generatedAvailable;
+    return generatedAnnotation != null;
+  }
+
+  String getGeneratedAnnotation() {
+    return generatedAnnotation;
   }
 
   boolean isOpenApiAvailable() {

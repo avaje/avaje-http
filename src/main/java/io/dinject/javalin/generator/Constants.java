@@ -11,7 +11,8 @@ class Constants {
   static final String OPENAPIDEFINITION = "io.swagger.v3.oas.annotations.OpenAPIDefinition";
 
   static final String SINGLETON = "javax.inject.Singleton";
-  static final String GENERATED = "javax.annotation.Generated";
+  static final String GENERATED_9 = "javax.annotation.processing.Generated";
+  static final String GENERATED_8 = "javax.annotation.Generated";
   static final String API_BUILDER = "io.javalin.apibuilder.ApiBuilder";
 
   static final String AT_GENERATED = "@Generated(\"io.dinject.javalin.generator\")";

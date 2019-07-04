@@ -4,7 +4,7 @@
 
   <groupId>io.dinject</groupId>
   <artifactId>javalin-generator</artifactId>
-  <version>1.10-SNAPSHOT</version>
+  <version>1.11-SNAPSHOT</version>
 
   <parent>
     <groupId>org.avaje</groupId>
