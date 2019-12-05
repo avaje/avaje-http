@@ -4,7 +4,7 @@
 
   <groupId>io.dinject</groupId>
   <artifactId>javalin-generator</artifactId>
-  <version>1.13-SNAPSHOT</version>
+  <version>1.14-SNAPSHOT</version>
 
   <parent>
     <groupId>org.avaje</groupId>
@@ -39,7 +39,7 @@
     <dependency>
       <groupId>io.dinject</groupId>
       <artifactId>dinject-controller</artifactId>
-      <version>1.12</version>
+      <version>1.14</version>
     </dependency>
 
     <dependency>
