@@ -73,11 +73,10 @@ public class Processor extends AbstractProcessor {
       try {
         ControllerRouteWriter writer = new ControllerRouteWriter(reader, ctx);
         writer.write();
-      } catch (Exception e) {
+      } catch (Throwable e) {
         e.printStackTrace();
-        ctx.logError(reader.getBeanType(), "Failed to write $route class");
+        ctx.logError(reader.getBeanType(), "Failed to write $route class " + e);
       }
     }
   }
-
 }
