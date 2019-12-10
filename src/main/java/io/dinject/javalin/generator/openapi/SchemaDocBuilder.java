@@ -148,8 +148,10 @@ class SchemaDocBuilder {
 
     Schema objectSchema = schemas.get(objectSchemaKey);
     if (objectSchema == null) {
-      objectSchema = createObjectSchema(type);
+      // Put first to resolve recursive stack overflow
+      objectSchema = new ObjectSchema();
       schemas.put(objectSchemaKey, objectSchema);
+      populateObjectSchema(type, objectSchema);
     }
 
     Schema ref = new Schema();
@@ -209,10 +211,7 @@ class SchemaDocBuilder {
     return canonicalName;
   }
 
-  private ObjectSchema createObjectSchema(TypeMirror objectType) {
-
-    ObjectSchema objectSchema = new ObjectSchema();
-
+  private <T> void populateObjectSchema(TypeMirror objectType, Schema<T> objectSchema) {
     Element element = types.asElement(objectType);
     for (VariableElement field : allFields(element)) {
       Schema<?> propSchema = toSchema(field.asType());
@@ -223,7 +222,6 @@ class SchemaDocBuilder {
       setFormatFromValidation(field, propSchema);
       objectSchema.addProperties(field.getSimpleName().toString(), propSchema);
     }
-    return objectSchema;
   }
 
   private void setFormatFromValidation(Element element, Schema<?> propSchema) {
