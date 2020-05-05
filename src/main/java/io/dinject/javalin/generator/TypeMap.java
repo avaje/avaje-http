@@ -19,11 +19,13 @@ class TypeMap {
   static {
     types.put("int", new IntHandler());
     types.put("long", new PLongHandler());
+    types.put("float", new PFloatHandler());
     types.put("boolean", new BoolHandler());
 
     types.put("java.lang.String", new StringHandler());
     types.put("java.lang.Integer", new IntegerHandler());
-    types.put("java.lang.Long", new LongHander());
+    types.put("java.lang.Long", new LongHandler());
+    types.put("java.lang.Float", new FloatHandler());
     types.put("java.lang.Boolean", new BooleanHandler());
 
     add(new UuidHandler());
@@ -77,8 +79,8 @@ class TypeMap {
     }
   }
 
-  static class LongHander extends JavaLangType {
-    LongHander() {
+  static class LongHandler extends JavaLangType {
+    LongHandler() {
       super("Long");
     }
 
@@ -96,6 +98,28 @@ class TypeMap {
   static class PLongHandler extends Primitive {
     PLongHandler() {
       super("Long");
+    }
+  }
+
+  static class FloatHandler extends JavaLangType {
+    FloatHandler() {
+      super("Float");
+    }
+
+    @Override
+    public String asMethod() {
+      return "asFloat(";
+    }
+
+    @Override
+    public String toMethod() {
+      return "toFloat(";
+    }
+  }
+
+  static class PFloatHandler extends Primitive {
+    PFloatHandler() {
+      super("Float");
     }
   }
 
