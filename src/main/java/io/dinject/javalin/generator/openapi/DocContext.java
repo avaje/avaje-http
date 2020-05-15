@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -129,6 +131,33 @@ public class DocContext {
       openAPI.setComponents(components);
     }
     return components;
+  }
+
+  private io.swagger.v3.oas.models.tags.Tag createTagItem(Tag tag){
+    io.swagger.v3.oas.models.tags.Tag tagsItem = new io.swagger.v3.oas.models.tags.Tag();
+    tagsItem.setName(tag.name());
+    tagsItem.setDescription(tag.description());
+    // tagsItem.setExtensions(tag.extensions());  # Not sure about the extensions
+    // tagsItem.setExternalDocs(tag.externalDocs()); # Not sure about the external docs
+    return tagsItem;
+  }
+
+  public void addTagsDefinition(Element element) {
+    Tags tags = element.getAnnotation(Tags.class);
+    if(tags == null)
+      return;
+
+    for(Tag tag: tags.value()){
+      openAPI.addTagsItem(createTagItem(tag));
+    }
+  }
+
+  public void addTagDefinition(Element element){
+    Tag tag = element.getAnnotation(Tag.class);
+    if(tag == null)
+      return;
+
+    openAPI.addTagsItem(createTagItem(tag));
   }
 
   public void readApiDefinition(Element element) {

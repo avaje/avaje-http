@@ -10,7 +10,10 @@ import io.dinject.controller.Produces;
 import io.dinject.controller.Put;
 import io.dinject.javalin.generator.javadoc.Javadoc;
 import io.dinject.javalin.generator.openapi.MethodDocBuilder;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ExecutableType;
@@ -89,6 +92,26 @@ public class MethodReader {
     }
 
     return bean.findMethodAnnotation(type, element);
+  }
+
+  private List<String> addTagsToList(Element element, List<String> list){
+    if(element == null)
+      return list;
+
+    if (element.getAnnotation(Tag.class) != null) {
+      list.add(element.getAnnotation(Tag.class).name());
+    }
+    if (element.getAnnotation(Tags.class) != null) {
+      for(Tag tag: element.getAnnotation(Tags.class).value())
+        list.add(tag.name());
+    }
+    return list;
+  }
+
+  public List<String> getTags(){
+    List<String> tags = new ArrayList<>();
+    tags = addTagsToList(element, tags);
+    return addTagsToList(element.getEnclosingElement(), tags);
   }
 
   void read() {
