@@ -65,5 +65,6 @@ public abstract class BaseControllerWriter {
 
   protected void writeClassEnd() {
     writer.append("}").eol();
+    writer.close();
   }
 }

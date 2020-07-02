@@ -21,28 +21,24 @@ class ControllerWriter extends BaseControllerWriter {
     writeClassStart();
     writeAddRoutes();
     writeClassEnd();
-    writer.close();
   }
 
   private void writeAddRoutes() {
     writer.append("  @Override").eol();
     writer.append("  public void registerRoutes() {").eol().eol();
-
     for (MethodReader method : reader.getMethods()) {
-      final WebMethod webMethod = method.getWebMethod();
-      if (webMethod != null) {
+      if (method.isWebMethod()) {
         writeForMethod(method);
-        if (!reader.isDocHidden()) {
-          method.buildApiDocumentation(ctx);
-        }
       }
     }
-
     writer.append("  }").eol().eol();
   }
 
   private void writeForMethod(MethodReader method) {
     new ControllerMethodWriter(method, writer).write();
+    if (!reader.isDocHidden()) {
+      method.buildApiDocumentation(ctx);
+    }
   }
 
   private void writeClassStart() {

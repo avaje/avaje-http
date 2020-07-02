@@ -101,10 +101,6 @@ public class MethodReader {
     this.webMethodPath = value;
   }
 
-  boolean isWebMethod() {
-    return webMethod != null;
-  }
-
   public Javadoc getJavadoc() {
     return javadoc;
   }
@@ -179,6 +175,10 @@ public class MethodReader {
 
   public List<String> roles() {
     return methodRoles.isEmpty() ? bean.getRoles() : methodRoles;
+  }
+
+  public boolean isWebMethod() {
+    return webMethod != null;
   }
 
   public WebMethod getWebMethod() {
