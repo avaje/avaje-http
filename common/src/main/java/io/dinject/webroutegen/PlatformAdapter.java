@@ -1,17 +1,24 @@
 package io.dinject.webroutegen;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Adapter to specific platforms like Javalin and Helidon.
  */
 public interface PlatformAdapter {
 
-  String rolesStaticImport();
-
+  /**
+   * Return true if this type is the platform context type (Javalin Context etc).
+   */
   boolean isContextType(String rawType);
 
-  String atGenerated();
+  /**
+   * Handle controller level roles.
+   */
+  void controllerRoles(List<String> roles, ControllerReader controller);
 
-  Set<String> controllerImports();
+  /**
+   * Handle method level roles.
+   */
+  void methodRoles(List<String> roles, ControllerReader controller);
 }

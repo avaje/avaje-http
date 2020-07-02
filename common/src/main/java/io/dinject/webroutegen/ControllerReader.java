@@ -66,7 +66,6 @@ class ControllerReader {
     includeValidator = initIncludeValidator();
     importTypes.add(Constants.SINGLETON);
     importTypes.add(Constants.IMPORT_CONTROLLER);
-    importTypes.addAll(ctx.platform().controllerImports());
     importTypes.add(beanType.getQualifiedName().toString());
     if (includeValidator) {
       importTypes.add(Constants.VALIDATOR);
@@ -160,10 +159,7 @@ class ControllerReader {
 
   void read() {
     if (!roles.isEmpty()) {
-      addStaticImportType(ctx.platform().rolesStaticImport());
-      for (String role : roles) {
-        addStaticImportType(role);
-      }
+      ctx.platform().controllerRoles(roles, this);
     }
 
     for (Element element : beanType.getEnclosedElements()) {

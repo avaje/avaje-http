@@ -111,10 +111,7 @@ public class MethodReader {
 
   void read() {
     if (!methodRoles.isEmpty()) {
-      bean.addStaticImportType(ctx.platform().rolesStaticImport());
-      for (String role : methodRoles) {
-        bean.addStaticImportType(role);
-      }
+      ctx.platform().methodRoles(methodRoles, bean);
     }
 
     // non-path parameters default to form or query parameters based on the

@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * Write Javalin specific Controller WebRoute handling.
+ * Write Javalin specific Controller WebRoute handling/adapter.
  */
-class ControllerRouteWriter {
+class JavalinControllerWriter {
+
+  static final String AT_GENERATED = "@Generated(\"io.dinject.javalin-webgen\")";
+  static final String API_BUILDER = "io.javalin.apibuilder.ApiBuilder";
 
   private final ControllerReader reader;
 
@@ -20,9 +23,10 @@ class ControllerRouteWriter {
   private String packageName;
   private Append writer;
 
-  ControllerRouteWriter(ControllerReader reader, ProcessingContext ctx) {
+  JavalinControllerWriter(ControllerReader reader, ProcessingContext ctx) {
     this.reader = reader;
     this.ctx = ctx;
+    reader.addImportType(API_BUILDER);
 
     TypeElement origin = reader.getBeanType();
     originName = origin.getQualifiedName().toString();
@@ -78,7 +82,7 @@ class ControllerRouteWriter {
   private void writeClassStart() {
 
     if (ctx.isGeneratedAvailable()) {
-      writer.append(ctx.platform().atGenerated()).eol();
+      writer.append(AT_GENERATED).eol();
     }
     writer.append("@Singleton").eol();
     writer.append("public class ").append(shortName).append("$route implements WebRoutes {").eol().eol();

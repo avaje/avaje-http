@@ -1,30 +1,11 @@
 package io.dinject.webroutegen;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-public class JavalinAdapter implements PlatformAdapter {
+class JavalinAdapter implements PlatformAdapter {
 
   static final String JAVALIN3_CONTEXT = "io.javalin.http.Context";
   static final String JAVALIN3_ROLES = "io.javalin.core.security.SecurityUtil.roles";
-  static final String AT_GENERATED = "@Generated(\"io.dinject.javalin-webgen\")";
-  static final String API_BUILDER = "io.javalin.apibuilder.ApiBuilder";
-
-  private final Set<String> controllerImports = new HashSet<>();
-
-  JavalinAdapter() {
-    controllerImports.add(API_BUILDER);
-  }
-
-  @Override
-  public Set<String> controllerImports() {
-    return controllerImports;
-  }
-
-  @Override
-  public String rolesStaticImport() {
-    return JAVALIN3_ROLES;
-  }
 
   @Override
   public boolean isContextType(String rawType) {
@@ -32,8 +13,19 @@ public class JavalinAdapter implements PlatformAdapter {
   }
 
   @Override
-  public String atGenerated() {
-    return AT_GENERATED;
+  public void controllerRoles(List<String> roles, ControllerReader controller) {
+    addRoleImports(roles, controller);
   }
 
+  @Override
+  public void methodRoles(List<String> roles, ControllerReader controller) {
+    addRoleImports(roles, controller);
+  }
+
+  private void addRoleImports(List<String> roles, ControllerReader controller) {
+    controller.addStaticImportType(JAVALIN3_ROLES);
+    for (String role : roles) {
+      controller.addStaticImportType(role);
+    }
+  }
 }
