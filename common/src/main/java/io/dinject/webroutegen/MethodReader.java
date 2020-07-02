@@ -58,7 +58,7 @@ public class MethodReader {
     this.beanPath = bean.getPath();
     this.element = element;
     this.actualExecutable = actualExecutable;
-    this.actualParams = (actualExecutable == null) ? null :actualExecutable.getParameterTypes();
+    this.actualParams = (actualExecutable == null) ? null : actualExecutable.getParameterTypes();
     this.isVoid = element.getReturnType().getKind() == TypeKind.VOID;
     this.methodRoles = Util.findRoles(element);
     this.javadoc = Javadoc.parse(ctx.getDocComment(element));
@@ -89,21 +89,21 @@ public class MethodReader {
     return bean.findMethodAnnotation(type, element);
   }
 
-  private List<String> addTagsToList(Element element, List<String> list){
-    if(element == null)
+  private List<String> addTagsToList(Element element, List<String> list) {
+    if (element == null)
       return list;
 
     if (element.getAnnotation(Tag.class) != null) {
       list.add(element.getAnnotation(Tag.class).name());
     }
     if (element.getAnnotation(Tags.class) != null) {
-      for(Tag tag: element.getAnnotation(Tags.class).value())
+      for (Tag tag : element.getAnnotation(Tags.class).value())
         list.add(tag.name());
     }
     return list;
   }
 
-  public List<String> getTags(){
+  public List<String> getTags() {
     List<String> tags = new ArrayList<>();
     tags = addTagsToList(element, tags);
     return addTagsToList(element.getEnclosingElement(), tags);
@@ -140,71 +140,66 @@ public class MethodReader {
    * Build the OpenAPI documentation for the method / operation.
    */
   void buildApiDocumentation(ProcessingContext ctx) {
-    if (webMethod != null) {
-      new MethodDocBuilder(this, ctx.doc()).build();
-    }
+    new MethodDocBuilder(this, ctx.doc()).build();
   }
-
 
   void addRoute(Append writer) {
 
-    if (webMethod != null) {
+    PathSegments segments = PathSegments.parse(Util.combinePath(beanPath, webMethodPath));
+    fullPath = segments.fullPath();
 
-      PathSegments segments = PathSegments.parse(Util.combinePath(beanPath, webMethodPath));
-      fullPath = segments.fullPath();
+    writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
+    writer.append("      ctx.status(%s);", getStatusCode()).eol();
 
-      writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
-      writer.append("      ctx.status(%s);", getStatusCode()).eol();
+    List<PathSegments.Segment> metricSegments = segments.metricSegments();
+    for (PathSegments.Segment metricSegment : metricSegments) {
+      metricSegment.writeCreateSegment(writer);
+    }
 
-      List<PathSegments.Segment> metricSegments = segments.metricSegments();
-      for (PathSegments.Segment metricSegment : metricSegments) {
-        metricSegment.writeCreateSegment(writer);
-      }
+    for (MethodParam param : params) {
+      param.writeCtxGet(writer, segments);
+    }
+    writer.append("      ");
 
+    if (!isVoid()) {
+      writeContextReturn(writer);
+    }
+
+    if (bean.isIncludeValidator() && webMethod != WebMethod.GET) {
       for (MethodParam param : params) {
-        param.writeCtxGet(writer, segments);
+        param.writeValidate(writer);
       }
-      writer.append("      ");
+    }
 
-      if (!isVoid()) {
-        writeContextReturn(writer);
+    writer.append("controller.");
+    writer.append(element.getSimpleName().toString()).append("(");
+    for (int i = 0; i < params.size(); i++) {
+      if (i > 0) {
+        writer.append(", ");
       }
+      params.get(i).buildParamName(writer);
+    }
+    writer.append(")");
+    if (!isVoid()) {
+      writer.append(")");
+    }
+    writer.append(";").eol();
+    writer.append("    }");
 
-      if (bean.isIncludeValidator() && webMethod != WebMethod.GET) {
-        for (MethodParam param : params) {
-          param.writeValidate(writer);
-        }
-      }
-
-      writer.append("controller.");
-      writer.append(element.getSimpleName().toString()).append("(");
-      for (int i = 0; i < params.size(); i++) {
+    List<String> roles = roles();
+    if (!roles.isEmpty()) {
+      writer.append(", roles(");
+      for (int i = 0; i < roles.size(); i++) {
         if (i > 0) {
           writer.append(", ");
         }
-        params.get(i).buildParamName(writer);
+        writer.append(Util.shortName(roles.get(i)));
       }
       writer.append(")");
-      if (!isVoid()) {
-        writer.append(")");
-      }
-      writer.append(";").eol();
-      writer.append("    }");
-
-      List<String> roles = roles();
-      if (!roles.isEmpty()) {
-        writer.append(", roles(");
-        for (int i = 0; i < roles.size(); i++) {
-          if (i > 0) {
-            writer.append(", ");
-          }
-          writer.append(Util.shortName(roles.get(i)));
-        }
-        writer.append(")");
-      }
-      writer.append(");");
-      writer.eol().eol();
     }
+    writer.append(");");
+    writer.eol().eol();
+
   }
 
   private void writeContextReturn(Append writer) {

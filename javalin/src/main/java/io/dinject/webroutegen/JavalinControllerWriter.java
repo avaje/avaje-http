@@ -52,9 +52,12 @@ class JavalinControllerWriter {
     writer.append("  public void registerRoutes() {").eol().eol();
 
     for (MethodReader method : reader.getMethods()) {
-      method.addRoute(writer);
-      if (!reader.isDocHidden()) {
-        method.buildApiDocumentation(ctx);
+      final WebMethod webMethod = method.getWebMethod();
+      if (webMethod != null) {
+        method.addRoute(writer);
+        if (!reader.isDocHidden()) {
+          method.buildApiDocumentation(ctx);
+        }
       }
     }
 
