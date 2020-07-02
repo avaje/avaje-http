@@ -2,10 +2,7 @@ package io.dinject.webroutegen;
 
 class Constants {
 
-  static final String JAVALIN2_CONTEXT = "io.javalin.Context";
   static final String JAVALIN3_CONTEXT = "io.javalin.http.Context";
-
-  static final String JAVALIN2_ROLES = "io.javalin.security.SecurityUtil.roles";
   static final String JAVALIN3_ROLES = "io.javalin.core.security.SecurityUtil.roles";
 
   static final String OPENAPIDEFINITION = "io.swagger.v3.oas.annotations.OpenAPIDefinition";

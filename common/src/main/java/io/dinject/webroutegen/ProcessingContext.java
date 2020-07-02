@@ -24,8 +24,6 @@ public class ProcessingContext {
   private final Types types;
   private final String generatedAnnotation;
   private final boolean openApiAvailable;
-  private final boolean javalin3;
-
   private final DocContext docContext;
 
   ProcessingContext(ProcessingEnvironment env) {
@@ -34,7 +32,6 @@ public class ProcessingContext {
     this.elements = env.getElementUtils();
     this.types = env.getTypeUtils();
     this.openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
-    this.javalin3 = isTypeAvailable(Constants.JAVALIN3_CONTEXT);
     this.docContext = new DocContext(env, openApiAvailable);
     boolean jdk8 = env.getSourceVersion().compareTo(SourceVersion.RELEASE_8) <= 0;
     this.generatedAnnotation = generatedAnnotation(jdk8);
@@ -65,10 +62,6 @@ public class ProcessingContext {
 
   boolean isOpenApiAvailable() {
     return openApiAvailable;
-  }
-
-  boolean isJavalin3() {
-    return javalin3;
   }
 
   void logError(Element e, String msg, Object... args) {

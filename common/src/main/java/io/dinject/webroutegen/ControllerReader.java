@@ -160,7 +160,7 @@ class ControllerReader {
 
   void read() {
     if (!roles.isEmpty()) {
-      addStaticImportType(ctx.isJavalin3() ? Constants.JAVALIN3_ROLES : Constants.JAVALIN2_ROLES);
+      addStaticImportType(Constants.JAVALIN3_ROLES);
       for (String role : roles) {
         addStaticImportType(role);
       }

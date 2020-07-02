@@ -123,7 +123,7 @@ public class ElementReader {
   }
 
   private boolean isJavalinContext() {
-    return Constants.JAVALIN3_CONTEXT.equals(rawType) || Constants.JAVALIN2_CONTEXT.equals(rawType);
+    return Constants.JAVALIN3_CONTEXT.equals(rawType);
   }
 
   private String shortType() {
