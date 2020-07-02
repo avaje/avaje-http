@@ -13,6 +13,22 @@ import static org.junit.Assert.assertTrue;
 public class PathSegmentsTest {
 
   @Test
+  public void parse_standard() {
+
+    PathSegments segments = PathSegments.parse("/before/{one}/{two}/after");
+
+    assertTrue(segments.contains("one"));
+    assertTrue(segments.contains("two"));
+    assertFalse(segments.contains("before"));
+    assertFalse(segments.contains("after"));
+
+    segments = PathSegments.parse("/{one}/{two}");
+
+    assertTrue(segments.contains("one"));
+    assertTrue(segments.contains("two"));
+  }
+
+  @Test
   public void parse_basic() {
 
     PathSegments segments = PathSegments.parse("/before/:one/:two/after");

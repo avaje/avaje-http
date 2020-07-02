@@ -28,8 +28,11 @@ class ControllerMethodWriter {
   void writeHandler() {
     writer.append("  private void _%s(ServerRequest req, ServerResponse res", method.simpleName());
     // TODO: if POST body get that here
-    writer.append(") {").eol();
+    writer.append(") { //5").eol();
 
+    if (!method.isVoid()) {
+      writeContextReturn();
+    }
     final PathSegments segments = method.getPathSegments();
 //    writer.append("      ctx.status(%s);", method.getStatusCode()).eol();
 
@@ -42,9 +45,9 @@ class ControllerMethodWriter {
     for (MethodParam param : params) {
       param.writeCtxGet(writer, segments);
     }
-    writer.append("      ");
+    writer.append("    ");
     if (!method.isVoid()) {
-      writeContextReturn();
+      writer.append("res.send(");
     }
 
     if (method.includeValidate()) {
@@ -66,36 +69,37 @@ class ControllerMethodWriter {
       writer.append(")");
     }
     writer.append(";").eol();
-    writer.append("    }");
-
-    List<String> roles = method.roles();
-    if (!roles.isEmpty()) {
-      writer.append(", roles(");
-      for (int i = 0; i < roles.size(); i++) {
-        if (i > 0) {
-          writer.append(", ");
-        }
-        writer.append(Util.shortName(roles.get(i)));
-      }
-      writer.append(")");
-    }
-    writer.append(");").eol().eol();
-
-    writer.append("    res.send(\"Hello\");").eol();
     writer.append("  }").eol();
 
+//    List<String> roles = method.roles();
+//    if (!roles.isEmpty()) {
+//      writer.append(", roles(");
+//      for (int i = 0; i < roles.size(); i++) {
+//        if (i > 0) {
+//          writer.append(", ");
+//        }
+//        writer.append(Util.shortName(roles.get(i)));
+//      }
+//      writer.append(")");
+//    }
+//    writer.append(");").eol().eol();
+
+//    writer.append("    res.send(\"Hello\");").eol();
+//    writer.append("  }").eol();
   }
 
   private void writeContextReturn() {
     final String produces = method.getProduces();
-    if (produces == null || produces.equalsIgnoreCase(MediaType.APPLICATION_JSON)) {
-      writer.append("ctx.json(");
-    } else if (produces.equalsIgnoreCase(MediaType.TEXT_HTML)) {
-      writer.append("ctx.html(");
-    } else if (produces.equalsIgnoreCase(MediaType.TEXT_PLAIN)) {
-      writer.append("ctx.contentType(\"text/plain\").result(");
+    if (produces == null) {
+      //writer.append("res.writerContext().contentType(MediaType.APPLICATION_JSON);").eol();
+    } else if (MediaType.APPLICATION_JSON.equalsIgnoreCase(produces)) {
+      writer.append("res.writerContext().contentType(io.helidon.common.http.MediaType.APPLICATION_JSON);").eol();
+    } else if (MediaType.TEXT_HTML.equalsIgnoreCase(produces)) {
+      writer.append("res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_HTML);").eol();
+    } else if (MediaType.TEXT_PLAIN.equalsIgnoreCase(produces)) {
+      writer.append("res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_PLAIN);").eol();
     } else {
-      writer.append("ctx.contentType(\"%s\").result(", produces);
+      writer.append("res.writerContext().contentType(io.helidon.common.http.MediaType.parse(\"%s\"));", produces).eol();
     }
   }
 

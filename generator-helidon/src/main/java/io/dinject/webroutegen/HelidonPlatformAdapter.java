@@ -35,13 +35,45 @@ class HelidonPlatformAdapter implements PlatformAdapter {
       case PATHPARAM:
         writer.append("req.path().param(\"%s\")", paramName);
         break;
-      case HEADER:
-        writer.append("req.headers().value(\"%s\")", paramName);
+      case QUERYPARAM:
+      case FORMPARAM:
+        writer.append("req.queryParams().first(\"%s\").orElse(null)", paramName);
         break;
-
+      case HEADER:
+        writer.append("req.headers().value(\"%s\").orElse(null)", paramName);
+        break;
+      case COOKIE:
+        writer.append("req.headers().cookies().first(\"%s\").orElse(null)", paramName);
+        break;
+      case BODY:
+      case BEANPARAM:
+      case FORM:
       default:
-        writer.append("req.%s().param(\"%s\")", paramType.getType(), paramName);
+        writer.append("null // TODO req.%s().param(\"%s\")", paramType.getType(), paramName);
+    }
+  }
 
+  @Override
+  public void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault) {
+    switch (paramType) {
+      case PATHPARAM:
+        writer.append("req.path().param(\"%s\")", paramName);
+        break;
+      case QUERYPARAM:
+      case FORMPARAM:
+        writer.append("req.queryParams().first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+        break;
+      case HEADER:
+        writer.append("req.headers().value(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+        break;
+      case COOKIE:
+        writer.append("req.headers().cookies().first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+        break;
+      case BODY:
+      case BEANPARAM:
+      case FORM:
+      default:
+        writer.append("null // TODO req.%s().param(\"%s\")", paramType.getType(), paramName);
     }
   }
 }

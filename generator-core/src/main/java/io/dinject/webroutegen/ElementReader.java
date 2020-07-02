@@ -174,7 +174,6 @@ public class ElementReader {
       // no conversion for this parameter
       return;
     }
-
     String shortType = shortType();
     writer.append("      %s %s = ", shortType, varName);
     if (setValue(writer, segments, shortType)) {
@@ -187,14 +186,12 @@ public class ElementReader {
   }
 
   private boolean setValue(Append writer, PathSegments segments, String shortType) {
-
     if (formMarker && impliedParamType && typeHandler == null) {
       // @Form on method and this type is a "bean" so treat is as a form bean
       writeForm(writer, shortType, varName, ParamType.FORMPARAM);
       paramType = ParamType.FORM;
       return false;
     }
-
     if (ParamType.FORM == paramType) {
       writeForm(writer, shortType, varName, ParamType.FORMPARAM);
       return false;
@@ -203,18 +200,16 @@ public class ElementReader {
       writeForm(writer, shortType, varName, ParamType.QUERYPARAM);
       return false;
     }
-
     if (impliedParamType) {
       PathSegments.Segment segment = segments.segment(varName);
       if (segment != null) {
         // path or metric parameter
         boolean requiredParam = segment.isRequired(varName);
         String asMethod = (typeHandler == null) ? null : (requiredParam) ? typeHandler.asMethod() : typeHandler.toMethod();
-
         if (asMethod != null) {
           writer.append(asMethod);
         }
-        segment.writeGetVal(writer, varName);
+        segment.writeGetVal(writer, varName, ctx.platform());
         if (asMethod != null) {
           writer.append(")");
         }
@@ -224,7 +219,6 @@ public class ElementReader {
     }
 
     String asMethod = (typeHandler == null) ? null : typeHandler.toMethod();
-
     if (asMethod != null) {
       writer.append(asMethod);
     }
@@ -236,7 +230,7 @@ public class ElementReader {
 
     } else {
       if (hasParamDefault()) {
-        writer.append("ctx.%s(\"%s\",\"%s\")", paramType, paramName, paramDefault);
+        ctx.platform().writeReadParameter(writer, paramType, paramName, paramDefault);
       } else {
         boolean checkNull = notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
         if (checkNull) {

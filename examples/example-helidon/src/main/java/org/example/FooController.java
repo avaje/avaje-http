@@ -9,7 +9,7 @@ import io.dinject.controller.Produces;
 @Path("/foo")
 public class FooController {
 
-  @Produces("text/plain")
+  //@Produces("text/plain")
   @Get
   public String hello() {
     return "Hello from Foo";

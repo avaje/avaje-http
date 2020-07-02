@@ -30,6 +30,11 @@ class PathSegments {
             segments.add(segment);
             path.append(segment.path(section));
 
+          } else if ((section.startsWith("{") && (section.endsWith("}")))) {
+            Segment segment = createSegment(section.substring(1, section.length() - 1));
+            segments.add(segment);
+            path.append(segment.path(section));
+
           } else {
             path.append(section);
           }
@@ -149,11 +154,11 @@ class PathSegments {
     /**
      * Reading the value from a segment (rather than directly from pathParam).
      */
-    void writeGetVal(Append writer, String varName) {
+    void writeGetVal(Append writer, String varName, PlatformAdapter platform) {
       if (!hasMetrics()) {
-        writer.append("ctx.pathParam(\"%s\")", name);
-
+        platform.writeReadParameter(writer, ParamType.PATHPARAM, name);
       } else {
+        // TODO: platform read segment handling ...
         writer.append("%s_segment.", name);
         if (name.equals(varName)) {
           writer.append("val()");
@@ -174,6 +179,7 @@ class PathSegments {
     }
 
     void writeCreateSegment(Append writer) {
+      // TODO: platform read segment handling ...
       writer.append("      PathSegment %s_segment = PathSegment.of(ctx.pathParam(\"%s_segment\"));", name, name).eol();
     }
 
@@ -185,6 +191,7 @@ class PathSegments {
       if (!hasMetrics()) {
         return section;
       }
+      // TODO: platform read segment handling ...=
       return ":" + name + "_segment";
     }
   }

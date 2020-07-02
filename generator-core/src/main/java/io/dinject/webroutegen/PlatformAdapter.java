@@ -23,4 +23,6 @@ public interface PlatformAdapter {
   void methodRoles(List<String> roles, ControllerReader controller);
 
   void writeReadParameter(Append writer, ParamType paramType, String paramName);
+
+  void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault);
 }

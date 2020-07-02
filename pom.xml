@@ -10,10 +10,9 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>common</module>
-    <module>javalin</module>
-    <module>helidon</module>
-    <module>example-helidon</module>
+    <module>generator-core</module>
+    <module>generator-javalin</module>
+    <module>generator-helidon</module>
   </modules>
 </project>
 
