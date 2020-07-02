@@ -2,6 +2,8 @@ package io.dinject.javalin.generator;
 
 import io.dinject.controller.Controller;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -41,6 +43,7 @@ public class Processor extends AbstractProcessor {
 
     if (ctx.isOpenApiAvailable()) {
       readOpenApiDefinition(round);
+      readTagDefinitions(round);
     }
 
     Set<? extends Element> controllers = round.getElementsAnnotatedWith(Controller.class);
@@ -55,10 +58,21 @@ public class Processor extends AbstractProcessor {
   }
 
   private void readOpenApiDefinition(RoundEnvironment round) {
-
     Set<? extends Element> elements = round.getElementsAnnotatedWith(OpenAPIDefinition.class);
     for (Element element : elements) {
       ctx.doc().readApiDefinition(element);
+    }
+  }
+
+  private void readTagDefinitions(RoundEnvironment round) {
+    Set<? extends Element> elements = round.getElementsAnnotatedWith(Tag.class);
+    for (Element element : elements) {
+      ctx.doc().addTagDefinition(element);
+    }
+
+    elements = round.getElementsAnnotatedWith(Tags.class);
+    for (Element element : elements) {
+      ctx.doc().addTagsDefinition(element);
     }
   }
 

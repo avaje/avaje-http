@@ -36,6 +36,7 @@ public class MethodDocBuilder {
     //operation.setOperationId();
     operation.setSummary(javadoc.getSummary());
     operation.setDescription(javadoc.getDescription());
+    operation.setTags(methodReader.getTags());
 
     if (javadoc.isDeprecated()) {
       operation.setDeprecated(true);
