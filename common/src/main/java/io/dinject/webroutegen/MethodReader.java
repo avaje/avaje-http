@@ -111,7 +111,7 @@ public class MethodReader {
 
   void read() {
     if (!methodRoles.isEmpty()) {
-      bean.addStaticImportType(Constants.JAVALIN3_ROLES);
+      bean.addStaticImportType(ctx.platform().rolesStaticImport());
       for (String role : methodRoles) {
         bean.addStaticImportType(role);
       }

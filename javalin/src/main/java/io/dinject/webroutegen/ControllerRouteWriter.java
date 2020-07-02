@@ -5,6 +5,9 @@ import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
 
+/**
+ * Write Javalin specific Controller WebRoute handling.
+ */
 class ControllerRouteWriter {
 
   private final ControllerReader reader;
@@ -75,7 +78,7 @@ class ControllerRouteWriter {
   private void writeClassStart() {
 
     if (ctx.isGeneratedAvailable()) {
-      writer.append(Constants.AT_GENERATED).eol();
+      writer.append(ctx.platform().atGenerated()).eol();
     }
     writer.append("@Singleton").eol();
     writer.append("public class ").append(shortName).append("$route implements WebRoutes {").eol().eol();

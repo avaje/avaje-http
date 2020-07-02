@@ -122,8 +122,8 @@ public class ElementReader {
     return paramDefault != null && !paramDefault.isEmpty();
   }
 
-  private boolean isJavalinContext() {
-    return Constants.JAVALIN3_CONTEXT.equals(rawType);
+  private boolean isPlatformContext() {
+    return ctx.platform().isContextType(rawType);
   }
 
   private String shortType() {
@@ -146,7 +146,7 @@ public class ElementReader {
   }
 
   void writeParamName(Append writer) {
-    if (isJavalinContext()) {
+    if (isPlatformContext()) {
       writer.append("ctx");
     } else {
       writer.append(varName);
@@ -157,13 +157,13 @@ public class ElementReader {
    * Build the OpenAPI documentation for this parameter.
    */
   void buildApiDocumentation(MethodDocBuilder methodDoc) {
-    if (!isJavalinContext()) {
+    if (!isPlatformContext()) {
       new MethodParamDocBuilder(methodDoc, this).build();
     }
   }
 
   void writeValidate(Append writer) {
-    if (!isJavalinContext() && typeHandler == null) {
+    if (!isPlatformContext() && typeHandler == null) {
       writer.append("validator.validate(%s);", varName).eol();
       writer.append("      ");
     }
@@ -171,7 +171,7 @@ public class ElementReader {
 
   void writeCtxGet(Append writer, PathSegments segments) {
 
-    if (isJavalinContext()) {
+    if (isPlatformContext()) {
       // no conversion for this parameter
       return;
     }

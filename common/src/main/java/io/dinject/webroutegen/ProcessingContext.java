@@ -18,6 +18,7 @@ import java.io.IOException;
 
 public class ProcessingContext {
 
+  private final PlatformAdapter readAdapter;
   private final Messager messager;
   private final Filer filer;
   private final Elements elements;
@@ -26,7 +27,8 @@ public class ProcessingContext {
   private final boolean openApiAvailable;
   private final DocContext docContext;
 
-  ProcessingContext(ProcessingEnvironment env) {
+  ProcessingContext(ProcessingEnvironment env, PlatformAdapter readAdapter) {
+    this.readAdapter = readAdapter;
     this.messager = env.getMessager();
     this.filer = env.getFiler();
     this.elements = env.getElementUtils();
@@ -39,7 +41,7 @@ public class ProcessingContext {
 
   private String generatedAnnotation(boolean jdk8) {
     if (jdk8) {
-      return isTypeAvailable(Constants.GENERATED_8) ? Constants.GENERATED_8 : null;
+      return null; // isTypeAvailable(Constants.GENERATED_8) ? Constants.GENERATED_8 : null;
     }
     return isTypeAvailable(Constants.GENERATED_9) ? Constants.GENERATED_9 : null;
   }
@@ -95,4 +97,7 @@ public class ProcessingContext {
     return types.asMemberOf(declaredType, element);
   }
 
+  public PlatformAdapter platform() {
+    return readAdapter;
+  }
 }

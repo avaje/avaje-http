@@ -35,8 +35,13 @@ public abstract class BaseProcessor extends AbstractProcessor {
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
-    this.ctx = new ProcessingContext(processingEnv);
+    this.ctx = new ProcessingContext(processingEnv, providePlatformAdapter());
   }
+
+  /**
+   * Provide the platform specific adapter to use for Javalin, Helidon etc.
+   */
+  protected abstract PlatformAdapter providePlatformAdapter();
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
