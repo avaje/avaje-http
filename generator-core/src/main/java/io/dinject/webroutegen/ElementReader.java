@@ -170,7 +170,6 @@ public class ElementReader {
   }
 
   void writeCtxGet(Append writer, PathSegments segments) {
-
     if (isPlatformContext()) {
       // no conversion for this parameter
       return;
@@ -243,7 +242,8 @@ public class ElementReader {
         if (checkNull) {
           writer.append("checkNull(");
         }
-        writer.append("ctx.%s(\"%s\")", paramType, paramName);
+        ctx.platform().writeReadParameter(writer, paramType, paramName);
+        //writer.append("ctx.%s(\"%s\")", paramType, paramName);
         if (checkNull) {
           writer.append(", \"%s\")", paramName);
         }
@@ -257,9 +257,7 @@ public class ElementReader {
   }
 
   private void writeForm(Append writer, String shortType, String varName, ParamType defaultParamType) {
-
     TypeElement formBeanType = ctx.getTypeElement(rawType);
-
     BeanParamReader form = new BeanParamReader(ctx, formBeanType, varName, shortType, defaultParamType);
     form.write(writer);
   }

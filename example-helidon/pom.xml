@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <parent>
+    <artifactId>web-reactor</artifactId>
+    <groupId>io.dinject</groupId>
+    <version>1.0</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>example-helidon</artifactId>
+
+  <properties>
+    <mainClass>org.example.Main</mainClass>
+    <helidon-version>2.0.1</helidon-version>
+    <dinject-version>1.18</dinject-version>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>io.dinject</groupId>
+      <artifactId>dinject</artifactId>
+      <version>${dinject-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.dinject</groupId>
+      <artifactId>dinject-controller</artifactId>
+      <version>${dinject-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.dinject</groupId>
+      <artifactId>dinject-generator</artifactId>
+      <version>${dinject-version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.dinject</groupId>
+      <artifactId>helidon-generator</artifactId>
+      <version>1.19-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.helidon.webserver</groupId>
+      <artifactId>helidon-webserver</artifactId>
+      <version>${helidon-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.helidon.health</groupId>
+      <artifactId>helidon-health</artifactId>
+      <version>${helidon-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.helidon.health</groupId>
+      <artifactId>helidon-health-checks</artifactId>
+      <version>${helidon-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.helidon.metrics</groupId>
+      <artifactId>helidon-metrics</artifactId>
+      <version>${helidon-version}</version>
+    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>io.helidon.media</groupId>-->
+<!--      <artifactId>helidon-media-jsonp</artifactId>-->
+<!--      <version>${helidon-version}</version>-->
+<!--    </dependency>-->
+    <dependency>
+      <groupId>io.helidon.media</groupId>
+      <artifactId>helidon-media-jackson</artifactId>
+      <version>${helidon-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.helidon.config</groupId>
+      <artifactId>helidon-config-yaml</artifactId>
+      <version>${helidon-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.5.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.helidon.webclient</groupId>
+      <artifactId>helidon-webclient</artifactId>
+      <version>${helidon-version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>11</release>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

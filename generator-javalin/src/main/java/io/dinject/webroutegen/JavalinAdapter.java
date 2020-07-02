@@ -28,4 +28,9 @@ class JavalinAdapter implements PlatformAdapter {
       controller.addStaticImportType(role);
     }
   }
+
+  @Override
+  public void writeReadParameter(Append writer, ParamType paramType, String paramName) {
+    writer.append("ctx.%s(\"%s\")", paramType, paramName);
+  }
 }

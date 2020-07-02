@@ -166,10 +166,13 @@ public class MethodReader {
     }
   }
 
+  public void buildApiDoc() {
+    buildApiDocumentation(ctx);
+  }
   /**
    * Build the OpenAPI documentation for the method / operation.
    */
-  void buildApiDocumentation(ProcessingContext ctx) {
+  public void buildApiDocumentation(ProcessingContext ctx) {
     new MethodDocBuilder(this, ctx.doc()).build();
   }
 
@@ -223,4 +226,5 @@ public class MethodReader {
   public String simpleName() {
     return element.getSimpleName().toString();
   }
+
 }

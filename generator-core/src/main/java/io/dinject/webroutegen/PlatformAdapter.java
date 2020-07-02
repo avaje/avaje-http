@@ -21,4 +21,6 @@ public interface PlatformAdapter {
    * Handle method level roles.
    */
   void methodRoles(List<String> roles, ControllerReader controller);
+
+  void writeReadParameter(Append writer, ParamType paramType, String paramName);
 }

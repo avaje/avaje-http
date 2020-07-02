@@ -11,8 +11,8 @@ public enum ParamType {
   COOKIE("cookie", "cookie"),
   HEADER("header", "header");
 
-  private String code;
-  private String type;
+  private final String code;
+  private final String type;
 
   ParamType(String code, String type) {
     this.code = code;

@@ -51,7 +51,6 @@ public abstract class BaseControllerWriter {
   }
 
   protected void writeImports() {
-
     writer.append(Constants.IMPORT_PATH_TYPE_CONVERT).eol();
     for (String type : reader.getStaticImportTypes()) {
       writer.append("import static %s;", type).eol();

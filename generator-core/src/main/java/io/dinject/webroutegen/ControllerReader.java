@@ -149,7 +149,7 @@ class ControllerReader {
     return beanType;
   }
 
-  boolean isDocHidden() {
+  public boolean isDocHidden() {
     return docHidden;
   }
 
