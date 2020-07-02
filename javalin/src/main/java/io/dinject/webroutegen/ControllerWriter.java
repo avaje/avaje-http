@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * Write Javalin specific Controller WebRoute handling/adapter.
+ * Write Javalin specific Controller WebRoute handling adapter.
  */
-class JavalinControllerWriter {
+class ControllerWriter {
 
-  static final String AT_GENERATED = "@Generated(\"io.dinject.javalin-webgen\")";
-  static final String API_BUILDER = "io.javalin.apibuilder.ApiBuilder";
+  private static final String AT_GENERATED = "@Generated(\"io.dinject.javalin-webgen\")";
+  private static final String API_BUILDER = "io.javalin.apibuilder.ApiBuilder";
 
   private final ControllerReader reader;
 
@@ -23,7 +23,7 @@ class JavalinControllerWriter {
   private String packageName;
   private Append writer;
 
-  JavalinControllerWriter(ControllerReader reader, ProcessingContext ctx) {
+  ControllerWriter(ControllerReader reader, ProcessingContext ctx) {
     this.reader = reader;
     this.ctx = ctx;
     reader.addImportType(API_BUILDER);
@@ -54,7 +54,7 @@ class JavalinControllerWriter {
     for (MethodReader method : reader.getMethods()) {
       final WebMethod webMethod = method.getWebMethod();
       if (webMethod != null) {
-        method.addRoute(writer);
+        writeForMethod(method);
         if (!reader.isDocHidden()) {
           method.buildApiDocumentation(ctx);
         }
@@ -62,6 +62,10 @@ class JavalinControllerWriter {
     }
 
     writer.append("  }").eol().eol();
+  }
+
+  private void writeForMethod(MethodReader method) {
+    new ControllerMethodWriter(method, writer).write();
   }
 
   private void writeImports() {
@@ -77,13 +81,11 @@ class JavalinControllerWriter {
     writer.eol();
   }
 
-
   private void writeClassEnd() {
     writer.append("}").eol();
   }
 
   private void writeClassStart() {
-
     if (ctx.isGeneratedAvailable()) {
       writer.append(AT_GENERATED).eol();
     }
@@ -115,7 +117,6 @@ class JavalinControllerWriter {
   }
 
   private Writer createFileWriter() throws IOException {
-
     int dp = originName.lastIndexOf('.');
     if (dp > -1) {
       packageName = originName.substring(0, dp);

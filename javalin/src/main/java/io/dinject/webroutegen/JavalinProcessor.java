@@ -11,6 +11,6 @@ public class JavalinProcessor extends BaseProcessor {
 
   @Override
   void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException {
-    new JavalinControllerWriter(reader, ctx).write();
+    new ControllerWriter(reader, ctx).write();
   }
 }

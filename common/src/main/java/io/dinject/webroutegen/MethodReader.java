@@ -3,7 +3,6 @@ package io.dinject.webroutegen;
 import io.dinject.controller.Delete;
 import io.dinject.controller.Form;
 import io.dinject.controller.Get;
-import io.dinject.controller.MediaType;
 import io.dinject.controller.Patch;
 import io.dinject.controller.Post;
 import io.dinject.controller.Produces;
@@ -31,7 +30,6 @@ public class MethodReader {
 
   private final boolean isVoid;
   private final List<MethodParam> params = new ArrayList<>();
-  private final String beanPath;
 
   private final Javadoc javadoc;
 
@@ -50,12 +48,11 @@ public class MethodReader {
   private final ExecutableType actualExecutable;
   private final List<? extends TypeMirror> actualParams;
 
-  private String fullPath;
+  private final PathSegments pathSegments;
 
   MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable, ProcessingContext ctx) {
     this.ctx = ctx;
     this.bean = bean;
-    this.beanPath = bean.getPath();
     this.element = element;
     this.actualExecutable = actualExecutable;
     this.actualParams = (actualExecutable == null) ? null : actualExecutable.getParameterTypes();
@@ -64,7 +61,44 @@ public class MethodReader {
     this.javadoc = Javadoc.parse(ctx.getDocComment(element));
     this.produces = produces(bean);
 
-    readMethodAnnotation();
+    initWebMethodViaAnnotation();
+    this.pathSegments = PathSegments.parse(Util.combinePath(bean.getPath(), webMethodPath));
+  }
+
+  private void initWebMethodViaAnnotation() {
+    Form form = findAnnotation(Form.class);
+    if (form != null) {
+      this.formMarker = true;
+    }
+    Get get = findAnnotation(Get.class);
+    if (get != null) {
+      initSetWebMethod(WebMethod.GET, get.value());
+      return;
+    }
+    Put put = findAnnotation(Put.class);
+    if (put != null) {
+      initSetWebMethod(WebMethod.PUT, put.value());
+      return;
+    }
+    Post post = findAnnotation(Post.class);
+    if (post != null) {
+      initSetWebMethod(WebMethod.POST, post.value());
+      return;
+    }
+    Patch patch = findAnnotation(Patch.class);
+    if (patch != null) {
+      initSetWebMethod(WebMethod.PATCH, patch.value());
+      return;
+    }
+    Delete delete = findAnnotation(Delete.class);
+    if (delete != null) {
+      initSetWebMethod(WebMethod.DELETE, delete.value());
+    }
+  }
+
+  private void initSetWebMethod(WebMethod webMethod, String value) {
+    this.webMethod = webMethod;
+    this.webMethodPath = value;
   }
 
   boolean isWebMethod() {
@@ -143,123 +177,12 @@ public class MethodReader {
     new MethodDocBuilder(this, ctx.doc()).build();
   }
 
-  void addRoute(Append writer) {
-
-    PathSegments segments = PathSegments.parse(Util.combinePath(beanPath, webMethodPath));
-    fullPath = segments.fullPath();
-
-    writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
-    writer.append("      ctx.status(%s);", getStatusCode()).eol();
-
-    List<PathSegments.Segment> metricSegments = segments.metricSegments();
-    for (PathSegments.Segment metricSegment : metricSegments) {
-      metricSegment.writeCreateSegment(writer);
-    }
-
-    for (MethodParam param : params) {
-      param.writeCtxGet(writer, segments);
-    }
-    writer.append("      ");
-
-    if (!isVoid()) {
-      writeContextReturn(writer);
-    }
-
-    if (bean.isIncludeValidator() && webMethod != WebMethod.GET) {
-      for (MethodParam param : params) {
-        param.writeValidate(writer);
-      }
-    }
-
-    writer.append("controller.");
-    writer.append(element.getSimpleName().toString()).append("(");
-    for (int i = 0; i < params.size(); i++) {
-      if (i > 0) {
-        writer.append(", ");
-      }
-      params.get(i).buildParamName(writer);
-    }
-    writer.append(")");
-    if (!isVoid()) {
-      writer.append(")");
-    }
-    writer.append(";").eol();
-    writer.append("    }");
-
-    List<String> roles = roles();
-    if (!roles.isEmpty()) {
-      writer.append(", roles(");
-      for (int i = 0; i < roles.size(); i++) {
-        if (i > 0) {
-          writer.append(", ");
-        }
-        writer.append(Util.shortName(roles.get(i)));
-      }
-      writer.append(")");
-    }
-    writer.append(");");
-    writer.eol().eol();
-
-  }
-
-  private void writeContextReturn(Append writer) {
-    if (produces == null || produces.equalsIgnoreCase(MediaType.APPLICATION_JSON)) {
-      writer.append("ctx.json(");
-    } else if (produces.equalsIgnoreCase(MediaType.TEXT_HTML)) {
-      writer.append("ctx.html(");
-    } else if (produces.equalsIgnoreCase(MediaType.TEXT_PLAIN)) {
-      writer.append("ctx.contentType(\"text/plain\").result(");
-    } else {
-      writer.append("ctx.contentType(\"%s\").result(", produces);
-    }
-  }
-
-  private List<String> roles() {
+  public List<String> roles() {
     return methodRoles.isEmpty() ? bean.getRoles() : methodRoles;
-  }
-
-  private boolean readMethodAnnotation() {
-
-    Form form = findAnnotation(Form.class);
-    if (form != null) {
-      this.formMarker = true;
-    }
-
-    Get get = findAnnotation(Get.class);
-    if (get != null) {
-      return setWebMethod(WebMethod.GET, get.value());
-    }
-    Put put = findAnnotation(Put.class);
-    if (put != null) {
-      return setWebMethod(WebMethod.PUT, put.value());
-    }
-    Post post = findAnnotation(Post.class);
-    if (post != null) {
-      return setWebMethod(WebMethod.POST, post.value());
-    }
-    Patch patch = findAnnotation(Patch.class);
-    if (patch != null) {
-      return setWebMethod(WebMethod.PATCH, patch.value());
-    }
-    Delete delete = findAnnotation(Delete.class);
-    if (delete != null) {
-      return setWebMethod(WebMethod.DELETE, delete.value());
-    }
-    return false;
-  }
-
-  private boolean setWebMethod(WebMethod webMethod, String value) {
-    this.webMethod = webMethod;
-    this.webMethodPath = value;
-    return true;
   }
 
   public WebMethod getWebMethod() {
     return webMethod;
-  }
-
-  public String getFullPath() {
-    return fullPath;
   }
 
   public List<MethodParam> getParams() {
@@ -285,4 +208,19 @@ public class MethodReader {
     return Integer.toString(webMethod.statusCode(isVoid));
   }
 
+  public PathSegments getPathSegments() {
+    return pathSegments;
+  }
+
+  public String getFullPath() {
+    return pathSegments.fullPath();
+  }
+
+  public boolean includeValidate() {
+    return bean.isIncludeValidator() && webMethod != WebMethod.GET;
+  }
+
+  public String simpleName() {
+    return element.getSimpleName().toString();
+  }
 }
