@@ -227,4 +227,31 @@ public class MethodReader {
     return element.getSimpleName().toString();
   }
 
+  public boolean isFormBody() {
+    for (MethodParam param : params) {
+      if (param.isForm()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public String getBodyType() {
+    for (MethodParam param : params) {
+      if (param.isBody()) {
+        return param.getShortType();
+      }
+    }
+    return null;
+  }
+
+  public String getBodyName() {
+    for (MethodParam param : params) {
+      if (param.isBody()) {
+        return param.getName();
+      }
+    }
+    return "body";
+  }
+
 }

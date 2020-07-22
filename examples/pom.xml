@@ -5,15 +5,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.dinject</groupId>
-  <artifactId>web-reactor</artifactId>
+  <artifactId>examples-reactor</artifactId>
   <version>1.0</version>
   <packaging>pom</packaging>
 
   <modules>
-    <module>generator-core</module>
-    <module>generator-javalin</module>
-    <module>generator-helidon</module>
-    <module>examples</module>
+    <module>example-helidon</module>
   </modules>
 </project>
 

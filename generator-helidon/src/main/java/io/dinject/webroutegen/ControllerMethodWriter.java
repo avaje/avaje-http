@@ -21,15 +21,25 @@ class ControllerMethodWriter {
 
   void writeRule() {
     final String fullPath = method.getFullPath();
-    //.get("/foo/{name}", this::getMessageHandler);
-    writer.append("    rules.%s(\"%s\", this::_%s);", webMethod.name().toLowerCase(), fullPath, method.simpleName()).eol();
+    final String bodyType = method.getBodyType();
+    if (bodyType != null) {
+      writer.append("    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));", webMethod.name().toLowerCase(), fullPath, bodyType, method.simpleName()).eol();
+    } else if (method.isFormBody()) {
+      writer.append("    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));", webMethod.name().toLowerCase(), fullPath, "FormParams", method.simpleName()).eol();
+    } else {
+      writer.append("    rules.%s(\"%s\", this::_%s);", webMethod.name().toLowerCase(), fullPath, method.simpleName()).eol();
+    }
   }
 
   void writeHandler() {
     writer.append("  private void _%s(ServerRequest req, ServerResponse res", method.simpleName());
-    // TODO: if POST body get that here
-    writer.append(") { //5").eol();
-
+    final String bodyType = method.getBodyType();
+    if (bodyType != null) {
+      writer.append(", %s %s", bodyType, method.getBodyName());
+    } else if (method.isFormBody()) {
+      writer.append(", %s %s", "FormParams", "formParams");
+    }
+    writer.append(") {").eol();
     if (!method.isVoid()) {
       writeContextReturn();
     }
@@ -69,7 +79,7 @@ class ControllerMethodWriter {
       writer.append(")");
     }
     writer.append(";").eol();
-    writer.append("  }").eol();
+    writer.append("  }").eol().eol();
 
 //    List<String> roles = method.roles();
 //    if (!roles.isEmpty()) {
@@ -91,7 +101,7 @@ class ControllerMethodWriter {
   private void writeContextReturn() {
     final String produces = method.getProduces();
     if (produces == null) {
-      //writer.append("res.writerContext().contentType(MediaType.APPLICATION_JSON);").eol();
+      // let it be automatically set
     } else if (MediaType.APPLICATION_JSON.equalsIgnoreCase(produces)) {
       writer.append("res.writerContext().contentType(io.helidon.common.http.MediaType.APPLICATION_JSON);").eol();
     } else if (MediaType.TEXT_HTML.equalsIgnoreCase(produces)) {

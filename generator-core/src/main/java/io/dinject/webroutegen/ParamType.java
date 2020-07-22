@@ -2,6 +2,7 @@ package io.dinject.webroutegen;
 
 public enum ParamType {
 
+  CONTEXT("ctx", "ctx"),
   BODY("body", "body"),
   PATHPARAM("pathParam", "path"),
   FORM("form", "form"),

@@ -31,4 +31,21 @@ public class MethodParam {
   public void buildApiDocumentation(MethodDocBuilder methodDoc) {
     elementParam.buildApiDocumentation(methodDoc);
   }
+
+  public boolean isBody() {
+    return elementParam.getParamType() == ParamType.BODY;
+  }
+
+  public boolean isForm() {
+    return elementParam.getParamType() == ParamType.FORM;
+  }
+
+  public String getShortType() {
+    return elementParam.getShortType();
+  }
+
+  public String getName() {
+    return elementParam.getVarName();
+  }
+
 }

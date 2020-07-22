@@ -13,6 +13,26 @@ class JavalinAdapter implements PlatformAdapter {
   }
 
   @Override
+  public String platformVariable(String rawType) {
+    return "ctx";
+  }
+
+  @Override
+  public boolean isBodyMethodParam() {
+    return false;
+  }
+
+  @Override
+  public String bodyAsClass(String shortType) {
+    return "ctx.bodyAsClass(" + shortType + ".class)";
+  }
+
+  @Override
+  public String indent() {
+    return "    ";
+  }
+
+  @Override
   public void controllerRoles(List<String> roles, ControllerReader controller) {
     addRoleImports(roles, controller);
   }

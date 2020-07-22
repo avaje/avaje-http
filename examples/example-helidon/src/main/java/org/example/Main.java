@@ -2,48 +2,44 @@ package org.example;
 
 import io.dinject.SystemContext;
 import io.helidon.health.HealthSupport;
-import io.helidon.health.checks.HealthChecks;
 import io.helidon.media.jackson.JacksonSupport;
 import io.helidon.metrics.MetricsSupport;
+import io.helidon.webserver.FormParamsSupport;
 import io.helidon.webserver.Routing;
 import io.helidon.webserver.Service;
 import io.helidon.webserver.WebServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import java.io.IOException;
-import java.util.List;
+import java.util.logging.LogManager;
 
 public class Main {
 
-  public static void main(String[] args) throws IOException {
-    startServer();
+  static {
+    LogManager.getLogManager().reset();
+    SLF4JBridgeHandler.removeHandlersForRootLogger();
+    SLF4JBridgeHandler.install();
   }
 
-  static WebServer startServer() throws IOException {
+  private static final Logger log = LoggerFactory.getLogger(Main.class);
 
-    //setupLogging();
+  public static void main(String[] args) {
+    startServer(8083);
+  }
 
-    // By default this will pick up application.yaml from the classpath
-    //Config config = Config.create();
+  static WebServer startServer(int port) {
 
-    JacksonSupport jacksonSupport = JacksonSupport.create();
-
-
-    // Build server with JSONP support
     WebServer server = WebServer.builder(createRouting())
       //.config(config.get("server"))
-//      .addMediaSupport(JsonpSupport.create())
-      .addMediaSupport(jacksonSupport)
-      .port(8083)
+      .addMediaSupport(JacksonSupport.create())
+      .port(port)
       .build();
 
-    // Try to start the server. If successful, print some info and arrange to
-    // print a message at shutdown. If unsuccessful, print the exception.
     server.start()
       .thenAccept(ws -> {
-        System.out.println(
-          "WEB server is up! http://localhost:" + ws.port() + "/greet");
-        ws.whenShutdown().thenRun(()
-          -> System.out.println("WEB server is DOWN. Good bye!"));
+        log.info("Server is up! http://localhost:" + ws.port() + "/greet");
+        ws.whenShutdown().thenRun(() -> log.info("Server is down. Good bye!"));
       })
       .exceptionally(t -> {
         System.err.println("Startup failed: " + t.getMessage());
@@ -51,36 +47,20 @@ public class Main {
         return null;
       });
 
-    // Server threads are not daemon. No need to block. Just react.
-
     return server;
   }
 
   private static Routing createRouting() {
 
-    MetricsSupport metrics = MetricsSupport.create();
-    HealthSupport health = HealthSupport.builder()
-      .addLiveness(HealthChecks.healthChecks())   // Adds a convenient set of checks
-      .build();
-
-
     final Routing.Builder builder = Routing.builder()
-      .register(health)                   // Health at "/health"
-      .register(metrics)                  // Metrics at "/metrics"
+      .register(FormParamsSupport.create())
+      .register(HealthSupport.create())
+      .register(MetricsSupport.create())
       .register("/greet", new GreetService());
 
-    final List<Service> services = SystemContext.getBeans(Service.class);
-    services.forEach(builder::register);
+    SystemContext.getBeans(Service.class).forEach(builder::register);
 
     return builder.build();
   }
 
-//  /**
-//   * Configure logging from logging.properties file.
-//   */
-//  private static void setupLogging() throws IOException {
-//    try (InputStream is = Main.class.getResourceAsStream("/logging.properties")) {
-//      LogManager.getLogManager().readConfiguration(is);
-//    }
-//  }
 }

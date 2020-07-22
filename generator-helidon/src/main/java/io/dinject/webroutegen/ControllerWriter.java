@@ -13,6 +13,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   ControllerWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
     super(reader, ctx);
+    reader.addImportType("io.helidon.common.http.FormParams");
     reader.addImportType("io.helidon.webserver.Handler");
     reader.addImportType("io.helidon.webserver.Routing");
     reader.addImportType("io.helidon.webserver.ServerRequest");

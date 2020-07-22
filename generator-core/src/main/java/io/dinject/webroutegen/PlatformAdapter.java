@@ -8,9 +8,30 @@ import java.util.List;
 public interface PlatformAdapter {
 
   /**
-   * Return true if this type is the platform context type (Javalin Context etc).
+   * Return true if this type is the platform specific request, response or context type.
+   * For example Javalin Context, Helidon ServerRequest or ServerResponse type).
    */
   boolean isContextType(String rawType);
+
+  /**
+   * Return the platform specific parameter (request, response or context).
+   */
+  String platformVariable(String rawType);
+
+  /**
+   * Return platform specific code to return the body content.
+   */
+  String bodyAsClass(String shortType);
+
+  /**
+   * Return true if body is passed as a method parameter.
+   */
+  boolean isBodyMethodParam();
+
+  /**
+   * Return whitespace indent for setting parameter values.
+   */
+  String indent();
 
   /**
    * Handle controller level roles.

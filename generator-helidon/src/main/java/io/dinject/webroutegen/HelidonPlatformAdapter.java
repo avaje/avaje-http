@@ -4,12 +4,42 @@ import java.util.List;
 
 class HelidonPlatformAdapter implements PlatformAdapter {
 
-  static final String JAVALIN3_CONTEXT = "io.javalin.http.Context";
-  static final String JAVALIN3_ROLES = "io.javalin.core.security.SecurityUtil.roles";
+  static final String HELIDON_REQ = "io.helidon.webserver.ServerRequest";
+  static final String HELIDON_RES = "io.helidon.webserver.ServerResponse";
+  static final String HELIDON_FORMPARAMS = "io.helidon.common.http.FormParams";
 
   @Override
   public boolean isContextType(String rawType) {
-    return JAVALIN3_CONTEXT.equals(rawType);
+    return HELIDON_REQ.equals(rawType) || HELIDON_RES.equals(rawType) || HELIDON_FORMPARAMS.equals(rawType);
+  }
+
+  @Override
+  public String platformVariable(String rawType) {
+    if (HELIDON_REQ.equals(rawType)) {
+      return "req";
+    }
+    if (HELIDON_RES.equals(rawType)) {
+      return "res";
+    }
+    if (HELIDON_FORMPARAMS.equals(rawType)) {
+      return "formParams";
+    }
+    return "unknownVariable for: "+rawType;
+  }
+
+  @Override
+  public boolean isBodyMethodParam() {
+    return true;
+  }
+
+  @Override
+  public String bodyAsClass(String shortType) {
+    return "body";
+  }
+
+  @Override
+  public String indent() {
+    return "  ";
   }
 
   @Override
@@ -23,10 +53,7 @@ class HelidonPlatformAdapter implements PlatformAdapter {
   }
 
   private void addRoleImports(List<String> roles, ControllerReader controller) {
-    controller.addStaticImportType(JAVALIN3_ROLES);
-    for (String role : roles) {
-      controller.addStaticImportType(role);
-    }
+    // nothing here yet
   }
 
   @Override
@@ -36,8 +63,10 @@ class HelidonPlatformAdapter implements PlatformAdapter {
         writer.append("req.path().param(\"%s\")", paramName);
         break;
       case QUERYPARAM:
-      case FORMPARAM:
         writer.append("req.queryParams().first(\"%s\").orElse(null)", paramName);
+        break;
+      case FORMPARAM:
+        writer.append("formParams.first(\"%s\").orElse(null)", paramName);
         break;
       case HEADER:
         writer.append("req.headers().value(\"%s\").orElse(null)", paramName);
@@ -60,8 +89,10 @@ class HelidonPlatformAdapter implements PlatformAdapter {
         writer.append("req.path().param(\"%s\")", paramName);
         break;
       case QUERYPARAM:
-      case FORMPARAM:
         writer.append("req.queryParams().first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+        break;
+      case FORMPARAM:
+        writer.append("formParams.first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
         break;
       case HEADER:
         writer.append("req.headers().value(\"%s\").orElse(\"%s\")", paramName, paramDefault);

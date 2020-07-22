@@ -20,10 +20,12 @@ public class ElementReader {
   private final ProcessingContext ctx;
   private final Element element;
   private final String rawType;
+  private final String shortType;
   private final TypeHandler typeHandler;
   private final String varName;
   private final String snakeName;
   private final boolean formMarker;
+  private final boolean contextType;
 
   private String paramName;
   private ParamType paramType;
@@ -31,7 +33,7 @@ public class ElementReader {
   private String paramDefault;
 
   private boolean notNullKotlin;
-  private boolean notNullJavax;
+  //private boolean notNullJavax;
 
   ElementReader(Element element, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
     this(element, typeDef(element.asType()), ctx, defaultType, formMarker);
@@ -41,20 +43,24 @@ public class ElementReader {
     this.ctx = ctx;
     this.element = element;
     this.rawType = rawType;
+    this.shortType = Util.shortName(rawType);
+    this.contextType = ctx.platform().isContextType(rawType);
     this.typeHandler = TypeMap.get(rawType);
     this.formMarker = formMarker;
-
     this.varName = element.getSimpleName().toString();
     this.snakeName = Util.snakeCase(varName);
     this.paramName = varName;
-
-    readAnnotations(element, defaultType);
+    if (!contextType) {
+      readAnnotations(element, defaultType);
+    } else {
+      paramType = ParamType.CONTEXT;
+    }
   }
 
   private void readAnnotations(Element element, ParamType defaultType) {
 
     notNullKotlin = (element.getAnnotation(org.jetbrains.annotations.NotNull.class) != null);
-    notNullJavax = (element.getAnnotation(javax.validation.constraints.NotNull.class) != null);
+    //notNullJavax = (element.getAnnotation(javax.validation.constraints.NotNull.class) != null);
 
     Default defaultVal = element.getAnnotation(Default.class);
     if (defaultVal != null) {
@@ -97,8 +103,13 @@ public class ElementReader {
       return;
     }
     if (paramType == null) {
-      this.paramType = defaultType;
       this.impliedParamType = true;
+      if (typeHandler != null) {
+        // a scalar type that we know how to convert
+        this.paramType = defaultType;
+      } else {
+        this.paramType = formMarker ? ParamType.FORM : ParamType.BODY;
+      }
     }
   }
 
@@ -123,14 +134,18 @@ public class ElementReader {
   }
 
   private boolean isPlatformContext() {
-    return ctx.platform().isContextType(rawType);
+    return contextType;
+  }
+
+  private String platformVariable() {
+    return ctx.platform().platformVariable(rawType);
   }
 
   private String shortType() {
     if (typeHandler != null) {
       return typeHandler.shortName();
     } else {
-      return Util.shortName(rawType);
+      return shortType;
     }
   }
 
@@ -147,7 +162,7 @@ public class ElementReader {
 
   void writeParamName(Append writer) {
     if (isPlatformContext()) {
-      writer.append("ctx");
+      writer.append(platformVariable());
     } else {
       writer.append(varName);
     }
@@ -174,8 +189,12 @@ public class ElementReader {
       // no conversion for this parameter
       return;
     }
+    if (paramType == ParamType.BODY && ctx.platform().isBodyMethodParam()) {
+      // body passed as method parameter (Helidon)
+      return;
+    }
     String shortType = shortType();
-    writer.append("      %s %s = ", shortType, varName);
+    writer.append("%s  %s %s = ", ctx.platform().indent(), shortType, varName);
     if (setValue(writer, segments, shortType)) {
       writer.append(";").eol();
     }
@@ -186,12 +205,15 @@ public class ElementReader {
   }
 
   private boolean setValue(Append writer, PathSegments segments, String shortType) {
-    if (formMarker && impliedParamType && typeHandler == null) {
-      // @Form on method and this type is a "bean" so treat is as a form bean
-      writeForm(writer, shortType, varName, ParamType.FORMPARAM);
-      paramType = ParamType.FORM;
-      return false;
-    }
+//    if (formMarker && impliedParamType && typeHandler == null) {
+//      if (ParamType.FORM != paramType) {
+//        throw new IllegalStateException("Don't get here?");
+//      }
+////      // @Form on method and this type is a "bean" so treat is as a form bean
+////      writeForm(writer, shortType, varName, ParamType.FORMPARAM);
+////      paramType = ParamType.FORM;
+////      return false;
+//    }
     if (ParamType.FORM == paramType) {
       writeForm(writer, shortType, varName, ParamType.FORMPARAM);
       return false;
@@ -224,9 +246,8 @@ public class ElementReader {
     }
 
     if (typeHandler == null) {
-      // assuming this is a body (POST, PATCH)
-      writer.append("ctx.bodyAsClass(%s.class)", shortType);
-      paramType = ParamType.BODY;
+      // this is a body (POST, PATCH)
+      writer.append(ctx.platform().bodyAsClass(shortType));
 
     } else {
       if (hasParamDefault()) {
@@ -262,6 +283,10 @@ public class ElementReader {
 
   public String getParamName() {
     return paramName;
+  }
+
+  public String getShortType() {
+    return shortType;
   }
 
   public String getRawType() {

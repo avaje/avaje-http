@@ -115,6 +115,7 @@ class BeanParamReader {
 
   static class FieldReader {
 
+    private final ProcessingContext ctx;
     private final ElementReader element;
 
     private String setterMethod;
@@ -122,6 +123,7 @@ class BeanParamReader {
     private boolean constructorParam;
 
     FieldReader(ProcessingContext ctx, Element enclosedElement, ParamType defaultParamType) {
+      this.ctx = ctx;
       this.element = new ElementReader(enclosedElement, ctx, defaultParamType, false);
     }
 
@@ -147,13 +149,13 @@ class BeanParamReader {
     void writeSet(Append writer, String beanVarName) {
       if (setterMethod != null) {
         // populate via setter method
-        writer.append("      %s.%s(", beanVarName, setterMethod);
+        writer.append("%s  %s.%s(", ctx.platform().indent(), beanVarName, setterMethod);
         element.setValue(writer);
         writer.append(");").eol();
 
       } else {
         // populate via field put
-        writer.append("      %s.%s = ", beanVarName, getVarName());
+        writer.append("%s  %s.%s = ", ctx.platform().indent(), beanVarName, getVarName());
         element.setValue(writer);
         writer.append(";").eol();
       }
