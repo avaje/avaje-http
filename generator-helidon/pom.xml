@@ -27,7 +27,7 @@
     <dependency>
       <groupId>io.dinject</groupId>
       <artifactId>webgen-core</artifactId>
-      <version>1.19-SNAPSHOT</version>
+      <version>1.19</version>
     </dependency>
 
     <!-- test dependencies -->
