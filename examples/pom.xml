@@ -11,6 +11,7 @@
 
   <modules>
     <module>example-helidon</module>
+    <module>example-javalin</module>
   </modules>
 </project>
 

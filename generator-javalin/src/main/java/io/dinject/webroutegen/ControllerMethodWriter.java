@@ -37,14 +37,13 @@ class ControllerMethodWriter {
       param.writeCtxGet(writer, segments);
     }
     writer.append("      ");
-    if (!method.isVoid()) {
-      writeContextReturn();
-    }
-
     if (method.includeValidate()) {
       for (MethodParam param : params) {
         param.writeValidate(writer);
       }
+    }
+    if (!method.isVoid()) {
+      writeContextReturn();
     }
 
     writer.append("controller.");
