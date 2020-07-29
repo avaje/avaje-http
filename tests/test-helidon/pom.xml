@@ -18,6 +18,7 @@
     <mainClass>org.example.Main</mainClass>
     <helidon-version>2.0.1</helidon-version>
     <dinject-version>2.2</dinject-version>
+    <dinject-controller-version>1.21-SNAPSHOT</dinject-controller-version>
   </properties>
 
   <dependencies>
@@ -42,7 +43,7 @@
     <dependency>
       <groupId>io.dinject</groupId>
       <artifactId>dinject-controller</artifactId>
-      <version>1.20-SNAPSHOT</version>
+      <version>${dinject-controller-version}</version>
     </dependency>
 
     <dependency>
@@ -55,7 +56,7 @@
     <dependency>
       <groupId>io.dinject</groupId>
       <artifactId>helidon-generator</artifactId>
-      <version>1.20-SNAPSHOT</version>
+      <version>${dinject-controller-version}</version>
       <scope>provided</scope>
     </dependency>
 
