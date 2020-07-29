@@ -4,7 +4,7 @@
 
   <groupId>io.dinject</groupId>
   <artifactId>helidon-generator</artifactId>
-  <version>1.20-SNAPSHOT</version>
+  <version>1.19-SNAPSHOT</version>
 
   <parent>
     <groupId>org.avaje</groupId>
@@ -27,7 +27,7 @@
     <dependency>
       <groupId>io.dinject</groupId>
       <artifactId>webgen-core</artifactId>
-      <version>1.20-SNAPSHOT</version>
+      <version>1.19-SNAPSHOT</version>
     </dependency>
 
     <!-- test dependencies -->
