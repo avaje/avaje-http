@@ -44,7 +44,9 @@ public class MethodDocBuilder {
       operation.setDeprecated(true);
     }
 
-    PathItem pathItem = ctx.pathItem(methodReader.getFullPath());
+    String path = methodReader.getFullPath().replaceAll("(:)([^/]+)", "{$2}");
+    PathItem pathItem = ctx.pathItem(path);
+
     switch (methodReader.getWebMethod()) {
       case GET:
         pathItem.setGet(operation);
