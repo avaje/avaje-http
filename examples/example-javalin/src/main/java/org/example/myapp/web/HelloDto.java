@@ -18,6 +18,12 @@ public class HelloDto {
     this.otherParam = otherParam;
   }
 
+  /**
+   * Jackson constructor.
+   */
+  public HelloDto() {
+  }
+
   public UUID getGid() {
     return gid;
   }

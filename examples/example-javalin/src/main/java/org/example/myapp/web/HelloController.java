@@ -103,6 +103,12 @@ class HelloController {
     System.out.println("name " + name + " email:" + email + " url:" + url);
   }
 
+  @Post("saveform3")
+  @Form
+  HelloDto saveForm3(HelloForm helloForm) {
+    return new HelloDto(52, helloForm.name, helloForm.email);
+  }
+
   @Hidden
   @Get
   List<HelloDto> getAll() {
