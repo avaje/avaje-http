@@ -2,20 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.dinject</groupId>
   <artifactId>javalin-generator</artifactId>
-  <version>1.20-SNAPSHOT</version>
 
   <parent>
-    <groupId>org.avaje</groupId>
-    <artifactId>java8-oss</artifactId>
-    <version>2.1</version>
+    <groupId>io.dinject</groupId>
+    <artifactId>controller-parent</artifactId>
+    <version>1.20-SNAPSHOT</version>
+    <relativePath>..</relativePath>
   </parent>
-
-  <scm>
-    <developerConnection>scm:git:git@github.com:dinject/javalin-generator.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
 
   <properties>
     <swagger.version>2.0.8</swagger.version>
@@ -27,7 +21,7 @@
     <dependency>
       <groupId>io.dinject</groupId>
       <artifactId>webgen-core</artifactId>
-      <version>1.19</version>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- test dependencies -->
