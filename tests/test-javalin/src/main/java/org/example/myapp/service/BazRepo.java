@@ -8,11 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Singleton
-public class BazRepo implements Repository<Baz,Long> {
+public class BazRepo implements Repository<Baz, Long> {
 
   @Override
   public Baz findById(Long id) {
-    return new Baz();
+    Baz baz = new Baz();
+    baz.id = id;
+    baz.name = "Baz" + id;
+    //baz.startDate = LocalDate.of(2020, 1, 1);
+    return baz;
   }
 
   @Override

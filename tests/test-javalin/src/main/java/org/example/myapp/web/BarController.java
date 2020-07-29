@@ -10,7 +10,10 @@ public class BarController implements BarInterface {
 
   @Override
   public Bar getById(long id) {
-    return new Bar();
+    Bar bar = new Bar();
+    bar.id = id;
+    bar.name = "Rob" + id;
+    return bar;
   }
 
   @Override

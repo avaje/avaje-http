@@ -7,12 +7,13 @@ import org.example.myapp.web.HelloDto;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class HelloControllerTest extends BaseWebTest {
 
@@ -23,13 +24,12 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(response.statusCode()).isEqualTo(200);
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   void hello2() {
 
-    TypeRef listDto = new TypeRef<List<HelloDto>>() { };
-    final List<HelloDto> beans =
-      (List<HelloDto>)given().get(baseUrl + "/hello")
+    TypeRef<List<HelloDto>> listDto = new TypeRef<List<HelloDto>>() { };
+    final List<HelloDto> beans = given()
+      .get(baseUrl + "/hello")
       .then()
       .statusCode(200)
       .extract()
@@ -39,13 +39,38 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void getWithPathParamAndQueryParam() {
+
+    final HelloDto bean = given()
+      .get(baseUrl + "/hello/43/2020-03-05?otherParam=other")
+      .then()
+      .statusCode(200)
+      .extract()
+      .as(HelloDto.class);
+
+    assertThat(bean.id).isEqualTo(43L);
+    assertThat(bean.name).isEqualTo("2020-03-05");
+    assertThat(bean.otherParam).isEqualTo("other");
+  }
+
+  @Test
   void postIt() {
     HelloDto dto = new HelloDto(12, "rob", "other");
 
-    given().body(dto).post(baseUrl + "/savebean/bar")
+    given().body(dto).post(baseUrl + "/hello")
       .then()
-      .body("age", equalTo(45))
-      .body("name", startsWith("testName=hello"));
+      .body("id", equalTo(12))
+      .body("name", equalTo("posted"))
+      .body("otherParam", equalTo("other"));
+  }
+
+  @Test
+  void saveBean() {
+    HelloDto dto = new HelloDto(12, "rob", "other");
+
+    given().body(dto).post(baseUrl + "/hello/savebean/foo")
+      .then()
+      .statusCode(201);
   }
 
   @Test
@@ -60,7 +85,6 @@ class HelloControllerTest extends BaseWebTest {
       .post(baseUrl + "/hello/saveform")
       .then()
       .statusCode(201);
-
   }
 
   @Test
@@ -92,6 +116,26 @@ class HelloControllerTest extends BaseWebTest {
       .body("otherParam", equalTo("Bax@foo.com"))
       .body("id", equalTo(52))
       .statusCode(201);
+  }
+
+  @Test
+  void postForm_validation_expect_badRequest() {
+
+    final ErrorResponse res = given().urlEncodingEnabled(true)
+      .param("email", "user@foo.com")
+      .param("url", "notAValidUrl")
+      .header("Accept", ContentType.JSON.getAcceptHeader())
+      .post(baseUrl + "/hello/saveform")
+      .then()
+      .statusCode(422)
+      .extract()
+      .as(ErrorResponse.class);
+
+    assertNotNull(res);
+    assertThat(res.getMessage()).contains("failed validation");
+    final Map<String, String> errors = res.getErrors();
+    assertThat(errors.get("url")).isEqualTo("must be a valid URL");
+    assertThat(errors.get("name")).isEqualTo("must not be null");
   }
 
   @Test

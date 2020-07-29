@@ -17,9 +17,7 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.example.myapp.web.AppRoles.ADMIN;
 
@@ -56,7 +54,6 @@ class HelloController {
    * @return The Hello DTO given the id and name.
    * @deprecated Please migrate away
    */
-//  @Deprecated
   @Get("/:id/:date")
   HelloDto hello(int id, LocalDate date, String otherParam) {
     return new HelloDto(id, date.toString(), otherParam);
