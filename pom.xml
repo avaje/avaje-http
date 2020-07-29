@@ -10,6 +10,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>controller</module>
     <module>generator-core</module>
     <module>generator-javalin</module>
     <module>generator-helidon</module>
