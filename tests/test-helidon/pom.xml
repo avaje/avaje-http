@@ -22,11 +22,6 @@
 
   <dependencies>
 
-<!--    <dependency>-->
-<!--      <groupId>io.helidon.microprofile.bundles</groupId>-->
-<!--      <artifactId>helidon-microprofile</artifactId>-->
-<!--    </dependency>-->
-
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
@@ -37,11 +32,7 @@
       <artifactId>jul-to-slf4j</artifactId>
       <version>1.7.25</version>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>ch.qos.logback</groupId>-->
-<!--      <artifactId></artifactId>-->
-<!--      <version></version>-->
-<!--    </dependency>-->
+
     <dependency>
       <groupId>io.dinject</groupId>
       <artifactId>dinject</artifactId>
@@ -78,31 +69,18 @@
       <artifactId>helidon-health</artifactId>
       <version>${helidon-version}</version>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>io.helidon.health</groupId>-->
-<!--      <artifactId>helidon-health-checks</artifactId>-->
-<!--      <version>${helidon-version}</version>-->
-<!--    </dependency>-->
+
     <dependency>
       <groupId>io.helidon.metrics</groupId>
       <artifactId>helidon-metrics</artifactId>
       <version>${helidon-version}</version>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>io.helidon.media</groupId>-->
-<!--      <artifactId>helidon-media-jsonp</artifactId>-->
-<!--      <version>${helidon-version}</version>-->
-<!--    </dependency>-->
+
     <dependency>
       <groupId>io.helidon.media</groupId>
       <artifactId>helidon-media-jackson</artifactId>
       <version>${helidon-version}</version>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>io.helidon.config</groupId>-->
-<!--      <artifactId>helidon-config-yaml</artifactId>-->
-<!--      <version>${helidon-version}</version>-->
-<!--    </dependency>-->
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -131,18 +109,6 @@
 
   </dependencies>
 
-<!--  <dependencyManagement>-->
-<!--    <dependencies>-->
-<!--      <dependency>-->
-<!--        <groupId>io.helidon</groupId>-->
-<!--        <artifactId>helidon-dependencies</artifactId>-->
-<!--        <version>2.0.1</version>-->
-<!--        <type>pom</type>-->
-<!--        <scope>import</scope>-->
-<!--      </dependency>-->
-<!--    </dependencies>-->
-<!--  </dependencyManagement>-->
-
   <build>
     <plugins>
       <plugin>
@@ -162,14 +128,6 @@
           <tiles>
             <tile>org.avaje.tile:lib-classpath:1.1</tile>
           </tiles>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.3</version>
-        <configuration>
-          <goals>install</goals>
         </configuration>
       </plugin>
     </plugins>
