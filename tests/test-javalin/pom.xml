@@ -39,7 +39,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.9.10.5</version>
+      <version>2.10.2</version>
     </dependency>
 
     <dependency>
@@ -107,22 +107,9 @@
 
   </dependencies>
 
-
   <build>
     <finalName>app</finalName>
     <plugins>
-
-      <plugin>
-        <groupId>io.repaint.maven</groupId>
-        <artifactId>tiles-maven-plugin</artifactId>
-        <version>2.17</version>
-        <extensions>true</extensions>
-        <configuration>
-          <tiles>
-            <tile>io.ebean.tile:enhancement:12.3.6</tile>
-          </tiles>
-        </configuration>
-      </plugin>
 
       <plugin>
         <groupId>io.dinject</groupId>

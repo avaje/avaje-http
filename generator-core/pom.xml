@@ -13,7 +13,7 @@
 
   <properties>
     <swagger.version>2.0.8</swagger.version>
-    <jackson-databind.version>2.10.1</jackson-databind.version>
+    <jackson.version>2.10.2</jackson.version>
   </properties>
 
   <dependencies>
@@ -39,7 +39,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson-databind.version}</version>
+      <version>${jackson.version}</version>
     </dependency>
 
     <dependency>
