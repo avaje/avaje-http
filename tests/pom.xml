@@ -5,13 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.dinject</groupId>
-  <artifactId>examples-reactor</artifactId>
+  <artifactId>tests-reactor</artifactId>
   <version>1.0</version>
   <packaging>pom</packaging>
 
   <modules>
-    <module>example-helidon</module>
-    <module>example-javalin</module>
+    <module>test-helidon</module>
+    <module>test-javalin</module>
   </modules>
 </project>
 
