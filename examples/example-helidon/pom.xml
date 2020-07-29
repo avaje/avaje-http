@@ -2,6 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.example</groupId>
+  <artifactId>example-helidon</artifactId>
+  <version>1.0</version>
 
   <parent>
     <groupId>org.avaje</groupId>
@@ -9,14 +14,10 @@
     <version>2.1</version>
   </parent>
 
-  <modelVersion>4.0.0</modelVersion>
-
-  <artifactId>example-helidon</artifactId>
-
   <properties>
     <mainClass>org.example.Main</mainClass>
     <helidon-version>2.0.1</helidon-version>
-    <dinject-version>2.1</dinject-version>
+    <dinject-version>2.2</dinject-version>
   </properties>
 
   <dependencies>
