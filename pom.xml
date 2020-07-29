@@ -13,7 +13,7 @@
     <module>generator-core</module>
     <module>generator-javalin</module>
     <module>generator-helidon</module>
-<!--    <module>examples</module>-->
+    <module>examples</module>
   </modules>
 </project>
 

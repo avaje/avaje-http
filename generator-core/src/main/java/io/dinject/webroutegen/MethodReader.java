@@ -62,7 +62,11 @@ public class MethodReader {
     this.produces = produces(bean);
 
     initWebMethodViaAnnotation();
-    this.pathSegments = PathSegments.parse(Util.combinePath(bean.getPath(), webMethodPath));
+    if (isWebMethod()) {
+      this.pathSegments = PathSegments.parse(Util.combinePath(bean.getPath(), webMethodPath));
+    } else {
+      this.pathSegments = null;
+    }
   }
 
   private void initWebMethodViaAnnotation() {

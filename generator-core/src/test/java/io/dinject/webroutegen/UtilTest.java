@@ -11,6 +11,8 @@ public class UtilTest {
   @Test
   public void combinePath() {
 
+    assertEquals(Util.combinePath("/hello", null), "/hello");
+
     assertEquals(Util.combinePath(null, "/hello"), "/hello");
     assertEquals(Util.combinePath(null, "/hello/"), "/hello");
     assertEquals(Util.combinePath(null, "hello"), "/hello");

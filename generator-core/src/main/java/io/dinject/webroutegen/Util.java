@@ -39,10 +39,12 @@ public class Util {
     if (beanPath != null) {
       sb.append(beanPath);
     }
-    if (!webMethodPath.isEmpty() && !webMethodPath.startsWith("/")) {
-      sb.append("/");
+    if (webMethodPath != null) {
+      if (!webMethodPath.isEmpty() && !webMethodPath.startsWith("/")) {
+        sb.append("/");
+      }
+      sb.append(trimTrailingSlash(webMethodPath));
     }
-    sb.append(trimTrailingSlash(webMethodPath));
     return sb.toString();
   }
 
