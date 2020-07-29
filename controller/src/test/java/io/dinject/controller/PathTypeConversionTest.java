@@ -1,6 +1,6 @@
 package io.dinject.controller;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -10,13 +10,14 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PathTypeConversionTest {
 
-  @Test(expected = RequiredArgumentException.class)
+  @Test
   public void checkNull_when_null() {
-    PathTypeConversion.checkNull(null, "id");
+    assertThrows(RequiredArgumentException.class, () -> PathTypeConversion.checkNull(null, "id"));
   }
 
   @Test
@@ -29,14 +30,14 @@ public class PathTypeConversionTest {
     assertEquals(42, PathTypeConversion.asInt("42"));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asInt_when_null() {
-    PathTypeConversion.asInt(null);
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asInt(null));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asInt_when_invalid() {
-    PathTypeConversion.asInt("junk");
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asInt("junk"));
   }
 
   @Test
@@ -44,14 +45,14 @@ public class PathTypeConversionTest {
     assertEquals(42L, PathTypeConversion.asInt("42"));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asLong_when_invalid() {
-    PathTypeConversion.asLong("junk");
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asLong("junk"));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asLong_when_null() {
-    PathTypeConversion.asLong(null);
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asLong(null));
   }
 
   @Test
@@ -59,14 +60,14 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.asDouble("42")).isEqualTo(42d);
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asDouble_when_invalid() {
-    PathTypeConversion.asDouble("jukn");
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asDouble("jukn"));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asDouble_when_null() {
-    PathTypeConversion.asDouble(null);
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asDouble(null));
   }
 
   @Test
@@ -74,19 +75,19 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.asFloat("42")).isEqualTo(42f);
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asFloat_when_null() {
-    PathTypeConversion.asFloat(null);
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asFloat(null));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asFloat_when_invalid() {
-    PathTypeConversion.asFloat("junk");
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asFloat("junk"));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asBool_when_null() {
-    PathTypeConversion.asBool(null);
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asBool(null));
   }
 
   @Test
@@ -103,14 +104,14 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.asBigDecimal("42.3")).isEqualByComparingTo("42.3");
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asBigDecimal_when_null() {
-    PathTypeConversion.asBigDecimal(null);
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asBigDecimal(null));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asBigDecimal_when_invalid() {
-    PathTypeConversion.asBigDecimal("junk");
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asBigDecimal("junk"));
   }
 
   @Test
@@ -118,24 +119,24 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.asLocalDate("2018-06-03")).isEqualTo(LocalDate.of(2018, 6, 3));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asLocalDate_when_null() {
-    PathTypeConversion.asLocalDate(null);
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asLocalDate(null));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asLocalDate_when_invalid() {
-    PathTypeConversion.asLocalDate("junk");
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asLocalDate("junk"));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asLocalTime_when_invalid() {
-    PathTypeConversion.asLocalTime("junk");
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asLocalTime("junk"));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asLocalTime_when_null() {
-    PathTypeConversion.asLocalTime(null);
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asLocalTime(null));
   }
 
   @Test
@@ -143,34 +144,34 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.asLocalTime("23:34:09")).isEqualTo(LocalTime.of(23, 34, 9));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asInstant_when_null() {
-    PathTypeConversion.asInstant(null);
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asInstant(null));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asOffsetDateTime_when_null() {
-    PathTypeConversion.asOffsetDateTime(null);
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asOffsetDateTime(null));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asLocalDateTime_when_null() {
-    PathTypeConversion.asLocalDateTime(null);
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asLocalDateTime(null));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asInstant_when_invalid() {
-    PathTypeConversion.asInstant("junk");
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asInstant("junk"));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asOffsetDateTime_when_invalid() {
-    PathTypeConversion.asOffsetDateTime("junk");
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asOffsetDateTime("junk"));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asLocalDateTime_when_invalid() {
-    PathTypeConversion.asLocalDateTime("junk");
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asLocalDateTime("junk"));
   }
 
   @Test
@@ -197,14 +198,14 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.asUUID(uuid.toString())).isEqualTo(uuid);
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asUUID_when_null() {
-    PathTypeConversion.asUUID(null);
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asUUID(null));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asUUID_when_invalid() {
-    PathTypeConversion.asUUID("junk");
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asUUID("junk"));
   }
 
   @Test
@@ -212,14 +213,14 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.asInteger("42")).isEqualTo(42);
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asInteger_null() {
-    PathTypeConversion.asInteger(null);
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asInteger(null));
   }
 
-  @Test(expected = InvalidPathArgumentException.class)
+  @Test
   public void asInteger_invalid() {
-    PathTypeConversion.asInteger("junk");
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asInteger("junk"));
   }
 
   @Test
@@ -228,9 +229,9 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.toInteger(null)).isNull();
   }
 
-  @Test(expected = InvalidTypeArgumentException.class)
+  @Test
   public void toInteger_invalid() {
-    PathTypeConversion.toInteger("junk");
+    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toInteger("junk"));
   }
 
   @Test
@@ -239,9 +240,9 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.toLong(null)).isNull();
   }
 
-  @Test(expected = InvalidTypeArgumentException.class)
+  @Test
   public void toLong_invalid() {
-    PathTypeConversion.toLong("junk");
+    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toLong("junk"));
   }
 
   @Test
@@ -250,9 +251,9 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.toBigDecimal(null)).isNull();
   }
 
-  @Test(expected = InvalidTypeArgumentException.class)
+  @Test
   public void toBigDecimal_invalid() {
-    PathTypeConversion.toBigDecimal("junk");
+    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toBigDecimal("junk"));
   }
 
   @Test
@@ -269,9 +270,9 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.toUUID(uuid.toString())).isEqualTo(uuid);
   }
 
-  @Test(expected = InvalidTypeArgumentException.class)
+  @Test
   public void toUUID_invalid() {
-    PathTypeConversion.toUUID("junk");
+    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toUUID("junk"));
   }
 
   @Test
@@ -279,9 +280,9 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.toLocalDate("2018-09-07")).isEqualTo(LocalDate.of(2018, 9, 7));
   }
 
-  @Test(expected = InvalidTypeArgumentException.class)
+  @Test
   public void toLocalDate_invalid() {
-    PathTypeConversion.toLocalDate("junk");
+    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toLocalDate("junk"));
   }
 
   @Test
@@ -289,9 +290,9 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.toLocalTime("23:34:09")).isEqualTo(LocalTime.of(23, 34, 9));
   }
 
-  @Test(expected = InvalidTypeArgumentException.class)
+  @Test
   public void toLocalTime_invalid() {
-    PathTypeConversion.toLocalTime("junk");
+    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toLocalTime("junk"));
   }
 
   @Test
@@ -300,9 +301,9 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.toInstant("2018-09-23T23:34:09Z")).isEqualTo(instant);
   }
 
-  @Test(expected = InvalidTypeArgumentException.class)
+  @Test
   public void toInstant_invalid() {
-    PathTypeConversion.toInstant("junk");
+    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toInstant("junk"));
   }
 
   @Test
@@ -311,9 +312,9 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.toOffsetDateTime("2018-09-23T23:34:09Z")).isEqualTo(instant);
   }
 
-  @Test(expected = InvalidTypeArgumentException.class)
+  @Test
   public void OffsetDateTime_invalid() {
-    PathTypeConversion.toOffsetDateTime("junk");
+    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toOffsetDateTime("junk"));
   }
 
   @Test
@@ -322,8 +323,8 @@ public class PathTypeConversionTest {
     assertThat(PathTypeConversion.toLocalDateTime("2018-09-23T23:34:09")).isEqualTo(instant);
   }
 
-  @Test(expected = InvalidTypeArgumentException.class)
+  @Test
   public void LocalDateTime_invalid() {
-    PathTypeConversion.toLocalDateTime("junk");
+    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toLocalDateTime("junk"));
   }
 }
