@@ -9,6 +9,11 @@
   <version>1.0</version>
   <packaging>pom</packaging>
 
+  <scm>
+    <developerConnection>scm:git:git@github.com:dinject/javalin-generator.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
   <modules>
     <module>generator-core</module>
     <module>generator-javalin</module>
