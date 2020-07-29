@@ -17,7 +17,10 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 import static org.example.myapp.web.AppRoles.ADMIN;
 
 /**
@@ -36,6 +39,12 @@ class HelloController {
   @Inject
   HelloController(MyService myService) {
     this.myService = myService;
+  }
+
+  @Produces(MediaType.TEXT_PLAIN)
+  @Get("message")
+  String getPlainMessage() {
+    return "hello world";
   }
 
   /**
@@ -85,6 +94,9 @@ class HelloController {
   void saveBean(String foo, HelloDto dto, Context context) {
     // save hello data ...
     System.out.println("save " + foo + " dto:" + dto);
+    requireNonNull(foo);
+    requireNonNull(dto);
+    requireNonNull(context);
   }
 
   /**
@@ -121,9 +133,4 @@ class HelloController {
     System.out.println("deleting " + id);
   }
 
-  @Produces(MediaType.TEXT_PLAIN)
-  @Get("message")
-  String getPlainMessage() {
-    return "hello world";
-  }
 }

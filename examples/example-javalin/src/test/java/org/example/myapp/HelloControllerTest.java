@@ -93,4 +93,11 @@ class HelloControllerTest extends BaseWebTest {
       .body("id", equalTo(52))
       .statusCode(201);
   }
+
+  @Test
+  void delete() {
+    given().delete(baseUrl + "/hello/52")
+      .then()
+      .statusCode(204);
+  }
 }
