@@ -19,7 +19,7 @@
     <swagger.version>2.0.8</swagger.version>
     <kotlin.version>1.3.31</kotlin.version>
     <dinject-version>2.2</dinject-version>
-    <dinject-controller-version>1.21-SNAPSHOT</dinject-controller-version>
+    <dinject-controller-version>1.22-SNAPSHOT</dinject-controller-version>
   </properties>
 
   <dependencies>

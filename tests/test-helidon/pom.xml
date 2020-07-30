@@ -18,7 +18,7 @@
     <mainClass>org.example.Main</mainClass>
     <helidon-version>2.0.1</helidon-version>
     <dinject-version>2.2</dinject-version>
-    <dinject-controller-version>1.21-SNAPSHOT</dinject-controller-version>
+    <dinject-controller-version>1.22-SNAPSHOT</dinject-controller-version>
   </properties>
 
   <dependencies>
