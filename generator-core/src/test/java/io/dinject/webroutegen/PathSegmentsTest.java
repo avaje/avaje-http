@@ -66,24 +66,41 @@ public class PathSegmentsTest {
   }
 
   @Test
-  public void pathParams() {
+  public void pathMatrixParams_colonPrefix() {
 
     PathSegments segments = PathSegments.parse("/:id;key;other/:foo;baz");
 
-    List<PathSegments.Segment> metricSegments = segments.metricSegments();
-    assertThat(metricSegments).hasSize(2);
+    List<PathSegments.Segment> matrixSegments = segments.matrixSegments();
+    assertThat(matrixSegments).hasSize(2);
 
-    assertThat(metricSegments.get(0).name()).isEqualTo("id");
-    assertThat(metricSegments.get(0).metrics()).containsOnly("key", "other");
+    assertThat(matrixSegments.get(0).name()).isEqualTo("id");
+    assertThat(matrixSegments.get(0).matrixKeys()).containsOnly("key", "other");
 
-    assertThat(metricSegments.get(1).name()).isEqualTo("foo");
-    assertThat(metricSegments.get(1).metrics()).containsOnly("baz");
+    assertThat(matrixSegments.get(1).name()).isEqualTo("foo");
+    assertThat(matrixSegments.get(1).matrixKeys()).containsOnly("baz");
 
     assertEquals("/:id_segment/:foo_segment", segments.fullPath());
   }
 
   @Test
-  public void pathParams_fullPath() {
+  public void pathMatrixParams_normalised() {
+
+    PathSegments segments = PathSegments.parse("/{id;key;other}/{foo;baz}");
+
+    List<PathSegments.Segment> matrixSegments = segments.matrixSegments();
+    assertThat(matrixSegments).hasSize(2);
+
+    assertThat(matrixSegments.get(0).name()).isEqualTo("id");
+    assertThat(matrixSegments.get(0).matrixKeys()).containsOnly("key", "other");
+
+    assertThat(matrixSegments.get(1).name()).isEqualTo("foo");
+    assertThat(matrixSegments.get(1).matrixKeys()).containsOnly("baz");
+
+    assertEquals("/{id_segment}/{foo_segment}", segments.fullPath());
+  }
+
+  @Test
+  public void pathMatrixParams_fullPath() {
 
     PathSegments segments = PathSegments.parse("/start/:id;key;other/:foo;baz/end");
     assertEquals("/start/:id_segment/:foo_segment/end", segments.fullPath());
@@ -92,4 +109,15 @@ public class PathSegmentsTest {
 
     assertEquals("/start/:id_segment/middle/:foo_segment/end", segments.fullPath());
   }
+
+  @Test
+  public void pathMatrixParams_fullPath_normalised() {
+
+    PathSegments segments = PathSegments.parse("/start/{id;key;other}/{foo;baz}/end");
+    assertEquals("/start/{id_segment}/{foo_segment}/end", segments.fullPath());
+
+    segments = PathSegments.parse("/start/{id;key;other}/middle/{foo;baz}/end");
+    assertEquals("/start/{id_segment}/middle/{foo_segment}/end", segments.fullPath());
+  }
+
 }

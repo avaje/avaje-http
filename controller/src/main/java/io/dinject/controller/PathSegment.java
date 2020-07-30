@@ -15,7 +15,7 @@ public class PathSegment {
 
   private final String val;
 
-  private Map<String, String> metricValues;
+  private Map<String, String> matrixValues;
 
   /**
    * Create with a given value that may contain matrix parameters.
@@ -31,11 +31,11 @@ public class PathSegment {
     String[] vals = value.split(";");
     this.val = vals[0];
     if (vals.length > 1) {
-      metricValues = new HashMap<>();
+      matrixValues = new HashMap<>();
       for (String val : vals) {
         String[] keyVal = val.split("=");
         if (keyVal.length == 2) {
-          metricValues.put(keyVal[0], keyVal[1]);
+          matrixValues.put(keyVal[0], keyVal[1]);
         }
       }
     }
@@ -66,8 +66,8 @@ public class PathSegment {
    * @param key The metric key
    * @return The metric value if supplied or null
    */
-  public String metric(String key) {
-    return metricValues == null ? null : metricValues.get(key);
+  public String matrix(String key) {
+    return matrixValues == null ? null : matrixValues.get(key);
   }
 
 }

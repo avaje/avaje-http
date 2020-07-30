@@ -12,11 +12,13 @@ class ControllerMethodWriter {
   private final MethodReader method;
   private final Append writer;
   private final WebMethod webMethod;
+  private final ProcessingContext ctx;
 
-  ControllerMethodWriter(MethodReader method, Append writer) {
+  ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.getWebMethod();
+    this.ctx = ctx;
   }
 
   void write() {
@@ -27,9 +29,9 @@ class ControllerMethodWriter {
     writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
     writer.append("      ctx.status(%s);", method.getStatusCode()).eol();
 
-    List<PathSegments.Segment> metricSegments = segments.metricSegments();
-    for (PathSegments.Segment metricSegment : metricSegments) {
-      metricSegment.writeCreateSegment(writer);
+    List<PathSegments.Segment> matrixSegments = segments.matrixSegments();
+    for (PathSegments.Segment matrixSegment : matrixSegments) {
+      matrixSegment.writeCreateSegment(writer, ctx.platform());
     }
 
     final List<MethodParam> params = method.getParams();

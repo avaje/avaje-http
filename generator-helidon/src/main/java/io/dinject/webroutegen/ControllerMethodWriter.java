@@ -12,11 +12,13 @@ class ControllerMethodWriter {
   private final MethodReader method;
   private final Append writer;
   private final WebMethod webMethod;
+  private final ProcessingContext ctx;
 
-  ControllerMethodWriter(MethodReader method, Append writer) {
+  ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.getWebMethod();
+    this.ctx = ctx;
   }
 
   void writeRule() {
@@ -43,13 +45,12 @@ class ControllerMethodWriter {
     if (!method.isVoid()) {
       writeContextReturn();
     }
-    final PathSegments segments = method.getPathSegments();
-//    writer.append("      ctx.status(%s);", method.getStatusCode()).eol();
 
-//    List<PathSegments.Segment> metricSegments = segments.metricSegments();
-//    for (PathSegments.Segment metricSegment : metricSegments) {
-//      metricSegment.writeCreateSegment(writer);
-//    }
+    final PathSegments segments = method.getPathSegments();
+    List<PathSegments.Segment> matrixSegments = segments.matrixSegments();
+    for (PathSegments.Segment matrixSegment : matrixSegments) {
+      matrixSegment.writeCreateSegment(writer, ctx.platform());
+    }
 
     final List<MethodParam> params = method.getParams();
     for (MethodParam param : params) {
@@ -103,13 +104,13 @@ class ControllerMethodWriter {
     if (produces == null) {
       // let it be automatically set
     } else if (MediaType.APPLICATION_JSON.equalsIgnoreCase(produces)) {
-      writer.append("res.writerContext().contentType(io.helidon.common.http.MediaType.APPLICATION_JSON);").eol();
+      writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.APPLICATION_JSON);").eol();
     } else if (MediaType.TEXT_HTML.equalsIgnoreCase(produces)) {
-      writer.append("res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_HTML);").eol();
+      writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_HTML);").eol();
     } else if (MediaType.TEXT_PLAIN.equalsIgnoreCase(produces)) {
-      writer.append("res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_PLAIN);").eol();
+      writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_PLAIN);").eol();
     } else {
-      writer.append("res.writerContext().contentType(io.helidon.common.http.MediaType.parse(\"%s\"));", produces).eol();
+      writer.append(    "res.writerContext().contentType(io.helidon.common.http.MediaType.parse(\"%s\"));", produces).eol();
     }
   }
 

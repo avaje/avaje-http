@@ -40,4 +40,39 @@ class FooControllerTest extends BaseWebTest {
       .body("age", equalTo(45))
       .body("name", startsWith("testName=hello"));
   }
+
+
+  @Test
+  void getWithMatrixParam() {
+    given()
+      .get(baseUrl + "/foo/withMatrix/2011;author=rob;country=nz/foo?extra=banana")
+      .then()
+      .statusCode(200)
+      .body(equalTo("yr:2011 au:rob co:nz other:foo extra:banana"));
+
+    given()
+      .get(baseUrl + "/foo/withMatrix/2011;author=rob;country=nz/foo")
+      .then()
+      .statusCode(200)
+      .body(equalTo("yr:2011 au:rob co:nz other:foo extra:null"));
+
+    given()
+      .get(baseUrl + "/foo/withMatrix/2011;author=rob/foo2")
+      .then()
+      .statusCode(200)
+      .body(equalTo("yr:2011 au:rob co:null other:foo2 extra:null"));
+
+    given()
+      .get(baseUrl + "/foo/withMatrix/2011;country=nz/foo2")
+      .then()
+      .statusCode(200)
+      .body(equalTo("yr:2011 au:null co:nz other:foo2 extra:null"));
+
+    given()
+      .get(baseUrl + "/foo/withMatrix/2011/foo3")
+      .then()
+      .statusCode(200)
+      .body(equalTo("yr:2011 au:null co:null other:foo3 extra:null"));
+
+  }
 }

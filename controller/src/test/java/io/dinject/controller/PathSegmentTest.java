@@ -13,7 +13,7 @@ public class PathSegmentTest {
     PathSegment seg = PathSegment.of("simple");
 
     assertEquals("simple", seg.val());
-    assertNull(seg.metric("foo"));
+    assertNull(seg.matrix("foo"));
   }
 
 
@@ -23,8 +23,8 @@ public class PathSegmentTest {
     PathSegment seg = new PathSegment("simple;k=v");
 
     assertEquals("simple", seg.val());
-    assertEquals("v", seg.metric("k"));
-    assertNull(seg.metric("foo"));
+    assertEquals("v", seg.matrix("k"));
+    assertNull(seg.matrix("foo"));
   }
 
   @Test
@@ -33,9 +33,9 @@ public class PathSegmentTest {
     PathSegment seg = PathSegment.of("simple;k=v;l=m");
 
     assertEquals("simple", seg.val());
-    assertEquals("v", seg.metric("k"));
-    assertEquals("m", seg.metric("l"));
-    assertNull(seg.metric("foo"));
+    assertEquals("v", seg.matrix("k"));
+    assertEquals("m", seg.matrix("l"));
+    assertNull(seg.matrix("foo"));
   }
 
   @Test
@@ -44,8 +44,8 @@ public class PathSegmentTest {
     PathSegment seg = new PathSegment("simple;k=;l=");
 
     assertEquals("simple", seg.val());
-    assertNull(seg.metric("k"));
-    assertNull(seg.metric("l"));
-    assertNull(seg.metric("foo"));
+    assertNull(seg.matrix("k"));
+    assertNull(seg.matrix("l"));
+    assertNull(seg.matrix("foo"));
   }
 }

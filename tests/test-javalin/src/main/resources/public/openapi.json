@@ -394,6 +394,62 @@
         }
       }
     },
+    "/hello/withMatrix/{year_segment}/{other}" : {
+      "get" : {
+        "tags" : [ ],
+        "summary" : "",
+        "description" : "",
+        "parameters" : [ {
+          "name" : "year",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "nullable" : false
+          }
+        }, {
+          "name" : "author",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "country",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "other",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "extra",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "text/plain" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/hello/{id}" : {
       "delete" : {
         "tags" : [ ],

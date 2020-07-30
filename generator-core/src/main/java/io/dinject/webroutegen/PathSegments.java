@@ -28,12 +28,12 @@ class PathSegments {
           if (section.startsWith(":")) {
             Segment segment = createSegment(section.substring(1));
             segments.add(segment);
-            path.append(segment.path(section));
+            path.append(segment.path(section, ":", ""));
 
           } else if ((section.startsWith("{") && (section.endsWith("}")))) {
             Segment segment = createSegment(section.substring(1, section.length() - 1));
             segments.add(segment);
-            path.append(segment.path(section));
+            path.append(segment.path(section, "{", "}"));
 
           } else {
             path.append(section);
@@ -46,21 +46,19 @@ class PathSegments {
   }
 
   private static Segment createSegment(String val) {
-
-    String[] metricSplit = val.split(";");
-    if (metricSplit.length == 1) {
-      return new Segment(metricSplit[0]);
+    String[] matrixSplit = val.split(";");
+    if (matrixSplit.length == 1) {
+      return new Segment(matrixSplit[0]);
     }
-
-    Set<String> metrics = new HashSet<>(Arrays.asList(metricSplit).subList(1, metricSplit.length));
-    return new Segment(metricSplit[0], metrics);
+    Set<String> matrixKeys = new HashSet<>(Arrays.asList(matrixSplit).subList(1, matrixSplit.length));
+    return new Segment(matrixSplit[0], matrixKeys);
   }
 
   private final String fullPath;
 
   private final Set<Segment> segments;
 
-  private final List<Segment> withMetrics = new ArrayList<>();
+  private final List<Segment> withMatrixs = new ArrayList<>();
 
   private final Set<String> allNames = new HashSet<>();
 
@@ -69,8 +67,8 @@ class PathSegments {
     this.segments = segments;
     for (Segment segment : segments) {
       segment.addNames(allNames);
-      if (segment.hasMetrics()) {
-        withMetrics.add(segment);
+      if (segment.hasMatrixParams()) {
+        withMatrixs.add(segment);
       }
     }
   }
@@ -80,8 +78,8 @@ class PathSegments {
     return allNames.contains(varName);
   }
 
-  List<Segment> metricSegments() {
-    return withMetrics;
+  List<Segment> matrixSegments() {
+    return withMatrixs;
   }
 
   Segment segment(String varName) {
@@ -103,27 +101,27 @@ class PathSegments {
     private final String name;
 
     /**
-     * Metric keys.
+     * Matrix keys.
      */
-    private final Set<String> metrics;
+    private final Set<String> matrixKeys;
 
     /**
-     * Variable names the metrics map to (Java method param names).
+     * Variable names the matrix map to (Java method param names).
      */
-    private final Set<String> metricVarNames;
+    private final Set<String> matrixVarNames;
 
     Segment(String name) {
       this.name = name;
-      this.metrics = null;
-      this.metricVarNames = null;
+      this.matrixKeys = null;
+      this.matrixVarNames = null;
     }
 
-    Segment(String name, Set<String> metrics) {
+    Segment(String name, Set<String> matrixKeys) {
       this.name = name;
-      this.metrics = metrics;
-      this.metricVarNames = new HashSet<>();
-      for (String key : metrics) {
-        metricVarNames.add(combine(name, key));
+      this.matrixKeys = matrixKeys;
+      this.matrixVarNames = new HashSet<>();
+      for (String key : matrixKeys) {
+        matrixVarNames.add(combine(name, key));
       }
     }
 
@@ -131,16 +129,16 @@ class PathSegments {
       allNames.add(name);
     }
 
-    boolean hasMetrics() {
-      return metrics != null && !metrics.isEmpty();
+    boolean hasMatrixParams() {
+      return matrixKeys != null && !matrixKeys.isEmpty();
     }
 
     private String combine(String name, String key) {
       return name + Character.toUpperCase(key.charAt(0)) + key.substring(1);
     }
 
-    Set<String> metrics() {
-      return metrics;
+    Set<String> matrixKeys() {
+      return matrixKeys;
     }
 
     String name() {
@@ -148,51 +146,49 @@ class PathSegments {
     }
 
     boolean isPathParameter(String varName) {
-      return name.equals(varName) || (metrics != null && (metricVarNames.contains(varName) || metrics.contains(varName)));
+      return name.equals(varName) || (matrixKeys != null && (matrixVarNames.contains(varName) || matrixKeys.contains(varName)));
     }
 
     /**
      * Reading the value from a segment (rather than directly from pathParam).
      */
     void writeGetVal(Append writer, String varName, PlatformAdapter platform) {
-      if (!hasMetrics()) {
+      if (!hasMatrixParams()) {
         platform.writeReadParameter(writer, ParamType.PATHPARAM, name);
       } else {
-        // TODO: platform read segment handling ...
         writer.append("%s_segment.", name);
         if (name.equals(varName)) {
           writer.append("val()");
         } else {
-          writer.append("metric(\"%s\")", metricKey(varName));
+          writer.append("matrix(\"%s\")", matrixKey(varName));
         }
       }
     }
 
-    private String metricKey(String varName) {
-
+    private String matrixKey(String varName) {
       if (!varName.startsWith(name)) {
         return varName;
       }
-
       String key = varName.substring(name.length());
       return Character.toLowerCase(key.charAt(0)) + key.substring(1);
     }
 
-    void writeCreateSegment(Append writer) {
-      // TODO: platform read segment handling ...
-      writer.append("      PathSegment %s_segment = PathSegment.of(ctx.pathParam(\"%s_segment\"));", name, name).eol();
+    void writeCreateSegment(Append writer, PlatformAdapter platform) {
+      writer.append(platform.indent());
+      writer.append("  PathSegment %s_segment = PathSegment.of(", name);
+      platform.writeReadParameter(writer, ParamType.PATHPARAM, name + "_segment");
+      writer.append(");").eol();
     }
 
     boolean isRequired(String varName) {
       return name.equals(varName);
     }
 
-    String path(String section) {
-      if (!hasMetrics()) {
+    String path(String section, String prefix, String suffix) {
+      if (!hasMatrixParams()) {
         return section;
       }
-      // TODO: platform read segment handling ...=
-      return ":" + name + "_segment";
+      return prefix + name + "_segment" + suffix;
     }
   }
 }

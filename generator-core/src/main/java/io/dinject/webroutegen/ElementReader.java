@@ -225,7 +225,7 @@ public class ElementReader {
     if (impliedParamType) {
       PathSegments.Segment segment = segments.segment(varName);
       if (segment != null) {
-        // path or metric parameter
+        // path or matrix parameter
         boolean requiredParam = segment.isRequired(varName);
         String asMethod = (typeHandler == null) ? null : (requiredParam) ? typeHandler.asMethod() : typeHandler.toMethod();
         if (asMethod != null) {

@@ -35,7 +35,7 @@ class ControllerWriter extends BaseControllerWriter {
   }
 
   private void writeForMethod(MethodReader method) {
-    new ControllerMethodWriter(method, writer).write();
+    new ControllerMethodWriter(method, writer, ctx).write();
     if (!reader.isDocHidden()) {
       method.buildApiDocumentation(ctx);
     }

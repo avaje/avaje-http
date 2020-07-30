@@ -7,6 +7,7 @@ import io.dinject.controller.Get;
 import io.dinject.controller.Header;
 import io.dinject.controller.Path;
 import io.dinject.controller.Post;
+import io.dinject.controller.Produces;
 import io.dinject.controller.Put;
 import io.helidon.common.http.FormParams;
 import io.helidon.webserver.ServerRequest;
@@ -87,6 +88,12 @@ public class FooController {
         myForm.name = formParams.first("name").orElse(null);
         res.send(formParams.toMap().toString());
       });
+  }
+
+  @Produces("text/plain")
+  @Get("/withMatrix/:year;author;country/:other")
+  String getWithMatrixParam(int year, String author, String country, String other, String extra) {
+    return "yr:" + year + " au:" + author + " co:" + country + " other:" + other + " extra:" + extra;
   }
 
   public static class MyForm {
