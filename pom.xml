@@ -4,7 +4,7 @@
 
   <groupId>io.dinject</groupId>
   <artifactId>controller-parent</artifactId>
-  <version>1.21-SNAPSHOT</version>
+  <version>1.21</version>
   <packaging>pom</packaging>
 
   <parent>
@@ -15,7 +15,7 @@
 
   <scm>
     <developerConnection>scm:git:git@github.com:dinject/dinject-controller.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>controller-parent-1.21</tag>
   </scm>
 
   <dependencies>
