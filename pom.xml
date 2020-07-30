@@ -14,7 +14,7 @@
   </parent>
 
   <scm>
-    <developerConnection>scm:git:git@github.com:dinject/javalin-generator.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:dinject/dinject-controller.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
