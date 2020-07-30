@@ -47,7 +47,7 @@
     <module>generator-core</module>
     <module>generator-javalin</module>
     <module>generator-helidon</module>
-<!--    <module>tests</module>-->
+    <module>tests</module>
   </modules>
 
 </project>
