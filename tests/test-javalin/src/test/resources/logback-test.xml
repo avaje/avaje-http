@@ -14,5 +14,6 @@
 
   <logger name="io.javalin" level="INFO"/>
   <logger name="org.example" level="DEBUG"/>
+  <logger name="io.avaje.http.client" level="DEBUG"/>
 
 </configuration>

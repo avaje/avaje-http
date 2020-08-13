@@ -10,8 +10,8 @@
 
   <parent>
     <groupId>org.avaje</groupId>
-    <artifactId>java8-oss</artifactId>
-    <version>2.1</version>
+    <artifactId>java11-oss</artifactId>
+    <version>2.1.2</version>
   </parent>
 
   <properties>

@@ -12,6 +12,7 @@
   <modules>
     <module>test-helidon</module>
     <module>test-javalin</module>
+    <module>test-client</module>
   </modules>
 
 </project>

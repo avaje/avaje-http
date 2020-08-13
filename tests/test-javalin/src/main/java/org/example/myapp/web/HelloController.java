@@ -86,7 +86,7 @@ class HelloController {
    * @param foo The hello doo id
    * @param dto The hello body as json
    */
-  @Roles({ADMIN})
+//  @Roles({ADMIN})
   @Post("/savebean/:foo")
   void saveBean(String foo, HelloDto dto, Context context) {
     // save hello data ...

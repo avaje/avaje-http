@@ -10,8 +10,8 @@
 
   <parent>
     <groupId>org.avaje</groupId>
-    <artifactId>java8-oss</artifactId>
-    <version>2.1</version>
+    <artifactId>java11-oss</artifactId>
+    <version>2.1.2</version>
   </parent>
 
   <properties>
@@ -102,6 +102,13 @@
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <version>4.3.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.avaje.beta.http</groupId>
+      <artifactId>http-client</artifactId>
+      <version>0.1-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
 
