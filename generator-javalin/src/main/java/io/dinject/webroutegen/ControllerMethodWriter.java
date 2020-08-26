@@ -21,7 +21,7 @@ class ControllerMethodWriter {
     this.ctx = ctx;
   }
 
-  void write() {
+  void write(boolean requestScoped) {
 
     final PathSegments segments = method.getPathSegments();
     final String fullPath = segments.fullPath();
@@ -48,7 +48,11 @@ class ControllerMethodWriter {
       writeContextReturn();
     }
 
-    writer.append("controller.");
+    if (requestScoped) {
+      writer.append("factory.create(ctx).");
+    } else {
+      writer.append("controller.");
+    }
     writer.append(method.simpleName()).append("(");
     for (int i = 0; i < params.size(); i++) {
       if (i > 0) {

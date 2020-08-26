@@ -30,6 +30,10 @@ public abstract class BaseControllerWriter {
     initWriter();
   }
 
+  protected boolean isRequestScoped() {
+    return reader.isRequestScoped();
+  }
+
   protected String initPackageName(String originName) {
     int dp = originName.lastIndexOf('.');
     return dp > -1 ? originName.substring(0, dp) : null;

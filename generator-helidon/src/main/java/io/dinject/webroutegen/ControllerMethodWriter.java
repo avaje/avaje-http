@@ -33,7 +33,7 @@ class ControllerMethodWriter {
     }
   }
 
-  void writeHandler() {
+  void writeHandler(boolean requestScoped) {
     writer.append("  private void _%s(ServerRequest req, ServerResponse res", method.simpleName());
     final String bodyType = method.getBodyType();
     if (bodyType != null) {
@@ -66,8 +66,11 @@ class ControllerMethodWriter {
         param.writeValidate(writer);
       }
     }
-
-    writer.append("controller.");
+    if (requestScoped) {
+      writer.append("factory.create(req, res).");
+    } else {
+      writer.append("controller.");
+    }
     writer.append(method.simpleName()).append("(");
     for (int i = 0; i < params.size(); i++) {
       if (i > 0) {
@@ -81,22 +84,6 @@ class ControllerMethodWriter {
     }
     writer.append(";").eol();
     writer.append("  }").eol().eol();
-
-//    List<String> roles = method.roles();
-//    if (!roles.isEmpty()) {
-//      writer.append(", roles(");
-//      for (int i = 0; i < roles.size(); i++) {
-//        if (i > 0) {
-//          writer.append(", ");
-//        }
-//        writer.append(Util.shortName(roles.get(i)));
-//      }
-//      writer.append(")");
-//    }
-//    writer.append(");").eol().eol();
-
-//    writer.append("    res.send(\"Hello\");").eol();
-//    writer.append("  }").eol();
   }
 
   private void writeContextReturn() {

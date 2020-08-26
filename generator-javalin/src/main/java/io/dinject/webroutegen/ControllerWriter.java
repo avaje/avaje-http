@@ -35,7 +35,7 @@ class ControllerWriter extends BaseControllerWriter {
   }
 
   private void writeForMethod(MethodReader method) {
-    new ControllerMethodWriter(method, writer, ctx).write();
+    new ControllerMethodWriter(method, writer, ctx).write(isRequestScoped());
     if (!reader.isDocHidden()) {
       method.buildApiDocumentation(ctx);
     }
@@ -48,18 +48,25 @@ class ControllerWriter extends BaseControllerWriter {
     writer.append("@Singleton").eol();
     writer.append("public class ").append(shortName).append("$route implements WebRoutes {").eol().eol();
 
-    writer.append(" private final %s controller;", shortName).eol();
+    String controllerName = "controller";
+    String controllerType = shortName;
+    if (isRequestScoped()) {
+      controllerName = "factory";
+      controllerType += "$factory";
+    }
+    writer.append(" private final %s %s;", controllerType, controllerName).eol();
+
     if (reader.isIncludeValidator()) {
       writer.append(" private final Validator validator;").eol();
     }
     writer.eol();
 
-    writer.append(" public %s$route(%s controller", shortName, shortName);
+    writer.append(" public %s$route(%s %s", shortName, controllerType, controllerName);
     if (reader.isIncludeValidator()) {
       writer.append(", Validator validator");
     }
     writer.append(") {").eol();
-    writer.append("   this.controller = controller;").eol();
+    writer.append("   this.%s = %s;", controllerName, controllerName).eol();
     if (reader.isIncludeValidator()) {
       writer.append("   this.validator = validator;").eol();
     }

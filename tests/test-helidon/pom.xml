@@ -17,7 +17,7 @@
   <properties>
     <mainClass>org.example.Main</mainClass>
     <helidon-version>2.0.1</helidon-version>
-    <dinject-version>2.2</dinject-version>
+    <dinject-version>2.3</dinject-version>
     <dinject-controller-version>1.22-SNAPSHOT</dinject-controller-version>
   </properties>
 
@@ -105,6 +105,12 @@
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <version>4.3.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.avaje.beta.http</groupId>
+      <artifactId>http-client</artifactId>
+      <version>0.1-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
 

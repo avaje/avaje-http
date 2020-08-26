@@ -1,5 +1,9 @@
 package org.example;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.avaje.http.client.HttpClientContext;
+import io.avaje.http.client.JacksonBodyAdapter;
+import io.avaje.http.client.RequestLogger;
 import io.helidon.webserver.WebServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,5 +23,14 @@ public class BaseWebTest {
   @AfterAll
   public static void shutdown() {
     webServer.shutdown();
+  }
+
+  public static HttpClientContext client() {
+    return HttpClientContext.newBuilder()
+      .withBaseUrl(baseUrl)
+      .withRequestListener(new RequestLogger())
+      .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+      //.with(httpClient)
+      .build();
   }
 }

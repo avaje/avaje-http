@@ -40,7 +40,7 @@ class ControllerWriter extends BaseControllerWriter {
     final List<ControllerMethodWriter> methods = getWriterMethods();
     writeRoutes(methods);
     for (ControllerMethodWriter methodWriter : methods) {
-      writeHandlerMethod(methodWriter);
+      methodWriter.writeHandler(isRequestScoped());
     }
   }
 
@@ -56,10 +56,6 @@ class ControllerWriter extends BaseControllerWriter {
     writer.append("  }").eol().eol();
   }
 
-  private void writeHandlerMethod(ControllerMethodWriter methodWriter) {
-    methodWriter.writeHandler();
-  }
-
   private void writeClassStart() {
     if (ctx.isGeneratedAvailable()) {
       writer.append(AT_GENERATED).eol();
@@ -67,18 +63,24 @@ class ControllerWriter extends BaseControllerWriter {
     writer.append("@Singleton").eol();
     writer.append("public class ").append(shortName).append("$route implements Service {").eol().eol();
 
-    writer.append(" private final %s controller;", shortName).eol();
+    String controllerName = "controller";
+    String controllerType = shortName;
+    if (isRequestScoped()) {
+      controllerName = "factory";
+      controllerType += "$factory";
+    }
+    writer.append(" private final %s %s;", controllerType, controllerName).eol();
     if (reader.isIncludeValidator()) {
       writer.append(" private final Validator validator;").eol();
     }
     writer.eol();
 
-    writer.append(" public %s$route(%s controller", shortName, shortName);
+    writer.append(" public %s$route(%s %s", shortName, controllerType, controllerName);
     if (reader.isIncludeValidator()) {
       writer.append(", Validator validator");
     }
     writer.append(") {").eol();
-    writer.append("   this.controller = controller;").eol();
+    writer.append("   this.%s = %s;", controllerName, controllerName).eol();
     if (reader.isIncludeValidator()) {
       writer.append("   this.validator = validator;").eol();
     }

@@ -46,9 +46,14 @@ class ControllerReader {
    */
   private final String produces;
 
-  private boolean docHidden;
-
   private final boolean includeValidator;
+
+  /**
+   * Flag set when the controller is dependant on a request scope type.
+   */
+  private boolean requestScope;
+
+  private boolean docHidden;
 
   ControllerReader(TypeElement beanType, ProcessingContext ctx) {
     this.beanType = beanType;
@@ -70,14 +75,11 @@ class ControllerReader {
     if (includeValidator) {
       importTypes.add(Constants.VALIDATOR);
     }
-
     this.produces = initProduces();
   }
 
   private List<Element> initInterfaces() {
-
     List<Element> interfaces = new ArrayList<>();
-
     for (TypeMirror anInterface : beanType.getInterfaces()) {
       final Element ifaceElement = ctx.asElement(anInterface);
       if (ifaceElement.getAnnotation(Path.class) != null) {
@@ -88,7 +90,6 @@ class ControllerReader {
   }
 
   private List<ExecutableElement> initInterfaceMethods() {
-
     List<ExecutableElement> ifaceMethods = new ArrayList<>();
     for (Element anInterface : interfaces) {
       ifaceMethods.addAll(ElementFilter.methodsIn(anInterface.getEnclosedElements()));
@@ -111,7 +112,6 @@ class ControllerReader {
   }
 
   <A extends Annotation> A findMethodAnnotation(Class<A> type, ExecutableElement element) {
-
     for (ExecutableElement interfaceMethod : interfaceMethods) {
       if (matchMethod(interfaceMethod, element)) {
         final A annotation = interfaceMethod.getAnnotation(type);
@@ -120,7 +120,6 @@ class ControllerReader {
         }
       }
     }
-
     return null;
   }
 
@@ -157,34 +156,49 @@ class ControllerReader {
     return includeValidator;
   }
 
+  /**
+   * Return true if the controller has request scoped dependencies.
+   * In that case a BeanFactory will have been generated.
+   */
+  boolean isRequestScoped() {
+    return requestScope;
+  }
+
   void read() {
     if (!roles.isEmpty()) {
       ctx.platform().controllerRoles(roles, this);
     }
-
     for (Element element : beanType.getEnclosedElements()) {
       if (element.getKind() == ElementKind.METHOD) {
         readMethod((ExecutableElement) element);
+      } else if (element.getKind() == ElementKind.FIELD) {
+        readField(element);
       }
     }
-
     readSuper(beanType);
+  }
+
+  private void readField(Element element) {
+    if (!requestScope) {
+      final String rawType = element.asType().toString();
+      requestScope = RequestScopeTypes.isRequestType(rawType);
+    }
   }
 
   /**
    * Read methods from superclasses taking into account generics.
    */
   private void readSuper(TypeElement beanType) {
-
     TypeMirror superclass = beanType.getSuperclass();
     if (superclass.getKind() != TypeKind.NONE) {
       DeclaredType declaredType = (DeclaredType) superclass;
-
       final Element superElement = ctx.asElement(superclass);
       if (!"java.lang.Object".equals(superElement.toString())) {
         for (Element element : superElement.getEnclosedElements()) {
           if (element.getKind() == ElementKind.METHOD) {
             readMethod((ExecutableElement) element, declaredType);
+          } else if (element.getKind() == ElementKind.FIELD) {
+            readField(element);
           }
         }
         if (superElement instanceof TypeElement) {
