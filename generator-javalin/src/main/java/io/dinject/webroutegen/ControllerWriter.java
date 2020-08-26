@@ -7,7 +7,7 @@ import java.io.IOException;
  */
 class ControllerWriter extends BaseControllerWriter {
 
-  private static final String AT_GENERATED = "@Generated(\"io.dinject.javalin-webgen\")";
+  private static final String AT_GENERATED = "@Generated(\"io.dinject.javalin-generator\")";
   private static final String API_BUILDER = "io.javalin.apibuilder.ApiBuilder";
 
   ControllerWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {

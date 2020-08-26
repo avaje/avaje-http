@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
  */
 class ControllerWriter extends BaseControllerWriter {
 
-  private static final String AT_GENERATED = "@Generated(\"io.dinject.helidon-webgen\")";
+  private static final String AT_GENERATED = "@Generated(\"io.dinject.helidon-generator\")";
 
   ControllerWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
     super(reader, ctx);
