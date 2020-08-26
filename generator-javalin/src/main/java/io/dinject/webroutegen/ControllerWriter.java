@@ -54,14 +54,14 @@ class ControllerWriter extends BaseControllerWriter {
       controllerName = "factory";
       controllerType += "$factory";
     }
-    writer.append(" private final %s %s;", controllerType, controllerName).eol();
+    writer.append("  private final %s %s;", controllerType, controllerName).eol();
 
     if (reader.isIncludeValidator()) {
-      writer.append(" private final Validator validator;").eol();
+      writer.append("  private final Validator validator;").eol();
     }
     writer.eol();
 
-    writer.append(" public %s$route(%s %s", shortName, controllerType, controllerName);
+    writer.append("  public %s$route(%s %s", shortName, controllerType, controllerName);
     if (reader.isIncludeValidator()) {
       writer.append(", Validator validator");
     }
@@ -70,7 +70,7 @@ class ControllerWriter extends BaseControllerWriter {
     if (reader.isIncludeValidator()) {
       writer.append("   this.validator = validator;").eol();
     }
-    writer.append(" }").eol().eol();
+    writer.append("  }").eol().eol();
   }
 
 }
