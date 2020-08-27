@@ -18,7 +18,7 @@ public class GitHubServiceTest {
     Retrofit retrofit = new Retrofit.Builder()
       .baseUrl("https://api.github.com/")
       .addConverterFactory(ScalarsConverterFactory.create())
-      //.addConverterFactory(GsonConverterFactory.create())
+      .addConverterFactory(GsonConverterFactory.create())
       .build();
 
     GitHubService service = retrofit.create(GitHubService.class);
