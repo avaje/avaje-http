@@ -10,6 +10,20 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Jackson BodyAdapter to read and write beans as JSON.
+ *
+ * <pre>{@code
+ *
+ *   HttpClientContext.newBuilder()
+ *       .withBaseUrl(baseUrl)
+ *       .withRequestListener(new RequestLogger())
+ *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+ *       //.withBodyAdapter(new GsonBodyAdapter(new Gson()))
+ *       .build();
+ *
+ * }</pre>
+ */
 public class JacksonBodyAdapter implements BodyAdapter {
 
   private final ObjectMapper mapper;

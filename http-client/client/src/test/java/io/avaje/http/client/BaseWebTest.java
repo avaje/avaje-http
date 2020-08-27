@@ -28,7 +28,7 @@ public class BaseWebTest {
       .withBaseUrl(baseUrl)
       .withRequestListener(new RequestLogger())
       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
-      //.with(httpClient)
+//      .withBodyAdapter(new GsonBodyAdapter(new Gson()))
       .build();
   }
 }

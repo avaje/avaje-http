@@ -35,6 +35,12 @@
 
     <!-- test dependencies  -->
 
+<!--    <dependency>-->
+<!--      <groupId>io.avaje</groupId>-->
+<!--      <artifactId>avaje-http-client-gson</artifactId>-->
+<!--      <version>0.2-SNAPSHOT</version>-->
+<!--    </dependency>-->
+
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
