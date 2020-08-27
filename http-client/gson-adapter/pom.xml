@@ -12,7 +12,7 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client-gson</artifactId>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http-client.git</developerConnection>
