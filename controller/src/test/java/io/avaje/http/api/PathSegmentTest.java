@@ -1,6 +1,5 @@
 package io.avaje.http.api;
 
-import io.avaje.http.api.PathSegment;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

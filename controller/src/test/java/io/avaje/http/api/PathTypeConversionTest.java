@@ -1,9 +1,5 @@
 package io.avaje.http.api;
 
-import io.avaje.http.api.InvalidPathArgumentException;
-import io.avaje.http.api.InvalidTypeArgumentException;
-import io.avaje.http.api.PathTypeConversion;
-import io.avaje.http.api.RequiredArgumentException;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
