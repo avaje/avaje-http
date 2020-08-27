@@ -91,7 +91,7 @@ public class FooController {
   }
 
   @Produces("text/plain")
-  @Get("/withMatrix/:year;author;country/:other")
+  @Get("/withMatrix/{year;author;country}/{other}")
   String getWithMatrixParam(int year, String author, String country, String other, String extra) {
     return "yr:" + year + " au:" + author + " co:" + country + " other:" + other + " extra:" + extra;
   }

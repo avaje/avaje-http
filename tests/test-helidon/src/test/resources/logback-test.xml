@@ -10,5 +10,6 @@
   </root>
 
   <logger name="org.example" level="DEBUG"/>
+  <logger name="io.avaje" level="TRACE"/>
 
 </configuration>

@@ -1,8 +1,12 @@
 package org.example;
 
+import io.avaje.http.client.HttpClientContext;
+import io.dinject.controller.Get;
 import io.restassured.response.Response;
 import org.example.api.FooBody;
 import org.junit.jupiter.api.Test;
+
+import java.net.http.HttpResponse;
 
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
@@ -11,6 +15,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
 
 class FooControllerTest extends BaseWebTest {
+
+  private final HttpClientContext client = client();
 
   @Test
   void hello() {
@@ -42,8 +48,22 @@ class FooControllerTest extends BaseWebTest {
   }
 
 
+  @Get("/withMatrix/:year;author;country/:other")
   @Test
   void getWithMatrixParam() {
+
+    final HttpResponse<String> res = client.request()
+      .path("foo")
+      .path("withMatrix")
+      .path("2011").matrixParam("author", "rob").matrixParam("country", "nz")
+      .path("foo")
+      .param("extra", "banana")
+      .get()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("yr:2011 au:rob co:nz other:foo extra:banana");
+
     given()
       .get(baseUrl + "/foo/withMatrix/2011;author=rob;country=nz/foo?extra=banana")
       .then()
