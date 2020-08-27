@@ -44,7 +44,6 @@
 
   <modules>
     <module>controller</module>
-    <module>client</module>
     <module>generator-core</module>
     <module>generator-javalin</module>
     <module>generator-helidon</module>
