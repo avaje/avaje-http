@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>java11-oss</artifactId>
+    <groupId>org.avaje</groupId>
+    <version>2.1.2</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.avaje</groupId>
+  <artifactId>avaje-http-client</artifactId>
+  <version>0.1-SNAPSHOT</version>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.25</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.11.1</version>
+      <optional>true</optional>
+    </dependency>
+
+
+    <!-- test dependencies  -->
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.6.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.6.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.16.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.javalin</groupId>
+      <artifactId>javalin</artifactId>
+      <version>3.9.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.dinject</groupId>
+      <artifactId>dinject</artifactId>
+      <version>2.3</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.dinject</groupId>
+      <artifactId>dinject-controller</artifactId>
+      <version>1.21</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.dinject</groupId>
+      <artifactId>controller-validator-hibernate</artifactId>
+      <version>1.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.avaje.composite</groupId>
+      <artifactId>logback</artifactId>
+      <version>1.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- test annotation processors -->
+
+    <dependency>
+      <groupId>io.dinject</groupId>
+      <artifactId>dinject-generator</artifactId>
+      <version>2.3</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.dinject</groupId>
+      <artifactId>javalin-generator</artifactId>
+      <version>1.21</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.2</version>
+        <configuration>
+          <argLine>
+            --illegal-access=permit
+          </argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.22.2</version>
+        <configuration>
+          <argLine>
+            --illegal-access=permit
+          </argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
