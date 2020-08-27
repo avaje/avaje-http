@@ -1,6 +1,6 @@
 package io.dinject.webroutegen;
 
-import io.dinject.controller.Controller;
+import io.avaje.http.api.Controller;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;

@@ -1,12 +1,12 @@
 package io.dinject.webroutegen;
 
-import io.dinject.controller.BeanParam;
-import io.dinject.controller.Cookie;
-import io.dinject.controller.Default;
-import io.dinject.controller.Form;
-import io.dinject.controller.FormParam;
-import io.dinject.controller.Header;
-import io.dinject.controller.QueryParam;
+import io.avaje.http.api.BeanParam;
+import io.avaje.http.api.Cookie;
+import io.avaje.http.api.Default;
+import io.avaje.http.api.Form;
+import io.avaje.http.api.FormParam;
+import io.avaje.http.api.Header;
+import io.avaje.http.api.QueryParam;
 import io.dinject.webroutegen.openapi.MethodDocBuilder;
 import io.dinject.webroutegen.openapi.MethodParamDocBuilder;
 

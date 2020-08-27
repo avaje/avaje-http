@@ -1,14 +1,14 @@
 package org.example;
 
-import io.dinject.controller.Controller;
-import io.dinject.controller.Delete;
-import io.dinject.controller.Form;
-import io.dinject.controller.Get;
-import io.dinject.controller.Header;
-import io.dinject.controller.Path;
-import io.dinject.controller.Post;
-import io.dinject.controller.Produces;
-import io.dinject.controller.Put;
+import io.avaje.http.api.Controller;
+import io.avaje.http.api.Delete;
+import io.avaje.http.api.Form;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.Header;
+import io.avaje.http.api.Path;
+import io.avaje.http.api.Post;
+import io.avaje.http.api.Produces;
+import io.avaje.http.api.Put;
 import io.helidon.common.http.FormParams;
 import io.helidon.webserver.ServerRequest;
 import io.helidon.webserver.ServerResponse;

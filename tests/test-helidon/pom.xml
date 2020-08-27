@@ -18,7 +18,7 @@
     <mainClass>org.example.Main</mainClass>
     <helidon-version>2.0.1</helidon-version>
     <dinject-version>2.3</dinject-version>
-    <dinject-controller-version>1.22-SNAPSHOT</dinject-controller-version>
+    <dinject-controller-version>1.23-SNAPSHOT</dinject-controller-version>
   </properties>
 
   <dependencies>
@@ -35,21 +35,21 @@
     </dependency>
 
     <dependency>
-      <groupId>io.dinject</groupId>
-      <artifactId>dinject</artifactId>
-      <version>${dinject-version}</version>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-inject</artifactId>
+      <version>0.1-SNAPSHOT</version>
     </dependency>
 
     <dependency>
-      <groupId>io.dinject</groupId>
-      <artifactId>dinject-controller</artifactId>
-      <version>${dinject-controller-version}</version>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-api</artifactId>
+      <version>0.1-SNAPSHOT</version>
     </dependency>
 
     <dependency>
-      <groupId>io.dinject</groupId>
-      <artifactId>dinject-generator</artifactId>
-      <version>${dinject-version}</version>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-inject-generator</artifactId>
+      <version>0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
 

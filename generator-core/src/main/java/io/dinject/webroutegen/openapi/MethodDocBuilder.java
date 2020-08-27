@@ -1,6 +1,6 @@
 package io.dinject.webroutegen.openapi;
 
-import io.dinject.controller.MediaType;
+import io.avaje.http.api.MediaType;
 import io.dinject.webroutegen.MethodParam;
 import io.dinject.webroutegen.MethodReader;
 import io.dinject.webroutegen.javadoc.Javadoc;

@@ -1,9 +1,9 @@
 package org.example.myapp.web;
 
-import io.dinject.controller.Controller;
-import io.dinject.controller.Get;
-import io.dinject.controller.Path;
-import io.dinject.controller.Produces;
+import io.avaje.http.api.Controller;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.Path;
+import io.avaje.http.api.Produces;
 import io.javalin.http.Context;
 
 import javax.inject.Inject;

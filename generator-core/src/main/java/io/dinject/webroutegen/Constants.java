@@ -8,9 +8,9 @@ class Constants {
   static final String GENERATED_9 = "javax.annotation.processing.Generated";
   //static final String GENERATED_8 = "javax.annotation.Generated";
 
-  static final String IMPORT_PATH_TYPE_CONVERT = "import static io.dinject.controller.PathTypeConversion.*;";
+  static final String IMPORT_PATH_TYPE_CONVERT = "import static io.avaje.http.api.PathTypeConversion.*;";
 
-  static final String IMPORT_CONTROLLER = "io.dinject.controller.*";
-  static final String VALIDATOR = "io.dinject.controller.Validator";
+  static final String IMPORT_CONTROLLER = "io.avaje.http.api.*";
+  static final String VALIDATOR = "io.avaje.http.api.Validator";
 
 }

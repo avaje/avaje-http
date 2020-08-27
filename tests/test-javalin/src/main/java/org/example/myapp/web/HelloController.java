@@ -1,13 +1,13 @@
 package org.example.myapp.web;
 
-import io.dinject.controller.Controller;
-import io.dinject.controller.Delete;
-import io.dinject.controller.Form;
-import io.dinject.controller.Get;
-import io.dinject.controller.MediaType;
-import io.dinject.controller.Path;
-import io.dinject.controller.Post;
-import io.dinject.controller.Produces;
+import io.avaje.http.api.Controller;
+import io.avaje.http.api.Delete;
+import io.avaje.http.api.Form;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.MediaType;
+import io.avaje.http.api.Path;
+import io.avaje.http.api.Post;
+import io.avaje.http.api.Produces;
 import io.javalin.http.Context;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.example.myapp.service.MyService;
@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
-import static org.example.myapp.web.AppRoles.ADMIN;
 
 /**
  * Hello resource manager.

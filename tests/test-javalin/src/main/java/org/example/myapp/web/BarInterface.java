@@ -1,9 +1,9 @@
 package org.example.myapp.web;
 
-import io.dinject.controller.Get;
-import io.dinject.controller.MediaType;
-import io.dinject.controller.Path;
-import io.dinject.controller.Produces;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.MediaType;
+import io.avaje.http.api.Path;
+import io.avaje.http.api.Produces;
 import io.swagger.v3.oas.annotations.links.Link;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 

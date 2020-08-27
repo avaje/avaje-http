@@ -1,12 +1,12 @@
 package io.dinject.webroutegen;
 
-import io.dinject.controller.Delete;
-import io.dinject.controller.Form;
-import io.dinject.controller.Get;
-import io.dinject.controller.Patch;
-import io.dinject.controller.Post;
-import io.dinject.controller.Produces;
-import io.dinject.controller.Put;
+import io.avaje.http.api.Delete;
+import io.avaje.http.api.Form;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.Patch;
+import io.avaje.http.api.Post;
+import io.avaje.http.api.Produces;
+import io.avaje.http.api.Put;
 import io.dinject.webroutegen.javadoc.Javadoc;
 import io.dinject.webroutegen.openapi.MethodDocBuilder;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -1,6 +1,6 @@
 package org.example.myapp.web;
 
-import io.dinject.controller.Controller;
+import io.avaje.http.api.Controller;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
 package io.dinject.webroutegen;
 
-import io.dinject.controller.MediaType;
+import io.avaje.http.api.MediaType;
 
 import java.util.List;
 

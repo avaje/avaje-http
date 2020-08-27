@@ -1,6 +1,6 @@
 package org.example;
 
-import io.dinject.SystemContext;
+import io.avaje.inject.SystemContext;
 import io.helidon.health.HealthSupport;
 import io.helidon.media.jackson.JacksonSupport;
 import io.helidon.metrics.MetricsSupport;

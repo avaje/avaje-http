@@ -1,7 +1,7 @@
 package io.dinject.webroutegen;
 
-import io.dinject.controller.Path;
-import io.dinject.controller.Produces;
+import io.avaje.http.api.Path;
+import io.avaje.http.api.Produces;
 import io.swagger.v3.oas.annotations.Hidden;
 
 import javax.lang.model.element.Element;

@@ -1,8 +1,8 @@
 package org.example.myapp.web;
 
-import io.dinject.controller.Controller;
-import io.dinject.controller.Get;
-import io.dinject.controller.Path;
+import io.avaje.http.api.Controller;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.Path;
 
 import java.util.Arrays;
 import java.util.List;

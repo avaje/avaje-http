@@ -1,7 +1,7 @@
 package org.example;
 
 import io.avaje.http.client.HttpClientContext;
-import io.dinject.controller.Get;
+import io.avaje.http.api.Get;
 import io.restassured.response.Response;
 import org.example.api.FooBody;
 import org.junit.jupiter.api.Test;
