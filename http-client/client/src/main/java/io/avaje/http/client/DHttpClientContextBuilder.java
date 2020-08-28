@@ -15,7 +15,7 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
 
   private BodyAdapter bodyAdapter;
 
-  private RequestListener requestListener;
+  private ResponseListener responseListener;
 
   DHttpClientContextBuilder() {
   }
@@ -45,8 +45,8 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   }
 
   @Override
-  public HttpClientContext.Builder withRequestListener(RequestListener requestListener) {
-    this.requestListener = requestListener;
+  public HttpClientContext.Builder withResponseListener(ResponseListener responseListener) {
+    this.responseListener = responseListener;
     return this;
   }
 
@@ -57,7 +57,7 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
     if (client == null) {
       client = defaultClient();
     }
-    return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, requestListener);
+    return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, responseListener);
   }
 
   private HttpClient defaultClient() {

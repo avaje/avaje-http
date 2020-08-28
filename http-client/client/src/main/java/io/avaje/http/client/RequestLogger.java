@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class RequestLogger implements RequestListener {
+public class RequestLogger implements ResponseListener {
 
   private static final Logger log = LoggerFactory.getLogger(RequestLogger.class);
 
@@ -29,7 +29,7 @@ public class RequestLogger implements RequestListener {
     if (log.isDebugEnabled()) {
       final HttpResponse<?> response = event.response();
       final HttpRequest request = response.request();
-      long micros = event.requestTimeNanos() / 1000;
+      long micros = event.responseTimeNanos() / 1000;
 
       StringBuilder sb = new StringBuilder();
       sb.append("statusCode:").append(response.statusCode())

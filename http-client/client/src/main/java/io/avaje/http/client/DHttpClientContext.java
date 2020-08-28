@@ -15,14 +15,14 @@ class DHttpClientContext implements HttpClientContext {
   private final String baseUrl;
   private final Duration requestTimeout;
   private final BodyAdapter bodyAdapter;
-  private final RequestListener requestListener;
+  private final ResponseListener responseListener;
 
-  DHttpClientContext(HttpClient httpClient, String baseUrl, Duration requestTimeout, BodyAdapter bodyAdapter, RequestListener requestListener) {
+  DHttpClientContext(HttpClient httpClient, String baseUrl, Duration requestTimeout, BodyAdapter bodyAdapter, ResponseListener responseListener) {
     this.httpClient = httpClient;
     this.baseUrl = baseUrl;
     this.requestTimeout = requestTimeout;
     this.bodyAdapter = bodyAdapter;
-    this.requestListener = requestListener;
+    this.responseListener = responseListener;
   }
 
   @Override
@@ -128,14 +128,14 @@ class DHttpClientContext implements HttpClientContext {
 
 
   void afterResponse(DHttpClientRequest request) {
-    if (requestListener != null) {
-      requestListener.response(request.listenerEvent());
+    if (responseListener != null) {
+      responseListener.response(request.listenerEvent());
     }
   }
 
   void afterResponseHandler(DHttpClientRequest request) {
-    if (requestListener != null) {
-      requestListener.response(request.listenerEvent());
+    if (responseListener != null) {
+      responseListener.response(request.listenerEvent());
     }
   }
 }

@@ -95,7 +95,12 @@ public interface HttpClientContext {
      */
     Builder withBodyAdapter(BodyAdapter adapter);
 
-    Builder withRequestListener(RequestListener requestListener);
+    /**
+     * Add a response listener. Note that {@link RequestLogger} is an
+     * implementation for debug logging request/response headers and
+     * content.
+     */
+    Builder withResponseListener(ResponseListener requestListener);
 
     /**
      * Build and return the context.
