@@ -28,7 +28,7 @@ public class BaseWebTest {
   public static HttpClientContext client() {
     return HttpClientContext.newBuilder()
       .withBaseUrl(baseUrl)
-      .withRequestListener(new RequestLogger())
+      .withResponseListener(new RequestLogger())
       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
       //.with(httpClient)
       .build();
