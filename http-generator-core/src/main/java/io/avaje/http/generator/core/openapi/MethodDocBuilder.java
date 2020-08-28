@@ -44,7 +44,7 @@ public class MethodDocBuilder {
       operation.setDeprecated(true);
     }
 
-    PathItem pathItem = ctx.pathItem(normalisePath(methodReader.getFullPath()));
+    PathItem pathItem = ctx.pathItem(methodReader.getFullPath());
     switch (methodReader.getWebMethod()) {
       case GET:
         pathItem.setGet(operation);
@@ -83,10 +83,6 @@ public class MethodDocBuilder {
       response.setContent(ctx.createContent(methodReader.getReturnType(), contentMediaType));
     }
     responses.addApiResponse(methodReader.getStatusCode(), response);
-  }
-
-  String normalisePath(String fullPath) {
-    return fullPath.replaceAll("(:)([^/]+)", "{$2}");
   }
 
   DocContext getContext() {

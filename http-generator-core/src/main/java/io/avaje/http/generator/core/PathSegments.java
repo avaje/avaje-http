@@ -10,39 +10,40 @@ import java.util.Set;
 
 public class PathSegments {
 
-  static final PathSegments EMPTY = new PathSegments("", Collections.emptySet());
+  static final PathSegments EMPTY = new PathSegments(new Chunks(), Collections.emptySet());
 
   static PathSegments parse(String fullPath) {
 
     Set<Segment> segments = new LinkedHashSet<>();
 
-    StringBuilder path = new StringBuilder();
-
+    Chunks chunks = new Chunks();
     if ("/".equals(fullPath)) {
-      path.append("/");
+      chunks.literal("/");
 
     } else {
       for (String section : fullPath.split("/")) {
         if (!section.isEmpty()) {
-          path.append("/");
+          chunks.literal("/");
           if (section.startsWith(":")) {
-            Segment segment = createSegment(section.substring(1));
+            final String name = section.substring(1);
+            Segment segment = createSegment(name);
             segments.add(segment);
-            path.append(segment.path(section, ":", ""));
+            chunks.named(segment.path(name));
 
           } else if ((section.startsWith("{") && (section.endsWith("}")))) {
-            Segment segment = createSegment(section.substring(1, section.length() - 1));
+            String name = section.substring(1, section.length() - 1);
+            Segment segment = createSegment(name);
             segments.add(segment);
-            path.append(segment.path(section, "{", "}"));
+            chunks.named(segment.path(name));
 
           } else {
-            path.append(section);
+            chunks.literal(section);
           }
         }
       }
     }
 
-    return new PathSegments(path.toString(), segments);
+    return new PathSegments(chunks, segments);
   }
 
   private static Segment createSegment(String val) {
@@ -54,7 +55,7 @@ public class PathSegments {
     return new Segment(matrixSplit[0], matrixKeys);
   }
 
-  private final String fullPath;
+  private final Chunks chunks;
 
   private final Set<Segment> segments;
 
@@ -62,8 +63,8 @@ public class PathSegments {
 
   private final Set<String> allNames = new HashSet<>();
 
-  private PathSegments(String fullPath, Set<Segment> segments) {
-    this.fullPath = fullPath;
+  private PathSegments(Chunks chunks, Set<Segment> segments) {
+    this.chunks = chunks;
     this.segments = segments;
     for (Segment segment : segments) {
       segment.addNames(allNames);
@@ -92,8 +93,22 @@ public class PathSegments {
     return null;
   }
 
+  /**
+   * Return full path with <code>{}</code for named path params.
+   */
   public String fullPath() {
-    return fullPath;
+    return fullPath("{", "}");
+  }
+
+  /**
+   * Return full path with colon for named path params (Javalin).
+   */
+  public String fullPathColon() {
+    return fullPath(":", "");
+  }
+
+  private String fullPath(String prefix, String suffix) {
+    return chunks.fullPath(prefix, suffix);
   }
 
   public static class Segment {
@@ -184,11 +199,54 @@ public class PathSegments {
       return name.equals(varName);
     }
 
-    String path(String section, String prefix, String suffix) {
+    String path(String section) {
       if (!hasMatrixParams()) {
         return section;
       }
-      return prefix + name + "_segment" + suffix;
+      return name + "_segment";
     }
   }
+
+  private static class Chunks {
+    private final List<Chunk> chunks = new ArrayList<>();
+
+    void named(String name) {
+      chunks.add(new Chunk(name));
+    }
+
+    void literal(String val) {
+      chunks.add(new LiteralChunk(val));
+    }
+
+    String fullPath(String prefix, String suffix) {
+      StringBuilder sb = new StringBuilder();
+      for (Chunk chunk : chunks) {
+        chunk.append(sb, prefix, suffix);
+      }
+      return sb.toString();
+    }
+  }
+
+  private static class LiteralChunk extends Chunk {
+    private LiteralChunk(String value) {
+      super(value);
+    }
+
+    @Override
+    void append(StringBuilder fullPath, String prefix, String suffix) {
+      fullPath.append(value);
+    }
+  }
+
+  private static class Chunk {
+    final String value;
+    private Chunk(String value) {
+      this.value = value;
+    }
+
+    void append(StringBuilder fullPath, String prefix, String suffix) {
+      fullPath.append(prefix).append(value).append(suffix);
+    }
+  }
+
 }

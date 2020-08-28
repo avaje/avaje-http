@@ -53,8 +53,8 @@ public class PathSegmentsTest {
     assertTrue(segments.contains("one-a"));
     assertTrue(segments.contains("two-b"));
 
-    assertEquals("/fo/:one-a/:two-b", segments.fullPath());
-
+    assertEquals("/fo/:one-a/:two-b", segments.fullPathColon());
+    assertEquals("/fo/{one-a}/{two-b}", segments.fullPath());
   }
 
   @Test
@@ -63,7 +63,6 @@ public class PathSegmentsTest {
     PathSegments segments = PathSegments.parse("/hello");
     assertFalse(segments.contains("hello"));
     assertEquals("/hello", segments.fullPath());
-
   }
 
   @Test
@@ -80,7 +79,8 @@ public class PathSegmentsTest {
     assertThat(matrixSegments.get(1).name()).isEqualTo("foo");
     assertThat(matrixSegments.get(1).matrixKeys()).containsOnly("baz");
 
-    assertEquals("/:id_segment/:foo_segment", segments.fullPath());
+    assertEquals("/:id_segment/:foo_segment", segments.fullPathColon());
+    assertEquals("/{id_segment}/{foo_segment}", segments.fullPath());
   }
 
   @Test
@@ -98,17 +98,20 @@ public class PathSegmentsTest {
     assertThat(matrixSegments.get(1).matrixKeys()).containsOnly("baz");
 
     assertEquals("/{id_segment}/{foo_segment}", segments.fullPath());
+    assertEquals("/:id_segment/:foo_segment", segments.fullPathColon());
   }
 
   @Test
   public void pathMatrixParams_fullPath() {
 
     PathSegments segments = PathSegments.parse("/start/:id;key;other/:foo;baz/end");
-    assertEquals("/start/:id_segment/:foo_segment/end", segments.fullPath());
+    assertEquals("/start/:id_segment/:foo_segment/end", segments.fullPathColon());
+    assertEquals("/start/{id_segment}/{foo_segment}/end", segments.fullPath());
 
     segments = PathSegments.parse("/start/:id;key;other/middle/:foo;baz/end");
 
-    assertEquals("/start/:id_segment/middle/:foo_segment/end", segments.fullPath());
+    assertEquals("/start/:id_segment/middle/:foo_segment/end", segments.fullPathColon());
+    assertEquals("/start/{id_segment}/middle/{foo_segment}/end", segments.fullPath());
   }
 
   @Test

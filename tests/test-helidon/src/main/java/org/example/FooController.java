@@ -60,7 +60,7 @@ public class FooController {
     return foo;
   }
 
-  @Delete("{id}")
+  @Delete(":id")
   public Foo deleteIt(long id, FooBody body) {
     Foo foo = new Foo();
     foo.name = body.name + "=" + body.getMessage() + " - Delete " + id;

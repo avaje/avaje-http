@@ -22,7 +22,7 @@ class BazController extends BaseController<Baz, Long> {
    *
    * @return The list of baz
    */
-  @Get("findbyname/:name")
+  @Get("findbyname/{name}")
   List<Baz> searchByName(String name) {
 
     Baz b1 = new Baz();
