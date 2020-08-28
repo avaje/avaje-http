@@ -1,7 +1,7 @@
 package org.example;
 
 
-import io.dinject.controller.Get;
+import io.avaje.http.api.Get;
 
 import java.util.List;
 

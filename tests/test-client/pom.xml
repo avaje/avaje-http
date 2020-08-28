@@ -12,6 +12,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>test-client</artifactId>
+  <version>1</version>
 
   <dependencies>
 
@@ -34,9 +35,9 @@
     </dependency>
 
     <dependency>
-      <groupId>io.dinject</groupId>
-      <artifactId>dinject-controller</artifactId>
-      <version>1.21</version>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-api</artifactId>
+      <version>0.1</version>
     </dependency>
 
     <dependency>
