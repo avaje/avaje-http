@@ -1,7 +1,7 @@
 package org.example;
 
 import io.avaje.http.client.HttpClientContext;
-import io.dinject.controller.QueryParam;
+import io.avaje.http.api.QueryParam;
 
 import java.util.List;
 
