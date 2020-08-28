@@ -1,13 +1,24 @@
-# javalin-generator
-Java annotation processor for generating web route to Controller adapters
+# avaje-http
+
+Http server and client libraries and code generation.
+
+## http server
+
+A jax-rs style controllers with annotations (`@Path`, `@Get` ...)
+that is lightweight by using source code generation (annotation processors)
+to generate adapter code for Javalin and Helidon SE.
+
+- Lightweight as in 65Kb library + generated source code
+- Full use of Javalin or Helidon SE as desired
+
 
 ## Define a Controller
 ```java
 package org.example.hello
 
-import io.dinject.controller.Controller
-import io.dinject.controller.Get
-import io.dinject.controller.Path
+import io.avaje.http.api.Controller
+import io.avaje.http.api.Get
+import io.avaje.http.api.Path
 
 @Path("/widgets")
 @Controller
@@ -45,7 +56,7 @@ fun main(args: Array<String>) {
 
   // get all the webRoutes
   val webRoutes = SystemContext.getBeans(WebRoutes::class.java)
-  
+
   val javalin = Javalin.create()
 
   javalin.routes {
@@ -71,14 +82,14 @@ fun main(args: Array<String>) {
 ```java
 package org.example.hello;
 
-import static io.dinject.controller.PathTypeConversion.*;
-import io.dinject.controller.WebRoutes;
+import static io.avaje.http.api.PathTypeConversion.*;
+import io.avaje.http.api.WebRoutes;
 import io.javalin.apibuilder.ApiBuilder;
 import javax.annotation.Generated;
 import javax.inject.Singleton;
 import org.example.hello.WidgetController;
 
-@Generated("io.dinject.web.javlin")
+@Generated("io.avaje.javalin-generator")
 @Singleton
 public class WidgetController$route implements WebRoutes {
 
