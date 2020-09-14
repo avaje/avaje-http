@@ -1,6 +1,7 @@
 package org.example.myapp.web;
 
 import io.avaje.http.api.Controller;
+import io.avaje.http.api.Default;
 import io.avaje.http.api.Delete;
 import io.avaje.http.api.Form;
 import io.avaje.http.api.Get;
@@ -8,6 +9,7 @@ import io.avaje.http.api.MediaType;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
+import io.avaje.http.api.QueryParam;
 import io.javalin.http.Context;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.example.myapp.service.MyService;
@@ -62,11 +64,11 @@ class HelloController {
    * Find Hellos by name.
    *
    * @param name       The name to search for
-   * @param otherParam My option parameter
+   * @param myParam My option parameter
    * @return The Hellos that we found.
    */
   @Get("/findbyname/:name")
-  List<HelloDto> findByName(String name, String otherParam) {
+  List<HelloDto> findByName(String name, @QueryParam("my-param") @Default("one") String myParam) {
     return new ArrayList<>();
   }
 
@@ -102,6 +104,11 @@ class HelloController {
   @Form
   void saveForm(HelloForm helloForm) {
     System.out.println("saving " + helloForm);
+  }
+
+  @Form @Post("mySave")
+  void saveForm324(@Default("junk") String name, String email, String url) {
+    System.out.println("name " + name + " email:" + email + " url:" + url);
   }
 
 

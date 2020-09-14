@@ -235,9 +235,8 @@
             "type" : "string"
           }
         }, {
-          "name" : "otherParam",
+          "name" : "myParam",
           "in" : "query",
-          "description" : "My option parameter",
           "schema" : {
             "type" : "string"
           }
@@ -274,6 +273,39 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/hello/mySave" : {
+      "post" : {
+        "tags" : [ ],
+        "summary" : "",
+        "description" : "",
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "name" : {
+                    "type" : "string"
+                  },
+                  "email" : {
+                    "type" : "string"
+                  },
+                  "url" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "No content"
           }
         }
       }
