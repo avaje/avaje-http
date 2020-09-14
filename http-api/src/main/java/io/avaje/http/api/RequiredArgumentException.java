@@ -11,15 +11,24 @@ public class RequiredArgumentException extends IllegalArgumentException {
 
   private String property;
 
+  /**
+   * Construct with a message and property.
+   */
   public RequiredArgumentException(String message, String property) {
     super(message);
     this.property = property;
   }
 
+  /**
+   * Construct with an exception.
+   */
   public RequiredArgumentException(Exception e) {
     super(e);
   }
 
+  /**
+   * Construct with a message and exception.
+   */
   public RequiredArgumentException(String message, Exception e) {
     super(message, e);
   }

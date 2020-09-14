@@ -11,7 +11,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * <pre>{@code
  *
- *   @Get(":id")
+ *   @Get("{id}")
  *   Customer get(long id) {
  *
  *     ...
@@ -30,7 +30,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * <pre>{@code
  *
- *   @Get("/status/:status")
+ *   @Get("/status/{status}")
  *   List<Customer> getByStatus(String status, LocalDate since) {
  *
  *     ...
@@ -41,7 +41,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <h4>Example - Multiple path parameters</h4>
  * <pre>{@code
  *
- *   @Get("/status/:status/:parentId")
+ *   @Get("/status/{status}/{parentId}")
  *   List<Customer> getByStatus(String status, long parentId, LocalDate since) {
  *
  *     ...

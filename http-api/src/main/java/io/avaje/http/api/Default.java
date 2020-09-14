@@ -14,7 +14,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * <pre>{@code
  *
- * @Get("/forCustomer/:custId")
+ * @Get("/forCustomer/{custId}")
  * public List<Contact> getContacts(UUID custId, @Default("name") String orderBy) {
  *   ...
  * }

@@ -11,7 +11,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * <pre>{@code
  *
- *   @Delete(":id")
+ *   @Delete("{id}")
  *   void delete(long id) {
  *
  *     ...
