@@ -33,6 +33,7 @@
     <module>http-generator-core</module>
     <module>http-generator-javalin</module>
     <module>http-generator-helidon</module>
+    <module>http-generator-spark</module>
     <!--    <module>http-generator-client</module>-->
     <module>tests</module>
   </modules>
