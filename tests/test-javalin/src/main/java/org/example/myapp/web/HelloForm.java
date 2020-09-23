@@ -1,7 +1,5 @@
 package org.example.myapp.web;
 
-//import org.hibernate.validator.constraints.URL;
-
 import org.hibernate.validator.constraints.URL;
 
 import javax.validation.Valid;
