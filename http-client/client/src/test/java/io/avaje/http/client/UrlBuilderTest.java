@@ -39,14 +39,14 @@ class UrlBuilderTest {
 
   @Test
   void param() {
-    assertThat(new UrlBuilder("https://foo").param("bar", null).build()).isEqualTo("https://foo");
-    assertThat(new UrlBuilder("https://foo").param("bar", "a").build()).isEqualTo("https://foo?bar=a");
-    assertThat(new UrlBuilder("https://foo").param("bar", "a").param("baz", "b").build()).isEqualTo("https://foo?bar=a&baz=b");
+    assertThat(new UrlBuilder("https://foo").queryParam("bar", null).build()).isEqualTo("https://foo");
+    assertThat(new UrlBuilder("https://foo").queryParam("bar", "a").build()).isEqualTo("https://foo?bar=a");
+    assertThat(new UrlBuilder("https://foo").queryParam("bar", "a").queryParam("baz", "b").build()).isEqualTo("https://foo?bar=a&baz=b");
   }
 
   @Test
   void param_encode() {
-    assertThat(new UrlBuilder("https://foo").param("some one", "a%b").build()).isEqualTo("https://foo?some+one=a%25b");
+    assertThat(new UrlBuilder("https://foo").queryParam("some one", "a%b").build()).isEqualTo("https://foo?some+one=a%25b");
   }
 
   @Test

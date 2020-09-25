@@ -93,8 +93,8 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
 
   @Override
-  public HttpClientRequest param(String name, String value) {
-    url.param(name, value);
+  public HttpClientRequest queryParam(String name, String value) {
+    url.queryParam(name, value);
     return this;
   }
 

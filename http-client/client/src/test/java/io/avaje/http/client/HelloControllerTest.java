@@ -42,7 +42,7 @@ class HelloControllerTest extends BaseWebTest {
   void get_withPathParamAndQueryParam_returningBean() {
 
     final HelloDto dto = clientContext.request()
-      .path("hello/43/2020-03-05").param("otherParam", "other").param("foo", null)
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
       .get().bean(HelloDto.class);
 
     assertThat(dto.id).isEqualTo(43L);
@@ -202,7 +202,7 @@ class HelloControllerTest extends BaseWebTest {
       .matrixParam("author", "rob")
       .matrixParam("country", "nz")
       .path("foo")
-      .param("extra", "banana")
+      .queryParam("extra", "banana")
       .get().asString();
 
     assertEquals(200, httpRes.statusCode());

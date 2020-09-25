@@ -46,7 +46,7 @@ class DHttpClientContextTest {
     // has expected url building
     assertThat(context.url().build()).isEqualTo("http://localhost");
     assertThat(context.url().path("hello").build()).isEqualTo("http://localhost/hello");
-    assertThat(context.url().param("hello","there").build()).isEqualTo("http://localhost?hello=there");
+    assertThat(context.url().queryParam("hello","there").build()).isEqualTo("http://localhost?hello=there");
   }
 
   @Test
@@ -66,7 +66,7 @@ class DHttpClientContextTest {
     // has expected url building
     assertThat(context.url().build()).isEqualTo("http://localhost");
     assertThat(context.url().path("hello").build()).isEqualTo("http://localhost/hello");
-    assertThat(context.url().param("hello","there").build()).isEqualTo("http://localhost?hello=there");
+    assertThat(context.url().queryParam("hello","there").build()).isEqualTo("http://localhost?hello=there");
   }
 
   @Test

@@ -18,7 +18,7 @@ public class UrlBuilder {
     return this;
   }
 
-  public UrlBuilder param(String name, String value) {
+  public UrlBuilder queryParam(String name, String value) {
     if (value != null) {
       buffer.append(hasParams ? '&' : '?');
       hasParams = true;

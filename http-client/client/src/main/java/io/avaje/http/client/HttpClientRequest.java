@@ -66,7 +66,7 @@ public interface HttpClientRequest {
    * @param value The value of the query parameter
    * @return The request being built
    */
-  HttpClientRequest param(String name, String value);
+  HttpClientRequest queryParam(String name, String value);
 
   /**
    * Add a form parameter.

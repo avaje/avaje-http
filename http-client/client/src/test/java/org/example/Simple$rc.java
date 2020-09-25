@@ -32,7 +32,7 @@ class Simple$rc implements Simple {
   public List<Repo> listRepos(String user, String other) throws HttpException {
     return context.request()
       .path("users").path(user).path("repos")
-      .param("other", other)
+      .queryParam("other", other)
       .get().list(Repo.class);
   }
 
