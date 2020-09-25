@@ -1,5 +1,7 @@
 package io.avaje.http.client;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.net.http.HttpClient;
 import java.time.Duration;
 
@@ -16,6 +18,8 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   private BodyAdapter bodyAdapter;
 
   private ResponseListener responseListener;
+
+  private CookieHandler cookieHandler = new CookieManager();
 
   DHttpClientContextBuilder() {
   }
@@ -51,6 +55,12 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   }
 
   @Override
+  public HttpClientContext.Builder withCookieHandler(CookieHandler cookieHandler) {
+    this.cookieHandler = cookieHandler;
+    return this;
+  }
+
+  @Override
   public HttpClientContext build() {
     requireNonNull(baseUrl, "baseUrl is not specified");
     requireNonNull(requestTimeout, "requestTimeout is not specified");
@@ -61,9 +71,13 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   }
 
   private HttpClient defaultClient() {
-    return HttpClient.newBuilder()
-      .connectTimeout(Duration.ofSeconds(20))
-      .build();
+    final HttpClient.Builder builder =
+      HttpClient.newBuilder()
+      .connectTimeout(Duration.ofSeconds(20));
+    if (cookieHandler != null) {
+      builder.cookieHandler(cookieHandler);
+    }
+    return builder.build();
   }
 
 }

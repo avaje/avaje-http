@@ -41,6 +41,27 @@ class DHttpClientContextTest {
     // has default client created
     assertThat(context.httpClient()).isNotNull();
     assertThat(context.httpClient().version()).isEqualTo(HttpClient.Version.HTTP_2);
+    assertThat(context.httpClient().cookieHandler()).isPresent();
+
+    // has expected url building
+    assertThat(context.url().build()).isEqualTo("http://localhost");
+    assertThat(context.url().path("hello").build()).isEqualTo("http://localhost/hello");
+    assertThat(context.url().param("hello","there").build()).isEqualTo("http://localhost?hello=there");
+  }
+
+  @Test
+  void build_noCookieHandler() {
+
+    final HttpClientContext context =
+      HttpClientContext.newBuilder()
+        .withBaseUrl("http://localhost")
+        .withCookieHandler(null)
+        .build();
+
+    // has default client created
+    assertThat(context.httpClient()).isNotNull();
+    assertThat(context.httpClient().version()).isEqualTo(HttpClient.Version.HTTP_2);
+    assertThat(context.httpClient().cookieHandler()).isEmpty();
 
     // has expected url building
     assertThat(context.url().build()).isEqualTo("http://localhost");

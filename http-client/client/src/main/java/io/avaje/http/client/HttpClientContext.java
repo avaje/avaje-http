@@ -1,5 +1,6 @@
 package io.avaje.http.client;
 
+import java.net.CookieHandler;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.time.Duration;
@@ -101,6 +102,11 @@ public interface HttpClientContext {
      * content.
      */
     Builder withResponseListener(ResponseListener requestListener);
+
+    /**
+     * Specify a cookie handler to use on the HttpClient. This would override the default cookie handler.
+     */
+    Builder withCookieHandler(CookieHandler cookieHandler);
 
     /**
      * Build and return the context.
