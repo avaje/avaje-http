@@ -21,6 +21,8 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
 
   private CookieHandler cookieHandler = new CookieManager();
 
+  private HttpClient.Redirect redirect = HttpClient.Redirect.NORMAL;
+
   DHttpClientContextBuilder() {
   }
 
@@ -61,6 +63,12 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   }
 
   @Override
+  public HttpClientContext.Builder withRedirect(HttpClient.Redirect redirect) {
+    this.redirect = redirect;
+    return this;
+  }
+
+  @Override
   public HttpClientContext build() {
     requireNonNull(baseUrl, "baseUrl is not specified");
     requireNonNull(requestTimeout, "requestTimeout is not specified");
@@ -73,7 +81,8 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   private HttpClient defaultClient() {
     final HttpClient.Builder builder =
       HttpClient.newBuilder()
-      .connectTimeout(Duration.ofSeconds(20));
+        .followRedirects(redirect)
+        .connectTimeout(Duration.ofSeconds(20));
     if (cookieHandler != null) {
       builder.cookieHandler(cookieHandler);
     }

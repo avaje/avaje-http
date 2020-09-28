@@ -109,6 +109,11 @@ public interface HttpClientContext {
     Builder withCookieHandler(CookieHandler cookieHandler);
 
     /**
+     * Specify the redirect policy. Defaults to HttpClient.Redirect.NORMAL.
+     */
+    Builder withRedirect(HttpClient.Redirect redirect);
+
+    /**
      * Build and return the context.
      */
     HttpClientContext build();
