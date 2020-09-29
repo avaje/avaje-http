@@ -12,6 +12,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,9 +41,9 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   private HttpRequest.Builder httpRequest;
 
-  private Map<String, String> formParams;
+  private Map<String, List<String>> formParams;
 
-  private Map<String, String> headers;
+  private Map<String, List<String>> headers;
 
   private boolean bodyFormEncoded;
 
@@ -69,7 +70,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     if (headers == null) {
       headers = new LinkedHashMap<>();
     }
-    headers.put(name, value);
+    headers.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
     return this;
   }
 
@@ -103,7 +104,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     if (formParams == null) {
       formParams = new LinkedHashMap<>();
     }
-    formParams.put(name, value);
+    formParams.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
     return this;
   }
 
@@ -174,13 +175,15 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   private String buildEncodedFormContent() {
     var builder = new StringBuilder(80);
-    for (Map.Entry<String, String> entry : formParams.entrySet()) {
-      if (builder.length() > 0) {
-        builder.append("&");
+    for (Map.Entry<String, List<String>> entry : formParams.entrySet()) {
+      for (String value : entry.getValue()) {
+        if (builder.length() > 0) {
+          builder.append("&");
+        }
+        builder.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+        builder.append("=");
+        builder.append(URLEncoder.encode(value, StandardCharsets.UTF_8));
       }
-      builder.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
-      builder.append("=");
-      builder.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
     }
     return builder.toString();
   }
@@ -205,8 +208,10 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
       httpRequest.header(CONTENT_ENCODING, "gzip");
     }
     if (headers != null) {
-      for (Map.Entry<String, String> header : headers.entrySet()) {
-        httpRequest.header(header.getKey(), header.getValue());
+      for (Map.Entry<String, List<String>> header : headers.entrySet()) {
+        for (String value : header.getValue()) {
+          httpRequest.header(header.getKey(), value);
+        }
       }
     }
   }
