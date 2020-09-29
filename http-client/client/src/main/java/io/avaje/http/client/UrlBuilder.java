@@ -7,7 +7,7 @@ public class UrlBuilder {
 
   private final StringBuilder buffer = new StringBuilder(100);
 
-  boolean hasParams;
+  private boolean hasParams;
 
   public UrlBuilder(String base) {
     buffer.append(base);

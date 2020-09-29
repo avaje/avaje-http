@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Logs request and response details for debug logging purposes.
+ */
 public class RequestLogger implements ResponseListener {
 
   private static final Logger log = LoggerFactory.getLogger(RequestLogger.class);

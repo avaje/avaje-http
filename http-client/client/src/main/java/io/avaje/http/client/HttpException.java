@@ -3,22 +3,38 @@ package io.avaje.http.client;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * HTTP Exception with support for converting the error response body into a bean.
+ * <p>
+ * Wraps an underlying HttpResponse with helper methods to get the response body
+ * as string or as a bean.
+ * </p>
+ */
 public class HttpException extends RuntimeException {
 
   private final int statusCode;
   private HttpClientContext context;
   private HttpResponse<?> httpResponse;
 
+  /**
+   * Create with status code and message.
+   */
   public HttpException(int statusCode, String message) {
     super(message);
     this.statusCode = statusCode;
   }
 
+  /**
+   * Create with status code, message and throwable.
+   */
   public HttpException(int statusCode, String message, Throwable cause) {
     super(message, cause);
     this.statusCode = statusCode;
   }
 
+  /**
+   * Create with status code and throwable.
+   */
   public HttpException(int statusCode, Throwable cause) {
     super(cause);
     this.statusCode = statusCode;
