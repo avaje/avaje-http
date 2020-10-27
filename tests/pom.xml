@@ -12,7 +12,8 @@
   <modules>
     <module>test-helidon</module>
     <module>test-javalin</module>
-<!--    <module>test-spark</module>-->
+    <module>test-jex</module>
+    <!--    <module>test-spark</module>-->
     <module>test-client</module>
   </modules>
 

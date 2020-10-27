@@ -67,7 +67,7 @@ class HelloController {
    * @param myParam My option parameter
    * @return The Hellos that we found.
    */
-  @Get("/findbyname/:name")
+  @Get("/findbyname/{name}")
   List<HelloDto> findByName(String name, @QueryParam("my-param") @Default("one") String myParam) {
     return new ArrayList<>();
   }
