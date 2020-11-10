@@ -1,8 +1,8 @@
 package io.avaje.http.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.javalin.Javalin;
 import org.example.webserver.App;
+import io.javalin.Javalin;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 

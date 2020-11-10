@@ -1,17 +1,14 @@
 package org.example.webserver;
 
-import io.dinject.SystemContext;
-import io.dinject.controller.InvalidPathArgumentException;
-import io.dinject.controller.InvalidTypeArgumentException;
-import io.dinject.controller.ValidationException;
-import io.dinject.controller.WebRoutes;
+import io.avaje.http.api.InvalidPathArgumentException;
+import io.avaje.http.api.InvalidTypeArgumentException;
+import io.avaje.http.api.ValidationException;
+import io.avaje.http.hibernate.validator.BeanValidator;
 import io.javalin.Javalin;
-import io.javalin.http.staticfiles.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class App {
@@ -34,7 +31,7 @@ public class App {
 
     app.exception(ValidationException.class, (exception, ctx) -> {
 
-      Map<String,Object> map = new LinkedHashMap<>();
+      Map<String, Object> map = new LinkedHashMap<>();
       map.put("message", exception.getMessage());
       map.put("errors", exception.getErrors());
       ctx.status(exception.getStatus());
@@ -59,14 +56,17 @@ public class App {
       ctx.json(map);
     });
 
-
     app.get("/", ctx -> {
       ctx.result("Hello World");
     });
 
-    // All WebRoutes / Controllers ... from DI Context
-    List<WebRoutes> webRoutes = SystemContext.getBeans(WebRoutes.class);
-    app.routes(() -> webRoutes.forEach(WebRoutes::registerRoutes));
+//    // All WebRoutes / Controllers ... from DI Context
+//    List<WebRoutes> webRoutes = context.getBeans(WebRoutes.class);
+//    app.routes(() -> webRoutes.forEach(WebRoutes::registerRoutes));
+
+    // programmatically create http endpoints
+    HelloController$route bean = new HelloController$route(new HelloController(), new BeanValidator());
+    app.routes(bean::registerRoutes);
 
     app.start(port);
     return app;

@@ -1,26 +1,26 @@
-package org.example;
+package org.example.github;
 
 import io.avaje.http.client.BodyReader;
 import io.avaje.http.client.BodyWriter;
 import io.avaje.http.client.HttpApiProvider;
 import io.avaje.http.client.HttpClientContext;
 import io.avaje.http.client.HttpException;
-import io.dinject.controller.Get;
-import io.dinject.controller.Post;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.Post;
 
 import java.io.InputStream;
 import java.net.http.HttpResponse;
 import java.util.List;
 
 
-class Simple$rc implements Simple {
+public class SimpleHttpClient implements Simple {
 
   private final HttpClientContext context;
   private final BodyReader<Repo> readRepo;
   private final BodyWriter writeRepo;
 //  private final BodyConverter<List<Repo>, String> toListOfRepo;
 
-  Simple$rc(HttpClientContext context) {
+  SimpleHttpClient(HttpClientContext context) {
     this.context = context;
     this.readRepo = context.converters().beanReader(Repo.class);
     this.writeRepo = context.converters().beanWriter(Repo.class);
@@ -69,10 +69,16 @@ class Simple$rc implements Simple {
     return null;
   }
 
-  static class Provider implements HttpApiProvider<Simple> {
+  public static class Provider implements HttpApiProvider<Simple> {
+
+    @Override
+    public Class<Simple> type() {
+      return Simple.class;
+    }
+
     @Override
     public Simple provide(HttpClientContext client) {
-      return new Simple$rc(client);
+      return new SimpleHttpClient(client);
     }
   }
 

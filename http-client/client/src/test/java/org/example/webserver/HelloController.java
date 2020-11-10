@@ -1,17 +1,15 @@
 package org.example.webserver;
 
-import io.dinject.controller.Controller;
-import io.dinject.controller.Delete;
-import io.dinject.controller.Form;
-import io.dinject.controller.Get;
-import io.dinject.controller.MediaType;
-import io.dinject.controller.Path;
-import io.dinject.controller.Post;
-import io.dinject.controller.Produces;
+import io.avaje.http.api.Controller;
+import io.avaje.http.api.Delete;
+import io.avaje.http.api.Form;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.MediaType;
+import io.avaje.http.api.Path;
+import io.avaje.http.api.Post;
+import io.avaje.http.api.Produces;
 import io.javalin.http.Context;
-import io.swagger.v3.oas.annotations.Hidden;
 
-import javax.inject.Inject;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,13 +27,6 @@ import static java.util.Objects.requireNonNull;
 @Controller
 @Path("/hello")
 class HelloController {
-
-  private final MyService myService;
-
-  @Inject
-  HelloController(MyService myService) {
-    this.myService = myService;
-  }
 
   @Produces(MediaType.TEXT_PLAIN)
   @Get("message")
@@ -116,10 +107,9 @@ class HelloController {
     return new HelloDto(52, helloForm.name, helloForm.email);
   }
 
-  @Hidden
   @Get
   List<HelloDto> getAll() {
-    return myService.findAll();
+    return findAll();
   }
 
   //  @Hidden
@@ -132,5 +122,12 @@ class HelloController {
   @Get("/withMatrix/:year;author;country/:other")
   String getWithMatrixParam(int year, String author, String country, String other, String extra) {
     return "yr:" + year + " au:" + author + " co:" + country + " other:" + other + " extra:" + extra;
+  }
+
+  private List<HelloDto> findAll() {
+    List<HelloDto> list = new ArrayList<>();
+    list.add(new HelloDto(12, "Jim", "asd"));
+    list.add(new HelloDto(13, "Spock", "456456"));
+    return list;
   }
 }

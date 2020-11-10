@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>java11-oss</artifactId>
     <groupId>org.avaje</groupId>
@@ -49,23 +50,23 @@
     </dependency>
 
     <dependency>
-      <groupId>io.dinject</groupId>
-      <artifactId>dinject</artifactId>
-      <version>2.3</version>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-inject</artifactId>
+      <version>3.0</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>io.dinject</groupId>
-      <artifactId>dinject-controller</artifactId>
-      <version>1.21</version>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-api</artifactId>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>io.dinject</groupId>
-      <artifactId>controller-validator-hibernate</artifactId>
-      <version>1.1</version>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-hibernate-validator</artifactId>
+      <version>1.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -79,19 +80,30 @@
     <!-- test annotation processors -->
 
     <dependency>
-      <groupId>io.dinject</groupId>
-      <artifactId>dinject-generator</artifactId>
-      <version>2.3</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>io.dinject</groupId>
-      <artifactId>javalin-generator</artifactId>
-      <version>1.21</version>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-inject-generator</artifactId>
+      <version>3.0</version>
       <scope>test</scope>
     </dependency>
 
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M4</version>
+        <configuration>
+          <argLine>
+            --add-modules com.fasterxml.jackson.databind
+            --add-opens io.avaje.http.client/io.avaje.http.client=ALL-UNNAMED
+            --add-opens io.avaje.http.client/org.example.webserver=ALL-UNNAMED
+            --add-opens io.avaje.http.client/org.example.webserver=com.fasterxml.jackson.databind
+            --add-opens io.avaje.http.client/org.example.github=com.fasterxml.jackson.databind
+          </argLine>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
 </project>

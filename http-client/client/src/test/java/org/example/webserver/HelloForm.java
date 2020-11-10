@@ -15,16 +15,16 @@ import java.time.LocalDate;
 public class HelloForm {
 
   @NotNull @Size(min = 2, max = 150)
-  String name;
+  public String name;
 
   @Email @Size(max = 100)
-  String email;
+  public String email;
 
   @URL
-  String url;
+  public String url;
 
   @Future
-  LocalDate startDate;
+  public LocalDate startDate;
 
   public HelloForm(String name, String email) {
     this.name = name;

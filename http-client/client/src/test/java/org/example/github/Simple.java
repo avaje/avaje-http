@@ -1,14 +1,14 @@
-package org.example;
+package org.example.github;
 
 import io.avaje.http.client.HttpException;
-import io.dinject.controller.Get;
-import io.dinject.controller.Path;
-import io.dinject.controller.Post;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.Path;
+import io.avaje.http.api.Post;
 
 import java.net.http.HttpResponse;
 import java.util.List;
 
-@Path("/foo")
+@Path("/")
 public interface Simple {
 
   @Get("users/{user}/repos")

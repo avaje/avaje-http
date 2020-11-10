@@ -154,7 +154,6 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void postForm_asBytes_validation_expect_badRequest_extractError() {
-
     try {
       clientContext.request()
         .path("hello/saveform")

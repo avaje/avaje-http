@@ -1,4 +1,4 @@
-package org.example;
+package example.github;
 
 public class Repo {
   public long id;
