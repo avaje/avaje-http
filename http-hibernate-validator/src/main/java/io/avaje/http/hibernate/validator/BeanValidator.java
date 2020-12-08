@@ -4,7 +4,7 @@ package io.avaje.http.hibernate.validator;
 import io.avaje.http.api.ValidationException;
 import io.avaje.http.api.Validator;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
 import javax.validation.Validation;
