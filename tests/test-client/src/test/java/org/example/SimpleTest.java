@@ -20,7 +20,7 @@ class SimpleTest {
     final HttpClientContext clientContext =
       HttpClientContext.newBuilder()
         .withBaseUrl("https://api.github.com")
-        .withRequestListener(new RequestLogger())
+        .withResponseListener(new RequestLogger())
         .withBodyAdapter(new JacksonBodyAdapter(objectMapper))
         .build();
 

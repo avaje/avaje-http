@@ -18,7 +18,7 @@ public class Simple$httpclient implements Simple {
   @Override
   public List<Repo> listRepos(String user, @QueryParam("foo-too") String fooToo) {
     return clientContext.request()
-      .path("users").path(user).path("repos").param("foo-too", fooToo)
+      .path("users").path(user).path("repos").queryParam("foo-too", fooToo)
       .get()
       .list(Repo.class);
   }

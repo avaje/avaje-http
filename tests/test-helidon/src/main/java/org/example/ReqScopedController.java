@@ -7,7 +7,7 @@ import io.avaje.http.api.Produces;
 import io.helidon.webserver.ServerRequest;
 import io.helidon.webserver.ServerResponse;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Controller
 @Path("/req-scoped")

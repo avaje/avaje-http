@@ -23,7 +23,6 @@ public class ProcessingContext {
   private final Filer filer;
   private final Elements elements;
   private final Types types;
-  private final String generatedAnnotation;
   private final boolean openApiAvailable;
   private final DocContext docContext;
 
@@ -35,12 +34,6 @@ public class ProcessingContext {
     this.types = env.getTypeUtils();
     this.openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
     this.docContext = new DocContext(env, openApiAvailable);
-    boolean jdk8 = env.getSourceVersion().compareTo(SourceVersion.RELEASE_8) <= 0;
-    this.generatedAnnotation = generatedAnnotation(jdk8);
-  }
-
-  private String generatedAnnotation(boolean jdk8) {
-    return jdk8 ? null : isTypeAvailable(Constants.GENERATED_9) ? Constants.GENERATED_9 : null;
   }
 
   private boolean isTypeAvailable(String canonicalName) {
@@ -51,14 +44,6 @@ public class ProcessingContext {
     return elements.getTypeElement(canonicalName);
   }
 
-  public boolean isGeneratedAvailable() {
-    return generatedAnnotation != null;
-  }
-
-  public String getGeneratedAnnotation() {
-    return generatedAnnotation;
-  }
-
   public boolean isOpenApiAvailable() {
     return openApiAvailable;
   }
@@ -66,10 +51,6 @@ public class ProcessingContext {
   public void logError(Element e, String msg, Object... args) {
     messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
-
-//  void logDebug(String msg, Object... args) {
-//    messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
-//  }
 
   /**
    * Create a file writer for the given class name.

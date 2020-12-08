@@ -89,7 +89,7 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(bean.otherParam).isEqualTo("other");
 
     final HelloDto dto = clientContext.request()
-      .path("hello/43/2020-03-05").param("otherParam", "other").param("foo", null)
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
       .get().bean(HelloDto.class);
 
     assertThat(dto.id).isEqualTo(43L);
@@ -136,7 +136,7 @@ class HelloControllerTest extends BaseWebTest {
       .param("name", "Bazz")
       .param("email", "user@foo.com")
       .param("url", "http://foo.com")
-      .param("startDate", "2020-12-03")
+      .param("startDate", "2030-12-03")
       .header("Accept", ContentType.JSON.getAcceptHeader())
       .post(baseUrl + "/hello/saveform")
       .then()
@@ -160,11 +160,23 @@ class HelloControllerTest extends BaseWebTest {
   @Test
   void postForm3_controllerFormBean_responseJsonDto() {
 
+    final HelloDto bean = clientContext.request()
+      .path("hello/saveform3")
+      .formParam("name", "Bax")
+      .formParam("email", "Bax@foo.com")
+      .formParam("url", "http://foo.com")
+      .formParam("startDate", "2030-12-03")
+      .post().bean(HelloDto.class);
+
+    assertThat(bean.name).isEqualTo("Bax");
+    assertThat(bean.otherParam).isEqualTo("Bax@foo.com");
+    assertThat(bean.id).isEqualTo(52);
+
     given().urlEncodingEnabled(true)
       .param("name", "Bax")
       .param("email", "Bax@foo.com")
       .param("url", "http://foo.com")
-      .param("startDate", "2020-12-03")
+      .param("startDate", "2030-12-03")
       .header("Accept", ContentType.JSON.getAcceptHeader())
       .post(baseUrl + "/hello/saveform3")
       .then()
@@ -262,7 +274,7 @@ class HelloControllerTest extends BaseWebTest {
       .matrixParam("author", "rob")
       .matrixParam("country", "nz")
       .path("foo")
-      .param("extra", "banana")
+      .queryParam("extra", "banana")
 
       .get().asString();
 

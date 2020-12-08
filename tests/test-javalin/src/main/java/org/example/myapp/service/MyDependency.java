@@ -1,6 +1,6 @@
 package org.example.myapp.service;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class MyDependency {

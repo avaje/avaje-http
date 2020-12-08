@@ -62,9 +62,7 @@ class ControllerWriter extends BaseControllerWriter {
   }
 
   private void writeClassStart() {
-    if (ctx.isGeneratedAvailable()) {
-      writer.append(AT_GENERATED).eol();
-    }
+    writer.append(AT_GENERATED).eol();
     writer.append("@Singleton").eol();
     writer.append("public class ").append(shortName).append("$route implements Service {").eol().eol();
 

@@ -57,7 +57,7 @@ class FooControllerTest extends BaseWebTest {
       .path("withMatrix")
       .path("2011").matrixParam("author", "rob").matrixParam("country", "nz")
       .path("foo")
-      .param("extra", "banana")
+      .queryParam("extra", "banana")
       .get()
       .asString();
 

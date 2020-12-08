@@ -6,7 +6,7 @@ import io.avaje.http.api.Path;
 import io.avaje.http.api.Produces;
 import io.javalin.http.Context;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Controller
 @Path("/req-scoped")

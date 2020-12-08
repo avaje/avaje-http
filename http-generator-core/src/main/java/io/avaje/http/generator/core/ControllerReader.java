@@ -61,10 +61,7 @@ public class ControllerReader {
     this.interfaces = initInterfaces();
     this.interfaceMethods = initInterfaceMethods();
     this.roles = Util.findRoles(beanType);
-    final String generated = ctx.getGeneratedAnnotation();
-    if (generated != null) {
-      importTypes.add(generated);
-    }
+    importTypes.add(Constants.GENERATED);
     if (ctx.isOpenApiAvailable()) {
       docHidden = initDocHidden();
     }

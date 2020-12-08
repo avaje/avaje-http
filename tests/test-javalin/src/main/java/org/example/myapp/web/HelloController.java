@@ -14,7 +14,7 @@ import io.javalin.http.Context;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.example.myapp.service.MyService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;

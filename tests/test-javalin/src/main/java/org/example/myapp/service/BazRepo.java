@@ -3,7 +3,7 @@ package org.example.myapp.service;
 import org.example.myapp.web.Baz;
 import org.example.myapp.web.Repository;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 

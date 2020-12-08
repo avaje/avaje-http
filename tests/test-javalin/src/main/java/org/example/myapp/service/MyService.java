@@ -2,7 +2,7 @@ package org.example.myapp.service;
 
 import org.example.myapp.web.HelloDto;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 
