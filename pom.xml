@@ -36,7 +36,7 @@
     <module>http-generator-helidon</module>
 <!--    <module>http-generator-spark</module>-->
     <!--    <module>http-generator-client</module>-->
-<!--    <module>tests</module>-->
+    <module>tests</module>
   </modules>
 
 </project>
