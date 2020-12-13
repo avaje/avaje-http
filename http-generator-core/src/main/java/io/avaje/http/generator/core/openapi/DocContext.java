@@ -200,7 +200,7 @@ public class DocContext {
   }
 
   private Writer createMetaWriter() throws IOException {
-    FileObject writer = filer.createResource(StandardLocation.CLASS_OUTPUT, "meta", "openapi.json", null);
+    FileObject writer = filer.createResource(StandardLocation.CLASS_OUTPUT, "meta", "openapi.json");
     return writer.openWriter();
   }
 
