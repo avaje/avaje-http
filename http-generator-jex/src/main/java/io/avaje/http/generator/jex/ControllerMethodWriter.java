@@ -31,7 +31,7 @@ class ControllerMethodWriter {
   void write(boolean requestScoped) {
 
     final PathSegments segments = method.getPathSegments();
-    final String fullPath = segments.fullPathColon();
+    final String fullPath = segments.fullPath();
 
     writer.append("    routing.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
     writer.append("      ctx.status(%s);", method.getStatusCode()).eol();
@@ -95,9 +95,9 @@ class ControllerMethodWriter {
     } else if (produces.equalsIgnoreCase(MediaType.TEXT_HTML)) {
       writer.append("ctx.html(");
     } else if (produces.equalsIgnoreCase(MediaType.TEXT_PLAIN)) {
-      writer.append("ctx.contentType(\"text/plain\").result(");
+      writer.append("ctx.text(");
     } else {
-      writer.append("ctx.contentType(\"%s\").result(", produces);
+      writer.append("ctx.contentType(\"%s\").write(", produces);
     }
   }
 }

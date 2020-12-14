@@ -3,6 +3,9 @@ package org.example.web;
 import io.avaje.http.client.HttpClientContext;
 import org.junit.jupiter.api.Test;
 
+import java.net.http.HttpResponse;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HelloControllerTest extends BaseWebTest {
@@ -15,5 +18,21 @@ class HelloControllerTest extends BaseWebTest {
 
     assertEquals(42, hello.id);
     assertEquals("rob", hello.name);
+  }
+
+  @Test
+  void getPlain() {
+
+    final HttpResponse<String> res = client.request().path("plain").get().asString();
+
+    assertEquals("something", res.body());
+    assertThat(res.headers().firstValue("content-type").get()).startsWith("text/plain;");
+  }
+
+  @Test
+  void getName() {
+
+    assertEquals("hi bazz", client.request().path("other/bazz").get().asString().body());
+    assertEquals("hi bax", client.request().path("other/bax").get().asString().body());
   }
 }
