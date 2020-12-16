@@ -35,4 +35,9 @@ class HelloControllerTest extends BaseWebTest {
     assertEquals("hi bazz", client.request().path("other/bazz").get().asString().body());
     assertEquals("hi bax", client.request().path("other/bax").get().asString().body());
   }
+
+  @Test
+  void splat() {
+    assertEquals("got name:one splat0:a/b splat1:x/y/z", client.request().path("splat/one/a/b/other/x/y/z").get().asString().body());
+  }
 }
