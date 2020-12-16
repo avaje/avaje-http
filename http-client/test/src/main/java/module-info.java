@@ -1,6 +1,6 @@
 import example.github.SimpleHttpClient;
 
-module test {
+open module test {
 
   requires io.avaje.http.client;
   requires com.fasterxml.jackson.databind;
