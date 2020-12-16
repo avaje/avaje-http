@@ -33,7 +33,7 @@
   </dependencies>
 
   <modules>
-<!--    <module>http-api</module>-->
+    <module>http-api</module>
     <module>http-generator-core</module>
     <module>http-generator-javalin</module>
     <module>http-generator-jex</module>
