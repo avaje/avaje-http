@@ -43,7 +43,7 @@ class HelloController {
    * @return The Hello DTO given the id and name.
    * @deprecated Please migrate away
    */
-  @Get("/:id/:date")
+  @Get("/{id}/{date}")
   HelloDto hello(int id, LocalDate date, String otherParam) {
     return new HelloDto(id, date.toString(), otherParam);
   }
@@ -55,7 +55,7 @@ class HelloController {
    * @param otherParam My option parameter
    * @return The Hellos that we found.
    */
-  @Get("/findbyname/:name")
+  @Get("/findbyname/{name}")
   List<HelloDto> findByName(String name, String otherParam) {
     return new ArrayList<>();
   }
@@ -76,7 +76,7 @@ class HelloController {
    * @param dto The hello body as json
    */
 //  @Roles({ADMIN})
-  @Post("/savebean/:foo")
+  @Post("/savebean/{foo}")
   void saveBean(String foo, HelloDto dto, Context context) {
     // save hello data ...
     System.out.println("save " + foo + " dto:" + dto);
@@ -113,13 +113,13 @@ class HelloController {
   }
 
   //  @Hidden
-  @Delete(":id")
+  @Delete("{id}")
   void deleteById(int id) {
     System.out.println("deleting " + id);
   }
 
   @Produces("text/plain")
-  @Get("/withMatrix/:year;author;country/:other")
+  @Get("/withMatrix/{year};author;country/{other}")
   String getWithMatrixParam(int year, String author, String country, String other, String extra) {
     return "yr:" + year + " au:" + author + " co:" + country + " other:" + other + " extra:" + extra;
   }

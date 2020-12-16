@@ -5,7 +5,7 @@ import io.avaje.http.api.Validator;
 import io.avaje.http.api.WebRoutes;
 import io.javalin.apibuilder.ApiBuilder;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.time.LocalDate;
 
 import static io.avaje.http.api.PathTypeConversion.asInt;
