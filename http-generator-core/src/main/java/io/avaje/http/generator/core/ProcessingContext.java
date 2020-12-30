@@ -5,10 +5,10 @@ import io.avaje.http.generator.core.openapi.DocContext;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -50,6 +50,23 @@ public class ProcessingContext {
 
   public void logError(Element e, String msg, Object... args) {
     messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
+  }
+
+  public boolean isChildType(DeclaredType declaredType, Class superClass) {
+    TypeMirror superMirror = getTypeElement(superClass.getName()).asType();
+    for (TypeMirror supertype : types.directSupertypes(declaredType)) {
+      if(supertype.getKind() != TypeKind.DECLARED)
+        continue;
+
+      if(isSameType(superMirror, ((DeclaredType)supertype).asElement().asType())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean isSameType(TypeMirror a, TypeMirror b) {
+    return types.isSameType(a, b);
   }
 
   /**
