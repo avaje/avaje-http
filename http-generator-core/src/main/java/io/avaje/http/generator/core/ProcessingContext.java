@@ -58,15 +58,11 @@ public class ProcessingContext {
       if(supertype.getKind() != TypeKind.DECLARED)
         continue;
 
-      if(isSameType(superMirror, ((DeclaredType)supertype).asElement().asType())) {
+      if(types.isSameType(superMirror, ((DeclaredType)supertype).asElement().asType())) {
         return true;
       }
     }
     return false;
-  }
-
-  public boolean isSameType(TypeMirror a, TypeMirror b) {
-    return types.isSameType(a, b);
   }
 
   /**
