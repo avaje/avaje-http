@@ -28,5 +28,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(value=TYPE)
 @Retention(value=RUNTIME)
 public @interface StatusCode {
-  String value();
+  int value();
 }

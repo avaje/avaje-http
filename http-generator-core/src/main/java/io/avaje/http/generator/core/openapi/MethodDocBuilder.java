@@ -99,7 +99,7 @@ public class MethodDocBuilder {
 
       StatusCode statusCode = badRequestResponse.asElement().getAnnotation(StatusCode.class);
       if(statusCode != null)
-        apiResponses.addApiResponse(statusCode.value(), badRequestApiResponse);
+        apiResponses.addApiResponse(Integer.toString(statusCode.value()), badRequestApiResponse);
       else
         apiResponses.addApiResponse("400", badRequestApiResponse);
     }
