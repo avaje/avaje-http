@@ -52,8 +52,12 @@ public class ProcessingContext {
     messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
 
-  public boolean isChildType(DeclaredType declaredType, Class superClass) {
+  public boolean isChildOrSameType(DeclaredType declaredType, Class superClass) {
     TypeMirror superMirror = getTypeElement(superClass.getName()).asType();
+    if(types.isSameType(superMirror, declaredType)) {
+      return true;
+    }
+
     for (TypeMirror supertype : types.directSupertypes(declaredType)) {
       if(supertype.getKind() != TypeKind.DECLARED)
         continue;

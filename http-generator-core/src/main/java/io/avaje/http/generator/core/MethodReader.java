@@ -212,11 +212,13 @@ public class MethodReader {
     for(TypeMirror thrownType : element.getThrownTypes()) {
       if (thrownType.getKind() == TypeKind.DECLARED) {
         DeclaredType declaredType = (DeclaredType) thrownType;
-        if(ctx.isChildType(declaredType, BadRequestResponse.class)) {
+
+        if(ctx.isChildOrSameType(declaredType, BadRequestResponse.class)) {
           thrownTypes.add(declaredType);
         }
       }
     }
+
     return thrownTypes;
   }
 
