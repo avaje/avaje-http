@@ -1,5 +1,18 @@
 # avaje-http-client
 
+
+### Dependency
+
+```xml
+<dependency>
+  <groupId>io.avaje</groupId>
+  <artifactId>avaje-http-client</artifactId>
+  <version>1.0</version>
+</dependency>
+```
+
+### Create HttpClientContext
+
 Create a HttpClientContext with a baseUrl, Jackson or Gson based JSON
  body adapter, logger.
 
@@ -14,6 +27,8 @@ Create a HttpClientContext with a baseUrl, Jackson or Gson based JSON
   }
 
 ```
+
+### Requests
 
 From HttpClientContext:
  - Create a request
