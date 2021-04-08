@@ -1,5 +1,12 @@
 # avaje-http-client
 
+A light weight wrapper to the JDK 11+ Java Http Client
+
+- Adds a fluid API for request constructing URL and payload
+- Adds JSON marshalling/unmarshalling of request and response using Jackson or Gson
+- Adds request/response logging
+
+
 
 ### Dependency
 
