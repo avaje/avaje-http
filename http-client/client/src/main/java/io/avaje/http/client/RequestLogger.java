@@ -59,7 +59,7 @@ public class RequestLogger implements ResponseListener {
     if (!entries.isEmpty()) {
       sb.append(delimiter).append(label);
       for (Map.Entry<String, List<String>> entry : entries) {
-        sb.append(entry.getKey()).append("=").append(entry.getValue()).append("; ");
+        sb.append(entry.getKey()).append("=").append(entry.getValue()).append(", ");
       }
     }
   }
