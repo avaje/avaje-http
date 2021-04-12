@@ -28,30 +28,25 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private static final String CONTENT_ENCODING = "Content-Encoding";
 
   private final DHttpClientContext context;
-
   private final UrlBuilder url;
-
   private Duration requestTimeout;
-
   private boolean gzip;
 
   private BodyContent encodedRequestBody;
-
   private HttpRequest.BodyPublisher body;
+  private String rawRequestBody;
 
   private HttpRequest.Builder httpRequest;
 
   private Map<String, List<String>> formParams;
-
   private Map<String, List<String>> headers;
 
   private boolean bodyFormEncoded;
-
   private long requestTimeNanos;
 
   private HttpResponse<?> httpResponse;
-
   private BodyContent encodedResponseBody;
+  private boolean loggableResponseBody;
 
   public DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
     this.context = context;
@@ -127,6 +122,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public HttpClientRequest body(String body) {
+    this.rawRequestBody = body;
     this.body = HttpRequest.BodyPublishers.ofString(body);
     return this;
   }
@@ -292,6 +288,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public HttpResponse<String> asString() {
+    loggableResponseBody = true;
     return withResponseHandler(HttpResponse.BodyHandlers.ofString());
   }
 
@@ -381,11 +378,11 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     public String requestBody() {
       if (encodedRequestBody != null) {
         return new String(encodedRequestBody.content(), StandardCharsets.UTF_8);
-      }
-      if (bodyFormEncoded) {
+      } else if (bodyFormEncoded) {
         return buildEncodedFormContent();
-      }
-      if (body != null) {
+      } else if (rawRequestBody != null) {
+        return rawRequestBody;
+      } else if (body != null) {
         return body.toString();
       }
       return null;
@@ -395,6 +392,12 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     public String responseBody() {
       if (encodedResponseBody != null) {
         return new String(encodedResponseBody.content(), StandardCharsets.UTF_8);
+      } else if (httpResponse != null && loggableResponseBody) {
+        String strBody = httpResponse.body().toString();
+        if (strBody.length() > 1_000) {
+          return strBody.substring(0, 1_000) + "...";
+        }
+        return strBody;
       }
       return null;
     }
