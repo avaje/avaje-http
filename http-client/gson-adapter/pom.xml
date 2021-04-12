@@ -4,12 +4,12 @@
   <parent>
     <artifactId>java11-oss</artifactId>
     <groupId>org.avaje</groupId>
-    <version>3.1</version>
+    <version>3.2</version>
   </parent>
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client-gson</artifactId>
-  <version>1.0</version>
+  <version>1.1</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http-client.git</developerConnection>
