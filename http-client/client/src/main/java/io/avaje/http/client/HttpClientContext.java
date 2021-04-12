@@ -4,6 +4,7 @@ import java.net.CookieHandler;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.concurrent.Executor;
 
 /**
  * The HTTP client context that we use to build and process requests.
@@ -77,6 +78,8 @@ public interface HttpClientContext {
 
     /**
      * Set the underlying HttpClient to use.
+     * <p>
+     * Used when we wish to control all options of the HttpClient.
      */
     Builder with(HttpClient client);
 
@@ -87,6 +90,8 @@ public interface HttpClientContext {
 
     /**
      * Set the default request timeout.
+     *
+     * @see java.net.http.HttpRequest.Builder#timeout(Duration)
      */
     Builder withRequestTimeout(Duration requestTimeout);
 
@@ -105,13 +110,32 @@ public interface HttpClientContext {
 
     /**
      * Specify a cookie handler to use on the HttpClient. This would override the default cookie handler.
+     *
+     * @see HttpClient.Builder#cookieHandler(CookieHandler)
      */
     Builder withCookieHandler(CookieHandler cookieHandler);
 
     /**
      * Specify the redirect policy. Defaults to HttpClient.Redirect.NORMAL.
+     *
+     * @see HttpClient.Builder#followRedirects(HttpClient.Redirect)
      */
     Builder withRedirect(HttpClient.Redirect redirect);
+
+    /**
+     * Specify the HTTP version. Defaults to not set.
+     *
+     * @see HttpClient.Builder#version(HttpClient.Version)
+     */
+    Builder withVersion(HttpClient.Version version);
+
+    /**
+     * Specify the Executor to use for asynchronous tasks.
+     * If not specified a default executor will be used.
+     *
+     * @see HttpClient.Builder#executor(Executor)
+     */
+    Builder withExecutor(Executor executor);
 
     /**
      * Build and return the context.

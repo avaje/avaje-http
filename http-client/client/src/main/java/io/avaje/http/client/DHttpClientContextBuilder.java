@@ -4,6 +4,7 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.http.HttpClient;
 import java.time.Duration;
+import java.util.concurrent.Executor;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,6 +23,9 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   private CookieHandler cookieHandler = new CookieManager();
 
   private HttpClient.Redirect redirect = HttpClient.Redirect.NORMAL;
+
+  private HttpClient.Version version;
+  private Executor executor;
 
   DHttpClientContextBuilder() {
   }
@@ -67,6 +71,16 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
     this.redirect = redirect;
     return this;
   }
+  @Override
+  public HttpClientContext.Builder withVersion(HttpClient.Version version) {
+    this.version = version;
+    return this;
+  }
+  @Override
+  public HttpClientContext.Builder withExecutor(Executor executor) {
+    this.executor = executor;
+    return this;
+  }
 
   @Override
   public HttpClientContext build() {
@@ -85,6 +99,12 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
         .connectTimeout(Duration.ofSeconds(20));
     if (cookieHandler != null) {
       builder.cookieHandler(cookieHandler);
+    }
+    if (version != null) {
+      builder.version(version);
+    }
+    if (executor != null) {
+      builder.executor(executor);
     }
     return builder.build();
   }
