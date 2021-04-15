@@ -20,20 +20,13 @@ class SimpleTest {
     final HttpClientContext clientContext =
       HttpClientContext.newBuilder()
         .withBaseUrl("https://api.github.com")
-        .withResponseListener(new RequestLogger())
+        //.withResponseListener(new RequestLogger())
         .withBodyAdapter(new JacksonBodyAdapter(objectMapper))
         .build();
 
     Simple simple = new Simple$httpclient(clientContext);
 
     final List<Repo> repos = simple.listRepos("octocat", "rbygrave");
-    System.out.println("done: " + repos);
-
-    final List<Repo> repos2 = simple.listRepos("octocat", "rbygrave");
-    System.out.println("done2: " + repos2);
-
-    final List<Repo> repos3 = simple.listRepos("octocat", "rbygrave");
-    System.out.println("done3: " + repos3);
-
+    System.out.println("got repos - " + repos.size());
   }
 }

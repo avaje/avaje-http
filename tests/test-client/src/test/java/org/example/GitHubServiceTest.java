@@ -1,7 +1,9 @@
 package org.example;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -12,8 +14,9 @@ import java.util.List;
 
 public class GitHubServiceTest {
 
+  @Disabled
   @Test
-  public void test() throws IOException {
+  void test() throws IOException {
 
     Retrofit retrofit = new Retrofit.Builder()
       .baseUrl("https://api.github.com/")
@@ -23,16 +26,25 @@ public class GitHubServiceTest {
 
     GitHubService service = retrofit.create(GitHubService.class);
     final Call<List<Repo>> call = service.listRepos("octocat");
-    final Response<List<Repo>> res = call.execute();
-    final List<Repo> body = res.body();
+    call.enqueue(new Callback<>() {
+      @Override
+      public void onResponse(Call<List<Repo>> call, Response<List<Repo>> response) {
+        System.out.println("onResponse repo count: " + response.body().size());
+      }
 
-    System.out.println("done "+body);
+      @Override
+      public void onFailure(Call<List<Repo>> call, Throwable throwable) {
+        System.out.println("onFailure: " + throwable);
+      }
+    });
+//    final Response<List<Repo>> res = call.execute();
+//    final List<Repo> body = res.body();
+//    System.out.println("done count: "+body.size());
 
     final Call<String> call2 = service.list2("octocat");
     final Response<String> res2 = call2.execute();
     final String body2 = res2.body();
 
-    System.out.println("done "+body2);
-
+    System.out.println("done length: " + body2.length());
   }
 }
