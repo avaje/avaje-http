@@ -5,23 +5,19 @@ import io.avaje.inject.SystemContext;
 import io.avaje.jex.Jex;
 import io.avaje.jex.Routing;
 
-import java.util.List;
-
 public class Main {
 
   public static void main(String[] args) {
-
     start(8090);
   }
 
   public static Jex.Server start(int port) {
+    return start(port, SystemContext.context());
+  }
+
+  public static Jex.Server start(int port, BeanContext context) {
     final Jex jex = Jex.create();
-
-    final Routing routing = jex.routing();
-    final BeanContext context = SystemContext.context();
-    final List<Routing.Service> beans = context.getBeans(Routing.Service.class);
-    beans.forEach(service -> service.add(routing));
-
+    jex.routing().addAll(context.getBeans(Routing.Service.class));
     return jex.port(port).start();
   }
 }

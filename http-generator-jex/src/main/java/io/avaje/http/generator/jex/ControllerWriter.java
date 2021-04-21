@@ -8,7 +8,7 @@ import io.avaje.http.generator.core.ProcessingContext;
 import java.io.IOException;
 
 /**
- * Write Javalin specific Controller WebRoute handling adapter.
+ * Write Jex specific Controller WebRoute handling adapter.
  */
 class ControllerWriter extends BaseControllerWriter {
 

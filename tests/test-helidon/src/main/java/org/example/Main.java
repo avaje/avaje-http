@@ -4,7 +4,6 @@ import io.avaje.inject.SystemContext;
 import io.helidon.health.HealthSupport;
 import io.helidon.media.jackson.JacksonSupport;
 import io.helidon.metrics.MetricsSupport;
-import io.helidon.webserver.FormParamsSupport;
 import io.helidon.webserver.Routing;
 import io.helidon.webserver.Service;
 import io.helidon.webserver.WebServer;
@@ -53,7 +52,8 @@ public class Main {
   private static Routing createRouting() {
 
     final Routing.Builder builder = Routing.builder()
-      .register(FormParamsSupport.create())
+      //.register(FormParamsSupport.create())
+      //.register( DefaultMediaSupport.formParamReader())
       .register(HealthSupport.create())
       .register(MetricsSupport.create())
       .register("/greet", new GreetService());
