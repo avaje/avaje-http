@@ -137,8 +137,20 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
-  void postForm_asVoid_invokesValidation_expect_badRequest_extractError() {
+  void postForm_asVoid_validResponse() {
+    HttpResponse<Void> res = clientContext.request()
+      .path("hello/saveform")
+      .formParam("name", "baz")
+      .formParam("email", "user@foo.com")
+      .formParam("url", "http://foo")
+      .post()
+      .asVoid();
 
+    assertEquals(201, res.statusCode());
+  }
+
+  @Test
+  void postForm_asVoid_invokesValidation_expect_badRequest_extractError() {
     try {
       clientContext.request()
         .path("hello/saveform")

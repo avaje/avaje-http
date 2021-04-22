@@ -250,7 +250,6 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     this.httpResponse = response;
     context.check(response);
     encodedResponseBody = context.readContent(response);
-    context.afterResponse(this);
   }
 
   @Override
@@ -279,11 +278,11 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public <T> HttpResponse<T> withResponseHandler(HttpResponse.BodyHandler<T> responseHandler) {
-    long startNanos = System.nanoTime();
+    final long startNanos = System.nanoTime();
     final HttpResponse<T> response = context.send(httpRequest, responseHandler);
-    this.requestTimeNanos = System.nanoTime() - startNanos;
-    this.httpResponse = response;
-    context.afterResponseHandler(this);
+    requestTimeNanos = System.nanoTime() - startNanos;
+    httpResponse = response;
+    context.afterResponse(this);
     return response;
   }
 

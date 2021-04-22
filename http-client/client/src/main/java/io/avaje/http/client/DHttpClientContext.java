@@ -126,14 +126,7 @@ class DHttpClientContext implements HttpClientContext {
     return bodyAdapter.listReader(cls).read(content);
   }
 
-
   void afterResponse(DHttpClientRequest request) {
-    if (requestListener != null) {
-      requestListener.response(request.listenerEvent());
-    }
-  }
-
-  void afterResponseHandler(DHttpClientRequest request) {
     if (requestListener != null) {
       requestListener.response(request.listenerEvent());
     }
