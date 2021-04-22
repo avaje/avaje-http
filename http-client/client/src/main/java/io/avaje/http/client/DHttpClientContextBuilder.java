@@ -18,7 +18,7 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
 
   private BodyAdapter bodyAdapter;
 
-  private ResponseListener responseListener;
+  private RequestListener requestListener;
 
   private CookieHandler cookieHandler = new CookieManager();
 
@@ -55,8 +55,8 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   }
 
   @Override
-  public HttpClientContext.Builder withResponseListener(ResponseListener responseListener) {
-    this.responseListener = responseListener;
+  public HttpClientContext.Builder withRequestListener(RequestListener requestListener) {
+    this.requestListener = requestListener;
     return this;
   }
 
@@ -89,7 +89,7 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
     if (client == null) {
       client = defaultClient();
     }
-    return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, responseListener);
+    return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, requestListener);
   }
 
   private HttpClient defaultClient() {

@@ -29,6 +29,18 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void get_helloMessage_via_url() {
+
+    final HttpResponse<String> hres = clientContext.request()
+      .url("http://127.0.0.1:8887")
+      .path("hello").path("message")
+      .get().asString();
+
+    assertThat(hres.body()).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
   void get_hello_returningListOfBeans() {
 
     final List<HelloDto> helloDtos = clientContext.request()

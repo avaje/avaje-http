@@ -76,6 +76,12 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpClientRequest url(String baseUrl) {
+    url.url(baseUrl);
+    return this;
+  }
+
+  @Override
   public HttpClientRequest path(String path) {
     url.path(path);
     return this;
@@ -348,11 +354,11 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
       .method(method, body);
   }
 
-  ResponseListener.Event listenerEvent() {
+  RequestListener.Event listenerEvent() {
     return new ListenerEvent();
   }
 
-  private class ListenerEvent implements ResponseListener.Event {
+  private class ListenerEvent implements RequestListener.Event {
 
     @Override
     public long responseTimeNanos() {
