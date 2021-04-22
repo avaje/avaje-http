@@ -8,6 +8,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 class DHttpClientContext implements HttpClientContext {
 
@@ -16,13 +17,20 @@ class DHttpClientContext implements HttpClientContext {
   private final Duration requestTimeout;
   private final BodyAdapter bodyAdapter;
   private final RequestListener requestListener;
+  private final RequestIntercept requestIntercept;
+  private final boolean withAuthToken;
+  private final AuthTokenProvider authTokenProvider;
+  private final AtomicReference<AuthToken> tokenRef = new AtomicReference<>();
 
-  DHttpClientContext(HttpClient httpClient, String baseUrl, Duration requestTimeout, BodyAdapter bodyAdapter, RequestListener requestListener) {
+  DHttpClientContext(HttpClient httpClient, String baseUrl, Duration requestTimeout, BodyAdapter bodyAdapter, RequestListener requestListener, AuthTokenProvider authTokenProvider, RequestIntercept intercept) {
     this.httpClient = httpClient;
     this.baseUrl = baseUrl;
     this.requestTimeout = requestTimeout;
     this.bodyAdapter = bodyAdapter;
     this.requestListener = requestListener;
+    this.authTokenProvider = authTokenProvider;
+    this.withAuthToken = authTokenProvider != null;
+    this.requestIntercept = intercept;
   }
 
   @Override
@@ -130,5 +138,27 @@ class DHttpClientContext implements HttpClientContext {
     if (requestListener != null) {
       requestListener.response(request.listenerEvent());
     }
+    if (requestIntercept != null) {
+      requestIntercept.afterResponse(request.response(), request);
+    }
   }
+
+  void beforeRequest(DHttpClientRequest request) {
+    if (withAuthToken && !request.isSkipAuthToken()) {
+      request.header("Authorization", "Bearer " + authToken());
+    }
+    if (requestIntercept != null) {
+      requestIntercept.beforeRequest(request);
+    }
+  }
+
+  private String authToken() {
+    AuthToken authToken = tokenRef.get();
+    if (authToken == null || authToken.isExpired()) {
+      authToken = authTokenProvider.obtainToken(request().skipAuthToken());
+      tokenRef.set(authToken);
+    }
+    return authToken.token();
+  }
+
 }

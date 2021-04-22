@@ -27,6 +27,14 @@ import java.util.function.Supplier;
 public interface HttpClientRequest {
 
   /**
+   * For this request skip using an Authorization token.
+   * <p>
+   * This is automatically set on the request passed to
+   * {@link AuthTokenProvider#obtainToken(HttpClientRequest)}.
+   */
+  HttpClientRequest skipAuthToken();
+
+  /**
    * Set the request timeout to use for this request. When not set the default
    * request timeout will be used.
    *

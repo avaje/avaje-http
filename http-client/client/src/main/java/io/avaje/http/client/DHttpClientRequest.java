@@ -47,11 +47,18 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private HttpResponse<?> httpResponse;
   private BodyContent encodedResponseBody;
   private boolean loggableResponseBody;
+  private boolean skipAuthToken;
 
   public DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
     this.context = context;
     this.requestTimeout = requestTimeout;
     this.url = context.url();
+  }
+
+  @Override
+  public HttpClientRequest skipAuthToken() {
+    this.skipAuthToken = true;
+    return this;
   }
 
   @Override
@@ -220,28 +227,24 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   public HttpClientResponse get() {
     httpRequest = newGet(url.build());
-    addHeaders();
     return this;
   }
 
   @Override
   public HttpClientResponse delete() {
     httpRequest = newDelete(url.build());
-    addHeaders();
     return this;
   }
 
   @Override
   public HttpClientResponse post() {
     httpRequest = newPost(url.build(), body());
-    addHeaders();
     return this;
   }
 
   @Override
   public HttpClientResponse put() {
     httpRequest = newPut(url.build(), body());
-    addHeaders();
     return this;
   }
 
@@ -278,6 +281,8 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public <T> HttpResponse<T> withResponseHandler(HttpResponse.BodyHandler<T> responseHandler) {
+    context.beforeRequest(this);
+    addHeaders();
     final long startNanos = System.nanoTime();
     final HttpResponse<T> response = context.send(httpRequest, responseHandler);
     requestTimeNanos = System.nanoTime() - startNanos;
@@ -355,6 +360,14 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   RequestListener.Event listenerEvent() {
     return new ListenerEvent();
+  }
+
+  HttpResponse<?> response() {
+    return httpResponse;
+  }
+
+  boolean isSkipAuthToken() {
+    return skipAuthToken;
   }
 
   private class ListenerEvent implements RequestListener.Event {

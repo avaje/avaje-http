@@ -158,6 +158,23 @@ public interface HttpClientContext {
     Builder withRequestListener(RequestListener requestListener);
 
     /**
+     * Add a request interceptor.
+     */
+    Builder withRequestIntercept(RequestIntercept requestIntercept);
+
+    /**
+     * Add a Authorization token provider.
+     * <p>
+     * When set all requests are expected to use a Authorization Bearer token
+     * unless they are marked via {@link HttpClientRequest#skipAuthToken()}.
+     * <p>
+     * The AuthTokenProvider obtains a new token typically with an expiry. This
+     * is automatically called as needed and the Authorization Bearer header set
+     * on all requests (not marked with skipAuthToken()).
+     */
+    Builder withAuthTokenProvider(AuthTokenProvider authTokenProvider);
+
+    /**
      * Specify a cookie handler to use on the HttpClient. This would override the default cookie handler.
      *
      * @see HttpClient.Builder#cookieHandler(CookieHandler)

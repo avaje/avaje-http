@@ -4,6 +4,8 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.http.HttpClient;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 import static java.util.Objects.requireNonNull;
@@ -26,6 +28,10 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
 
   private HttpClient.Version version;
   private Executor executor;
+
+  private AuthTokenProvider authTokenProvider;
+
+  private final List<RequestIntercept> interceptors = new ArrayList<>();
 
   DHttpClientContextBuilder() {
   }
@@ -61,6 +67,18 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   }
 
   @Override
+  public HttpClientContext.Builder withRequestIntercept(RequestIntercept requestIntercept) {
+    this.interceptors.add(requestIntercept);
+    return this;
+  }
+
+  @Override
+  public HttpClientContext.Builder withAuthTokenProvider(AuthTokenProvider authTokenProvider) {
+    this.authTokenProvider = authTokenProvider;
+    return this;
+  }
+
+  @Override
   public HttpClientContext.Builder withCookieHandler(CookieHandler cookieHandler) {
     this.cookieHandler = cookieHandler;
     return this;
@@ -71,11 +89,13 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
     this.redirect = redirect;
     return this;
   }
+
   @Override
   public HttpClientContext.Builder withVersion(HttpClient.Version version) {
     this.version = version;
     return this;
   }
+
   @Override
   public HttpClientContext.Builder withExecutor(Executor executor) {
     this.executor = executor;
@@ -89,7 +109,17 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
     if (client == null) {
       client = defaultClient();
     }
-    return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, requestListener);
+    return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, requestListener, authTokenProvider, buildIntercept());
+  }
+
+  private RequestIntercept buildIntercept() {
+    if (interceptors.isEmpty()) {
+      return null;
+    } else if (interceptors.size() == 1) {
+      return interceptors.get(0);
+    } else {
+      return new DRequestInterceptors(interceptors);
+    }
   }
 
   private HttpClient defaultClient() {
