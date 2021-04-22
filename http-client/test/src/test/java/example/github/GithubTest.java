@@ -31,7 +31,7 @@ public class GithubTest {
     final HttpClientContext clientContext = HttpClientContext.newBuilder()
       .withBaseUrl("https://api.github.com")
       .withBodyAdapter(bodyAdapter)
-      .withResponseListener(new RequestLogger())
+      .withRequestListener(new RequestLogger())
       .build();
 
     final Simple simple = HttpApi.provide(Simple.class, clientContext);

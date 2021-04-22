@@ -14,7 +14,7 @@ A light weight wrapper to the JDK 11+ Java Http Client
 <dependency>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client</artifactId>
-  <version>1.0</version>
+  <version>1.2</version>
 </dependency>
 ```
 
@@ -27,7 +27,7 @@ Create a HttpClientContext with a baseUrl, Jackson or Gson based JSON
   public HttpClientContext client() {
     return HttpClientContext.newBuilder()
       .withBaseUrl(baseUrl)
-      .withResponseListener(new RequestLogger())
+      .withRequestListener(new RequestLogger())
       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
 //      .withBodyAdapter(new GsonBodyAdapter(new Gson()))
       .build();
@@ -132,3 +132,46 @@ assertThat(res.statusCode()).isEqualTo(201);
 ```
 
 ## Currently NO support for POSTing multipart-form
+
+## Auth token
+
+Built in support for obtaining and setting an Authorization token.
+
+### 1. Implement AuthTokenProvider
+
+```java
+
+  class MyAuthTokenProvider implements AuthTokenProvider {
+
+    @Override
+    public AuthToken obtainToken(HttpClientRequest tokenRequest) {
+      AuthTokenResponse res = tokenRequest
+        .url("https://foo/v2/token")
+        .header("content-type", "application/json")
+        .body(authRequestAsJson())
+        .post()
+        .bean(AuthTokenResponse.class);
+
+      Instant validUntil = Instant.now().plusSeconds(res.expires_in).minusSeconds(60);
+
+      return AuthToken.of(res.access_token, validUntil);
+    }
+  }
+```
+
+### 2. Register with HttpClientContext
+
+```java
+    HttpClientContext ctx = HttpClientContext.newBuilder()
+      .withBaseUrl("https://foo")
+      .withBodyAdapter(new JacksonBodyAdapter(objectMapper))
+      .withRequestListener(new RequestLogger())
+      .withAuthTokenProvider(new MyAuthTokenProvider()) <!-- HERE
+      .build();
+```
+
+### 3. Token obtained and set automatically
+
+Now all requests using the HttpClientContext will automatically get
+an `Authorization` header with `Bearer` token added. The token will be
+obtained when necessary.
