@@ -7,6 +7,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class UrlBuilderTest {
 
   @Test
+  void url() {
+    String url = new UrlBuilder("https://foo").url("http://bar").path("bazz").build();
+    assertThat(url).isEqualTo("http://bar/bazz");
+  }
+
+  @Test
   void path() {
     assertThat(new UrlBuilder("https://foo").path("bar").build()).isEqualTo("https://foo/bar");
   }

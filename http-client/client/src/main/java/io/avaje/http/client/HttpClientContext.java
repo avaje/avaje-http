@@ -8,11 +8,40 @@ import java.util.concurrent.Executor;
 
 /**
  * The HTTP client context that we use to build and process requests.
+ *
+ * <pre>{@code
+ *
+ *   HttpClientContext ctx = HttpClientContext.newBuilder()
+ *       .withBaseUrl("http://localhost:8080")
+ *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+ *       .build();
+ *
+ *  HelloDto dto = ctx.request()
+ *       .path("hello")
+ *       .queryParam("name", "Rob")
+ *       .queryParam("say", "Ki ora")
+ *       .get()
+ *       .bean(HelloDto.class);
+ *
+ * }</pre>
  */
 public interface HttpClientContext {
 
   /**
    * Return the builder to config and build the client context.
+   *
+   * <pre>{@code
+   *
+   *   HttpClientContext ctx = HttpClientContext.newBuilder()
+   *       .withBaseUrl("http://localhost:8080")
+   *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+   *       .build();
+   *
+   *  HttpResponse<String> res = ctx.request()
+   *       .path("hello")
+   *       .get().asString();
+   *
+   * }</pre>
    */
   static HttpClientContext.Builder newBuilder() {
     return new DHttpClientContextBuilder();
@@ -31,6 +60,9 @@ public interface HttpClientContext {
 
   /**
    * Return the body adapter used by the client context.
+   * <p>
+   * This is the body adapter used to convert request and response
+   * bodies to java types. For example using Jackson with JSON payloads.
    */
   BodyAdapter converters();
 
@@ -70,9 +102,24 @@ public interface HttpClientContext {
    */
   byte[] decodeContent(String encoding, byte[] content);
 
-
   /**
    * Builds the HttpClientContext.
+   *
+   * <pre>{@code
+   *
+   *   HttpClientContext ctx = HttpClientContext.newBuilder()
+   *       .withBaseUrl("http://localhost:8080")
+   *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+   *       .build();
+   *
+   *  HelloDto dto = ctx.request()
+   *       .path("hello")
+   *       .queryParam("name", "Rob")
+   *       .queryParam("say", "Ki ora")
+   *       .get()
+   *       .bean(HelloDto.class);
+   *
+   * }</pre>
    */
   interface Builder {
 
@@ -85,6 +132,8 @@ public interface HttpClientContext {
 
     /**
      * Set the base URL to use for requests created from the context.
+     * <p>
+     * Note that the base url can be replaced via {@link HttpClientRequest#url(String)}.
      */
     Builder withBaseUrl(String baseUrl);
 
@@ -139,6 +188,21 @@ public interface HttpClientContext {
 
     /**
      * Build and return the context.
+     *
+     * <pre>{@code
+     *
+     *   HttpClientContext ctx = HttpClientContext.newBuilder()
+     *       .withBaseUrl("http://localhost:8080")
+     *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+     *       .build();
+     *
+     *  HelloDto dto = ctx.request()
+     *       .path("hello")
+     *       .queryParam("say", "Ki ora")
+     *       .get()
+     *       .bean(HelloDto.class);
+     *
+     * }</pre>
      */
     HttpClientContext build();
   }

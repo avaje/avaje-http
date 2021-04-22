@@ -13,6 +13,16 @@ import java.util.function.Supplier;
  * Largely wraps the standard JDK HttpRequest with additional
  * support for converting beans to body content and converting
  * beans from response content.
+ *
+ * <pre>{@code
+ *
+ *  HelloDto dto = clientContext.request()
+ *       .path("hello").queryParam("name", "Rob").queryParam("say", "Ki ora")
+ *       .get().bean(HelloDto.class);
+ *
+ * }</pre>
+ *
+ * @see HttpClientContext
  */
 public interface HttpClientRequest {
 
@@ -41,6 +51,23 @@ public interface HttpClientRequest {
    * @return The request being built
    */
   HttpClientRequest gzip(boolean gzip);
+
+  /**
+   * Set the URL to use replacing the base URL.
+   * <pre>{code
+   *
+   *  HttpResponse<String> res = clientContext.request()
+   *       .url("http://127.0.0.1:8887")
+   *       .path("hello")
+   *       .get().asString();
+   *
+   * }</pre>
+   *
+   * @param url The url effectively replacing the base url.
+   * @return The request being built
+   * @see HttpClientContext.Builder#withBaseUrl(String)
+   */
+  HttpClientRequest url(String url);
 
   /**
    * Add a path segment to the URL.

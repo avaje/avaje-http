@@ -76,6 +76,12 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpClientRequest url(String baseUrl) {
+    url.url(baseUrl);
+    return this;
+  }
+
+  @Override
   public HttpClientRequest path(String path) {
     url.path(path);
     return this;
