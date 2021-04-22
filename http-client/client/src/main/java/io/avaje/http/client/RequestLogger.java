@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * Logs request and response details for debug logging purposes.
  */
-public class RequestLogger implements ResponseListener {
+public class RequestLogger implements RequestListener {
 
   private static final Logger log = LoggerFactory.getLogger(RequestLogger.class);
 

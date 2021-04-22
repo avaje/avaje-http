@@ -151,11 +151,11 @@ public interface HttpClientContext {
     Builder withBodyAdapter(BodyAdapter adapter);
 
     /**
-     * Add a response listener. Note that {@link RequestLogger} is an
+     * Add a request listener. Note that {@link RequestLogger} is an
      * implementation for debug logging request/response headers and
      * content.
      */
-    Builder withResponseListener(ResponseListener requestListener);
+    Builder withRequestListener(RequestListener requestListener);
 
     /**
      * Specify a cookie handler to use on the HttpClient. This would override the default cookie handler.

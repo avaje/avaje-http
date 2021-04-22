@@ -7,10 +7,10 @@ import java.net.http.HttpResponse;
 /**
  * Listen to responses.
  * <p>
- * {@link RequestLogger} is an implementation for debug logging the
- * requests and responses.
+ * {@link RequestLogger} is an implementation for debug logging
+ * the requests and responses.
  */
-public interface ResponseListener {
+public interface RequestListener {
 
   /**
    * Handle the response.

@@ -354,11 +354,11 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
       .method(method, body);
   }
 
-  ResponseListener.Event listenerEvent() {
+  RequestListener.Event listenerEvent() {
     return new ListenerEvent();
   }
 
-  private class ListenerEvent implements ResponseListener.Event {
+  private class ListenerEvent implements RequestListener.Event {
 
     @Override
     public long responseTimeNanos() {
