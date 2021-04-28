@@ -11,8 +11,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.time.LocalDate;
+import java.time.*;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -121,7 +120,6 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return this;
   }
 
-
   @Override
   public HttpClientRequest queryParam(String name, String value) {
     url.queryParam(name, value);
@@ -129,11 +127,78 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpClientRequest queryParam(String name, Integer value) {
+    url.queryParam(name, value);
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest queryParam(String name, Long value) {
+    url.queryParam(name, value);
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest queryParam(String name, UUID value) {
+    url.queryParam(name, value);
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest queryParam(String name, Boolean value) {
+    url.queryParam(name, value);
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest queryParam(String name, LocalDate value) {
+    url.queryParam(name, value);
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest queryParam(String name, LocalTime value) {
+    url.queryParam(name, value);
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest queryParam(String name, LocalDateTime value) {
+    url.queryParam(name, value);
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest queryParam(String name, Instant value) {
+    url.queryParam(name, value);
+    return this;
+  }
+
+  @Override
   public HttpClientRequest formParam(String name, String value) {
+    if (value == null) {
+      return this;
+    }
     if (formParams == null) {
       formParams = new LinkedHashMap<>();
     }
     formParams.computeIfAbsent(name, s -> new ArrayList<>()).add(value);
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest formParam(String name, Long value) {
+    if (value != null) {
+      formParam(name, Long.toString(value));
+    }
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest formParam(String name, UUID value) {
+    if (value != null) {
+      formParam(name, value.toString());
+    }
     return this;
   }
 

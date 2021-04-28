@@ -4,8 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.http.HttpRequest;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.time.LocalDate;
+import java.time.*;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -138,6 +137,78 @@ public interface HttpClientRequest {
   HttpClientRequest queryParam(String name, String value);
 
   /**
+   * Add a Integer query parameter
+   *
+   * @param name  The name of the query parameter
+   * @param value The value of the query parameter
+   * @return The request being built
+   */
+  HttpClientRequest queryParam(String name, Integer value);
+
+  /**
+   * Add a Long query parameter
+   *
+   * @param name  The name of the query parameter
+   * @param value The value of the query parameter
+   * @return The request being built
+   */
+  HttpClientRequest queryParam(String name, Long value);
+
+  /**
+   * Add a UUID query parameter
+   *
+   * @param name  The name of the query parameter
+   * @param value The value of the query parameter
+   * @return The request being built
+   */
+  HttpClientRequest queryParam(String name, UUID value);
+
+  /**
+   * Add a Boolean query parameter
+   *
+   * @param name  The name of the query parameter
+   * @param value The value of the query parameter
+   * @return The request being built
+   */
+  HttpClientRequest queryParam(String name, Boolean value);
+
+  /**
+   * Add a LocalDate query parameter
+   *
+   * @param name  The name of the query parameter
+   * @param value The value of the query parameter
+   * @return The request being built
+   */
+  HttpClientRequest queryParam(String name, LocalDate value);
+
+  /**
+   * Add a LocalTime query parameter
+   *
+   * @param name  The name of the query parameter
+   * @param value The value of the query parameter
+   * @return The request being built
+   */
+  HttpClientRequest queryParam(String name, LocalTime value);
+
+  /**
+   * Add a LocalDateTime query parameter
+   *
+   * @param name  The name of the query parameter
+   * @param value The value of the query parameter
+   * @return The request being built
+   */
+  HttpClientRequest queryParam(String name, LocalDateTime value);
+
+  /**
+   * Add a Instant query parameter as ISO-8601 format.
+   *
+   * @param name  The name of the query parameter
+   * @param value The value of the query parameter
+   * @return The request being built
+   */
+  HttpClientRequest queryParam(String name, Instant value);
+
+  /**
    * Add a form parameter.
    *
    * @param name  The form parameter name
@@ -145,6 +216,16 @@ public interface HttpClientRequest {
    * @return The request being built
    */
   HttpClientRequest formParam(String name, String value);
+
+  /**
+   * Add a Long value form parameter.
+   */
+  HttpClientRequest formParam(String name, Long value);
+
+  /**
+   * Add a Long value form parameter.
+   */
+  HttpClientRequest formParam(String name, UUID value);
 
   /**
    * Set encoded body content.
