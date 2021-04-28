@@ -2,6 +2,9 @@ package io.avaje.http.client;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UrlBuilderTest {
@@ -15,6 +18,17 @@ class UrlBuilderTest {
   @Test
   void path() {
     assertThat(new UrlBuilder("https://foo").path("bar").build()).isEqualTo("https://foo/bar");
+  }
+
+`  @Test
+  void path_otherTypes() {
+    LocalDate date = LocalDate.of(2020, 5, 12);
+    UUID uuid = UUID.randomUUID();
+    assertThat(new UrlBuilder("https://foo")
+      .path(uuid)
+      .path(42)
+      .path(date)
+      .path(98L).build()).isEqualTo("https://foo/" + uuid + "/42/2020-05-12/98");
   }
 
   @Test

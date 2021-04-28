@@ -2,6 +2,8 @@ package io.avaje.http.client;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Build a URL typically using a base url and adding path and query parameters.
@@ -36,6 +38,34 @@ public class UrlBuilder {
   public UrlBuilder path(String path) {
     buffer.append("/").append(path);
     return this;
+  }
+
+  /**
+   * Add a path segment to the url.
+   */
+  public UrlBuilder path(int val) {
+    return path(Integer.toString(val));
+  }
+
+  /**
+   * Add a path segment to the url.
+   */
+  public UrlBuilder path(long val) {
+    return path(Long.toString(val));
+  }
+
+  /**
+   * Add a path segment to the url.
+   */
+  public UrlBuilder path(LocalDate val) {
+    return path(val.toString());
+  }
+
+  /**
+   * Add a path segment to the url.
+   */
+  public UrlBuilder path(UUID val) {
+    return path(val.toString());
   }
 
   /**

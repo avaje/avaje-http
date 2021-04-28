@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.net.http.HttpRequest;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 /**
@@ -84,6 +86,38 @@ public interface HttpClientRequest {
    * @return The request being built
    */
   HttpClientRequest path(String path);
+
+  /**
+   * Add a path segment to the URL.
+   *
+   * @param val The value to add to the URL path.
+   * @return The request being built
+   */
+  HttpClientRequest path(int val);
+
+  /**
+   * Add a path segment to the URL.
+   *
+   * @param val The value to add to the URL path.
+   * @return The request being built
+   */
+  HttpClientRequest path(long val);
+
+  /**
+   * Add a path segment to the URL.
+   *
+   * @param val The value to add to the URL path.
+   * @return The request being built
+   */
+  HttpClientRequest path(UUID val);
+
+  /**
+   * Add a path segment to the URL.
+   *
+   * @param val The value to add to the URL path.
+   * @return The request being built
+   */
+  HttpClientRequest path(LocalDate val);
 
   /**
    * Add a matrix parameter to the current path segment.

@@ -12,11 +12,8 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -91,6 +88,30 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   @Override
   public HttpClientRequest path(String path) {
     url.path(path);
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest path(int val) {
+    url.path(val);
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest path(long val) {
+    url.path(val);
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest path(UUID val) {
+    url.path(val);
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest path(LocalDate val) {
+    url.path(val);
     return this;
   }
 
