@@ -20,7 +20,7 @@ class UrlBuilderTest {
     assertThat(new UrlBuilder("https://foo").path("bar").build()).isEqualTo("https://foo/bar");
   }
 
-`  @Test
+  @Test
   void path_otherTypes() {
     LocalDate date = LocalDate.of(2020, 5, 12);
     UUID uuid = UUID.randomUUID();
