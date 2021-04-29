@@ -1,50 +1,37 @@
 package io.avaje.http.generator.core;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.lang.model.element.*;
+import java.util.*;
 
-class BeanParamReader {
+public class BeanParamReader {
 
   private final ProcessingContext ctx;
   private final String beanVarName;
   private final String beanShortType;
   private final TypeElement beanType;
-
   private final ParamType defaultParamType;
-
   private final Set<String> setterMethods = new HashSet<>();
-
   private final Map<String, FieldReader> fieldMap = new LinkedHashMap<>();
-
   private final List<ExecutableElement> constructors = new ArrayList<>();
+  private final Map<String, ExecutableElement> methodMap = new LinkedHashMap<>();
 
-  BeanParamReader(ProcessingContext ctx, TypeElement beanType, String beanVarName, String beanShortType, ParamType defaultParamType) {
+  public BeanParamReader(ProcessingContext ctx, TypeElement beanType, String beanVarName, String beanShortType, ParamType defaultParamType) {
     this.ctx = ctx;
     this.beanType = beanType;
     this.beanVarName = beanVarName;
     this.beanShortType = beanShortType;
     this.defaultParamType = defaultParamType;
-
     read();
   }
 
   private void read() {
-
     for (Element enclosedElement : beanType.getEnclosedElements()) {
       switch (enclosedElement.getKind()) {
         case CONSTRUCTOR:
           constructors.add((ExecutableElement) enclosedElement);
           break;
         case METHOD:
-          readMethod(enclosedElement);
+          readMethod((ExecutableElement) enclosedElement);
           break;
         case FIELD:
           readField(enclosedElement);
@@ -54,20 +41,22 @@ class BeanParamReader {
   }
 
   private void readField(Element enclosedElement) {
-
     FieldReader field = new FieldReader(ctx, enclosedElement, defaultParamType);
     fieldMap.put(field.getVarName(), field);
   }
 
-  private void readMethod(Element enclosedElement) {
+  private void readMethod(ExecutableElement enclosedElement) {
     String simpleName = enclosedElement.getSimpleName().toString();
+    if (enclosedElement.getParameters().isEmpty()) {
+      // getter methods
+      methodMap.put(simpleName, enclosedElement);
+    }
     if (simpleName.startsWith("set")) {
       setterMethods.add(simpleName);
     }
   }
 
   void write(Append writer) {
-
     writer.append(" new %s(", beanShortType);
     final Set<String> constructorParams = writeConstructorParams(writer);
     writer.append(");").eol();
@@ -113,18 +102,43 @@ class BeanParamReader {
     return paramsUsed;
   }
 
+  public void writeFormParams(Append writer) {
+    for (FieldReader field : fieldMap.values()) {
+      ExecutableElement getter = findGetter(field.getVarName());
+      if (getter != null) {
+        writer.append("      .formParam(\"%s\", %s.%s)", field.getVarName(), beanVarName, getter.toString()).eol();
+      } else if (field.isPublic()) {
+        writer.append("      .formParam(\"%s\", %s.%s)", field.getVarName(), beanVarName, field.getVarName()).eol();
+      }
+    }
+  }
+
+  private ExecutableElement findGetter(String varName) {
+    ExecutableElement getter = methodMap.get(varName);
+    if (getter == null) {
+      String initCap = Util.initcapSnake(varName);
+      getter = methodMap.get("get" + initCap);
+      if (getter == null) {
+        getter = methodMap.get("is" + initCap);
+      }
+    }
+    return getter;
+  }
+
   static class FieldReader {
 
     private final ProcessingContext ctx;
     private final ElementReader element;
-
     private String setterMethod;
-
     private boolean constructorParam;
 
     FieldReader(ProcessingContext ctx, Element enclosedElement, ParamType defaultParamType) {
       this.ctx = ctx;
       this.element = new ElementReader(enclosedElement, ctx, defaultParamType, false);
+    }
+
+    boolean isPublic() {
+      return element.getElement().getModifiers().contains(Modifier.PUBLIC);
     }
 
     String getVarName() {

@@ -100,6 +100,14 @@ public class Util {
     return sb.toString();
   }
 
+  public static String initcap(String input) {
+    if (input.length() < 2) {
+      return input.toUpperCase();
+    } else {
+      return Character.toUpperCase(input.charAt(0)) + input.substring(1);
+    }
+  }
+
   public static String initcapSnake(String input) {
     StringBuilder sb = new StringBuilder(input.length());
     int len = input.length();

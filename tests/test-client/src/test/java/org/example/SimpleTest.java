@@ -5,10 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.avaje.http.client.HttpClientContext;
 import io.avaje.http.client.JacksonBodyAdapter;
 import io.avaje.http.client.RequestLogger;
-import org.example.httpclient.GitHubUsers$httpclient;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class SimpleTest {
 
@@ -25,9 +26,12 @@ class SimpleTest {
         .withBodyAdapter(new JacksonBodyAdapter(objectMapper))
         .build();
 
-    GitHubUsers simple = new GitHubUsers$httpclient(clientContext);
+    GitHubUsers simple = clientContext.create(GitHubUsers.class);
 
     final List<Repo> repos = simple.listRepos("rbygrave");
     System.out.println("got repos - " + repos.size());
+
+    assertThat(repos).hasSizeGreaterThan(5);
   }
+
 }

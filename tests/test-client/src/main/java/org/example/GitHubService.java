@@ -6,6 +6,9 @@ import retrofit2.http.Path;
 
 import java.util.List;
 
+/**
+ * Example Retrofit API.
+ */
 public interface GitHubService {
 
   @GET("users/{user}/repos")

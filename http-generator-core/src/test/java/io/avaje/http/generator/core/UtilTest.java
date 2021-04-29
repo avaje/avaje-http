@@ -5,11 +5,10 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 public class UtilTest {
 
   @Test
-  public void combinePath() {
+  void combinePath() {
 
     assertEquals(Util.combinePath("/hello", null), "/hello");
 
@@ -29,20 +28,20 @@ public class UtilTest {
   }
 
   @Test
-  public void combinePath_forRoot() {
+  void combinePath_forRoot() {
     assertEquals(Util.combinePath("/", ""), "/");
     assertEquals(Util.combinePath("", "/"), "");
   }
 
   @Test
-  public void trimPath() {
+  void trimPath() {
     assertEquals(Util.trimPath("/"), "/");
     assertEquals(Util.trimPath("/foo"), "/foo");
     assertEquals(Util.trimPath("/foo/"), "/foo");
   }
 
   @Test
-  public void snakeCase() {
+  void snakeCase() {
 
     assertThat(Util.snakeCase("lower")).isEqualTo("lower");
     assertThat(Util.snakeCase("fooId")).isEqualTo("foo-id");
@@ -54,8 +53,14 @@ public class UtilTest {
   }
 
   @Test
-  public void initcapSnake() {
+  void initcap() {
+    assertThat(Util.initcapSnake("lower")).isEqualTo("Lower");
+    assertThat(Util.initcapSnake("a")).isEqualTo("A");
+    assertThat(Util.initcapSnake("myFoo")).isEqualTo("MyFoo");
+  }
 
+  @Test
+  void initcapSnake() {
     assertThat(Util.initcapSnake("lower")).isEqualTo("Lower");
     assertThat(Util.initcapSnake("foo-id")).isEqualTo("Foo-Id");
     assertThat(Util.initcapSnake("foo-bar-baz-uuid")).isEqualTo("Foo-Bar-Baz-Uuid");
@@ -64,13 +69,13 @@ public class UtilTest {
   }
 
   @Test
-  public void propertyName() {
+  void propertyName() {
     assertThat(Util.propertyName("setLower")).isEqualTo("lower");
     assertThat(Util.propertyName("setFooBar")).isEqualTo("fooBar");
   }
 
   @Test
-  public void parse_basic() {
+  void parse_basic() {
     UType type = Util.parse("org.example.Repo");
 
     assertThat(type.importTypes()).containsExactly("org.example.Repo");
@@ -78,7 +83,7 @@ public class UtilTest {
   }
 
   @Test
-  public void parse_generic() {
+  void parse_generic() {
     UType type = Util.parse("java.util.List<org.example.Repo>");
 
     assertThat(type.importTypes()).containsExactly("java.util.List", "org.example.Repo");
@@ -86,7 +91,7 @@ public class UtilTest {
   }
 
   @Test
-  public void parse_generic_twoParams() {
+  void parse_generic_twoParams() {
     UType type = Util.parse("java.util.List<org.example.Repo, foo.Other>");
 
     assertThat(type.importTypes()).containsExactly("java.util.List", "org.example.Repo", "foo.Other");

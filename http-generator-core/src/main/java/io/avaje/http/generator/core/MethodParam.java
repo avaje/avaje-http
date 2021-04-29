@@ -44,6 +44,10 @@ public class MethodParam {
     return elementParam.getShortType();
   }
 
+  public String getRawType() {
+    return elementParam.getRawType();
+  }
+
   public String getName() {
     return elementParam.getVarName();
   }

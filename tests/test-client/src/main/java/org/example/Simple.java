@@ -1,9 +1,7 @@
 package org.example;
 
 
-import io.avaje.http.api.Client;
-import io.avaje.http.api.Get;
-import io.avaje.http.api.QueryParam;
+import io.avaje.http.api.*;
 
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
@@ -20,4 +18,47 @@ public interface Simple {
   @Get("users/{user}/repos")
   List<Repo> listRepos(String user, String other);
 
+  @Post
+  void save(Repo bean);
+
+  @Post
+  @Form
+  void register(MyForm myForm);
+
+  @Post("other")
+  @Form
+  void registerOther(String myName, String email);
+
+  class MyForm {
+
+    String name;
+    String email;
+    boolean active;
+    int notPublic;
+
+    public String getName() {
+      return name;
+    }
+
+    public boolean isActive4() {
+      return active;
+    }
+
+    public boolean isActive() {
+      return active;
+    }
+
+    public String email() {
+      return email;
+    }
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    public void setEmail(String email) {
+      this.email = email;
+    }
+
+
+  }
 }
