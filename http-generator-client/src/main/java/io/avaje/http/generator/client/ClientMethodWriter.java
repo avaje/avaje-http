@@ -60,10 +60,10 @@ class ClientMethodWriter {
     PathSegments pathSegments = method.getPathSegments();
     Set<PathSegments.Segment> segments = pathSegments.getSegments();
 
+    writeHeaders();
     writePaths(segments);
     writeQueryParams(pathSegments);
     writeFormParams();
-    writeHeaders();
     writeBody();
 
     WebMethod webMethod = method.getWebMethod();

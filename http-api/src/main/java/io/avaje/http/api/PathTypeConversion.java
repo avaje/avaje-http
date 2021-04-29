@@ -64,7 +64,7 @@ public class PathTypeConversion {
   public static double asDouble(String value) {
     checkNull(value);
     try {
-      return Double.valueOf(value);
+      return Double.parseDouble(value);
     } catch (RuntimeException e) {
       throw new InvalidPathArgumentException(e);
     }
@@ -76,7 +76,7 @@ public class PathTypeConversion {
   public static float asFloat(String value) {
     checkNull(value);
     try {
-      return Float.valueOf(value);
+      return Float.parseFloat(value);
     } catch (RuntimeException e) {
       throw new InvalidPathArgumentException(e);
     }

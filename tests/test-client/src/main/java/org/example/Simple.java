@@ -3,25 +3,27 @@ package org.example;
 
 import io.avaje.http.api.*;
 
+import javax.validation.Valid;
+import java.net.URL;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Client
+@Path("moo")
 public interface Simple {
 
   // UUID goo, Boolean option,
-  @Get("{uid}")
-  HttpResponse<String> byId(long uid, LocalTime forT, @QueryParam("my-dat") LocalDate dt);
+  @Get("{uid}/{date}")
+  HttpResponse<String> byIdg(long uid, LocalDate date, @Header URL access, @QueryParam("my-dat") LocalDate dt);
 
   @Get("users/{user}/repos")
   List<Repo> listRepos(String user, String other);
 
   @Post
-  void save(Repo bean);
+  Id save(Repo bean);
 
-  @Post
+  @Post("/register")
   @Form
   void register(MyForm myForm);
 
@@ -29,6 +31,11 @@ public interface Simple {
   @Form
   void registerOther(String myName, String email);
 
+  class Id {
+    public long id;
+  }
+
+  @Valid
   class MyForm {
 
     String name;

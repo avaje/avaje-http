@@ -61,13 +61,12 @@ public class ControllerReader {
     this.interfaces = initInterfaces();
     this.interfaceMethods = initInterfaceMethods();
     this.roles = Util.findRoles(beanType);
-    importTypes.add(Constants.GENERATED);
     if (ctx.isOpenApiAvailable()) {
       docHidden = initDocHidden();
     }
     includeValidator = initIncludeValidator();
     importTypes.add(Constants.SINGLETON);
-    importTypes.add(Constants.IMPORT_CONTROLLER);
+    importTypes.add(Constants.IMPORT_HTTP_API);
     importTypes.add(beanType.getQualifiedName().toString());
     if (includeValidator) {
       importTypes.add(Constants.VALIDATOR);

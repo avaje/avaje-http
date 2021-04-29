@@ -42,7 +42,7 @@ public class PathTypeConversionTest {
 
   @Test
   public void asLong() {
-    assertEquals(42L, PathTypeConversion.asInt("42"));
+    assertEquals(42L, PathTypeConversion.asLong("42"));
   }
 
   @Test

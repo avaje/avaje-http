@@ -14,7 +14,6 @@ import java.util.List;
  */
 class ClientWriter extends BaseControllerWriter {
 
-  private static final String PATH_CONVERSION = "io.avaje.http.client.PathConversion.toPath";
   private static final String HTTP_CLIENT_CONTEXT = "io.avaje.http.client.HttpClientContext";
   private static final String AT_GENERATED = "@Generated(\"avaje-http-client-generator\")";
 
@@ -23,7 +22,6 @@ class ClientWriter extends BaseControllerWriter {
   ClientWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
     super(reader, ctx, "$httpclient");
     reader.addImportType(HTTP_CLIENT_CONTEXT);
-    reader.addStaticImportType(PATH_CONVERSION);
     readMethods();
   }
 
