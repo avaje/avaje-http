@@ -2,11 +2,6 @@ package io.avaje.http.client;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.UUID;
 
 /**
  * Build a URL typically using a base url and adding path and query parameters.
@@ -60,14 +55,7 @@ public class UrlBuilder {
   /**
    * Add a path segment to the url.
    */
-  public UrlBuilder path(LocalDate val) {
-    return path(val.toString());
-  }
-
-  /**
-   * Add a path segment to the url.
-   */
-  public UrlBuilder path(UUID val) {
+  public UrlBuilder path(Object val) {
     return path(val.toString());
   }
 
@@ -94,91 +82,7 @@ public class UrlBuilder {
    * <p>
    * The name and value parameters are url encoded.
    */
-  public UrlBuilder queryParam(String name, Integer value) {
-    if (value != null) {
-      addQueryParam(name, Integer.toString(value));
-    }
-    return this;
-  }
-
-  /**
-   * Append a query parameter.
-   * <p>
-   * The name and value parameters are url encoded.
-   */
-  public UrlBuilder queryParam(String name, Long value) {
-    if (value != null) {
-      addQueryParam(name, Long.toString(value));
-    }
-    return this;
-  }
-
-  /**
-   * Append a query parameter.
-   * <p>
-   * The name and value parameters are url encoded.
-   */
-  public UrlBuilder queryParam(String name, UUID value) {
-    if (value != null) {
-      addQueryParam(name, value.toString());
-    }
-    return this;
-  }
-
-  /**
-   * Append a query parameter.
-   * <p>
-   * The name and value parameters are url encoded.
-   */
-  public UrlBuilder queryParam(String name, Boolean value) {
-    if (value != null) {
-      addQueryParam(name, value.toString());
-    }
-    return this;
-  }
-
-  /**
-   * Append a query parameter.
-   * <p>
-   * The name and value parameters are url encoded.
-   */
-  public UrlBuilder queryParam(String name, LocalDate value) {
-    if (value != null) {
-      addQueryParam(name, value.toString());
-    }
-    return this;
-  }
-
-  /**
-   * Append a query parameter.
-   * <p>
-   * The name and value parameters are url encoded.
-   */
-  public UrlBuilder queryParam(String name, LocalTime value) {
-    if (value != null) {
-      addQueryParam(name, value.toString());
-    }
-    return this;
-  }
-
-  /**
-   * Append a query parameter.
-   * <p>
-   * The name and value parameters are url encoded.
-   */
-  public UrlBuilder queryParam(String name, LocalDateTime value) {
-    if (value != null) {
-      addQueryParam(name, value.toString());
-    }
-    return this;
-  }
-
-  /**
-   * Append a query parameter.
-   * <p>
-   * The name and value parameters are url encoded.
-   */
-  public UrlBuilder queryParam(String name, Instant value) {
+  public UrlBuilder queryParam(String name, Object value) {
     if (value != null) {
       addQueryParam(name, value.toString());
     }
@@ -193,6 +97,18 @@ public class UrlBuilder {
   public UrlBuilder matrixParam(String name, String value) {
     if (value != null) {
       buffer.append(';').append(enc(name)).append("=").append(enc(value));
+    }
+    return this;
+  }
+
+  /**
+   * Append a matrix parameter.
+   * <p>
+   * The name and value parameters are url encoded.
+   */
+  public UrlBuilder matrixParam(String name, Object value) {
+    if (value != null) {
+      buffer.append(';').append(enc(name)).append("=").append(enc(value.toString()));
     }
     return this;
   }

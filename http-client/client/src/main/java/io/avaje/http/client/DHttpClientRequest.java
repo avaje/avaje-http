@@ -73,6 +73,11 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpClientRequest header(String name, Object value) {
+    return value != null ? header(name, value.toString()) : this;
+  }
+
+  @Override
   public HttpClientRequest gzip(boolean gzip) {
     this.gzip = gzip;
     return this;
@@ -103,13 +108,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public HttpClientRequest path(UUID val) {
-    url.path(val);
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest path(LocalDate val) {
+  public HttpClientRequest path(Object val) {
     url.path(val);
     return this;
   }
@@ -121,55 +120,20 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpClientRequest matrixParam(String name, Object value) {
+    url.matrixParam(name, value);
+    return this;
+  }
+
+
+  @Override
   public HttpClientRequest queryParam(String name, String value) {
     url.queryParam(name, value);
     return this;
   }
 
   @Override
-  public HttpClientRequest queryParam(String name, Integer value) {
-    url.queryParam(name, value);
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest queryParam(String name, Long value) {
-    url.queryParam(name, value);
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest queryParam(String name, UUID value) {
-    url.queryParam(name, value);
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest queryParam(String name, Boolean value) {
-    url.queryParam(name, value);
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest queryParam(String name, LocalDate value) {
-    url.queryParam(name, value);
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest queryParam(String name, LocalTime value) {
-    url.queryParam(name, value);
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest queryParam(String name, LocalDateTime value) {
-    url.queryParam(name, value);
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest queryParam(String name, Instant value) {
+  public HttpClientRequest queryParam(String name, Object value) {
     url.queryParam(name, value);
     return this;
   }
@@ -187,67 +151,8 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public HttpClientRequest formParam(String name, Integer value) {
-    if (value != null) {
-      formParam(name, Integer.toString(value));
-    }
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest formParam(String name, Long value) {
-    if (value != null) {
-      formParam(name, Long.toString(value));
-    }
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest formParam(String name, UUID value) {
-    if (value != null) {
-      formParam(name, value.toString());
-    }
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest formParam(String name, Boolean value) {
-    if (value != null) {
-      formParam(name, value.toString());
-    }
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest formParam(String name, LocalDate value) {
-    if (value != null) {
-      formParam(name, value.toString());
-    }
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest formParam(String name, LocalTime value) {
-    if (value != null) {
-      formParam(name, value.toString());
-    }
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest formParam(String name, LocalDateTime value) {
-    if (value != null) {
-      formParam(name, value.toString());
-    }
-    return this;
-  }
-
-  @Override
-  public HttpClientRequest formParam(String name, Instant value) {
-    if (value != null) {
-      formParam(name, value.toString());
-    }
-    return this;
+  public HttpClientRequest formParam(String name, Object value) {
+    return value != null ? formParam(name, value.toString()) : this;
   }
 
   @Override
