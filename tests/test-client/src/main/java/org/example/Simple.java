@@ -5,6 +5,7 @@ import io.avaje.http.api.*;
 
 import javax.validation.Valid;
 import java.net.URL;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.List;
@@ -30,6 +31,12 @@ public interface Simple {
   @Post("other")
   @Form
   void registerOther(String myName, String email);
+
+  @Post
+  HttpResponse<Void> postFile(Path file);
+
+  @Post("{oid}")
+  HttpResponse<Void> postRaw(String oid, HttpRequest.BodyPublisher body, String myParam, String other);
 
   class Id {
     public long id;

@@ -12,7 +12,7 @@ class KnownResponse {
 
   KnownResponse() {
     map.put("void", ".asDiscarding();");
-    map.put("java.net.http.HttpResponse<Void>", ".asDiscarding();");
+    map.put("java.net.http.HttpResponse<java.lang.Void>", ".asDiscarding();");
     map.put("java.net.http.HttpResponse<java.lang.String>", ".asString();");
     map.put("java.lang.String", ".asString().body();");
     map.put("java.net.http.HttpResponse<java.io.InputStream>", ".asInputStream();");
