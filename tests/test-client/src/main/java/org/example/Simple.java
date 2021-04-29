@@ -36,6 +36,16 @@ public interface Simple {
     boolean active;
     int notPublic;
 
+    @Header
+    public String bafHead;
+
+    @QueryParam("my-parm")
+    String mparam;
+
+    public String getMparam() {
+      return mparam;
+    }
+
     public String getName() {
       return name;
     }

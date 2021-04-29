@@ -105,11 +105,25 @@ public class BeanParamReader {
   public void writeFormParams(Append writer) {
     for (FieldReader field : fieldMap.values()) {
       ExecutableElement getter = findGetter(field.getVarName());
-      if (getter != null) {
-        writer.append("      .formParam(\"%s\", %s.%s)", field.getVarName(), beanVarName, getter.toString()).eol();
-      } else if (field.isPublic()) {
-        writer.append("      .formParam(\"%s\", %s.%s)", field.getVarName(), beanVarName, field.getVarName()).eol();
+      ParamType paramType = field.element.getParamType();
+      String type = propertyParamType(paramType);
+      if (type != null) {
+        String accessor = (getter != null) ? getter.toString() : field.isPublic() ? field.getVarName() : null;
+        if (accessor != null) {
+          writer.append("      .%s(\"%s\", %s.%s)", type, field.getParamName(), beanVarName, accessor).eol();
+        }
       }
+    }
+  }
+
+  private String propertyParamType(ParamType paramType) {
+    switch (paramType) {
+      case FORMPARAM:
+      case QUERYPARAM:
+      case HEADER:
+        return paramType.toString();
+      default:
+        return null;
     }
   }
 
@@ -139,6 +153,10 @@ public class BeanParamReader {
 
     boolean isPublic() {
       return element.getElement().getModifiers().contains(Modifier.PUBLIC);
+    }
+
+    String getParamName() {
+      return element.getParamName();
     }
 
     String getVarName() {
