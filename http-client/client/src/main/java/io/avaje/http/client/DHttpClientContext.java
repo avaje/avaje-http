@@ -40,6 +40,10 @@ class DHttpClientContext implements HttpClientContext {
     if (!clientInterface.isInterface()) {
       throw new IllegalArgumentException("API declarations must be interfaces.");
     }
+    HttpApiProvider<T> apiProvider = DHttpApi.get(clientInterface);
+    if (apiProvider != null) {
+      return apiProvider.provide(this);
+    }
     String implClassName = clientImplementationClassName(clientInterface);
     try {
       Class<?> serviceClass = Class.forName(implClassName);

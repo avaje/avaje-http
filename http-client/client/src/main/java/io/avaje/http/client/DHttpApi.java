@@ -35,15 +35,30 @@ class DHttpApi {
   }
 
   @SuppressWarnings("unchecked")
+  private <T> HttpApiProvider<T> lookup(Class<T> type) {
+    return (HttpApiProvider<T>) providerMap.get(type);
+  }
+
+  @SuppressWarnings("unchecked")
   <T> T provideFor(Class<T> type, HttpClientContext clientContext) {
-    final HttpApiProvider<T> apiProvider = (HttpApiProvider<T>) providerMap.get(type);
+    final HttpApiProvider<T> apiProvider = lookup(type);
     if (apiProvider == null) {
       throw new IllegalArgumentException("No registered HttpApiProvider for type: " + type);
     }
     return apiProvider.provide(clientContext);
   }
 
+  /**
+   * Return the client implementation via service loading.
+   */
   static <T> T provide(Class<T> type, HttpClientContext clientContext) {
     return INSTANCE.provideFor(type, clientContext);
+  }
+
+  /**
+   * Return the HttpApiProvider for the client interface type or null if not registered.
+   */
+  static <T> HttpApiProvider<T> get(Class<T> type) {
+    return INSTANCE.lookup(type);
   }
 }
