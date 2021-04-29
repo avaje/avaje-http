@@ -187,6 +187,14 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpClientRequest formParam(String name, Integer value) {
+    if (value != null) {
+      formParam(name, Integer.toString(value));
+    }
+    return this;
+  }
+
+  @Override
   public HttpClientRequest formParam(String name, Long value) {
     if (value != null) {
       formParam(name, Long.toString(value));
@@ -196,6 +204,46 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public HttpClientRequest formParam(String name, UUID value) {
+    if (value != null) {
+      formParam(name, value.toString());
+    }
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest formParam(String name, Boolean value) {
+    if (value != null) {
+      formParam(name, value.toString());
+    }
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest formParam(String name, LocalDate value) {
+    if (value != null) {
+      formParam(name, value.toString());
+    }
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest formParam(String name, LocalTime value) {
+    if (value != null) {
+      formParam(name, value.toString());
+    }
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest formParam(String name, LocalDateTime value) {
+    if (value != null) {
+      formParam(name, value.toString());
+    }
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest formParam(String name, Instant value) {
     if (value != null) {
       formParam(name, value.toString());
     }

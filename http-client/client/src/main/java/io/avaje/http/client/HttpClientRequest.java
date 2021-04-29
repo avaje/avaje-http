@@ -218,6 +218,11 @@ public interface HttpClientRequest {
   HttpClientRequest formParam(String name, String value);
 
   /**
+   * Add a Integer value form parameter.
+   */
+  HttpClientRequest formParam(String name, Integer value);
+
+  /**
    * Add a Long value form parameter.
    */
   HttpClientRequest formParam(String name, Long value);
@@ -226,6 +231,31 @@ public interface HttpClientRequest {
    * Add a Long value form parameter.
    */
   HttpClientRequest formParam(String name, UUID value);
+
+  /**
+   * Add a Boolean form parameter
+   */
+  HttpClientRequest formParam(String name, Boolean value);
+
+  /**
+   * Add a LocalDate form parametert
+   */
+  HttpClientRequest formParam(String name, LocalDate value);
+
+  /**
+   * Add a LocalTime form parameter
+   */
+  HttpClientRequest formParam(String name, LocalTime value);
+
+  /**
+   * Add a LocalDateTime form parameter
+   */
+  HttpClientRequest formParam(String name, LocalDateTime value);
+
+  /**
+   * Add a Instant form parameter as ISO-8601 format.
+   */
+  HttpClientRequest formParam(String name, Instant value);
 
   /**
    * Set encoded body content.
