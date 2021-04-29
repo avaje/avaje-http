@@ -68,4 +68,28 @@ public class UtilTest {
     assertThat(Util.propertyName("setLower")).isEqualTo("lower");
     assertThat(Util.propertyName("setFooBar")).isEqualTo("fooBar");
   }
+
+  @Test
+  public void parse_basic() {
+    UType type = Util.parse("org.example.Repo");
+
+    assertThat(type.importTypes()).containsExactly("org.example.Repo");
+    assertThat(type.shortType()).isEqualTo("Repo");
+  }
+
+  @Test
+  public void parse_generic() {
+    UType type = Util.parse("java.util.List<org.example.Repo>");
+
+    assertThat(type.importTypes()).containsExactly("java.util.List", "org.example.Repo");
+    assertThat(type.shortType()).isEqualTo("List<Repo>");
+  }
+
+  @Test
+  public void parse_generic_twoParams() {
+    UType type = Util.parse("java.util.List<org.example.Repo, foo.Other>");
+
+    assertThat(type.importTypes()).containsExactly("java.util.List", "org.example.Repo", "foo.Other");
+    assertThat(type.shortType()).isEqualTo("List<Repo,Other>");
+  }
 }

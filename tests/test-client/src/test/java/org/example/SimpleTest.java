@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.avaje.http.client.HttpClientContext;
 import io.avaje.http.client.JacksonBodyAdapter;
 import io.avaje.http.client.RequestLogger;
+import org.example.httpclient.GitHubUsers$httpclient;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -20,13 +21,13 @@ class SimpleTest {
     final HttpClientContext clientContext =
       HttpClientContext.newBuilder()
         .withBaseUrl("https://api.github.com")
-        //.withResponseListener(new RequestLogger())
+        .withRequestListener(new RequestLogger())
         .withBodyAdapter(new JacksonBodyAdapter(objectMapper))
         .build();
 
-    Simple simple = new Simple$httpclient(clientContext);
+    GitHubUsers simple = new GitHubUsers$httpclient(clientContext);
 
-    final List<Repo> repos = simple.listRepos("octocat", "rbygrave");
+    final List<Repo> repos = simple.listRepos("rbygrave");
     System.out.println("got repos - " + repos.size());
   }
 }

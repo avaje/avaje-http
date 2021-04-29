@@ -173,6 +173,7 @@ public class MethodReader {
   public void buildApiDoc() {
     buildApiDocumentation(ctx);
   }
+
   /**
    * Build the OpenAPI documentation for the method / operation.
    */
@@ -190,6 +191,10 @@ public class MethodReader {
 
   public WebMethod getWebMethod() {
     return webMethod;
+  }
+
+  public String getWebMethodPath() {
+    return webMethodPath;
   }
 
   public List<MethodParam> getParams() {

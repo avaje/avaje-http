@@ -12,6 +12,30 @@ import java.util.List;
 public class Util {
 
   /**
+   * Parse the raw type potentially handling generic parameters.
+   */
+  public static UType parse(String rawType) {
+    int pos = rawType.indexOf('<');
+    if (pos == -1) {
+      return new UType.Basic(rawType);
+    } else {
+      String mainType = rawType.substring(0, pos);
+      String genericParams = rawType.substring(pos+1, rawType.length()-1);
+      List<String> params = parseGenericParams(genericParams);
+      return new UType.Generic(rawType, mainType, params);
+    }
+  }
+
+  private static List<String> parseGenericParams(String genericParams) {
+    String[] vals = genericParams.split(",");
+    List<String> result = new ArrayList<>(vals.length);
+    for (String val : vals) {
+      result.add(val.trim());
+    }
+    return result;
+  }
+
+  /**
    * Return the type removing validation annotations etc.
    */
   public static String typeDef(TypeMirror typeMirror) {
@@ -141,5 +165,12 @@ public class Util {
 
     String prop = setterMethod.substring(3);
     return Character.toLowerCase(prop.charAt(0)) + prop.substring(1);
+  }
+
+  public static UType parseType(TypeMirror returnType) {
+    if (returnType.getKind() == TypeKind.VOID) {
+      return UType.VOID;
+    }
+    return parse(returnType.toString());//typeDef(returnType));
   }
 }

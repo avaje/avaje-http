@@ -48,4 +48,11 @@ public class MethodParam {
     return elementParam.getVarName();
   }
 
+  public String getParamName() {
+    return elementParam.getParamName();
+  }
+
+  public ParamType getParamType() {
+    return elementParam.getParamType();
+  }
 }

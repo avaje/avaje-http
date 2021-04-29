@@ -26,7 +26,7 @@ public class ProcessingContext {
   private final boolean openApiAvailable;
   private final DocContext docContext;
 
-  ProcessingContext(ProcessingEnvironment env, PlatformAdapter readAdapter) {
+  public ProcessingContext(ProcessingEnvironment env, PlatformAdapter readAdapter) {
     this.readAdapter = readAdapter;
     this.messager = env.getMessager();
     this.filer = env.getFiler();

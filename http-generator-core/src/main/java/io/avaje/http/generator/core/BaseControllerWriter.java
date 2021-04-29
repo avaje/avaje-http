@@ -16,16 +16,22 @@ public abstract class BaseControllerWriter {
   protected final String shortName;
   protected final String fullName;
   protected final String packageName;
+  protected final boolean router;
   protected Append writer;
 
-  public BaseControllerWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
+  protected BaseControllerWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
+    this(reader, ctx, "$route");
+  }
+
+  protected BaseControllerWriter(ControllerReader reader, ProcessingContext ctx, String suffix) throws IOException {
     this.reader = reader;
     this.ctx = ctx;
+    this.router = "$route".equals(suffix);
     TypeElement origin = reader.getBeanType();
     this.originName = origin.getQualifiedName().toString();
     this.shortName = origin.getSimpleName().toString();
-    this.fullName = originName + "$route";
     this.packageName = initPackageName(originName);
+    this.fullName = packageName + "." + shortName + suffix;
 
     initWriter();
   }
@@ -55,7 +61,9 @@ public abstract class BaseControllerWriter {
   }
 
   protected void writeImports() {
-    writer.append(Constants.IMPORT_PATH_TYPE_CONVERT).eol();
+    if (router) {
+      writer.append(Constants.IMPORT_PATH_TYPE_CONVERT).eol();
+    }
     for (String type : reader.getStaticImportTypes()) {
       writer.append("import static %s;", type).eol();
     }

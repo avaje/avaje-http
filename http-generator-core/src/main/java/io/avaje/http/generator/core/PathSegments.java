@@ -37,6 +37,8 @@ public class PathSegments {
             chunks.named(segment.path(name));
 
           } else {
+            Segment segment = createLiteralSegment(section);
+            segments.add(segment);
             chunks.literal(section);
           }
         }
@@ -44,6 +46,10 @@ public class PathSegments {
     }
 
     return new PathSegments(chunks, segments);
+  }
+
+  private static Segment createLiteralSegment(String section) {
+    return new Segment(section, true);
   }
 
   private static Segment createSegment(String val) {
@@ -74,7 +80,6 @@ public class PathSegments {
     }
   }
 
-
   public boolean contains(String varName) {
     return allNames.contains(varName);
   }
@@ -83,8 +88,14 @@ public class PathSegments {
     return withMatrixs;
   }
 
-  public Segment segment(String varName) {
+  /**
+   * Return all segments including literal segments.
+   */
+  public Set<Segment> getSegments() {
+    return segments;
+  }
 
+  public Segment segment(String varName) {
     for (Segment segment : segments) {
       if (segment.isPathParameter(varName)) {
         return segment;
@@ -114,6 +125,7 @@ public class PathSegments {
   public static class Segment {
 
     private final String name;
+    private final String literalSection;
 
     /**
      * Matrix keys.
@@ -125,14 +137,22 @@ public class PathSegments {
      */
     private final Set<String> matrixVarNames;
 
+    /**
+     * Create a normal segment.
+     */
     Segment(String name) {
       this.name = name;
+      this.literalSection = null;
       this.matrixKeys = null;
       this.matrixVarNames = null;
     }
 
+    /**
+     * Create a segment with matrix keys.
+     */
     Segment(String name, Set<String> matrixKeys) {
       this.name = name;
+      this.literalSection = null;
       this.matrixKeys = matrixKeys;
       this.matrixVarNames = new HashSet<>();
       for (String key : matrixKeys) {
@@ -140,8 +160,20 @@ public class PathSegments {
       }
     }
 
+    /**
+     * Create a literal path segment.
+     */
+    public Segment(String section, boolean literalDummy) {
+      this.literalSection = section;
+      this.name = null;
+      this.matrixKeys = null;
+      this.matrixVarNames = null;
+    }
+
     void addNames(Set<String> allNames) {
-      allNames.add(name);
+      if (name != null) {
+        allNames.add(name);
+      }
     }
 
     boolean hasMatrixParams() {
@@ -152,16 +184,24 @@ public class PathSegments {
       return name + Character.toUpperCase(key.charAt(0)) + key.substring(1);
     }
 
-    Set<String> matrixKeys() {
+    public Set<String> matrixKeys() {
       return matrixKeys;
     }
 
-    String name() {
+    public String name() {
       return name;
     }
 
+    public String literalSection() {
+      return literalSection;
+    }
+
+    public boolean isLiteral() {
+      return literalSection != null;
+    }
+
     boolean isPathParameter(String varName) {
-      return name.equals(varName) || (matrixKeys != null && (matrixVarNames.contains(varName) || matrixKeys.contains(varName)));
+      return (name != null && name.equals(varName)) || (matrixKeys != null && (matrixVarNames.contains(varName) || matrixKeys.contains(varName)));
     }
 
     /**

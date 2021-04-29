@@ -55,7 +55,7 @@ public class ControllerReader {
 
   private boolean docHidden;
 
-  ControllerReader(TypeElement beanType, ProcessingContext ctx) {
+  public ControllerReader(TypeElement beanType, ProcessingContext ctx) {
     this.beanType = beanType;
     this.ctx = ctx;
     this.interfaces = initInterfaces();
@@ -141,7 +141,7 @@ public class ControllerReader {
     return produces;
   }
 
-  TypeElement getBeanType() {
+  public TypeElement getBeanType() {
     return beanType;
   }
 
@@ -161,7 +161,7 @@ public class ControllerReader {
     return requestScope;
   }
 
-  void read() {
+  public void read() {
     if (!roles.isEmpty()) {
       ctx.platform().controllerRoles(roles, this);
     }
@@ -241,7 +241,15 @@ public class ControllerReader {
   }
 
   public void addImportType(String rawType) {
-    importTypes.add(rawType);
+    if (rawType.indexOf('.') > 0) {
+      importTypes.add(rawType);
+    }
+  }
+
+  public void addImportTypes(Set<String> types) {
+    for (String type : types) {
+      addImportType(type);
+    }
   }
 
   public void addStaticImportType(String rawType) {
