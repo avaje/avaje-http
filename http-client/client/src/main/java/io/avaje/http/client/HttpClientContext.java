@@ -48,6 +48,15 @@ public interface HttpClientContext {
   }
 
   /**
+   * Return the http client API implementation.
+   *
+   * @param clientInterface A <code>@Client</code> interface with annotated API methods.
+   * @param <T>             The service type.
+   * @return The http client API implementation.
+   */
+  <T> T create(Class<T> clientInterface);
+
+  /**
    * Create a new request.
    */
   HttpClientRequest request();

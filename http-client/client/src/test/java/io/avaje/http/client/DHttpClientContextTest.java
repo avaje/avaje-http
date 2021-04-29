@@ -1,5 +1,6 @@
 package io.avaje.http.client;
 
+import org.example.github.BasicClientInterface;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpClient;
@@ -10,6 +11,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DHttpClientContextTest {
 
   private final DHttpClientContext context = new DHttpClientContext(null, null, null, null, null, null, null);
+
+  @Test
+  void create() {
+    BasicClientInterface client = context.create(BasicClientInterface.class);
+    assertThat(client).isNotNull();
+  }
 
   @Test
   void gzip_gzipDecode() {

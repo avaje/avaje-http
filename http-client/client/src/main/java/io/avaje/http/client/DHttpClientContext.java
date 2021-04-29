@@ -1,6 +1,7 @@
 package io.avaje.http.client;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
@@ -31,6 +32,29 @@ class DHttpClientContext implements HttpClientContext {
     this.authTokenProvider = authTokenProvider;
     this.withAuthToken = authTokenProvider != null;
     this.requestIntercept = intercept;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public <T> T create(Class<T> clientInterface) {
+    if (!clientInterface.isInterface()) {
+      throw new IllegalArgumentException("API declarations must be interfaces.");
+    }
+    String implClassName = clientImplementationClassName(clientInterface);
+    try {
+      Class<?> serviceClass = Class.forName(implClassName);
+      Constructor<?> constructor = serviceClass.getConstructor(HttpClientContext.class);
+      Object service = constructor.newInstance(this);
+      return (T) service;
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to create http client service " + implClassName, e);
+    }
+  }
+
+  private <T> String clientImplementationClassName(Class<T> clientInterface) {
+    String packageName = clientInterface.getPackageName();
+    String simpleName = clientInterface.getSimpleName();
+    return packageName + ".httpclient." + simpleName + "$httpclient";
   }
 
   @Override
