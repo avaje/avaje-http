@@ -40,10 +40,12 @@ public class RequestLogger implements RequestListener {
         .append(" uri:").append(event.uri())
         .append(" timeMicros:").append(micros);
 
-      headers(sb, "req-head: ", request.headers());
-      body(sb, "req-body: ", event.requestBody());
-      headers(sb, "res-head: ", response.headers());
-      body(sb, "res-body: ", event.responseBody());
+      if (log.isTraceEnabled()) {
+        headers(sb, "req-head: ", request.headers());
+        body(sb, "req-body: ", event.requestBody());
+        headers(sb, "res-head: ", response.headers());
+        body(sb, "res-body: ", event.responseBody());
+      }
       log.debug(sb.toString());
     }
   }
