@@ -1,12 +1,8 @@
 package org.example.github;
 
-import io.avaje.http.client.BodyReader;
-import io.avaje.http.client.BodyWriter;
-import io.avaje.http.client.HttpApiProvider;
-import io.avaje.http.client.HttpClientContext;
-import io.avaje.http.client.HttpException;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Post;
+import io.avaje.http.client.*;
 
 import java.io.InputStream;
 import java.net.http.HttpResponse;

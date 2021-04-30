@@ -2,7 +2,6 @@ package org.example.github;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.avaje.http.client.HttpApi;
 import io.avaje.http.client.HttpClientContext;
 import io.avaje.http.client.JacksonBodyAdapter;
 import org.junit.jupiter.api.Disabled;
@@ -25,7 +24,8 @@ public class GithubTest {
       .withBodyAdapter(bodyAdapter)
       .build();
 
-    final Simple simple = HttpApi.provide(Simple.class, clientContext);
+    // will not work under module classpath without registering the HttpApiProvider
+    final Simple simple = clientContext.create(Simple.class);
 
     final List<Repo> repos = simple.listRepos("rbygrave", "junk");
     assertThat(repos).isNotEmpty();

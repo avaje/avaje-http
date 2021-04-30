@@ -135,19 +135,14 @@ class DHttpClientContext implements HttpClientContext {
   }
 
   <T> HttpResponse<T> send(HttpRequest.Builder requestBuilder, HttpResponse.BodyHandler<T> bodyHandler) {
-    final HttpRequest request = applyFilters(requestBuilder).build();
     try {
-      return httpClient.send(request, bodyHandler);
+      return httpClient.send(requestBuilder.build(), bodyHandler);
     } catch (IOException e) {
       throw new HttpException(499, e);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new HttpException(499, e);
     }
-  }
-
-  private HttpRequest.Builder applyFilters(HttpRequest.Builder hreq) {
-    return hreq;
   }
 
   BodyContent write(Object bean, String contentType) {
