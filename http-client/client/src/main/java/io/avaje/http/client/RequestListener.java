@@ -45,8 +45,7 @@ public interface RequestListener {
     /**
      * Return the response body as string content if applicable.
      * <p>
-     * This is primarily here to assist logging of responses for debug and
-     * trace purposes.
+     * This is primarily here to assist logging of responses for trace purposes.
      * <p>
      * This will return null if the response is not String or byte array
      * encoded string content. For example, when requests use response
@@ -58,8 +57,7 @@ public interface RequestListener {
     /**
      * Return the related request body as string content if available.
      * <p>
-     * This is primarily here to assist logging of requests for debug and
-     * trace purposes.
+     * This is primarily here to assist logging of requests for trace purposes.
      * <p>
      * This will return  null if the related request content was not
      * String or byte array encoded string content.
