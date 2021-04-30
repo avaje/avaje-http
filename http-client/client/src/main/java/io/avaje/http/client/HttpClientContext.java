@@ -160,14 +160,17 @@ public interface HttpClientContext {
     Builder withBodyAdapter(BodyAdapter adapter);
 
     /**
-     * Add a request listener. Note that {@link RequestLogger} is an
+     * Add a request listener. Multiple listeners may be added, when
+     * do so they will process events in the order they were added.
+     * <p>
+     * Note that {@link RequestLogger} is an
      * implementation for debug logging request/response headers and
      * content.
      */
     Builder withRequestListener(RequestListener requestListener);
 
     /**
-     * Add a request interceptor.
+     * Add a request interceptor. Multiple interceptors may be added.
      */
     Builder withRequestIntercept(RequestIntercept requestIntercept);
 

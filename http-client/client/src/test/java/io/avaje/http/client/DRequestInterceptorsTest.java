@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 
 class DRequestInterceptorsTest {
 
-  private StringBuilder buffer = new StringBuilder();
+  private final StringBuilder buffer = new StringBuilder();
 
   @Test
   void intercept_reverse_after() {

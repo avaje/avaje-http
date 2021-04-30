@@ -20,8 +20,6 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
 
   private BodyAdapter bodyAdapter;
 
-  private RequestListener requestListener;
-
   private CookieHandler cookieHandler = new CookieManager();
 
   private HttpClient.Redirect redirect = HttpClient.Redirect.NORMAL;
@@ -32,6 +30,7 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   private AuthTokenProvider authTokenProvider;
 
   private final List<RequestIntercept> interceptors = new ArrayList<>();
+  private final List<RequestListener> listeners = new ArrayList<>();
 
   DHttpClientContextBuilder() {
   }
@@ -62,7 +61,7 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
 
   @Override
   public HttpClientContext.Builder withRequestListener(RequestListener requestListener) {
-    this.requestListener = requestListener;
+    this.listeners.add(requestListener);
     return this;
   }
 
@@ -109,7 +108,17 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
     if (client == null) {
       client = defaultClient();
     }
-    return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, requestListener, authTokenProvider, buildIntercept());
+    return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, buildListener(), authTokenProvider, buildIntercept());
+  }
+
+  private RequestListener buildListener() {
+    if (listeners.isEmpty()) {
+      return null;
+    } else if (listeners.size() == 1) {
+      return listeners.get(0);
+    } else {
+      return new DRequestListeners(listeners);
+    }
   }
 
   private RequestIntercept buildIntercept() {
