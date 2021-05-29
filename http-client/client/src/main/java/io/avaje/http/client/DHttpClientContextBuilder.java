@@ -13,21 +13,16 @@ import static java.util.Objects.requireNonNull;
 class DHttpClientContextBuilder implements HttpClientContext.Builder {
 
   private HttpClient client;
-
   private String baseUrl;
-
   private Duration requestTimeout = Duration.ofSeconds(20);
-
   private BodyAdapter bodyAdapter;
+  private RetryHandler retryHandler;
+  private AuthTokenProvider authTokenProvider;
 
   private CookieHandler cookieHandler = new CookieManager();
-
   private HttpClient.Redirect redirect = HttpClient.Redirect.NORMAL;
-
   private HttpClient.Version version;
   private Executor executor;
-
-  private AuthTokenProvider authTokenProvider;
 
   private final List<RequestIntercept> interceptors = new ArrayList<>();
   private final List<RequestListener> listeners = new ArrayList<>();
@@ -56,6 +51,12 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   @Override
   public HttpClientContext.Builder withBodyAdapter(BodyAdapter adapter) {
     this.bodyAdapter = adapter;
+    return this;
+  }
+
+  @Override
+  public HttpClientContext.Builder withRetryHandler(RetryHandler retryHandler) {
+    this.retryHandler = retryHandler;
     return this;
   }
 
@@ -108,7 +109,7 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
     if (client == null) {
       client = defaultClient();
     }
-    return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, buildListener(), authTokenProvider, buildIntercept());
+    return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, retryHandler, buildListener(), authTokenProvider, buildIntercept());
   }
 
   private RequestListener buildListener() {

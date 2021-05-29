@@ -65,7 +65,7 @@ public class App {
 //    app.routes(() -> webRoutes.forEach(WebRoutes::registerRoutes));
 
     // programmatically create http endpoints
-    HelloController$route bean = new HelloController$route(new HelloController(), new BeanValidator());
+    HelloController$Route bean = new HelloController$Route(new HelloController(), new BeanValidator());
     app.routes(bean::registerRoutes);
 
     app.start(port);

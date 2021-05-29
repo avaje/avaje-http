@@ -96,6 +96,7 @@
             --add-modules com.fasterxml.jackson.databind
             --add-opens io.avaje.http.client/io.avaje.http.client=ALL-UNNAMED
             --add-opens io.avaje.http.client/org.example.webserver=ALL-UNNAMED
+            --add-opens io.avaje.http.client/org.example.github=ALL-UNNAMED
             --add-opens io.avaje.http.client/org.example.webserver=com.fasterxml.jackson.databind
             --add-opens io.avaje.http.client/org.example.github=com.fasterxml.jackson.databind
           </argLine>

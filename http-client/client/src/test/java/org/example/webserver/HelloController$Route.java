@@ -13,12 +13,12 @@ import static io.avaje.http.api.PathTypeConversion.asLocalDate;
 import static io.avaje.http.api.PathTypeConversion.toLocalDate;
 
 @Singleton
-public class HelloController$route implements WebRoutes {
+public class HelloController$Route implements WebRoutes {
 
   private final HelloController controller;
   private final Validator validator;
 
-  public HelloController$route(HelloController controller, Validator validator) {
+  public HelloController$Route(HelloController controller, Validator validator) {
    this.controller = controller;
    this.validator = validator;
   }
@@ -29,6 +29,11 @@ public class HelloController$route implements WebRoutes {
     ApiBuilder.get("/hello/message", ctx -> {
       ctx.status(200);
       ctx.contentType("text/plain").result(controller.getPlainMessage());
+    });
+
+    ApiBuilder.get("/hello/retry", ctx -> {
+      ctx.status(200);
+      ctx.contentType("text/plain").result(controller.retry());
     });
 
     ApiBuilder.get("/hello/:id/:date", ctx -> {

@@ -160,6 +160,11 @@ public interface HttpClientContext {
     Builder withBodyAdapter(BodyAdapter adapter);
 
     /**
+     * Set a RetryHandler to use to retry requests.
+     */
+    Builder withRetryHandler(RetryHandler retryHandler);
+
+    /**
      * Add a request listener. Multiple listeners may be added, when
      * do so they will process events in the order they were added.
      * <p>

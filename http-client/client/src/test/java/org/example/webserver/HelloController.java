@@ -28,10 +28,23 @@ import static java.util.Objects.requireNonNull;
 @Path("/hello")
 class HelloController {
 
+  private int retryCounter;
+
   @Produces(MediaType.TEXT_PLAIN)
   @Get("message")
   String getPlainMessage() {
     return "hello world";
+  }
+
+  @Get("retry")
+  String retry() {
+    retryCounter++;
+    if (retryCounter == 3) {
+      retryCounter = 0;
+      return "All good at 3rd attempt";
+    } else {
+      throw new IllegalStateException("Barf");
+    }
   }
 
   /**

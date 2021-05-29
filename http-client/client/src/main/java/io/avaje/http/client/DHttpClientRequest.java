@@ -45,7 +45,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private boolean loggableResponseBody;
   private boolean skipAuthToken;
 
-  public DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
+  DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
     this.context = context;
     this.requestTimeout = requestTimeout;
     this.url = context.url();
@@ -322,12 +322,19 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   public <T> HttpResponse<T> withResponseHandler(HttpResponse.BodyHandler<T> responseHandler) {
     context.beforeRequest(this);
     addHeaders();
-    final long startNanos = System.nanoTime();
-    final HttpResponse<T> response = context.send(httpRequest, responseHandler);
-    requestTimeNanos = System.nanoTime() - startNanos;
+    HttpResponse<T> response = performSend(responseHandler);
     httpResponse = response;
     context.afterResponse(this);
     return response;
+  }
+
+  protected <T> HttpResponse<T> performSend(HttpResponse.BodyHandler<T> responseHandler) {
+    final long startNanos = System.nanoTime();
+    try {
+      return context.send(httpRequest, responseHandler);
+    } finally {
+      requestTimeNanos = System.nanoTime() - startNanos;
+    }
   }
 
   @Override

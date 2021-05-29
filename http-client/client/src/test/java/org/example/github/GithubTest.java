@@ -13,12 +13,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GithubTest {
 
-  @Test @Disabled
+  private final JacksonBodyAdapter bodyAdapter = new JacksonBodyAdapter(new ObjectMapper()
+    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false));
+
+  @Test
+  @Disabled
   void test() {
-
-    JacksonBodyAdapter bodyAdapter = new JacksonBodyAdapter(new ObjectMapper()
-      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false));
-
     final HttpClientContext clientContext = HttpClientContext.newBuilder()
       .withBaseUrl("https://api.github.com")
       .withBodyAdapter(bodyAdapter)
@@ -30,4 +30,5 @@ public class GithubTest {
     final List<Repo> repos = simple.listRepos("rbygrave", "junk");
     assertThat(repos).isNotEmpty();
   }
+
 }

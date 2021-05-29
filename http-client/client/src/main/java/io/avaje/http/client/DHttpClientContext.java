@@ -19,15 +19,17 @@ class DHttpClientContext implements HttpClientContext {
   private final BodyAdapter bodyAdapter;
   private final RequestListener requestListener;
   private final RequestIntercept requestIntercept;
+  private final RetryHandler retryHandler;
   private final boolean withAuthToken;
   private final AuthTokenProvider authTokenProvider;
   private final AtomicReference<AuthToken> tokenRef = new AtomicReference<>();
 
-  DHttpClientContext(HttpClient httpClient, String baseUrl, Duration requestTimeout, BodyAdapter bodyAdapter, RequestListener requestListener, AuthTokenProvider authTokenProvider, RequestIntercept intercept) {
+  DHttpClientContext(HttpClient httpClient, String baseUrl, Duration requestTimeout, BodyAdapter bodyAdapter, RetryHandler retryHandler, RequestListener requestListener, AuthTokenProvider authTokenProvider, RequestIntercept intercept) {
     this.httpClient = httpClient;
     this.baseUrl = baseUrl;
     this.requestTimeout = requestTimeout;
     this.bodyAdapter = bodyAdapter;
+    this.retryHandler = retryHandler;
     this.requestListener = requestListener;
     this.authTokenProvider = authTokenProvider;
     this.withAuthToken = authTokenProvider != null;
@@ -58,12 +60,14 @@ class DHttpClientContext implements HttpClientContext {
   private <T> String clientImplementationClassName(Class<T> clientInterface) {
     String packageName = clientInterface.getPackageName();
     String simpleName = clientInterface.getSimpleName();
-    return packageName + ".httpclient." + simpleName + "$httpclient";
+    return packageName + ".httpclient." + simpleName + "$HttpClient";
   }
 
   @Override
   public HttpClientRequest request() {
-    return new DHttpClientRequest(this, requestTimeout);
+    return retryHandler == null
+      ? new DHttpClientRequest(this, requestTimeout)
+      : new DHttpClientRequestWithRetry(this, requestTimeout, retryHandler);
   }
 
   @Override
