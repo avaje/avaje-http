@@ -2,16 +2,18 @@ package org.example;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.avaje.http.client.HttpApiProvider;
 import io.avaje.http.client.HttpClientContext;
 import io.avaje.http.client.JacksonBodyAdapter;
 import io.avaje.http.client.RequestLogger;
+import org.example.httpclient.GitHubUsers$HttpClient;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SimpleTest {
+public class SimpleTest {
 
   @Test
   void listRepos() {
@@ -34,4 +36,16 @@ class SimpleTest {
     assertThat(repos).hasSizeGreaterThan(5);
   }
 
+  public static class AP implements HttpApiProvider<GitHubUsers> {
+
+    @Override
+    public Class<GitHubUsers> type() {
+      return GitHubUsers.class;
+    }
+
+    @Override
+    public GitHubUsers provide(HttpClientContext client) {
+      return new GitHubUsers$HttpClient(client);
+    }
+  }
 }

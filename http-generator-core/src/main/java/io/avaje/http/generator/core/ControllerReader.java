@@ -65,13 +65,18 @@ public class ControllerReader {
       docHidden = initDocHidden();
     }
     includeValidator = initIncludeValidator();
-    importTypes.add(Constants.SINGLETON);
+    this.produces = initProduces();
+  }
+
+  protected void addImports(boolean withSingleton) {
     importTypes.add(Constants.IMPORT_HTTP_API);
     importTypes.add(beanType.getQualifiedName().toString());
     if (includeValidator) {
       importTypes.add(Constants.VALIDATOR);
     }
-    this.produces = initProduces();
+    if (withSingleton) {
+      importTypes.add(Constants.SINGLETON);
+    }
   }
 
   private List<Element> initInterfaces() {
@@ -160,7 +165,8 @@ public class ControllerReader {
     return requestScope;
   }
 
-  public void read() {
+  public void read(boolean withSingleton) {
+    addImports(withSingleton);
     if (!roles.isEmpty()) {
       ctx.platform().controllerRoles(roles, this);
     }

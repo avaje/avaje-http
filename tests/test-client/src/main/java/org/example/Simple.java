@@ -3,7 +3,6 @@ package org.example;
 
 import io.avaje.http.api.*;
 
-import javax.validation.Valid;
 import java.net.URL;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -42,7 +41,6 @@ public interface Simple {
     public long id;
   }
 
-  @Valid
   class MyForm {
 
     String name;

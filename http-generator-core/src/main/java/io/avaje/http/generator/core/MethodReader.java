@@ -69,6 +69,11 @@ public class MethodReader {
     }
   }
 
+  @Override
+  public String toString() {
+    return element.toString();
+  }
+
   private void initWebMethodViaAnnotation() {
     Form form = findAnnotation(Form.class);
     if (form != null) {

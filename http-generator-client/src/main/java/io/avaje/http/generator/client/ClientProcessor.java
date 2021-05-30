@@ -76,7 +76,7 @@ public class ClientProcessor extends AbstractProcessor {
   private void writeClient(Element controller) {
     if (controller instanceof TypeElement) {
       ControllerReader reader = new ControllerReader((TypeElement) controller, ctx);
-      reader.read();
+      reader.read(false);
       try {
         writeClientAdapter(ctx, reader);
       } catch (Throwable e) {

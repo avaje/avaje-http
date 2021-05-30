@@ -16,11 +16,12 @@ class ClientWriter extends BaseControllerWriter {
 
   private static final String HTTP_CLIENT_CONTEXT = "io.avaje.http.client.HttpClientContext";
   private static final String AT_GENERATED = "@Generated(\"avaje-http-client-generator\")";
+  private static final String SUFFIX = "$HttpClient";
 
   private final List<ClientMethodWriter> methodList = new ArrayList<>();
 
   ClientWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
-    super(reader, ctx, "$httpclient");
+    super(reader, ctx, SUFFIX);
     reader.addImportType(HTTP_CLIENT_CONTEXT);
     readMethods();
   }
@@ -57,12 +58,11 @@ class ClientWriter extends BaseControllerWriter {
 
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
-    writer.append("@Singleton").eol();
-    writer.append("public class %s$httpclient implements %s {", shortName, shortName).eol().eol();
+    writer.append("public class %s%s implements %s {", shortName, SUFFIX, shortName).eol().eol();
 
     writer.append("  private final HttpClientContext clientContext;").eol().eol();
 
-    writer.append("  public %s$httpclient(HttpClientContext ctx) {", shortName).eol();
+    writer.append("  public %s%s(HttpClientContext ctx) {", shortName, SUFFIX).eol();
     writer.append("    this.clientContext = ctx;").eol();
     writer.append("  }").eol().eol();
   }

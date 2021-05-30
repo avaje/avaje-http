@@ -88,7 +88,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
   private void writeControllerAdapter(Element controller) {
     if (controller instanceof TypeElement) {
       ControllerReader reader = new ControllerReader((TypeElement) controller, ctx);
-      reader.read();
+      reader.read(true);
       try {
         writeControllerAdapter(ctx, reader);
       } catch (Throwable e) {
