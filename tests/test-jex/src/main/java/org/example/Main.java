@@ -1,7 +1,7 @@
 package org.example;
 
-import io.avaje.inject.BeanContext;
-import io.avaje.inject.SystemContext;
+import io.avaje.inject.ApplicationScope;
+import io.avaje.inject.BeanScope;
 import io.avaje.jex.Jex;
 import io.avaje.jex.Routing;
 
@@ -12,12 +12,12 @@ public class Main {
   }
 
   public static Jex.Server start(int port) {
-    return start(port, SystemContext.context());
+    return start(port, ApplicationScope.scope());
   }
 
-  public static Jex.Server start(int port, BeanContext context) {
+  public static Jex.Server start(int port, BeanScope context) {
     final Jex jex = Jex.create();
-    jex.routing().addAll(context.getBeans(Routing.Service.class));
+    jex.routing().addAll(context.list(Routing.Service.class));
     return jex.port(port).start();
   }
 }
