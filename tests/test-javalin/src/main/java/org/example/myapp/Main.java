@@ -40,7 +40,7 @@ public class Main {
 
     app.exception(ValidationException.class, (exception, ctx) -> {
 
-      Map<String,Object> map = new LinkedHashMap<>();
+      Map<String, Object> map = new LinkedHashMap<>();
       map.put("message", exception.getMessage());
       map.put("errors", exception.getErrors());
       ctx.json(map);
