@@ -20,13 +20,13 @@ public abstract class BaseControllerWriter {
   protected Append writer;
 
   protected BaseControllerWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
-    this(reader, ctx, "$route");
+    this(reader, ctx, "$Route");
   }
 
   protected BaseControllerWriter(ControllerReader reader, ProcessingContext ctx, String suffix) throws IOException {
     this.reader = reader;
     this.ctx = ctx;
-    this.router = "$route".equals(suffix);
+    this.router = "$Route".equals(suffix);
     TypeElement origin = reader.getBeanType();
     this.originName = origin.getQualifiedName().toString();
     this.shortName = origin.getSimpleName().toString();

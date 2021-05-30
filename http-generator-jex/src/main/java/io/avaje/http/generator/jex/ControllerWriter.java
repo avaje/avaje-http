@@ -51,7 +51,7 @@ class ControllerWriter extends BaseControllerWriter {
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
     writer.append("@Singleton").eol();
-    writer.append("public class ").append(shortName).append("$route implements Routing.Service {").eol().eol();
+    writer.append("public class ").append(shortName).append("$Route implements Routing.Service {").eol().eol();
 
     String controllerName = "controller";
     String controllerType = shortName;
@@ -66,7 +66,7 @@ class ControllerWriter extends BaseControllerWriter {
     }
     writer.eol();
 
-    writer.append("  public %s$route(%s %s", shortName, controllerType, controllerName);
+    writer.append("  public %s$Route(%s %s", shortName, controllerType, controllerName);
     if (reader.isIncludeValidator()) {
       writer.append(", Validator validator");
     }

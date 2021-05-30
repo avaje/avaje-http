@@ -46,7 +46,7 @@ class WidgetController(private val hello: HelloComponent) {
 
 ## Generated source
 
-The annotation processor will generate a `$route` for the controller like below.
+The annotation processor will generate a `$Route` for the controller like below.
 
 Note that this class implements the WebRoutes interface, which means we can
 get all the WebRoutes and register them with Javalin using.
@@ -76,7 +76,7 @@ fun main(args: Array<String>) {
 
 ```
 
-### The generated WidgetController$route.java is:
+### The generated WidgetController$Route.java is:
 
 
 ```java
@@ -91,7 +91,7 @@ import org.example.hello.WidgetController;
 
 @Generated("io.avaje.javalin-generator")
 @Singleton
-public class WidgetController$route implements WebRoutes {
+public class WidgetController$Route implements WebRoutes {
 
  private final WidgetController controller;
 
