@@ -5,6 +5,7 @@ import io.avaje.http.api.ValidationException;
 import io.avaje.http.api.Validator;
 
 import jakarta.inject.Singleton;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
 import javax.validation.Validation;
@@ -20,7 +21,6 @@ public class BeanValidator implements Validator {
 
   @Override
   public void validate(Object bean) {
-
     Set<ConstraintViolation<Object>> violations = factory.getValidator().validate(bean);
     if (!violations.isEmpty()) {
       throwExceptionWith(violations);
@@ -28,9 +28,7 @@ public class BeanValidator implements Validator {
   }
 
   private void throwExceptionWith(Set<ConstraintViolation<Object>> violations) {
-
-    Map<String,Object> errors = new LinkedHashMap<>();
-
+    Map<String, Object> errors = new LinkedHashMap<>();
     for (ConstraintViolation<?> violation : violations) {
       Path path = violation.getPropertyPath();
       String message = violation.getMessage();

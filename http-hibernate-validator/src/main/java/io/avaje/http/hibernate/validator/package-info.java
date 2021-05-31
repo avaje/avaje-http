@@ -1,4 +1,4 @@
-@ContextModule(name = "javalin-validator", provides = "validator")
+@InjectModule(name = "bean-validator", provides = "validator")
 package io.avaje.http.hibernate.validator;
 
-import io.avaje.inject.ContextModule;
+import io.avaje.inject.InjectModule;
