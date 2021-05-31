@@ -1,6 +1,12 @@
 package io.avaje.http.generator.core;
 
-class Constants {
+public class Constants {
+
+  /**
+   * The suffix used by avaje-inject for generated factories.
+   * A factory is generated automatically for request scoped controllers.
+   */
+  public static final String FACTORY_SUFFIX = "$Factory";
 
   static final String OPENAPIDEFINITION = "io.swagger.v3.oas.annotations.OpenAPIDefinition";
 
