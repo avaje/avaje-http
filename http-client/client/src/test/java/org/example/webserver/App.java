@@ -56,9 +56,14 @@ public class App {
       ctx.json(map);
     });
 
-    app.get("/", ctx -> {
-      ctx.result("Hello World");
-    });
+    app.get("/", ctx -> ctx.result("Hello World"));
+    app.head("/head", ctx -> ctx.result("head"));
+    app.get("/get", ctx -> ctx.result("get"));
+    app.post("/post", ctx -> ctx.result("post"));
+    app.put("/put", ctx -> ctx.result("put"));
+    app.patch("/patch", ctx -> ctx.result("patch"));
+    //app.tra("/patch", ctx -> ctx.result("patch"));
+    app.delete("/delete", ctx -> ctx.result("delete body[" + ctx.body() + "]"));
 
 //    // All WebRoutes / Controllers ... from DI Context
 //    List<WebRoutes> webRoutes = context.getBeans(WebRoutes.class);

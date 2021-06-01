@@ -22,6 +22,10 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   private static final String CONTENT_TYPE = "Content-Type";
   private static final String CONTENT_ENCODING = "Content-Encoding";
+  private static final String VERB_DELETE = "DELETE";
+  private static final String VERB_HEAD = "HEAD";
+  private static final String VERB_PATCH = "PATCH";
+  private static final String VERB_TRACE = "TRACE";
 
   private final DHttpClientContext context;
   private final UrlBuilder url;
@@ -211,7 +215,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     } else if (formParams != null) {
       return bodyFromForm();
     } else {
-      return null;
+      return HttpRequest.BodyPublishers.noBody();
     }
   }
 
@@ -264,26 +268,44 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     }
   }
 
-  public HttpClientResponse get() {
+  @Override
+  public HttpClientResponse HEAD() {
+    httpRequest = newHead(url.build());
+    return this;
+  }
+
+  public HttpClientResponse GET() {
     httpRequest = newGet(url.build());
     return this;
   }
 
   @Override
-  public HttpClientResponse delete() {
-    httpRequest = newDelete(url.build());
+  public HttpClientResponse DELETE() {
+    httpRequest = newDelete(url.build(), body());
     return this;
   }
 
   @Override
-  public HttpClientResponse post() {
+  public HttpClientResponse POST() {
     httpRequest = newPost(url.build(), body());
     return this;
   }
 
   @Override
-  public HttpClientResponse put() {
+  public HttpClientResponse PUT() {
     httpRequest = newPut(url.build(), body());
+    return this;
+  }
+
+  @Override
+  public HttpClientResponse PATCH() {
+    httpRequest = newPatch(url.build(), body());
+    return this;
+  }
+
+  @Override
+  public HttpClientResponse TRACE() {
+    httpRequest = newTrace(url.build(), body());
     return this;
   }
 
@@ -368,30 +390,39 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return withResponseHandler(HttpResponse.BodyHandlers.ofLines());
   }
 
-  protected HttpRequest.Builder newGet(String url) {
+  private HttpRequest.Builder newReq(String url) {
     return HttpRequest.newBuilder()
       .uri(URI.create(url))
-      .timeout(requestTimeout)
-      .GET();
+      .timeout(requestTimeout);
   }
 
-  protected HttpRequest.Builder newDelete(String url) {
-    return HttpRequest.newBuilder()
-      .uri(URI.create(url))
-      .timeout(requestTimeout)
-      .DELETE();
+  private HttpRequest.Builder newHead(String url) {
+    return newRequest(VERB_HEAD, url, HttpRequest.BodyPublishers.noBody());
   }
 
-  public HttpRequest.Builder newPost(String url, HttpRequest.BodyPublisher body) {
-    return newRequest("POST", url, body);
+  private HttpRequest.Builder newGet(String url) {
+    return newReq(url).GET();
   }
 
-  public HttpRequest.Builder newPut(String url, HttpRequest.BodyPublisher body) {
-    return newRequest("PUT", url, body);
+  private HttpRequest.Builder newPost(String url, HttpRequest.BodyPublisher body) {
+    return newReq(url).POST(body);
   }
 
-  public HttpRequest.Builder newPatch(String url, HttpRequest.BodyPublisher body) {
-    return newRequest("PATCH", url, body);
+  private HttpRequest.Builder newPut(String url, HttpRequest.BodyPublisher body) {
+    return newReq(url).PUT(body);
+  }
+
+  private HttpRequest.Builder newPatch(String url, HttpRequest.BodyPublisher body) {
+    return newRequest(VERB_PATCH, url, body);
+  }
+
+  private HttpRequest.Builder newDelete(String url, HttpRequest.BodyPublisher body) {
+    // allow DELETE to have a body
+    return newRequest(VERB_DELETE, url, body);
+  }
+
+  private HttpRequest.Builder newTrace(String url, HttpRequest.BodyPublisher body) {
+    return newRequest(VERB_TRACE, url, body);
   }
 
   protected HttpRequest.Builder newRequest(String method, String url, HttpRequest.BodyPublisher body) {

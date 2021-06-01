@@ -229,23 +229,78 @@ public interface HttpClientRequest {
   HttpClientRequest body(HttpRequest.BodyPublisher body);
 
   /**
+   * Deprecated migrate to GET().
+   */
+  @Deprecated
+  default HttpClientResponse get() {
+    return GET();
+  }
+
+  /**
+   * Deprecated migrate to POST().
+   */
+  @Deprecated
+  default HttpClientResponse post() {
+    return POST();
+  }
+
+  /**
+   * Deprecated migrate to PUT().
+   */
+  @Deprecated
+  default HttpClientResponse put() {
+    return PUT();
+  }
+
+  /**
+   * Deprecated migrate to PATCH().
+   */
+  @Deprecated
+  default HttpClientResponse patch() {
+    return PATCH();
+  }
+
+  /**
+   * Deprecated migrate to DELETE().
+   */
+  @Deprecated
+  default HttpClientResponse delete() {
+    return DELETE();
+  }
+
+  /**
    * Execute the request as a GET.
    */
-  HttpClientResponse get();
+  HttpClientResponse GET();
 
   /**
    * Execute the request as a POST.
    */
-  HttpClientResponse post();
+  HttpClientResponse POST();
 
   /**
    * Execute the request as a PUT.
    */
-  HttpClientResponse put();
+  HttpClientResponse PUT();
+
+  /**
+   * Execute the request as a PATCH.
+   */
+  HttpClientResponse PATCH();
 
   /**
    * Execute the request as a DELETE.
    */
-  HttpClientResponse delete();
+  HttpClientResponse DELETE();
+
+  /**
+   * Execute the request as a TRACE.
+   */
+  HttpClientResponse TRACE();
+
+  /**
+   * Execute the request as a HEAD.
+   */
+  HttpClientResponse HEAD();
 
 }
