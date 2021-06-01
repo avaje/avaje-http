@@ -14,7 +14,7 @@ A light weight wrapper to the JDK 11+ Java Http Client
 <dependency>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client</artifactId>
-  <version>1.2</version>
+  <version>1.5</version>
 </dependency>
 ```
 
@@ -42,24 +42,25 @@ From HttpClientContext:
  - Build the url via path(), matrixParam(), queryParam()
  - Optionally set headers(), cookies() etc
  - Optionally specify a request body (JSON, form, or raw BodyPublisher)
- - Http verbs - get(), post(), put(), delete()
+ - Http verbs - GET(), POST(), PUT(), PATCH(), DELETE(), HEAD(), TRACE()
  - Optionally return response body as a bean, list of beans, or raw
 
 ## Examples
 
 GET as String
 ```java
-    final HttpResponse<String> hres = clientContext.request()
-      .path("hello")
-      .get().asString();
-
+final HttpResponse<String> hres = clientContext.request()
+  .path("hello")
+  .GET()
+  .asString();
 ```
 
 GET as json to single bean
 ```java
 final HelloDto bean = clientContext.request()
   .path("hello/there")
-  .get().bean(HelloDto.class);
+  .GET()
+  .bean(HelloDto.class);
 ```
 
 POST a bean as json request body
@@ -68,18 +69,19 @@ HelloDto bean = new HelloDto(12, "rob", "other");
 
 final HttpResponse<Void> res = clientContext.request()
   .path("hello/savebean")
-  .body(bean).post()
+  .body(bean)
+  .POST()
   .asDiscarding();
 
 assertThat(res.statusCode()).isEqualTo(201);
-
 ```
 
 GET as json to list of beans
 ```java
 final List<HelloDto> beans = clientContext.request()
   .path("hello")
-  .get().list(HelloDto.class);
+  .GET()
+  .list(HelloDto.class);
 ```
 
 Path
@@ -88,13 +90,15 @@ final HttpResponse<String> res = clientContext.request()
   .path("hello")
   .path("withMatrix")
   .path("2011")
-  .get().asString();
+  .GET()
+  .asString();
 
 // is the same as ...
 
 final HttpResponse<String> res = clientContext.request()
   .path("hello/withMatrix/2011")
-  .get().asString();
+  .GET()
+  .asString();
 ```
 
 MatrixParam
@@ -105,7 +109,7 @@ final HttpResponse<String> httpRes = clientContext.request()
   .matrixParam("country", "nz")
   .path("foo")
   .matrixParam("extra", "banana")
-  .get().asString();
+  .GET().asString();
 ```
 
 QueryParam
@@ -114,7 +118,7 @@ final List<HelloDto> beans = clientContext.request()
   .path("hello")
   .queryParam("sortBy", "name")
   .queryParam("maxCount", "100")
-  .get().list(HelloDto.class);
+  .GET().list(HelloDto.class);
 ```
 
 FormParam
@@ -125,13 +129,13 @@ final HttpResponse<Void> res = clientContext.request()
   .formParam("email", "user@foo.com")
   .formParam("url", "http://foo.com")
   .formParam("startDate", "2020-12-03")
-  .post()
+  .POST()
   .asDiscarding();
 
 assertThat(res.statusCode()).isEqualTo(201);
 ```
 
-## Currently NO support for POSTing multipart-form
+## Currently, NO support for POSTing multipart-form
 
 ## Auth token
 
@@ -149,7 +153,7 @@ Built in support for obtaining and setting an Authorization token.
         .url("https://foo/v2/token")
         .header("content-type", "application/json")
         .body(authRequestAsJson())
-        .post()
+        .POST()
         .bean(AuthTokenResponse.class);
 
       Instant validUntil = Instant.now().plusSeconds(res.expires_in).minusSeconds(60);
