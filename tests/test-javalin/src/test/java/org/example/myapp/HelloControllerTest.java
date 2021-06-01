@@ -36,7 +36,7 @@ class HelloControllerTest extends BaseWebTest {
 
     this.clientContext = HttpClientContext.newBuilder()
       .withBaseUrl(baseUrl)
-      .withResponseListener(new RequestLogger())
+      .withRequestListener(new RequestLogger())
       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
       .with(httpClient)
       .build();

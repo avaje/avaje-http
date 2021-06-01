@@ -1,10 +1,10 @@
 package org.example.myapp;
 
-import io.avaje.inject.SystemContext;
 import io.avaje.http.api.InvalidPathArgumentException;
 import io.avaje.http.api.InvalidTypeArgumentException;
 import io.avaje.http.api.ValidationException;
 import io.avaje.http.api.WebRoutes;
+import io.avaje.inject.SystemContext;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;

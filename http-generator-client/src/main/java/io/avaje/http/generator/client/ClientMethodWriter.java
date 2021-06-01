@@ -67,7 +67,7 @@ class ClientMethodWriter {
     writeBody();
 
     WebMethod webMethod = method.getWebMethod();
-    writer.append("      .%s()", webMethod.name().toLowerCase()).eol();
+    writer.append("      .%s()", webMethod.name()).eol();
     if (returnType == UType.VOID) {
       writer.append("      .asDiscarding();").eol();
     } else {

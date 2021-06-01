@@ -17,7 +17,7 @@
   <properties>
     <mainClass>org.example.Main</mainClass>
     <helidon-version>2.2.2</helidon-version>
-    <avaje-http-version>1.4-SNAPSHOT</avaje-http-version>
+    <avaje-http-version>1.5-SNAPSHOT</avaje-http-version>
   </properties>
 
   <dependencies>
@@ -115,7 +115,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>1.0</version>
+      <version>1.5</version>
       <scope>test</scope>
     </dependency>
 
