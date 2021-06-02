@@ -6,6 +6,7 @@ import io.avaje.http.api.Path;
 import io.avaje.http.api.Produces;
 import io.avaje.jex.Context;
 
+// @Roles(AppRoles.BASIC_USER)
 @Controller
 @Path("/")
 public class HelloController {
@@ -24,6 +25,7 @@ public class HelloController {
     return "something";
   }
 
+  @Roles({AppRoles.ADMIN, AppRoles.BASIC_USER})
   @Produces("text/plain")
   @Get("other/{name}")
   String name(String name) {

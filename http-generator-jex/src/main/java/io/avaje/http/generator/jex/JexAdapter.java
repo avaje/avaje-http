@@ -10,7 +10,6 @@ import java.util.List;
 class JexAdapter implements PlatformAdapter {
 
   static final String JEX_CONTEXT = "io.avaje.jex.Context";
-  //static final String JAVALIN3_ROLES = "io.javalin.core.security.SecurityUtil.roles";
 
   @Override
   public boolean isContextType(String rawType) {
@@ -39,20 +38,19 @@ class JexAdapter implements PlatformAdapter {
 
   @Override
   public void controllerRoles(List<String> roles, ControllerReader controller) {
-    //addRoleImports(roles, controller);
+    addRoleImports(roles, controller);
   }
 
   @Override
   public void methodRoles(List<String> roles, ControllerReader controller) {
-    //addRoleImports(roles, controller);
+    addRoleImports(roles, controller);
   }
 
-//  private void addRoleImports(List<String> roles, ControllerReader controller) {
-//    controller.addStaticImportType(JAVALIN3_ROLES);
-//    for (String role : roles) {
-//      controller.addStaticImportType(role);
-//    }
-//  }
+  private void addRoleImports(List<String> roles, ControllerReader controller) {
+    for (String role : roles) {
+      controller.addStaticImportType(role);
+    }
+  }
 
   @Override
   public void writeReadParameter(Append writer, ParamType paramType, String paramName) {

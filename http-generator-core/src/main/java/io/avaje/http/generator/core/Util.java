@@ -3,10 +3,13 @@ package io.avaje.http.generator.core;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.SimpleAnnotationValueVisitor8;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Util {
@@ -20,7 +23,7 @@ public class Util {
       return new UType.Basic(rawType);
     } else {
       String mainType = rawType.substring(0, pos);
-      String genericParams = rawType.substring(pos+1, rawType.length()-1);
+      String genericParams = rawType.substring(pos + 1, rawType.length() - 1);
       List<String> params = parseGenericParams(genericParams);
       return new UType.Generic(rawType, mainType, params);
     }
@@ -141,24 +144,14 @@ public class Util {
    * @param element The bean or method
    */
   public static List<String> findRoles(Element element) {
-
-    List<String> roles = new ArrayList<>();
-
     for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
-      DeclaredType annotationType = annotationMirror.getAnnotationType();
-      if (isRolesAnnotation(annotationType)) {
-        for (AnnotationValue value : annotationMirror.getElementValues().values()) {
-          String raw = value.toString();
-          if (raw.startsWith("{")) {
-            raw = raw.substring(1, raw.length() - 1);
-          }
-          for (String singleRole : raw.split(",")) {
-            roles.add(singleRole.trim());
-          }
+      if (isRolesAnnotation(annotationMirror.getAnnotationType())) {
+        for (AnnotationValue annotationValue : annotationMirror.getElementValues().values()) {
+          return annotationValue.accept(new RoleReader(), annotationValue);
         }
       }
     }
-    return roles;
+    return Collections.emptyList();
   }
 
   private static boolean isRolesAnnotation(DeclaredType annotationType) {
@@ -180,5 +173,24 @@ public class Util {
       return UType.VOID;
     }
     return parse(returnType.toString());//typeDef(returnType));
+  }
+
+  private static class RoleReader extends SimpleAnnotationValueVisitor8<List<String>, Object> {
+
+    private final List<String> fullRoles = new ArrayList<>();
+
+    @Override
+    public List<String> visitArray(List<? extends AnnotationValue> values, Object o) {
+      for (AnnotationValue val : values) {
+        val.accept(this, o);
+      }
+      return fullRoles;
+    }
+
+    @Override
+    public List<String> visitEnumConstant(VariableElement roleEnum, Object o) {
+      fullRoles.add(roleEnum.asType() + "." + roleEnum.getSimpleName());
+      return fullRoles;
+    }
   }
 }

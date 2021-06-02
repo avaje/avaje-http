@@ -55,6 +55,7 @@ class HelloController {
    * @return The Hello DTO given the id and name.
    * @deprecated Please migrate away
    */
+  @Roles({AppRoles.ADMIN, AppRoles.BASIC_USER})
   @Get("/:id/:date")
   HelloDto hello(int id, LocalDate date, String otherParam) {
     return new HelloDto(id, date.toString(), otherParam);
@@ -63,10 +64,11 @@ class HelloController {
   /**
    * Find Hellos by name.
    *
-   * @param name       The name to search for
+   * @param name    The name to search for
    * @param myParam My option parameter
    * @return The Hellos that we found.
    */
+  @Roles(AppRoles.ADMIN)
   @Get("/findbyname/{name}")
   List<HelloDto> findByName(String name, @QueryParam("my-param") @Default("one") String myParam) {
     return new ArrayList<>();
