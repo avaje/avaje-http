@@ -1,9 +1,6 @@
 package io.avaje.http.generator.javalin;
 
-import io.avaje.http.generator.core.BaseControllerWriter;
-import io.avaje.http.generator.core.ControllerReader;
-import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.*;
 
 import java.io.IOException;
 
@@ -55,7 +52,7 @@ class ControllerWriter extends BaseControllerWriter {
     String controllerType = shortName;
     if (isRequestScoped()) {
       controllerName = "factory";
-      controllerType += "$factory";
+      controllerType += Constants.FACTORY_SUFFIX;
     }
     writer.append("  private final %s %s;", controllerType, controllerName).eol();
 

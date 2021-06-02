@@ -55,7 +55,7 @@ class ControllerWriter extends BaseControllerWriter {
     String controllerType = shortName;
     if (isRequestScoped()) {
       controllerName = "factory";
-      controllerType += "$factory";
+      controllerType += Constants.FACTORY_SUFFIX;
     }
     writer.append("  private final %s %s;", controllerType, controllerName).eol();
 
