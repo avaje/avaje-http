@@ -16,7 +16,7 @@ class ReqScopedControllerTest extends BaseWebTest {
 
     final HttpResponse<String> res = client.request()
       .path("req-scoped")
-      .get().asString();
+      .GET().asString();
 
     assertThat(res.statusCode()).isEqualTo(200);
     assertThat(res.body()).isEqualTo("http://localhost:8887/req-scoped");

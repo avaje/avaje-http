@@ -48,7 +48,7 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(response.statusCode()).isEqualTo(200);
 
     final HttpResponse<String> hres = clientContext.request().path("hello").path("message")
-      .get().asString();
+      .GET().asString();
 
     assertThat(hres.body()).contains("hello world");
     assertThat(hres.statusCode()).isEqualTo(200);
@@ -69,7 +69,7 @@ class HelloControllerTest extends BaseWebTest {
 
     final List<HelloDto> helloDtos = clientContext.request()
       .path("hello")
-      .get().list(HelloDto.class);
+      .GET().list(HelloDto.class);
 
     assertThat(helloDtos).hasSize(2);
   }
@@ -90,7 +90,7 @@ class HelloControllerTest extends BaseWebTest {
 
     final HelloDto dto = clientContext.request()
       .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
-      .get().bean(HelloDto.class);
+      .GET().bean(HelloDto.class);
 
     assertThat(dto.id).isEqualTo(43L);
     assertThat(dto.name).isEqualTo("2020-03-05");
@@ -113,7 +113,7 @@ class HelloControllerTest extends BaseWebTest {
     final HelloDto bean = clientContext.request()
       .path("hello")
       .body(from.write(dto))
-      .post()
+      .POST()
       .read(toDto);
 
     assertEquals("posted", bean.name);
@@ -166,7 +166,7 @@ class HelloControllerTest extends BaseWebTest {
       .formParam("email", "Bax@foo.com")
       .formParam("url", "http://foo.com")
       .formParam("startDate", "2030-12-03")
-      .post().bean(HelloDto.class);
+      .POST().bean(HelloDto.class);
 
     assertThat(bean.name).isEqualTo("Bax");
     assertThat(bean.otherParam).isEqualTo("Bax@foo.com");
@@ -210,7 +210,7 @@ class HelloControllerTest extends BaseWebTest {
         .path("hello/saveform")
         .formParam("email", "user@foo.com")
         .formParam("url", "notAValidUrl")
-        .post()
+        .POST()
         .asVoid();
 
     } catch (HttpException e) {
@@ -276,7 +276,7 @@ class HelloControllerTest extends BaseWebTest {
       .path("foo")
       .queryParam("extra", "banana")
 
-      .get().asString();
+      .GET().asString();
 
     assertEquals(200, httpRes.statusCode());
     assertEquals("yr:2011 au:rob co:nz other:foo extra:banana", httpRes.body());

@@ -14,7 +14,7 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void getHello() {
-    final HelloDto hello = client.request().get().bean(HelloDto.class);
+    final HelloDto hello = client.request().GET().bean(HelloDto.class);
 
     assertEquals(42, hello.id);
     assertEquals("rob", hello.name);
@@ -23,7 +23,7 @@ class HelloControllerTest extends BaseWebTest {
   @Test
   void getPlain() {
 
-    final HttpResponse<String> res = client.request().path("plain").get().asString();
+    final HttpResponse<String> res = client.request().path("plain").GET().asString();
 
     assertEquals("something", res.body());
     assertThat(res.headers().firstValue("content-type").get()).startsWith("text/plain;");
@@ -32,12 +32,12 @@ class HelloControllerTest extends BaseWebTest {
   @Test
   void getName() {
 
-    assertEquals("hi bazz", client.request().path("other/bazz").get().asString().body());
-    assertEquals("hi bax", client.request().path("other/bax").get().asString().body());
+    assertEquals("hi bazz", client.request().path("other/bazz").GET().asString().body());
+    assertEquals("hi bax", client.request().path("other/bax").GET().asString().body());
   }
 
   @Test
   void splat() {
-    assertEquals("got name:one splat0:a/b splat1:x/y/z", client.request().path("splat/one/a/b/other/x/y/z").get().asString().body());
+    assertEquals("got name:one splat0:a/b splat1:x/y/z", client.request().path("splat/one/a/b/other/x/y/z").GET().asString().body());
   }
 }

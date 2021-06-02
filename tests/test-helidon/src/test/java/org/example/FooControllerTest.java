@@ -58,7 +58,7 @@ class FooControllerTest extends BaseWebTest {
       .path("2011").matrixParam("author", "rob").matrixParam("country", "nz")
       .path("foo")
       .queryParam("extra", "banana")
-      .get()
+      .GET()
       .asString();
 
     assertThat(res.statusCode()).isEqualTo(200);
