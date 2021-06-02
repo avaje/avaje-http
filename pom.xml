@@ -4,7 +4,7 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-generator-parent</artifactId>
-  <version>1.5-SNAPSHOT</version>
+  <version>1.5</version>
   <packaging>pom</packaging>
 
   <parent>
@@ -15,7 +15,7 @@
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>avaje-http-generator-parent-1.5</tag>
   </scm>
 
   <properties>
