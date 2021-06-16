@@ -61,8 +61,17 @@ public class RequestLogger implements RequestListener {
     if (!entries.isEmpty()) {
       sb.append(delimiter).append(label);
       for (Map.Entry<String, List<String>> entry : entries) {
-        sb.append(entry.getKey()).append("=").append(entry.getValue()).append(", ");
+        final String key = entry.getKey();
+        if (obfuscate(key)) {
+          sb.append(key).append("=<obfuscated>, ");
+        } else {
+          sb.append(key).append("=").append(entry.getValue()).append(", ");
+        }
       }
     }
+  }
+
+  boolean obfuscate(String key) {
+    return DHttpClientContext.AUTHORIZATION.equals(key);
   }
 }

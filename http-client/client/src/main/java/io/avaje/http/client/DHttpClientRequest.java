@@ -48,6 +48,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private BodyContent encodedResponseBody;
   private boolean loggableResponseBody;
   private boolean skipAuthToken;
+  private boolean suppressLogging;
 
   DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
     this.context = context;
@@ -58,6 +59,13 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   @Override
   public HttpClientRequest skipAuthToken() {
     this.skipAuthToken = true;
+    this.suppressLogging = true;
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest suppressLogging() {
+    this.suppressLogging = true;
     return this;
   }
 
@@ -471,6 +479,9 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
     @Override
     public String requestBody() {
+      if (suppressLogging) {
+        return "<suppressed request body>";
+      }
       if (encodedRequestBody != null) {
         return new String(encodedRequestBody.content(), StandardCharsets.UTF_8);
       } else if (bodyFormEncoded) {
@@ -485,6 +496,9 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
     @Override
     public String responseBody() {
+      if (suppressLogging) {
+        return "<suppressed response body>";
+      }
       if (encodedResponseBody != null) {
         return new String(encodedResponseBody.content(), StandardCharsets.UTF_8);
       } else if (httpResponse != null && loggableResponseBody) {

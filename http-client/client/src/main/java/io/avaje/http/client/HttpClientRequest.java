@@ -35,6 +35,14 @@ public interface HttpClientRequest {
   HttpClientRequest skipAuthToken();
 
   /**
+   * For this request suppress payload logging.
+   * <p>
+   * The payload contains sensitive content and the request and response content
+   * should be suppressed and not included in request logging.
+   */
+  HttpClientRequest suppressLogging();
+
+  /**
    * Set the request timeout to use for this request. When not set the default
    * request timeout will be used.
    *

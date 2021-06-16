@@ -50,7 +50,6 @@ public interface RequestListener {
      * This will return null if the response is not String or byte array
      * encoded string content. For example, when requests use response
      * handlers for InputStream, Path, Stream etc this will return null.
-     * <p>
      */
     String responseBody();
 

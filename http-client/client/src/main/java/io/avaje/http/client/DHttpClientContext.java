@@ -13,6 +13,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 class DHttpClientContext implements HttpClientContext {
 
+  /**
+   * HTTP Authorization header.
+   */
+  static final String AUTHORIZATION = "Authorization";
+  private static final String BEARER = "Bearer ";
+
   private final HttpClient httpClient;
   private final String baseUrl;
   private final Duration requestTimeout;
@@ -172,7 +178,7 @@ class DHttpClientContext implements HttpClientContext {
 
   void beforeRequest(DHttpClientRequest request) {
     if (withAuthToken && !request.isSkipAuthToken()) {
-      request.header("Authorization", "Bearer " + authToken());
+      request.header(AUTHORIZATION, BEARER + authToken());
     }
     if (requestIntercept != null) {
       requestIntercept.beforeRequest(request);
