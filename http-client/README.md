@@ -14,7 +14,7 @@ A light weight wrapper to the JDK 11+ Java Http Client
 <dependency>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client</artifactId>
-  <version>1.5</version>
+  <version>1.6</version>
 </dependency>
 ```
 
@@ -49,7 +49,7 @@ From HttpClientContext:
 
 GET as String
 ```java
-final HttpResponse<String> hres = clientContext.request()
+HttpResponse<String> hres = clientContext.request()
   .path("hello")
   .GET()
   .asString();
@@ -57,17 +57,34 @@ final HttpResponse<String> hres = clientContext.request()
 
 GET as json to single bean
 ```java
-final HelloDto bean = clientContext.request()
-  .path("hello/there")
+Customer customer = clientContext.request()
+  .path("customers").path(42)
   .GET()
-  .bean(HelloDto.class);
+  .bean(Customer.class);
 ```
+
+GET as json to a list of beans
+```java
+List<Customer> list = clientContext.request()
+  .path("customers")
+  .GET()
+  .list(Customer.class);
+```
+
+GET as `application/x-json-stream` as a stream of beans
+```java
+Stream<Customer> stream = clientContext.request()
+  .path("customers/all")
+  .GET()
+  .stream(Customer.class);
+```
+
 
 POST a bean as json request body
 ```java
 HelloDto bean = new HelloDto(12, "rob", "other");
 
-final HttpResponse<Void> res = clientContext.request()
+HttpResponse<Void> res = clientContext.request()
   .path("hello/savebean")
   .body(bean)
   .POST()
@@ -76,35 +93,28 @@ final HttpResponse<Void> res = clientContext.request()
 assertThat(res.statusCode()).isEqualTo(201);
 ```
 
-GET as json to list of beans
-```java
-final List<HelloDto> beans = clientContext.request()
-  .path("hello")
-  .GET()
-  .list(HelloDto.class);
-```
 
 Path
 ```java
-final HttpResponse<String> res = clientContext.request()
-  .path("hello")
-  .path("withMatrix")
-  .path("2011")
+HttpResponse<String> res = clientContext.request()
+  .path("customers")
+  .path("42")
+  .path("contacts")
   .GET()
   .asString();
 
 // is the same as ...
 
-final HttpResponse<String> res = clientContext.request()
-  .path("hello/withMatrix/2011")
+HttpResponse<String> res = clientContext.request()
+  .path("customers/42/contacts")
   .GET()
   .asString();
 ```
 
 MatrixParam
 ```java
-final HttpResponse<String> httpRes = clientContext.request()
-  .path("hello")
+HttpResponse<String> httpRes = clientContext.request()
+  .path("books")
   .matrixParam("author", "rob")
   .matrixParam("country", "nz")
   .path("foo")
@@ -114,17 +124,17 @@ final HttpResponse<String> httpRes = clientContext.request()
 
 QueryParam
 ```java
-final List<HelloDto> beans = clientContext.request()
-  .path("hello")
+List<Product> beans = clientContext.request()
+  .path("products")
   .queryParam("sortBy", "name")
   .queryParam("maxCount", "100")
-  .GET().list(HelloDto.class);
+  .GET().list(Product.class);
 ```
 
 FormParam
 ```java
-final HttpResponse<Void> res = clientContext.request()
-  .path("hello/saveform")
+HttpResponse<Void> res = clientContext.request()
+  .path("register/user")
   .formParam("name", "Bazz")
   .formParam("email", "user@foo.com")
   .formParam("url", "http://foo.com")
