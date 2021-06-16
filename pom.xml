@@ -4,7 +4,7 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-generator-parent</artifactId>
-  <version>2.0.RC1-SNAPSHOT</version>
+  <version>1.6-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <parent>
@@ -39,7 +39,7 @@
     <module>http-generator-jex</module>
     <module>http-generator-helidon</module>
     <module>http-generator-client</module>
-    <module>tests</module>
+<!--    <module>tests</module>-->
   </modules>
 
 </project>
