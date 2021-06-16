@@ -100,6 +100,18 @@ public class GsonBodyAdapter implements BodyAdapter {
       this.adapter = adapter;
     }
 
+    /**
+     * Read the content returning it as a java type.
+     */
+    @Override
+    public T readBody(String content) {
+      try {
+        return adapter.fromJson(content);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
     @Override
     public T read(BodyContent body) {
       try {

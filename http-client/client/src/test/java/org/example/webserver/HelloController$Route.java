@@ -36,6 +36,11 @@ public class HelloController$Route implements WebRoutes {
       ctx.contentType("text/plain").result(controller.retry());
     });
 
+    ApiBuilder.get("/hello/stream", ctx -> {
+      ctx.status(200);
+      controller.stream(ctx);
+    });
+
     ApiBuilder.get("/hello/:id/:date", ctx -> {
       ctx.status(200);
       int id = asInt(ctx.pathParam("id"));

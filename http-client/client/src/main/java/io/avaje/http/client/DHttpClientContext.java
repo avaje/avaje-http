@@ -159,6 +159,10 @@ class DHttpClientContext implements HttpClientContext {
     return bodyAdapter.beanWriter(bean.getClass()).write(bean, contentType);
   }
 
+  <T> BodyReader<T> beanReader(Class<T> cls) {
+    return bodyAdapter.beanReader(cls);
+  }
+
   <T> T readBean(Class<T> cls, BodyContent content) {
     return bodyAdapter.beanReader(cls).read(content);
   }

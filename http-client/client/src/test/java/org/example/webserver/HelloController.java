@@ -47,6 +47,18 @@ class HelloController {
     }
   }
 
+  @Get("stream")
+  void stream(Context context) {
+    // simulate x-json-stream response
+    context.header("content-type", "application/x-json-stream");
+    String content =
+      "{\"id\":1, \"name\":\"one\"}\n" +
+        "{\"id\":2, \"name\":\"two\"}\n" +
+        "{\"id\":3, \"name\":\"three\"}\n" +
+        "{\"id\":4, \"name\":\"four\"}\n";
+    context.result(content);
+  }
+
   /**
    * Return the Hello DTO.
    *

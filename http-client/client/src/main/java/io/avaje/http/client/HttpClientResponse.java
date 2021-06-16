@@ -43,6 +43,19 @@ public interface HttpClientResponse {
   <T> List<T> list(Class<T> type);
 
   /**
+   * Return the response as a stream of beans.
+   * <p>
+   * Typically the response is expected to be {@literal applciation/x-json-stream}
+   * newline delimited json payload.
+   *
+   * @param type The type of the bean to convert the response content into.
+   * @param <T>  The type that the content is converted to.
+   * @return The stream of beans from the response
+   * @throws HttpException when the response has error status codes
+   */
+  <T> Stream<T> stream(Class<T> type);
+
+  /**
    * Return the response with check for 200 range status code.
    * <p>
    * Will throw an HttpException if the status code is in the

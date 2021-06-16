@@ -349,6 +349,17 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public <T> Stream<T> stream(Class<T> cls) {
+    final HttpResponse<Stream<String>> res = withResponseHandler(HttpResponse.BodyHandlers.ofLines());
+    this.httpResponse = res;
+    if (res.statusCode() >= 300) {
+      throw new HttpException(res, context);
+    }
+    final BodyReader<T> bodyReader = context.beanReader(cls);
+    return res.body().map(bodyReader::readBody);
+  }
+
+  @Override
   public <T> HttpResponse<T> withResponseHandler(HttpResponse.BodyHandler<T> responseHandler) {
     context.beforeRequest(this);
     addHeaders();

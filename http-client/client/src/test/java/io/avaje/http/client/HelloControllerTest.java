@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,6 +16,22 @@ import static org.junit.jupiter.api.Assertions.*;
 class HelloControllerTest extends BaseWebTest {
 
   final HttpClientContext clientContext = client();
+
+  @Test
+  void get_stream() {
+
+    final Stream<SimpleData> stream = clientContext.request()
+      .path("hello").path("stream")
+      .GET()
+      .stream(SimpleData.class);
+
+    final List<SimpleData> data = stream.collect(Collectors.toList());
+
+    assertThat(data).hasSize(4);
+    final SimpleData first = data.get(0);
+    assertThat(first.id).isEqualTo(1);
+    assertThat(first.name).isEqualTo("one");
+  }
 
   @Test
   void get_helloMessage() {
@@ -232,5 +250,10 @@ class HelloControllerTest extends BaseWebTest {
 
     assertEquals(200, httpRes.statusCode());
     assertEquals("yr:2011 au:rob co:nz other:foo extra:banana", httpRes.body());
+  }
+
+  public static class SimpleData {
+    public long id;
+    public String name;
   }
 }

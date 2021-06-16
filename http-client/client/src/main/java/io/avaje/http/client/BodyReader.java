@@ -10,4 +10,8 @@ public interface BodyReader<T> {
    */
   T read(BodyContent content);
 
+  /**
+   * Read the String content returning it as a java type.
+   */
+  T readBody(String content);
 }
