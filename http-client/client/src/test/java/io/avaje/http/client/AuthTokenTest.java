@@ -32,7 +32,7 @@ public class AuthTokenTest {
         .url("https://foo/v2/token")
         .header("content-type", "application/json")
         .body(authRequestAsJson())
-        .post()
+        .POST()
         .bean(AuthTokenResponse.class);
 
       Instant validUntil = Instant.now().plusSeconds(res.expires_in).minusSeconds(60);
@@ -58,14 +58,14 @@ public class AuthTokenTest {
       .path(path)
       .header("Content-Type", "application/json")
       //.body(payload)
-      .post()
+      .POST()
       .asString();
 
     HttpResponse<String> res2 = ctx.request()
       .path(path)
       .header("Content-Type", "application/json")
       //.body(payload)
-      .post()
+      .POST()
       .asString();
 
   }

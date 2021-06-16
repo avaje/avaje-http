@@ -29,7 +29,7 @@ public class SimpleHttpClient implements Simple {
     return context.request()
       .path("users").path(user).path("repos")
       .queryParam("other", other)
-      .get().list(Repo.class);
+      .GET().list(Repo.class);
   }
 
   @Post("users")
@@ -38,7 +38,7 @@ public class SimpleHttpClient implements Simple {
     return context.request()
       .path("foo/users")
       .body(writeRepo.write(repo))
-      .post().read(readRepo);
+      .POST().read(readRepo);
   }
 
   @Get("users/{id}")
@@ -46,7 +46,7 @@ public class SimpleHttpClient implements Simple {
   public Repo getById(String id) {
     return context.request()
       .path("users").path(id)
-      .get().bean(Repo.class);
+      .GET().bean(Repo.class);
   }
 
   public InputStream getById2(String id, InputStream is) {
@@ -54,7 +54,7 @@ public class SimpleHttpClient implements Simple {
       context.request()
         .path("users").path(id).path("stream")
         .body(() -> is)
-        .get().withResponseHandler(HttpResponse.BodyHandlers.ofInputStream());
+        .GET().withResponseHandler(HttpResponse.BodyHandlers.ofInputStream());
 
     context.checkResponse(response);
     return response.body();

@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 class HelloControllerTest extends BaseWebTest {
 
@@ -22,7 +20,7 @@ class HelloControllerTest extends BaseWebTest {
 
     final HttpResponse<String> hres = clientContext.request()
       .path("hello").path("message")
-      .get().asString();
+      .GET().asString();
 
     assertThat(hres.body()).contains("hello world");
     assertThat(hres.statusCode()).isEqualTo(200);
@@ -34,7 +32,7 @@ class HelloControllerTest extends BaseWebTest {
     final HttpResponse<String> hres = clientContext.request()
       .url("http://127.0.0.1:8887")
       .path("hello").path("message")
-      .get().asString();
+      .GET().asString();
 
     assertThat(hres.body()).contains("hello world");
     assertThat(hres.statusCode()).isEqualTo(200);
@@ -45,7 +43,7 @@ class HelloControllerTest extends BaseWebTest {
 
     final List<HelloDto> helloDtos = clientContext.request()
       .path("hello")
-      .get().list(HelloDto.class);
+      .GET().list(HelloDto.class);
 
     assertThat(helloDtos).hasSize(2);
   }
@@ -54,8 +52,9 @@ class HelloControllerTest extends BaseWebTest {
   void get_withPathParamAndQueryParam_returningBean() {
 
     final HelloDto dto = clientContext.request()
-      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", (String) null)
-      .get().bean(HelloDto.class);
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
+      .GET()
+      .bean(HelloDto.class);
 
     assertThat(dto.id).isEqualTo(43L);
     assertThat(dto.name).isEqualTo("2020-03-05");
@@ -73,7 +72,7 @@ class HelloControllerTest extends BaseWebTest {
     final HelloDto bean = clientContext.request()
       .path("hello")
       .body(from.write(dto))
-      .post()
+      .POST()
       .read(toDto);
 
     assertEquals("posted", bean.name);
@@ -87,7 +86,8 @@ class HelloControllerTest extends BaseWebTest {
 
     final HttpResponse<Void> res = clientContext.request()
       .path("hello/savebean/foo")
-      .body(dto).post()
+      .body(dto)
+      .POST()
       .asDiscarding();
 
     assertThat(res.statusCode()).isEqualTo(201);
@@ -102,7 +102,7 @@ class HelloControllerTest extends BaseWebTest {
       .formParam("email", "user@foo.com")
       .formParam("url", "http://foo.com")
       .formParam("startDate", "2030-12-03")
-      .post()
+      .POST()
       .asDiscarding();
 
     assertThat(res.statusCode()).isEqualTo(201);
@@ -117,7 +117,7 @@ class HelloControllerTest extends BaseWebTest {
       .formParam("email", "user@foo.com")
       .formParam("url", "http://foo.com")
       .formParam("startDate", "2030-12-03")
-      .post()
+      .POST()
       .asDiscarding();
 
     assertThat(res.statusCode()).isEqualTo(201);
@@ -128,7 +128,7 @@ class HelloControllerTest extends BaseWebTest {
       .formParam("email", "Bax@foo.com")
       .formParam("url", "http://foo.com")
       .formParam("startDate", "2030-12-03")
-      .post()
+      .POST()
       .bean(HelloDto.class);
 
     assertThat(bean.name).isEqualTo("Bax");
@@ -143,7 +143,7 @@ class HelloControllerTest extends BaseWebTest {
       .formParam("name", "baz")
       .formParam("email", "user@foo.com")
       .formParam("url", "http://foo")
-      .post()
+      .POST()
       .asVoid();
 
     assertEquals(201, res.statusCode());
@@ -156,7 +156,7 @@ class HelloControllerTest extends BaseWebTest {
         .path("hello/saveform")
         .formParam("email", "user@foo.com")
         .formParam("url", "notAValidUrl")
-        .post()
+        .POST()
         .asVoid();
 
       fail();
@@ -183,7 +183,7 @@ class HelloControllerTest extends BaseWebTest {
         .path("hello/saveform")
         .formParam("email", "user@foo.com")
         .formParam("url", "notAValidUrl")
-        .post().asVoid();
+        .POST().asVoid();
 
       fail();
 
@@ -212,7 +212,8 @@ class HelloControllerTest extends BaseWebTest {
     final HttpResponse<Void> res =
       clientContext.request()
         .path("hello/52")
-        .delete().asDiscarding();
+        .DELETE()
+        .asDiscarding();
 
     assertThat(res.statusCode()).isEqualTo(204);
   }
@@ -226,7 +227,8 @@ class HelloControllerTest extends BaseWebTest {
       .matrixParam("country", "nz")
       .path("foo")
       .queryParam("extra", "banana")
-      .get().asString();
+      .GET()
+      .asString();
 
     assertEquals(200, httpRes.statusCode());
     assertEquals("yr:2011 au:rob co:nz other:foo extra:banana", httpRes.body());

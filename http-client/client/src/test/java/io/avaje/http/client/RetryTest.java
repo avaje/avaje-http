@@ -25,7 +25,7 @@ public class RetryTest extends BaseWebTest {
 
     HttpResponse<String> res = clientContext.request()
       .path("hello/retry")
-      .get()
+      .GET()
       .asString();
 
     assertThat(res.body()).isEqualTo("All good at 3rd attempt");

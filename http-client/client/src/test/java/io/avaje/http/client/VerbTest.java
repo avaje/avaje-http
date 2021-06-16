@@ -23,7 +23,7 @@ public class VerbTest extends BaseWebTest {
 
     HttpResponse<String> res2 = clientContext.request()
       .path("post")
-      .post()
+      .POST()
       .asString();
 
     assertThat(res2.body()).isEqualTo("post");
@@ -41,7 +41,7 @@ public class VerbTest extends BaseWebTest {
 
     HttpResponse<String> res2 = clientContext.request()
       .path("put")
-      .put()
+      .PUT()
       .asString();
 
     assertThat(res2.body()).isEqualTo("put");

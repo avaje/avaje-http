@@ -63,7 +63,7 @@ class UrlBuilderTest {
 
   @Test
   void param() {
-    assertThat(foo().queryParam("bar", (String) null).build()).isEqualTo("https://foo");
+    assertThat(foo().queryParam("bar", null).build()).isEqualTo("https://foo");
     assertThat(foo().queryParam("bar", "a").build()).isEqualTo("https://foo?bar=a");
     assertThat(foo().queryParam("bar", "a").queryParam("baz", "b").build()).isEqualTo("https://foo?bar=a&baz=b");
   }
@@ -75,7 +75,7 @@ class UrlBuilderTest {
 
   @Test
   void queryParam_when_null() {
-    assertThat(foo().queryParam("bar", (String) null).build()).isEqualTo("https://foo");
+    assertThat(foo().queryParam("bar", null).build()).isEqualTo("https://foo");
     assertThat(foo().queryParam("bar", (Boolean) null).build()).isEqualTo("https://foo");
     assertThat(foo().queryParam("bar", (Integer) null).build()).isEqualTo("https://foo");
     assertThat(foo().queryParam("bar", (Long) null).build()).isEqualTo("https://foo");
