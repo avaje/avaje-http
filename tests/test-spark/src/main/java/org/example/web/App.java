@@ -1,7 +1,6 @@
 package org.example.web;
 
 import io.avaje.http.api.WebRoutes;
-import io.avaje.inject.SystemContext;
 import spark.Spark;
 
 public class App {
@@ -17,7 +16,7 @@ public class App {
       return "hello";
     });
 
-    SystemContext.getBeans(WebRoutes.class)
+    ApplicationScope.list(WebRoutes.class)
       .forEach(WebRoutes::registerRoutes);
   }
 }

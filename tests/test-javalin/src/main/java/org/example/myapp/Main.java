@@ -4,7 +4,7 @@ import io.avaje.http.api.InvalidPathArgumentException;
 import io.avaje.http.api.InvalidTypeArgumentException;
 import io.avaje.http.api.ValidationException;
 import io.avaje.http.api.WebRoutes;
-import io.avaje.inject.SystemContext;
+import io.avaje.inject.ApplicationScope;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -71,7 +71,7 @@ public class Main {
     });
 
     // All WebRoutes / Controllers ... from DI Context
-    List<WebRoutes> webRoutes = SystemContext.getBeans(WebRoutes.class);
+    List<WebRoutes> webRoutes = ApplicationScope.list(WebRoutes.class);
     app.routes(() -> webRoutes.forEach(WebRoutes::registerRoutes));
 
     app.start(port);

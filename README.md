@@ -55,7 +55,7 @@ get all the WebRoutes and register them with Javalin using.
 fun main(args: Array<String>) {
 
   // get all the webRoutes
-  val webRoutes = SystemContext.getBeans(WebRoutes::class.java)
+  val webRoutes = ApplicationScope.list(WebRoutes::class.java)
 
   val javalin = Javalin.create()
 

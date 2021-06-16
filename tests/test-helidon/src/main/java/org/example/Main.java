@@ -1,6 +1,6 @@
 package org.example;
 
-import io.avaje.inject.SystemContext;
+import io.avaje.inject.ApplicationScope;
 import io.helidon.health.HealthSupport;
 import io.helidon.media.jackson.JacksonSupport;
 import io.helidon.metrics.MetricsSupport;
@@ -58,7 +58,7 @@ public class Main {
       .register(MetricsSupport.create())
       .register("/greet", new GreetService());
 
-    SystemContext.getBeans(Service.class).forEach(builder::register);
+    ApplicationScope.list(Service.class).forEach(builder::register);
 
     return builder.build();
   }
