@@ -93,9 +93,9 @@ public class JacksonBodyAdapter implements BodyAdapter {
     }
 
     @Override
-    public T read(BodyContent s) {
+    public T read(BodyContent bodyContent) {
       try {
-        return reader.readValue(s.content());
+        return reader.readValue(bodyContent.content());
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

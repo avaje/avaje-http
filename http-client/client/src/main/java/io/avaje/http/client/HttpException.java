@@ -43,7 +43,7 @@ import java.nio.charset.StandardCharsets;
 public class HttpException extends RuntimeException {
 
   private final int statusCode;
-  private HttpClientContext context;
+  private DHttpClientContext context;
   private HttpResponse<?> httpResponse;
 
   /**
@@ -70,14 +70,14 @@ public class HttpException extends RuntimeException {
     this.statusCode = statusCode;
   }
 
-  HttpException(HttpResponse<?> httpResponse, HttpClientContext context) {
+  HttpException(HttpResponse<?> httpResponse, DHttpClientContext context) {
     super();
     this.httpResponse = httpResponse;
     this.statusCode = httpResponse.statusCode();
     this.context = context;
   }
 
-  HttpException(HttpClientContext context, HttpResponse<byte[]> httpResponse) {
+  HttpException(DHttpClientContext context, HttpResponse<byte[]> httpResponse) {
     super();
     this.httpResponse = httpResponse;
     this.statusCode = httpResponse.statusCode();
@@ -93,7 +93,7 @@ public class HttpException extends RuntimeException {
   @SuppressWarnings("unchecked")
   public <T> T bean(Class<T> cls) {
     final BodyContent body = context.readContent((HttpResponse<byte[]>) httpResponse);
-    return context.converters().beanReader(cls).read(body);
+    return context.readBean(cls, body);
   }
 
   /**
