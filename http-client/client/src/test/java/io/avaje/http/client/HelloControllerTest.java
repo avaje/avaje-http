@@ -105,6 +105,27 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void async_list() throws ExecutionException, InterruptedException {
+
+    AtomicReference<List<HelloDto>> ref = new AtomicReference<>();
+
+    final CompletableFuture<List<HelloDto>> future = clientContext.request()
+      .path("hello")
+      .GET().async()
+      .list(HelloDto.class);
+
+    future.whenComplete((helloDtos, throwable) -> {
+      assertThat(throwable).isNull();
+      assertThat(helloDtos).hasSize(2);
+      ref.set(helloDtos);
+    });
+
+    final List<HelloDto> helloDtos = future.get();
+    assertThat(helloDtos).hasSize(2);
+    assertThat(helloDtos).isSameAs(ref.get());
+  }
+
+  @Test
   void get_withPathParamAndQueryParam_returningBean() {
 
     final HelloDto dto = clientContext.request()

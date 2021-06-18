@@ -1,6 +1,7 @@
 package io.avaje.http.client;
 
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -81,11 +82,37 @@ public interface HttpAsyncResponse {
    *           // use helloDto
    *           ...
    *         }
-   *
    *       });
-   *
-   *
    * }</pre>
    */
   <E> CompletableFuture<E> bean(Class<E> type);
+
+  /**
+   * Process expecting a list of beans response body (typically from json content).
+   * <p>
+   * If the HTTP statusCode is 300 or above a HttpException is throw which
+   * contains the HttpResponse.
+   *
+   * <pre>{@code
+   *
+   *    clientContext.request()
+   *       ...
+   *       .GET().async()
+   *       .list(HelloDto.class)
+   *       .whenComplete((helloDtos, throwable) -> {
+   *
+   *         if (throwable != null) {
+   *           HttpException httpException = (HttpException) throwable.getCause();
+   *           int statusCode = httpException.getStatusCode();
+   *           ...
+   *
+   *         } else {
+   *           // use list of helloDto
+   *           ...
+   *         }
+   *       });
+   * }</pre>
+   */
+  <E> CompletableFuture<List<E>> list(Class<E> type);
+
 }
