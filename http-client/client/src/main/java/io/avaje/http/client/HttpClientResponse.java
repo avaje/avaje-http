@@ -13,6 +13,11 @@ import java.util.stream.Stream;
 public interface HttpClientResponse {
 
   /**
+   * Send the request async using CompletableFuture.
+   */
+  HttpAsyncResponse async();
+
+  /**
    * Returning the response using the given response reader.
    *
    * @param reader The response reader.

@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -49,6 +50,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private boolean loggableResponseBody;
   private boolean skipAuthToken;
   private boolean suppressLogging;
+  private long startAsyncNanos;
 
   DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
     this.context = context;
@@ -277,6 +279,11 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpAsyncResponse async() {
+    return new DHttpAsync(this);
+  }
+
+  @Override
   public HttpClientResponse HEAD() {
     httpRequest = newHead(url.build());
     return this;
@@ -376,6 +383,21 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     } finally {
       requestTimeNanos = System.nanoTime() - startNanos;
     }
+  }
+
+  protected <T> CompletableFuture<HttpResponse<T>> performSendAsync(boolean loggable, HttpResponse.BodyHandler<T> responseHandler) {
+    loggableResponseBody = loggable;
+    context.beforeRequest(this);
+    addHeaders();
+    startAsyncNanos = System.nanoTime();
+    return context.sendAsync(httpRequest, responseHandler);
+  }
+
+  public <E> HttpResponse<E> afterAsync(HttpResponse<E> response) {
+    requestTimeNanos = System.nanoTime() - startAsyncNanos;
+    httpResponse = response;
+    context.afterResponse(this);
+    return response;
   }
 
   @Override
@@ -511,13 +533,9 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
         return "<suppressed response body>";
       }
       if (encodedResponseBody != null) {
-        return new String(encodedResponseBody.content(), StandardCharsets.UTF_8);
+        return context.maxResponseBody(new String(encodedResponseBody.content(), StandardCharsets.UTF_8));
       } else if (httpResponse != null && loggableResponseBody) {
-        String strBody = httpResponse.body().toString();
-        if (strBody.length() > 1_000) {
-          return strBody.substring(0, 1_000) + "...";
-        }
-        return strBody;
+        return context.maxResponseBody(httpResponse.body().toString());
       }
       return null;
     }

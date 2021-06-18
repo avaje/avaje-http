@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,6 +43,31 @@ class HelloControllerTest extends BaseWebTest {
       .GET().asString();
 
     assertThat(hres.body()).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void async_get_asString() throws ExecutionException, InterruptedException {
+
+    final CompletableFuture<HttpResponse<String>> future = clientContext.request()
+      .path("hello").path("message")
+      .GET()
+      .async().asString();
+
+    final HttpResponse<String> hres = future.get();
+    assertThat(hres.body()).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void async_get_asDiscarding() throws ExecutionException, InterruptedException {
+
+    final CompletableFuture<HttpResponse<Void>> future = clientContext.request()
+      .path("hello").path("message")
+      .GET()
+      .async().asDiscarding();
+
+    final HttpResponse<Void> hres = future.get();
     assertThat(hres.statusCode()).isEqualTo(200);
   }
 
