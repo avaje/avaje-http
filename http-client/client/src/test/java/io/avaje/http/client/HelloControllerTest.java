@@ -8,7 +8,10 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -104,6 +107,108 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(dto.id).isEqualTo(43L);
     assertThat(dto.name).isEqualTo("2020-03-05");
     assertThat(dto.otherParam).isEqualTo("other");
+  }
+
+  @Test
+  void async_whenComplete_returningBean() throws ExecutionException, InterruptedException {
+
+    final AtomicInteger counter = new AtomicInteger();
+    final AtomicReference<HelloDto> ref = new AtomicReference<>();
+
+    final CompletableFuture<HelloDto> future = clientContext.request()
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
+      .GET()
+      .async().bean(HelloDto.class);
+
+    future.whenComplete((dto, throwable) -> {
+      counter.incrementAndGet();
+      ref.set(dto);
+
+      assertThat(throwable).isNull();
+      assertThat(dto.id).isEqualTo(43L);
+      assertThat(dto.name).isEqualTo("2020-03-05");
+      assertThat(dto.otherParam).isEqualTo("other");
+    });
+
+    // wait ...
+    final HelloDto dto = future.get();
+    assertThat(counter.incrementAndGet()).isEqualTo(2);
+    assertThat(dto).isSameAs(ref.get());
+
+    assertThat(dto.id).isEqualTo(43L);
+    assertThat(dto.name).isEqualTo("2020-03-05");
+    assertThat(dto.otherParam).isEqualTo("other");
+  }
+
+  @Test
+  void async_whenComplete_throwingHttpException() {
+
+    AtomicReference<HttpException> causeRef = new AtomicReference<>();
+
+    final CompletableFuture<HelloDto> future = clientContext.request()
+      .path("hello/saveform3")
+      .formParam("name", "Bax")
+      .formParam("email", "notValidEmail")
+      .formParam("url", "notValidUrl")
+      .formParam("startDate", "2030-12-03")
+      .POST()
+      .async()
+      .bean(HelloDto.class)
+      .whenComplete((helloDto, throwable) -> {
+        // we get a throwable
+        assertThat(throwable.getCause()).isInstanceOf(HttpException.class);
+        assertThat(helloDto).isNull();
+
+        final HttpException httpException = (HttpException) throwable.getCause();
+        causeRef.set(httpException);
+        assertThat(httpException.getStatusCode()).isEqualTo(422);
+
+        // convert json error response body to a bean
+        final ErrorResponse errorResponse = httpException.bean(ErrorResponse.class);
+
+        final Map<String, String> errorMap = errorResponse.getErrors();
+        assertThat(errorMap.get("url")).isEqualTo("must be a valid URL");
+        assertThat(errorMap.get("email")).isEqualTo("must be a well-formed email address");
+      });
+
+    try {
+      future.join();
+    } catch (CompletionException e) {
+      assertThat(e.getCause()).isSameAs(causeRef.get());
+    }
+  }
+
+  @Test
+  void async_exceptionally_style() {
+
+    AtomicReference<HttpException> causeRef = new AtomicReference<>();
+
+    final CompletableFuture<HelloDto> future = clientContext.request()
+      .path("hello/saveform3")
+      .formParam("name", "Bax")
+      .formParam("email", "notValidEmail")
+      .formParam("url", "notValidUrl")
+      .formParam("startDate", "2030-12-03")
+      .POST()
+      .async()
+      .bean(HelloDto.class);
+
+    future.exceptionally(throwable -> {
+        final HttpException httpException = (HttpException) throwable.getCause();
+        causeRef.set(httpException);
+        assertThat(httpException.getStatusCode()).isEqualTo(422);
+
+        return new HelloDto(0, "ErrorResponse", "");
+
+    }).thenAccept(helloDto -> {
+      assertThat(helloDto.name).isEqualTo("ErrorResponse");
+    });
+
+    try {
+      future.join();
+    } catch (CompletionException e) {
+      assertThat(e.getCause()).isSameAs(causeRef.get());
+    }
   }
 
   @Test

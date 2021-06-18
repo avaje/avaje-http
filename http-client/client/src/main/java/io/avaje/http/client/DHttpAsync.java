@@ -25,4 +25,10 @@ class DHttpAsync implements HttpAsyncResponse {
       .thenApply(request::afterAsync);
   }
 
+  @Override
+  public <E> CompletableFuture<E> bean(Class<E> type) {
+    return request
+      .performSendAsync(true, HttpResponse.BodyHandlers.ofByteArray())
+      .thenApply(httpResponse -> request.asyncBean(type, httpResponse));
+  }
 }

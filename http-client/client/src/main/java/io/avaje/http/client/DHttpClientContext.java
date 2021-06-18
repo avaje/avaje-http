@@ -100,7 +100,7 @@ class DHttpClientContext implements HttpClientContext {
     }
   }
 
-  void check(HttpResponse<byte[]> response) {
+  void checkMaybeThrow(HttpResponse<byte[]> response) {
     if (response.statusCode() >= 300) {
       throw new HttpException(this, response);
     }

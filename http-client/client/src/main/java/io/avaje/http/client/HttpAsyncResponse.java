@@ -18,4 +18,37 @@ public interface HttpAsyncResponse {
    */
   CompletableFuture<HttpResponse<String>> asString();
 
+  /**
+   * Process expecting a (json) bean response body.
+   * <p>
+   * If the HTTP statusCode is 300 or above a HttpException is throw which
+   * contains the HttpResponse.
+   *
+   * <pre>{@code
+   *
+   *    clientContext.request()
+   *       ...
+   *       .POST().async()
+   *       .bean(HelloDto.class)
+   *       .whenComplete((helloDto, throwable) -> {
+   *
+   *         if (throwable != null) {
+   *           HttpException httpException = (HttpException) throwable.getCause();
+   *           int statusCode = httpException.getStatusCode();
+   *
+   *           // maybe convert json error response body to a bean (using Jackson/Gson)
+   *           MyErrorBean errorResponse = httpException.bean(MyErrorBean.class);
+   *           ..
+   *
+   *         } else {
+   *           // use helloDto
+   *           ...
+   *         }
+   *
+   *       });
+   *
+   *
+   * }</pre>
+   */
+  <E> CompletableFuture<E> bean(Class<E> type);
 }

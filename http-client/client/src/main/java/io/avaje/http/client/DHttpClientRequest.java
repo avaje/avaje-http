@@ -327,7 +327,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private void readResponseContent() {
     final HttpResponse<byte[]> response = asByteArray();
     this.httpResponse = response;
-    context.check(response);
+    context.checkMaybeThrow(response);
     encodedResponseBody = context.readContent(response);
   }
 
@@ -391,6 +391,15 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     addHeaders();
     startAsyncNanos = System.nanoTime();
     return context.sendAsync(httpRequest, responseHandler);
+  }
+
+  protected <E> E asyncBean(Class<E> type, HttpResponse<byte[]> response) {
+    requestTimeNanos = System.nanoTime() - startAsyncNanos;
+    httpResponse = response;
+    encodedResponseBody = context.readContent(response);
+    context.afterResponse(this);
+    context.checkMaybeThrow(response);
+    return context.readBean(type, encodedResponseBody);
   }
 
   public <E> HttpResponse<E> afterAsync(HttpResponse<E> response) {
