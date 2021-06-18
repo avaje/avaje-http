@@ -43,7 +43,8 @@ From HttpClientContext:
  - Optionally set headers(), cookies() etc
  - Optionally specify a request body (JSON, form, or raw BodyPublisher)
  - Http verbs - GET(), POST(), PUT(), PATCH(), DELETE(), HEAD(), TRACE()
- - Optionally return response body as a bean, list of beans, or raw
+ - Optionally return response body as a bean, list of beans, stream of beans or various raw response types
+ - Optionally use Async processing of the request
 
 ## Examples
 
@@ -149,7 +150,7 @@ assertThat(res.statusCode()).isEqualTo(201);
 
 ## Async processing
 
-### .async().asDiscarding() - HttpResponse<Void>
+### .async().asDiscarding() - HttpResponse&lt;Void&gt;
 
 ```java
 
@@ -169,7 +170,7 @@ clientContext.request()
 
 ```
 
-###  .async().asString() - HttpResponse<String>
+###  .async().asString() - HttpResponse&lt;String&gt;
 
 ```java
 clientContext.request()
