@@ -357,7 +357,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public <T> Stream<T> stream(Class<T> cls) {
-    final HttpResponse<Stream<String>> res = withResponseHandler(HttpResponse.BodyHandlers.ofLines());
+    final HttpResponse<Stream<String>> res = withHandler(HttpResponse.BodyHandlers.ofLines());
     this.httpResponse = res;
     if (res.statusCode() >= 300) {
       throw new HttpException(res, context);
@@ -367,7 +367,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public <T> HttpResponse<T> withResponseHandler(HttpResponse.BodyHandler<T> responseHandler) {
+  public <T> HttpResponse<T> withHandler(HttpResponse.BodyHandler<T> responseHandler) {
     context.beforeRequest(this);
     addHeaders();
     HttpResponse<T> response = performSend(responseHandler);
@@ -420,33 +420,33 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public HttpResponse<byte[]> asByteArray() {
-    return withResponseHandler(HttpResponse.BodyHandlers.ofByteArray());
+    return withHandler(HttpResponse.BodyHandlers.ofByteArray());
   }
 
   @Override
   public HttpResponse<String> asString() {
     loggableResponseBody = true;
-    return withResponseHandler(HttpResponse.BodyHandlers.ofString());
+    return withHandler(HttpResponse.BodyHandlers.ofString());
   }
 
   @Override
   public HttpResponse<Void> asDiscarding() {
-    return withResponseHandler(discarding());
+    return withHandler(discarding());
   }
 
   @Override
   public HttpResponse<InputStream> asInputStream() {
-    return withResponseHandler(HttpResponse.BodyHandlers.ofInputStream());
+    return withHandler(HttpResponse.BodyHandlers.ofInputStream());
   }
 
   @Override
   public HttpResponse<Path> asFile(Path file) {
-    return withResponseHandler(HttpResponse.BodyHandlers.ofFile(file));
+    return withHandler(HttpResponse.BodyHandlers.ofFile(file));
   }
 
   @Override
   public HttpResponse<Stream<String>> asLines() {
-    return withResponseHandler(HttpResponse.BodyHandlers.ofLines());
+    return withHandler(HttpResponse.BodyHandlers.ofLines());
   }
 
   private HttpRequest.Builder newReq(String url) {
@@ -564,7 +564,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
     private final HttpResponse<?> orig;
 
-    @SuppressWarnings({"unchecked", "raw"})
+    @SuppressWarnings({"raw"})
     HttpVoidResponse(HttpResponse<?> orig) {
       this.orig = orig;
     }

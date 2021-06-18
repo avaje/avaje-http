@@ -108,6 +108,14 @@ public interface HttpClientResponse {
   /**
    * Return the response using the given response body handler.
    */
-  <T> HttpResponse<T> withResponseHandler(HttpResponse.BodyHandler<T> responseHandler);
+  <T> HttpResponse<T> withHandler(HttpResponse.BodyHandler<T> responseHandler);
+
+  /**
+   * Deprecated migrate to {@link #withHandler(HttpResponse.BodyHandler)}
+   */
+  @Deprecated
+  default <T> HttpResponse<T> withResponseHandler(HttpResponse.BodyHandler<T> responseHandler) {
+    return withHandler(responseHandler);
+  }
 
 }
