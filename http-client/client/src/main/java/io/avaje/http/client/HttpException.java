@@ -8,7 +8,37 @@ import java.nio.charset.StandardCharsets;
  * <p>
  * Wraps an underlying HttpResponse with helper methods to get the response body
  * as string or as a bean.
- * </p>
+ *
+ * <h3>Example catching HttpException</h3>
+ * <pre>{@code
+ *
+ *   try {
+ *       clientContext.request()
+ *         .path("hello/saveForm")
+ *         .formParam("email", "user@foo.com")
+ *         .formParam("url", "notAValidUrl")
+ *         .POST()
+ *         .asVoid();
+ *
+ *     } catch (HttpException e) {
+ *
+ *       // obtain the statusCode from the exception ...
+ *       int statusCode = e.getStatusCode());
+ *
+ *       HttpResponse<?> httpResponse = e.getHttpResponse();
+ *
+ *       // obtain the statusCode from httpResponse ...
+ *       int statusCode = httpResponse.statusCode();
+ *
+ *       // convert error response body into a bean (typically Jackson/Gson)
+ *       final MyErrorBean errorResponse = e.bean(MyErrorBean.class);
+ *
+ *       final Map<String, String> errorMap = errorResponse.getErrors();
+ *       assertThat(errorMap.get("url")).isEqualTo("must be a valid URL");
+ *       assertThat(errorMap.get("name")).isEqualTo("must not be null");
+ *     }
+ *
+ * }</pre>
  */
 public class HttpException extends RuntimeException {
 
