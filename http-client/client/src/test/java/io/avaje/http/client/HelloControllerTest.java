@@ -52,12 +52,20 @@ class HelloControllerTest extends BaseWebTest {
   @Test
   void async_get_asString() throws ExecutionException, InterruptedException {
 
+    AtomicReference<HttpResponse<String>> ref = new AtomicReference<>();
+
     final CompletableFuture<HttpResponse<String>> future = clientContext.request()
       .path("hello").path("message")
       .GET()
-      .async().asString();
+      .async().asString()
+      .whenComplete((hres, throwable) -> {
+        ref.set(hres);
+        assertThat(hres.statusCode()).isEqualTo(200);
+        assertThat(hres.body()).contains("hello world");
+      });
 
     final HttpResponse<String> hres = future.get();
+    assertThat(hres).isSameAs(ref.get());
     assertThat(hres.body()).contains("hello world");
     assertThat(hres.statusCode()).isEqualTo(200);
   }

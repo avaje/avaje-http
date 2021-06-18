@@ -10,16 +10,53 @@ public interface HttpAsyncResponse {
 
   /**
    * Process discarding response body as {@literal HttpResponse<Void>}.
+   *
+   * <pre>{@code
+   *
+   *   clientContext.request()
+   *       .path("hello/world")
+   *       .GET()
+   *       .async().asDiscarding()
+   *       .whenComplete((hres, throwable) -> {
+   *
+   *         if (throwable != null) {
+   *           ...
+   *         } else {
+   *           int statusCode = hres.statusCode();
+   *           ...
+   *         }
+   *       });
+   *
+   * }</pre>
    */
   CompletableFuture<HttpResponse<Void>> asDiscarding();
 
   /**
    * Process as String response body {@literal HttpResponse<String>}.
+   *
+   * <pre>{@code
+   *
+   *   clientContext.request()
+   *       .path("hello/world")
+   *       .GET()
+   *       .async().asString()
+   *       .whenComplete((hres, throwable) -> {
+   *
+   *         if (throwable != null) {
+   *           ...
+   *         } else {
+   *           int statusCode = hres.statusCode();
+   *           String body = hres.body();
+   *           ...
+   *         }
+   *       });
+   *
+   * }</pre>
    */
   CompletableFuture<HttpResponse<String>> asString();
 
   /**
-   * Process expecting a (json) bean response body.
+   * Process expecting a bean response body (typically from json content).
    * <p>
    * If the HTTP statusCode is 300 or above a HttpException is throw which
    * contains the HttpResponse.
