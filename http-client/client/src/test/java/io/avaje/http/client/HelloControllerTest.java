@@ -5,8 +5,15 @@ import org.example.webserver.HelloDto;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Flow;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,6 +41,55 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void async_stream() throws ExecutionException, InterruptedException {
+
+    AtomicReference<HttpResponse<Void>> hresRef = new AtomicReference<>();
+    AtomicReference<Throwable> errRef = new AtomicReference<>();
+    AtomicReference<Boolean> completeRef = new AtomicReference<>();
+    AtomicReference<Boolean> onSubscribeRef = new AtomicReference<>();
+
+    final List<String> lines = new ArrayList<>();
+
+    final CompletableFuture<HttpResponse<Void>> future = clientContext.request()
+      .path("hello/stream")
+      .GET()
+      .async().withHandler(HttpResponse.BodyHandlers.fromLineSubscriber(new Flow.Subscriber<>() {
+        @Override
+        public void onSubscribe(Flow.Subscription subscription) {
+          subscription.request(Long.MAX_VALUE);
+          onSubscribeRef.set(true);
+        }
+        @Override
+        public void onNext(String item) {
+          lines.add(item);
+        }
+        @Override
+        public void onError(Throwable throwable) {
+          errRef.set(throwable);
+        }
+        @Override
+        public void onComplete() {
+          completeRef.set(true);
+        }
+      })).whenComplete((hres, throwable) -> {
+        hresRef.set(hres);
+        assertThat(hres.statusCode()).isEqualTo(200);
+        assertThat(throwable).isNull();
+      });
+
+    // just wait
+    assertThat(future.get()).isSameAs(hresRef.get());
+
+    assertThat(onSubscribeRef.get()).isTrue();
+    assertThat(completeRef.get()).isTrue();
+    assertThat(errRef.get()).isNull();
+    assertThat(lines).hasSize(4);
+
+    final String first = lines.get(0);
+    assertThat(first).isEqualTo("{\"id\":1, \"name\":\"one\"}");
+  }
+
+  @Test
   void get_helloMessage() {
 
     final HttpResponse<String> hres = clientContext.request()
@@ -41,6 +97,39 @@ class HelloControllerTest extends BaseWebTest {
       .GET().asString();
 
     assertThat(hres.body()).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void async_get_asString() throws ExecutionException, InterruptedException {
+
+    AtomicReference<HttpResponse<String>> ref = new AtomicReference<>();
+
+    final CompletableFuture<HttpResponse<String>> future = clientContext.request()
+      .path("hello").path("message")
+      .GET()
+      .async().asString()
+      .whenComplete((hres, throwable) -> {
+        ref.set(hres);
+        assertThat(hres.statusCode()).isEqualTo(200);
+        assertThat(hres.body()).contains("hello world");
+      });
+
+    final HttpResponse<String> hres = future.get();
+    assertThat(hres).isSameAs(ref.get());
+    assertThat(hres.body()).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void async_get_asDiscarding() throws ExecutionException, InterruptedException {
+
+    final CompletableFuture<HttpResponse<Void>> future = clientContext.request()
+      .path("hello").path("message")
+      .GET()
+      .async().asDiscarding();
+
+    final HttpResponse<Void> hres = future.get();
     assertThat(hres.statusCode()).isEqualTo(200);
   }
 
@@ -67,6 +156,27 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void async_list() throws ExecutionException, InterruptedException {
+
+    AtomicReference<List<HelloDto>> ref = new AtomicReference<>();
+
+    final CompletableFuture<List<HelloDto>> future = clientContext.request()
+      .path("hello")
+      .GET().async()
+      .list(HelloDto.class);
+
+    future.whenComplete((helloDtos, throwable) -> {
+      assertThat(throwable).isNull();
+      assertThat(helloDtos).hasSize(2);
+      ref.set(helloDtos);
+    });
+
+    final List<HelloDto> helloDtos = future.get();
+    assertThat(helloDtos).hasSize(2);
+    assertThat(helloDtos).isSameAs(ref.get());
+  }
+
+  @Test
   void get_withPathParamAndQueryParam_returningBean() {
 
     final HelloDto dto = clientContext.request()
@@ -77,6 +187,108 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(dto.id).isEqualTo(43L);
     assertThat(dto.name).isEqualTo("2020-03-05");
     assertThat(dto.otherParam).isEqualTo("other");
+  }
+
+  @Test
+  void async_whenComplete_returningBean() throws ExecutionException, InterruptedException {
+
+    final AtomicInteger counter = new AtomicInteger();
+    final AtomicReference<HelloDto> ref = new AtomicReference<>();
+
+    final CompletableFuture<HelloDto> future = clientContext.request()
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
+      .GET()
+      .async().bean(HelloDto.class);
+
+    future.whenComplete((dto, throwable) -> {
+      counter.incrementAndGet();
+      ref.set(dto);
+
+      assertThat(throwable).isNull();
+      assertThat(dto.id).isEqualTo(43L);
+      assertThat(dto.name).isEqualTo("2020-03-05");
+      assertThat(dto.otherParam).isEqualTo("other");
+    });
+
+    // wait ...
+    final HelloDto dto = future.get();
+    assertThat(counter.incrementAndGet()).isEqualTo(2);
+    assertThat(dto).isSameAs(ref.get());
+
+    assertThat(dto.id).isEqualTo(43L);
+    assertThat(dto.name).isEqualTo("2020-03-05");
+    assertThat(dto.otherParam).isEqualTo("other");
+  }
+
+  @Test
+  void async_whenComplete_throwingHttpException() {
+
+    AtomicReference<HttpException> causeRef = new AtomicReference<>();
+
+    final CompletableFuture<HelloDto> future = clientContext.request()
+      .path("hello/saveform3")
+      .formParam("name", "Bax")
+      .formParam("email", "notValidEmail")
+      .formParam("url", "notValidUrl")
+      .formParam("startDate", "2030-12-03")
+      .POST()
+      .async()
+      .bean(HelloDto.class)
+      .whenComplete((helloDto, throwable) -> {
+        // we get a throwable
+        assertThat(throwable.getCause()).isInstanceOf(HttpException.class);
+        assertThat(helloDto).isNull();
+
+        final HttpException httpException = (HttpException) throwable.getCause();
+        causeRef.set(httpException);
+        assertThat(httpException.getStatusCode()).isEqualTo(422);
+
+        // convert json error response body to a bean
+        final ErrorResponse errorResponse = httpException.bean(ErrorResponse.class);
+
+        final Map<String, String> errorMap = errorResponse.getErrors();
+        assertThat(errorMap.get("url")).isEqualTo("must be a valid URL");
+        assertThat(errorMap.get("email")).isEqualTo("must be a well-formed email address");
+      });
+
+    try {
+      future.join();
+    } catch (CompletionException e) {
+      assertThat(e.getCause()).isSameAs(causeRef.get());
+    }
+  }
+
+  @Test
+  void async_exceptionally_style() {
+
+    AtomicReference<HttpException> causeRef = new AtomicReference<>();
+
+    final CompletableFuture<HelloDto> future = clientContext.request()
+      .path("hello/saveform3")
+      .formParam("name", "Bax")
+      .formParam("email", "notValidEmail")
+      .formParam("url", "notValidUrl")
+      .formParam("startDate", "2030-12-03")
+      .POST()
+      .async()
+      .bean(HelloDto.class);
+
+    future.exceptionally(throwable -> {
+        final HttpException httpException = (HttpException) throwable.getCause();
+        causeRef.set(httpException);
+        assertThat(httpException.getStatusCode()).isEqualTo(422);
+
+        return new HelloDto(0, "ErrorResponse", "");
+
+    }).thenAccept(helloDto -> {
+      assertThat(helloDto.name).isEqualTo("ErrorResponse");
+    });
+
+    try {
+      future.join();
+    } catch (CompletionException e) {
+      assertThat(e.getCause()).isSameAs(causeRef.get());
+    }
   }
 
   @Test

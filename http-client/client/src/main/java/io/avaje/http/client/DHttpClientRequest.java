@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -49,6 +50,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private boolean loggableResponseBody;
   private boolean skipAuthToken;
   private boolean suppressLogging;
+  private long startAsyncNanos;
 
   DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
     this.context = context;
@@ -277,6 +279,11 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpAsyncResponse async() {
+    return new DHttpAsync(this);
+  }
+
+  @Override
   public HttpClientResponse HEAD() {
     httpRequest = newHead(url.build());
     return this;
@@ -320,7 +327,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private void readResponseContent() {
     final HttpResponse<byte[]> response = asByteArray();
     this.httpResponse = response;
-    context.check(response);
+    context.checkMaybeThrow(response);
     encodedResponseBody = context.readContent(response);
   }
 
@@ -350,7 +357,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public <T> Stream<T> stream(Class<T> cls) {
-    final HttpResponse<Stream<String>> res = withResponseHandler(HttpResponse.BodyHandlers.ofLines());
+    final HttpResponse<Stream<String>> res = withHandler(HttpResponse.BodyHandlers.ofLines());
     this.httpResponse = res;
     if (res.statusCode() >= 300) {
       throw new HttpException(res, context);
@@ -360,7 +367,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public <T> HttpResponse<T> withResponseHandler(HttpResponse.BodyHandler<T> responseHandler) {
+  public <T> HttpResponse<T> withHandler(HttpResponse.BodyHandler<T> responseHandler) {
     context.beforeRequest(this);
     addHeaders();
     HttpResponse<T> response = performSend(responseHandler);
@@ -378,35 +385,68 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     }
   }
 
+  protected <T> CompletableFuture<HttpResponse<T>> performSendAsync(boolean loggable, HttpResponse.BodyHandler<T> responseHandler) {
+    loggableResponseBody = loggable;
+    context.beforeRequest(this);
+    addHeaders();
+    startAsyncNanos = System.nanoTime();
+    return context.sendAsync(httpRequest, responseHandler);
+  }
+
+  protected <E> E asyncBean(Class<E> type, HttpResponse<byte[]> response) {
+    afterAsyncEncoded(response);
+    return context.readBean(type, encodedResponseBody);
+  }
+
+  protected <E> List<E> asyncList(Class<E> type, HttpResponse<byte[]> response) {
+    afterAsyncEncoded(response);
+    return context.readList(type, encodedResponseBody);
+  }
+
+  private void afterAsyncEncoded(HttpResponse<byte[]> response) {
+    requestTimeNanos = System.nanoTime() - startAsyncNanos;
+    httpResponse = response;
+    encodedResponseBody = context.readContent(response);
+    context.afterResponse(this);
+    context.checkMaybeThrow(response);
+  }
+
+  protected <E> HttpResponse<E> afterAsync(HttpResponse<E> response) {
+    requestTimeNanos = System.nanoTime() - startAsyncNanos;
+    httpResponse = response;
+    context.afterResponse(this);
+    return response;
+  }
+
   @Override
   public HttpResponse<byte[]> asByteArray() {
-    return withResponseHandler(HttpResponse.BodyHandlers.ofByteArray());
+    return withHandler(HttpResponse.BodyHandlers.ofByteArray());
   }
 
   @Override
   public HttpResponse<String> asString() {
     loggableResponseBody = true;
-    return withResponseHandler(HttpResponse.BodyHandlers.ofString());
+    return withHandler(HttpResponse.BodyHandlers.ofString());
   }
 
   @Override
   public HttpResponse<Void> asDiscarding() {
-    return withResponseHandler(discarding());
+    return withHandler(discarding());
   }
 
   @Override
   public HttpResponse<InputStream> asInputStream() {
-    return withResponseHandler(HttpResponse.BodyHandlers.ofInputStream());
+    return withHandler(HttpResponse.BodyHandlers.ofInputStream());
   }
 
   @Override
   public HttpResponse<Path> asFile(Path file) {
-    return withResponseHandler(HttpResponse.BodyHandlers.ofFile(file));
+    return withHandler(HttpResponse.BodyHandlers.ofFile(file));
   }
 
   @Override
   public HttpResponse<Stream<String>> asLines() {
-    return withResponseHandler(HttpResponse.BodyHandlers.ofLines());
+    return withHandler(HttpResponse.BodyHandlers.ofLines());
   }
 
   private HttpRequest.Builder newReq(String url) {
@@ -511,13 +551,10 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
         return "<suppressed response body>";
       }
       if (encodedResponseBody != null) {
-        return new String(encodedResponseBody.content(), StandardCharsets.UTF_8);
+        return context.maxResponseBody(new String(encodedResponseBody.content(), StandardCharsets.UTF_8));
       } else if (httpResponse != null && loggableResponseBody) {
-        String strBody = httpResponse.body().toString();
-        if (strBody.length() > 1_000) {
-          return strBody.substring(0, 1_000) + "...";
-        }
-        return strBody;
+        final Object body = httpResponse.body();
+        return (body == null) ? null : context.maxResponseBody(body.toString());
       }
       return null;
     }
@@ -527,7 +564,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
     private final HttpResponse<?> orig;
 
-    @SuppressWarnings({"unchecked", "raw"})
+    @SuppressWarnings({"raw"})
     HttpVoidResponse(HttpResponse<?> orig) {
       this.orig = orig;
     }

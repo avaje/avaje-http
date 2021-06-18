@@ -9,6 +9,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 class DHttpClientContext implements HttpClientContext {
@@ -29,6 +30,7 @@ class DHttpClientContext implements HttpClientContext {
   private final boolean withAuthToken;
   private final AuthTokenProvider authTokenProvider;
   private final AtomicReference<AuthToken> tokenRef = new AtomicReference<>();
+  private int loggingMaxBody = 1_000;
 
   DHttpClientContext(HttpClient httpClient, String baseUrl, Duration requestTimeout, BodyAdapter bodyAdapter, RetryHandler retryHandler, RequestListener requestListener, AuthTokenProvider authTokenProvider, RequestIntercept intercept) {
     this.httpClient = httpClient;
@@ -98,7 +100,7 @@ class DHttpClientContext implements HttpClientContext {
     }
   }
 
-  void check(HttpResponse<byte[]> response) {
+  void checkMaybeThrow(HttpResponse<byte[]> response) {
     if (response.statusCode() >= 300) {
       throw new HttpException(this, response);
     }
@@ -155,6 +157,10 @@ class DHttpClientContext implements HttpClientContext {
     }
   }
 
+  <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest.Builder requestBuilder, HttpResponse.BodyHandler<T> bodyHandler) {
+    return httpClient.sendAsync(requestBuilder.build(), bodyHandler);
+  }
+
   BodyContent write(Object bean, String contentType) {
     return bodyAdapter.beanWriter(bean.getClass()).write(bean, contentType);
   }
@@ -198,4 +204,7 @@ class DHttpClientContext implements HttpClientContext {
     return authToken.token();
   }
 
+  String maxResponseBody(String body) {
+    return body.length() > loggingMaxBody ? body.substring(0, loggingMaxBody) + " <truncated> ..." : body;
+  }
 }
