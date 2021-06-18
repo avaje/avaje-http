@@ -147,6 +147,107 @@ assertThat(res.statusCode()).isEqualTo(201);
 
 ## Currently, NO support for POSTing multipart-form
 
+## Async processing
+
+### .async().asDiscarding() - HttpResponse<Void>
+
+```java
+
+clientContext.request()
+   .path("hello/world")
+   .GET()
+   .async().asDiscarding()
+   .whenComplete((hres, throwable) -> {
+
+     if (throwable != null) {
+       ...
+     } else {
+       int statusCode = hres.statusCode();
+       ...
+     }
+   });
+
+```
+
+###  .async().asString() - HttpResponse<String>
+
+```java
+clientContext.request()
+   .path("hello/world")
+   .GET()
+   .async().asString()
+   .whenComplete((hres, throwable) -> {
+
+     if (throwable != null) {
+       ...
+     } else {
+       int statusCode = hres.statusCode();
+       String body = hres.body();
+       ...
+     }
+   });
+```
+
+### .async().bean(HelloDto.class)
+
+```java
+clientContext.request()
+   ...
+   .POST().async()
+   .bean(HelloDto.class)
+   .whenComplete((helloDto, throwable) -> {
+
+     if (throwable != null) {
+       HttpException httpException = (HttpException) throwable.getCause();
+       int statusCode = httpException.getStatusCode();
+
+       // maybe convert json error response body to a bean (using Jackson/Gson)
+       MyErrorBean errorResponse = httpException.bean(MyErrorBean.class);
+       ..
+
+     } else {
+       // use helloDto
+       ...
+     }
+   });
+
+```
+
+### .async().withHandler(...) - Any response body handler
+
+The example below is a line subscriber processing response content line by line.
+
+```java
+CompletableFuture<HttpResponse<Void>> future = clientContext.request()
+   .path("hello/lineStream")
+   .GET().async()
+   .withHandler(HttpResponse.BodyHandlers.fromLineSubscriber(new Flow.Subscriber<>() {
+
+     @Override
+     public void onSubscribe(Flow.Subscription subscription) {
+       subscription.request(Long.MAX_VALUE);
+     }
+     @Override
+     public void onNext(String item) {
+       ...
+     }
+     @Override
+     public void onError(Throwable throwable) {
+       ...
+     }
+     @Override
+     public void onComplete() {
+       ...
+     }
+   }))
+   .whenComplete((hres, throwable) -> {
+     int statusCode = hres.statusCode();
+     ...
+   });
+
+```
+
+
 ## Auth token
 
 Built in support for obtaining and setting an Authorization token.
