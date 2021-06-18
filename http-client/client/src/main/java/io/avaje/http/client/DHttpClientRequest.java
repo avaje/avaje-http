@@ -553,7 +553,8 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
       if (encodedResponseBody != null) {
         return context.maxResponseBody(new String(encodedResponseBody.content(), StandardCharsets.UTF_8));
       } else if (httpResponse != null && loggableResponseBody) {
-        return context.maxResponseBody(httpResponse.body().toString());
+        final Object body = httpResponse.body();
+        return (body == null) ? null : context.maxResponseBody(body.toString());
       }
       return null;
     }

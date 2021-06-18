@@ -5,11 +5,13 @@ import org.example.webserver.HelloDto;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -36,6 +38,55 @@ class HelloControllerTest extends BaseWebTest {
     final SimpleData first = data.get(0);
     assertThat(first.id).isEqualTo(1);
     assertThat(first.name).isEqualTo("one");
+  }
+
+  @Test
+  void async_stream() throws ExecutionException, InterruptedException {
+
+    AtomicReference<HttpResponse<Void>> hresRef = new AtomicReference<>();
+    AtomicReference<Throwable> errRef = new AtomicReference<>();
+    AtomicReference<Boolean> completeRef = new AtomicReference<>();
+    AtomicReference<Boolean> onSubscribeRef = new AtomicReference<>();
+
+    final List<String> lines = new ArrayList<>();
+
+    final CompletableFuture<HttpResponse<Void>> future = clientContext.request()
+      .path("hello/stream")
+      .GET()
+      .async().withHandler(HttpResponse.BodyHandlers.fromLineSubscriber(new Flow.Subscriber<>() {
+        @Override
+        public void onSubscribe(Flow.Subscription subscription) {
+          subscription.request(Long.MAX_VALUE);
+          onSubscribeRef.set(true);
+        }
+        @Override
+        public void onNext(String item) {
+          lines.add(item);
+        }
+        @Override
+        public void onError(Throwable throwable) {
+          errRef.set(throwable);
+        }
+        @Override
+        public void onComplete() {
+          completeRef.set(true);
+        }
+      })).whenComplete((hres, throwable) -> {
+        hresRef.set(hres);
+        assertThat(hres.statusCode()).isEqualTo(200);
+        assertThat(throwable).isNull();
+      });
+
+    // just wait
+    assertThat(future.get()).isSameAs(hresRef.get());
+
+    assertThat(onSubscribeRef.get()).isTrue();
+    assertThat(completeRef.get()).isTrue();
+    assertThat(errRef.get()).isNull();
+    assertThat(lines).hasSize(4);
+
+    final String first = lines.get(0);
+    assertThat(first).isEqualTo("{\"id\":1, \"name\":\"one\"}");
   }
 
   @Test

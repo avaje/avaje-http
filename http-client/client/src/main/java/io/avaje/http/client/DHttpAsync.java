@@ -13,10 +13,15 @@ class DHttpAsync implements HttpAsyncResponse {
   }
 
   @Override
-  public CompletableFuture<HttpResponse<Void>> asDiscarding() {
+  public <E> CompletableFuture<HttpResponse<E>> withHandler(HttpResponse.BodyHandler<E>  handler) {
     return request
-      .performSendAsync(false, HttpResponse.BodyHandlers.discarding())
+      .performSendAsync(false, handler)
       .thenApply(request::afterAsync);
+  }
+
+  @Override
+  public CompletableFuture<HttpResponse<Void>> asDiscarding() {
+    return withHandler(HttpResponse.BodyHandlers.discarding());
   }
 
   @Override
