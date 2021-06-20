@@ -15,6 +15,12 @@ public class SimpleRetryHandler implements RetryHandler {
   private final int maxRetries;
   private final long backoffMillis;
 
+  /**
+   * Create with maximum number of retries and linear backoff time.
+   *
+   * @param maxRetries    The maximum number of retry attempts
+   * @param backoffMillis The linear backoff between attempts in milliseconds
+   */
   public SimpleRetryHandler(int maxRetries, long backoffMillis) {
     this.maxRetries = maxRetries;
     this.backoffMillis = backoffMillis;

@@ -19,7 +19,8 @@ import java.util.function.Supplier;
  *
  *  HelloDto dto = clientContext.request()
  *       .path("hello").queryParam("name", "Rob").queryParam("say", "Ki ora")
- *       .get().bean(HelloDto.class);
+ *       .GET()
+ *       .bean(HelloDto.class);
  *
  * }</pre>
  *
@@ -92,7 +93,8 @@ public interface HttpClientRequest {
    *  HttpResponse<String> res = clientContext.request()
    *       .url("http://127.0.0.1:8887")
    *       .path("hello")
-   *       .get().asString();
+   *       .GET()
+   *       .asString();
    *
    * }</pre>
    *

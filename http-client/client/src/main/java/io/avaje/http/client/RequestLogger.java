@@ -12,6 +12,10 @@ import java.util.Set;
 
 /**
  * Logs request and response details for debug logging purposes.
+ * <p>
+ * This implementation logs the request and response with the same
+ * single logging entry rather than separate logging of the request
+ * and response.
  */
 public class RequestLogger implements RequestListener {
 
@@ -19,10 +23,16 @@ public class RequestLogger implements RequestListener {
 
   private final String delimiter;
 
+  /**
+   * Create using the {@literal \n} new line character.
+   */
   public RequestLogger() {
     this("\n");
   }
 
+  /**
+   * Create with a given line delimiter.
+   */
   public RequestLogger(String delimiter) {
     this.delimiter = delimiter;
   }

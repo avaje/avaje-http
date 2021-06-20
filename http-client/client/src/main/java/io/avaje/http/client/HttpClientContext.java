@@ -13,6 +13,7 @@ import java.util.concurrent.Executor;
  *
  *   HttpClientContext ctx = HttpClientContext.newBuilder()
  *       .withBaseUrl("http://localhost:8080")
+ *       .withRequestListener(new RequestLogger())
  *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
  *       .build();
  *
@@ -20,7 +21,7 @@ import java.util.concurrent.Executor;
  *       .path("hello")
  *       .queryParam("name", "Rob")
  *       .queryParam("say", "Ki ora")
- *       .get()
+ *       .GET()
  *       .bean(HelloDto.class);
  *
  * }</pre>
@@ -34,12 +35,13 @@ public interface HttpClientContext {
    *
    *   HttpClientContext ctx = HttpClientContext.newBuilder()
    *       .withBaseUrl("http://localhost:8080")
+   *       .withRequestListener(new RequestLogger())
    *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
    *       .build();
    *
    *  HttpResponse<String> res = ctx.request()
    *       .path("hello")
-   *       .get().asString();
+   *       .GET().asString();
    *
    * }</pre>
    */
@@ -118,6 +120,7 @@ public interface HttpClientContext {
    *
    *   HttpClientContext ctx = HttpClientContext.newBuilder()
    *       .withBaseUrl("http://localhost:8080")
+   *       .withRequestListener(new RequestLogger())
    *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
    *       .build();
    *
@@ -125,7 +128,7 @@ public interface HttpClientContext {
    *       .path("hello")
    *       .queryParam("name", "Rob")
    *       .queryParam("say", "Ki ora")
-   *       .get()
+   *       .GET()
    *       .bean(HelloDto.class);
    *
    * }</pre>
@@ -227,13 +230,14 @@ public interface HttpClientContext {
      *
      *   HttpClientContext ctx = HttpClientContext.newBuilder()
      *       .withBaseUrl("http://localhost:8080")
+     *       .withRequestListener(new RequestLogger())
      *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
      *       .build();
      *
      *  HelloDto dto = ctx.request()
      *       .path("hello")
      *       .queryParam("say", "Ki ora")
-     *       .get()
+     *       .GET()
      *       .bean(HelloDto.class);
      *
      * }</pre>
