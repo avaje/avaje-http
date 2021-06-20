@@ -1,20 +1,15 @@
 package org.example.webserver;
 
-import io.avaje.http.api.Controller;
-import io.avaje.http.api.Delete;
-import io.avaje.http.api.Form;
-import io.avaje.http.api.Get;
-import io.avaje.http.api.MediaType;
-import io.avaje.http.api.Path;
-import io.avaje.http.api.Post;
-import io.avaje.http.api.Produces;
+import io.avaje.http.api.*;
 import io.javalin.http.Context;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -45,6 +40,15 @@ class HelloController {
     } else {
       throw new IllegalStateException("Barf");
     }
+  }
+
+  @Get
+  String basicAuth(@Header String authorization) {
+    final String[] split = authorization.split(" ");
+    if (split[0].equals("Basic")) {
+      return "decoded: " + new String(Base64.getDecoder().decode(split[1]), UTF_8);
+    }
+    return "NotExpected: " + authorization;
   }
 
   @Get("stream")

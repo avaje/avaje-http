@@ -36,6 +36,12 @@ public class HelloController$Route implements WebRoutes {
       ctx.contentType("text/plain").result(controller.retry());
     });
 
+    ApiBuilder.get("/hello/basicAuth", ctx -> {
+      ctx.status(200);
+      final String authorization = ctx.header("Authorization");
+      ctx.result(controller.basicAuth(authorization));
+    });
+
     ApiBuilder.get("/hello/stream", ctx -> {
       ctx.status(200);
       controller.stream(ctx);

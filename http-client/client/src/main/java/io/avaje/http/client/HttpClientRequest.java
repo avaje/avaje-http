@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.http.HttpRequest;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -68,6 +69,13 @@ public interface HttpClientRequest {
    * @return The request being built
    */
   HttpClientRequest header(String name, Object value);
+
+  /**
+   * Return the header values that have been set for the given header name.
+   *
+   * @return The headers values or an empty collection if the header has not been specified yet.
+   */
+  List<String> header(String name);
 
   /**
    * Set if body content should be gzip encoded.

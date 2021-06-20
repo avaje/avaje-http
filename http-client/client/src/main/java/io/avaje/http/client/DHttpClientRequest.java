@@ -92,6 +92,12 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public List<String> header(String name) {
+    final List<String> values = headers.get(name);
+    return values == null ? Collections.emptyList() : values;
+  }
+
+  @Override
   public HttpClientRequest gzip(boolean gzip) {
     this.gzip = gzip;
     return this;
