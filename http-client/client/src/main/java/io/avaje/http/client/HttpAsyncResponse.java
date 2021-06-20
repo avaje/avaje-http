@@ -3,6 +3,7 @@ package io.avaje.http.client;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 /**
  * Async processing of the request with responses as CompletableFuture.
@@ -105,8 +106,9 @@ public interface HttpAsyncResponse {
   /**
    * Process expecting a bean response body (typically from json content).
    * <p>
-   * If the HTTP statusCode is 300 or above a HttpException is throw which
-   * contains the HttpResponse.
+   * If the HTTP statusCode is 300 or above a HttpException is throw
+   * which contains the HttpResponse. This is the cause in the
+   * CompletionException.
    *
    * <pre>{@code
    *
@@ -125,7 +127,7 @@ public interface HttpAsyncResponse {
    *           ..
    *
    *         } else {
-   *           // use helloDto
+   *           // process helloDto
    *           ...
    *         }
    *       });
@@ -139,8 +141,9 @@ public interface HttpAsyncResponse {
   /**
    * Process expecting a list of beans response body (typically from json content).
    * <p>
-   * If the HTTP statusCode is 300 or above a HttpException is throw which
-   * contains the HttpResponse.
+   * If the HTTP statusCode is 300 or above a HttpException is throw
+   * which contains the HttpResponse. This is the cause in the
+   * CompletionException.
    *
    * <pre>{@code
    *
@@ -156,7 +159,7 @@ public interface HttpAsyncResponse {
    *           ...
    *
    *         } else {
-   *           // use list of helloDto
+   *           // process list of helloDto
    *           ...
    *         }
    *       });
@@ -167,4 +170,35 @@ public interface HttpAsyncResponse {
    */
   <E> CompletableFuture<List<E>> list(Class<E> type);
 
+  /**
+   * Process response as a stream of beans (x-json-stream).
+   * <p>
+   * If the HTTP statusCode is 300 or above a HttpException is throw
+   * which contains the HttpResponse. This is the cause in the
+   * CompletionException.
+   *
+   * <pre>{@code
+   *
+   *   CompletableFuture<Stream<Customer>> future = clientContext.request()
+   *       .path("customers/stream")
+   *       .GET().async()
+   *       .stream(Customer.class);
+   *
+   *   future.whenComplete((stream, throwable) -> {
+   *       // if throwable != null ... handle error
+   *
+   *       // else process Stream<Customer> ...
+   *       try (stream) {
+   *         stream.forEach(customer -> {
+   *           ...
+   *         });
+   *       }
+   *     });
+   *
+   * }</pre>
+   *
+   * @param type The bean type to convert the content to
+   * @return The CompletableFuture of the response
+   */
+  <E> CompletableFuture<Stream<E>> stream(Class<E> type);
 }

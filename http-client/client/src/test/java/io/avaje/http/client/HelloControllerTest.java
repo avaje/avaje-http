@@ -41,7 +41,37 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
-  void async_stream() throws ExecutionException, InterruptedException {
+  void async_get_stream() throws ExecutionException, InterruptedException {
+
+    final CompletableFuture<Stream<SimpleData>> future = clientContext.request()
+      .path("hello").path("stream")
+      .GET().async()
+      .stream(SimpleData.class);
+
+    future.whenComplete((stream, throwable) -> {
+      assertThat(throwable).isNull();
+
+      final List<SimpleData> data = stream.collect(Collectors.toList());
+      assertThat(data).hasSize(4);
+      final SimpleData first = data.get(0);
+      assertThat(first.id).isEqualTo(1);
+      assertThat(first.name).isEqualTo("one");
+
+      try (stream) {
+        // more typically process with forEach ...
+        stream.forEach(simpleData -> {
+          System.out.println("process " + simpleData.id + " " + simpleData.name);
+        });
+      }
+    });
+
+    // wait ...
+    future.get();
+
+  }
+
+  @Test
+  void async_stream_fromLineSubscriber() throws ExecutionException, InterruptedException {
 
     AtomicReference<HttpResponse<Void>> hresRef = new AtomicReference<>();
     AtomicReference<Throwable> errRef = new AtomicReference<>();
@@ -59,14 +89,17 @@ class HelloControllerTest extends BaseWebTest {
           subscription.request(Long.MAX_VALUE);
           onSubscribeRef.set(true);
         }
+
         @Override
         public void onNext(String item) {
           lines.add(item);
         }
+
         @Override
         public void onError(Throwable throwable) {
           errRef.set(throwable);
         }
+
         @Override
         public void onComplete() {
           completeRef.set(true);
@@ -274,11 +307,11 @@ class HelloControllerTest extends BaseWebTest {
       .bean(HelloDto.class);
 
     future.exceptionally(throwable -> {
-        final HttpException httpException = (HttpException) throwable.getCause();
-        causeRef.set(httpException);
-        assertThat(httpException.getStatusCode()).isEqualTo(422);
+      final HttpException httpException = (HttpException) throwable.getCause();
+      causeRef.set(httpException);
+      assertThat(httpException.getStatusCode()).isEqualTo(422);
 
-        return new HelloDto(0, "ErrorResponse", "");
+      return new HelloDto(0, "ErrorResponse", "");
 
     }).thenAccept(helloDto -> {
       assertThat(helloDto.name).isEqualTo("ErrorResponse");

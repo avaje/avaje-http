@@ -3,6 +3,7 @@ package io.avaje.http.client;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 class DHttpAsync implements HttpAsyncResponse {
 
@@ -43,5 +44,12 @@ class DHttpAsync implements HttpAsyncResponse {
     return request
       .performSendAsync(true, HttpResponse.BodyHandlers.ofByteArray())
       .thenApply(httpResponse -> request.asyncList(type, httpResponse));
+  }
+
+  @Override
+  public <E> CompletableFuture<Stream<E>> stream(Class<E> type) {
+    return request
+      .performSendAsync(false, HttpResponse.BodyHandlers.ofLines())
+      .thenApply(httpResponse -> request.asyncStream(type, httpResponse));
   }
 }
