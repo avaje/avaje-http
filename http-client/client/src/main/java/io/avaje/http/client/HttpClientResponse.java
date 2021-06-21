@@ -29,6 +29,10 @@ public interface HttpClientResponse {
 
   /**
    * Return the response as a single bean.
+   * <p>
+   * If the HTTP statusCode is 300 or above a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException. Redirects are
+   * by default followed apart from HTTPS to HTTP.
    *
    * @param type The type of the bean to convert the response content into.
    * @param <T>  The type that the content is converted to.
@@ -39,6 +43,10 @@ public interface HttpClientResponse {
 
   /**
    * Return the response as a list of beans.
+   * <p>
+   * If the HTTP statusCode is 300 or above a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException. Redirects are
+   * by default followed apart from HTTPS to HTTP.
    *
    * @param type The type of the bean to convert the response content into.
    * @param <T>  The type that the content is converted to.
@@ -57,6 +65,10 @@ public interface HttpClientResponse {
    * 'loggable' by avaje-http-client. This is because the entire response
    * may not be available at the time of the callback. As such {@link RequestLogger}
    * will not include response content when logging stream request/response
+   * <p>
+   * If the HTTP statusCode is 300 or above a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException. Redirects are
+   * by default followed apart from HTTPS to HTTP.
    *
    * @param type The type of the bean to convert the response content into.
    * @param <T>  The type that the content is converted to.
@@ -87,6 +99,8 @@ public interface HttpClientResponse {
 
   /**
    * Return the response discarding the response content.
+   * <p>
+   * Unlike {@link #asVoid()} this does not check the response status code.
    */
   HttpResponse<Void> asDiscarding();
 
