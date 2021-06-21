@@ -1,6 +1,6 @@
 # avaje-http-client
 
-A light weight wrapper to the JDK 11+ Java Http Client
+A light weight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/groups/net/httpclient/intro.html)
 
 - Adds a fluid API for request constructing URL and payload
 - Adds JSON marshalling/unmarshalling of request and response using Jackson or Gson
@@ -58,6 +58,16 @@ From HttpClientContext:
 
 ## Limitations:
 - NO support for POSTing multipart-form currently
+- Retry (when specified) does not apply to `async` response processing`
+
+
+## JDK HttpClient
+
+- Introduction to JDK HttpClient at
+[JDK HttpClient Introduction](http://openjdk.java.net/groups/net/httpclient/intro.html)
+
+- Javadoc for JDK
+  [HttpClient](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html)
 
 
 #### Example GET as String
@@ -91,13 +101,13 @@ Overview of response types for sync calls.
 <tr><td>withHandler(HttpResponse.BodyHandler&lt;E&gt)</td><td>CompletableFuture&lt;HttpResponse&lt;E&gt;&gt;</td></tr>
 </table>
 
-### JDK BodyHandlers
+### HttpResponse BodyHandlers
 
-JDK HttpClient provides a number of BodyHandlers including reactive Flow based subscribers.
-With the `withHandler()` methods we can use any of these or our own `HttpResponse.BodyHandler`
+JDK HttpClient provides a number of [BodyHandlers](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandler.html)
+including reactive Flow based subscribers. With the `withHandler()` method we can use any of these or our own [`HttpResponse.BodyHandler`](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandler.html)
 implementation.
 
-Reference https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandlers.html
+Refer to [HttpResponse.BodyHandlers](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandlers.html)
 
 <table style="width:100%;">
 <tr><td>discarding()</td><td>Discards the response body</td></tr>
@@ -108,9 +118,19 @@ Reference https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/
 
 <tr><td>ofFile(Path file)</td><td>Path with various options</td></tr>
 <tr><td>ofByteArrayConsumer(...)</td><td>&nbsp;</td></tr>
-<tr><td>fromSubscriber</td><td>various options</td></tr>
-<tr><td>fromLineSubscriber</td><td>various options</td></tr>
+<tr><td>fromSubscriber(...)</td><td>various options</td></tr>
+<tr><td>fromLineSubscriber(...)</td><td>various options</td></tr>
 </table>
+
+## Overview of Request body
+
+When sending body content we can use:
+- Object which is written as JSON content by default
+- byte[], String, Path (file), InputStream
+- formParams() for url encoded form (`application/x-www-form-urlencoded`)
+- Any [HttpRequest.BodyPublisher](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpRequest.BodyPublishers.html)
+
+
 
 ## Examples
 
@@ -249,8 +269,8 @@ assertThat(res.statusCode()).isEqualTo(201);
 All async requests use JDK httpClient.sendAsync(...) returning CompletableFuture. Commonly the
 `whenComplete()` callback will be used to process the async responses.
 
-The `bean()`, `list()` and `stream()` responses throw a `HttpException` if
-the status code >= 400.
+The `bean()`, `list()` and `stream()` responses throw a `HttpException` if the status code >= 300
+(noting that by default redirects are followed apart for HTTPS to HTTP).
 
 <table style="width:100%;">
 <tr><td><b>async processing</b></td><td>&nbsp;</td></tr>
