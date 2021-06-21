@@ -50,8 +50,13 @@ public interface HttpClientResponse {
   /**
    * Return the response as a stream of beans.
    * <p>
-   * Typically the response is expected to be {@literal applciation/x-json-stream}
+   * Typically the response is expected to be {@literal application/x-json-stream}
    * newline delimited json payload.
+   * <p>
+   * Note that for this stream request the response content is not deemed
+   * 'loggable' by avaje-http-client. This is because the entire response
+   * may not be available at the time of the callback. As such {@link RequestLogger}
+   * will not include response content when logging stream request/response
    *
    * @param type The type of the bean to convert the response content into.
    * @param <T>  The type that the content is converted to.

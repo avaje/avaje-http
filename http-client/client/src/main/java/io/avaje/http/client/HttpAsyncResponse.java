@@ -173,6 +173,14 @@ public interface HttpAsyncResponse {
   /**
    * Process response as a stream of beans (x-json-stream).
    * <p>
+   * Typically the response is expected to be {@literal application/x-json-stream}
+   * newline delimited json payload.
+   * <p>
+   * Note that for this stream request the response content is not deemed
+   * 'loggable' by avaje-http-client. This is because the entire response
+   * may not be available at the time of the callback. As such {@link RequestLogger}
+   * will not include response content in logging stream request/response.
+   * <p>
    * If the HTTP statusCode is 300 or above a HttpException is throw
    * which contains the HttpResponse. This is the cause in the
    * CompletionException.
