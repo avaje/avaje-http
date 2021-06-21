@@ -80,15 +80,15 @@ Overview of response types for sync calls.
 <tr><td>bean&lt;E&gt</td><td>E</td></tr>
 <tr><td>list&lt;E&gt</td><td>List&lt;E&gt;</td></tr>
 <tr><td>stream&lt;E&gt</td><td>Stream&lt;E&gt;</td></tr>
-<tr><td>withHandler(HttpResponse.BodyHandler&lt;E&gt;)</td><td>E</td></tr>
+<tr><td>withHandler(HttpResponse.BodyHandler&lt;E&gt;)</td><td>HttpResponse&lt;E&gt;</td></tr>
 <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
 <tr><td><b>async processing</b></td><td>&nbsp;</td></tr>
-<tr><td>asVoid</td><td>CompletableFuture&lt;Void&gt;</td></tr>
-<tr><td>asString</td><td>CompletableFuture&lt;String&gt;</td></tr>
+<tr><td>asVoid</td><td>CompletableFuture&lt;HttpResponse&lt;Void&gt;&gt;</td></tr>
+<tr><td>asString</td><td>CompletableFuture&lt;HttpResponse&lt;String&gt;&gt;</td></tr>
 <tr><td>bean&lt;E&gt</td><td>CompletableFuture&lt;E&gt;</td></tr>
 <tr><td>list&lt;E&gt</td><td>CompletableFuture&lt;List&lt;E&gt;&gt;</td></tr>
 <tr><td>stream&lt;E&gt</td><td>CompletableFuture&lt;Stream&lt;E&gt;&gt;</td></tr>
-<tr><td>withHandler(HttpResponse.BodyHandler&lt;E&gt)</td><td>CompletableFuture&lt;E&gt;</td></tr>
+<tr><td>withHandler(HttpResponse.BodyHandler&lt;E&gt)</td><td>CompletableFuture&lt;HttpResponse&lt;E&gt;&gt;</td></tr>
 </table>
 
 ### JDK BodyHandlers
@@ -246,15 +246,20 @@ assertThat(res.statusCode()).isEqualTo(201);
 
 ## Async processing
 
-All async requests use JDK httpClient.sendAsync(...) returning CompletableFuture&lt;T&gt;
+All async requests use JDK httpClient.sendAsync(...) returning CompletableFuture. Commonly the
+`whenComplete()` callback will be used to process the async responses.
+
+The `bean()`, `list()` and `stream()` responses throw a `HttpException` if
+the status code >= 400.
 
 <table style="width:100%;">
-<tr><td>asVoid</td><td>CompletableFuture&lt;Void&gt;</td></tr>
-<tr><td>asString</td><td>CompletableFuture&lt;String&gt;</td></tr>
+<tr><td><b>async processing</b></td><td>&nbsp;</td></tr>
+<tr><td>asVoid</td><td>CompletableFuture&lt;HttpResponse&lt;Void&gt;&gt;</td></tr>
+<tr><td>asString</td><td>CompletableFuture&lt;HttpResponse&lt;String&gt;&gt;</td></tr>
 <tr><td>bean&lt;E&gt</td><td>CompletableFuture&lt;E&gt;</td></tr>
 <tr><td>list&lt;E&gt</td><td>CompletableFuture&lt;List&lt;E&gt;&gt;</td></tr>
 <tr><td>stream&lt;E&gt</td><td>CompletableFuture&lt;Stream&lt;E&gt;&gt;</td></tr>
-<tr><td>withHandler(HttpResponse.BodyHandler&lt;E&gt)</td><td>CompletableFuture&lt;E&gt</td></tr>
+<tr><td>withHandler(HttpResponse.BodyHandler&lt;E&gt)</td><td>CompletableFuture&lt;HttpResponse&lt;E&gt;&gt;</td></tr>
 </table>
 
 ### .async().asDiscarding() - HttpResponse&lt;Void&gt;
