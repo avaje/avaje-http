@@ -440,3 +440,114 @@ and register that when building the HttpClientContext.
 All requests using the HttpClientContext will automatically get
 an `Authorization` header with `Bearer` token added. The token will be
 obtained for initial request and then renewed when the token has expired.
+
+
+# 10K requests - Loom vs Async
+
+The following is a very quick and rough comparison of running 10,000 requests
+using `Async` vs `Loom`.
+
+To run this test myself I use [Jex](https://github.com/avaje/avaje-jex) as the
+server (Jetty based) and have it running using Loom.
+
+The Loom blocking request (make 10K of these)
+
+```java
+HttpResponse<String> hres =  httpClient.request()
+  .path("s200")
+  .GET()
+  .asString();
+```
+The equivalent async request (make 10K of these joining the CompletableFuture's).
+
+```java
+CompletableFuture<HttpResponse<String>> future = httpClient.request()
+  .path("s200")
+  .GET()
+  .async()
+  .asString()
+  .whenComplete((hres, throwable) -> {
+    ...
+  });
+```
+
+
+### 10K requests using Async and reactive streams
+
+Use `.async()` to execute the requests which internally is using JDK
+HttpClient's reactive streams. The `whenComplete()` callback is invoked
+when the response is ready. Collect all the resulting CompletableFuture
+and wait for them all to complete.
+
+```java
+
+// Collect all the CompletableFuture's
+List<CompletableFuture<HttpResponse<String>>> all = new ArrayList<>();
+
+long start = System.currentTimeMillis();
+for (int i = 0; i < 10_000; i++) {
+    all.add(httpClient.request().path("s200")
+            .GET()
+            .async().asString()
+            .whenComplete((hres, throwable) -> {
+                output(hres);
+            }));
+}
+
+// wait for them all to complete ..
+CompletableFuture.allOf(all.toArray(new CompletableFuture[0]))
+  .join();
+
+long exeMs = System.currentTimeMillis() - start;
+System.out.println("Complete ... exeMillis:" + exeMs);
+```
+Runs is approx 5 to 5.5 seconds on my environment (without sout).
+
+### 10K requests using Loom
+
+With Loom Java 17 EA Release we can use `Executors.newVirtualThreadExecutor()`
+to return an ExecutorService that uses Loom Virtual Threads. These
+are backed by "Carrier threads" (via ForkedJoinPool).
+
+```java
+
+long start = System.currentTimeMillis();
+
+// Use Loom's Executors.newVirtualThreadExecutor()
+
+try (ExecutorService executorService = Executors.newVirtualThreadExecutor()) {
+    for (int i = 0; i < 10_000; i++) {
+        executorService.submit(this::task);
+    }
+}
+
+long exeMs = System.currentTimeMillis() - start;
+System.out.println("Complete ... exeMillis:" + exeMs);
+```
+```java
+private void task() {
+  HttpResponse<String> hres = performGet();
+  System.out.println(" status:" + hres.statusCode() + " length:" + hres.body().length());
+}
+
+private HttpResponse<String> performGet() {
+    return httpClient.request()
+            .path("s200")
+            .GET()
+            .asString();
+}
+```
+
+Running in approx 4.5 to 5 seconds on my environment (without sout).
+
+It looks like Loom and Async run in pretty much the same time although
+it could be that Loom is just a slight touch faster. I need to do more
+investigation.
+
+Build used is: `17 EA 2021-09-14 / (build 17-loom+7-342)`.
+
+```
+openjdk version "17-loom" 2021-09-14
+OpenJDK Runtime Environment (build 17-loom+7-342)
+OpenJDK 64-Bit Server VM (build 17-loom+7-342, mixed mode, sharing)
+```
