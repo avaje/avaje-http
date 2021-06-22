@@ -77,7 +77,29 @@ HttpResponse<String> hres = clientContext.request()
   .GET()
   .asString();
 ```
+#### Example Async GET as String
+- All async requests use CompletableFuture&lt;T&gt;
+- throwable is a CompletionException
+- In the example below hres is of type HttpResponse&lt;String&gt;
 
+```java
+clientContext.request()
+   .path("hello")
+   .GET()
+   .async().asString()  // CompletableFuture<HttpResponse<String>>
+   .whenComplete((hres, throwable) -> {
+
+     if (throwable != null) {
+       // CompletionException
+       ...
+     } else {
+       // HttpResponse<String>
+       int statusCode = hres.statusCode();
+       String body = hres.body();
+       ...
+     }
+   });
+```
 
 ## Overview of responses
 
@@ -158,7 +180,7 @@ clientContext.request()
        // CompletionException
        ...
      } else {
-       // HttpResponse&lt;String&gt;
+       // HttpResponse<String>
        int statusCode = hres.statusCode();
        String body = hres.body();
        ...
@@ -380,6 +402,32 @@ CompletableFuture<HttpResponse<Void>> future = clientContext.request()
    });
 
 ```
+
+## HttpCall
+
+If we are creating an API and want the client code to *choose* to execute
+the request asynchronously or synchronously then we can use `call()`.
+
+The client can then choose to `execute()` the request synchronously or
+choose `async()` to execute the request asynchronously.
+
+```java
+HttpCall<List<Customer>> call =
+  clientContext.request()
+    .path("customers")
+    .GET()
+    .call().list(Customer.class);
+
+// Either execute synchronously
+List<Customer> customers =  call.execute();
+
+// Or execute asynchronously
+call.async()
+  .whenComplete((customers, throwable) -> {
+    ...
+  });
+```
+
 
 ## BasicAuthIntercept - Authorization Basic / Basic Auth
 
