@@ -614,6 +614,66 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void callAsVoid_async_extractError() throws InterruptedException {
+    AtomicReference<HttpException> ref = new AtomicReference<>();
+
+    final CompletableFuture<HttpResponse<Void>> future =
+      clientContext.request()
+        .path("hello/saveform")
+        .formParam("email", "user@foo.com")
+        .formParam("url", "notAValidUrl")
+        .POST()
+        .call()
+        .asVoid()
+        .async()
+        .whenComplete((hres, throwable) -> {
+
+          final HttpException cause = (HttpException) throwable.getCause();
+          ref.set(cause);
+
+          final HttpResponse<?> httpResponse = cause.getHttpResponse();
+          assertNotNull(httpResponse);
+          assertEquals(422, httpResponse.statusCode());
+
+          final ErrorResponse errorResponse = cause.bean(ErrorResponse.class);
+          final Map<String, String> errorMap = errorResponse.getErrors();
+          assertThat(errorMap.get("url")).isEqualTo("must be a valid URL");
+          assertThat(errorMap.get("name")).isEqualTo("must not be null");
+        });
+
+    try {
+      future.get();
+    } catch (ExecutionException e) {
+      assertThat(ref.get()).isNotNull();
+    }
+  }
+
+  @Test
+  void callAsVoid_extractError() {
+    try {
+      clientContext.request()
+        .path("hello/saveform")
+        .formParam("email", "user@foo.com")
+        .formParam("url", "notAValidUrl")
+        .POST()
+        .call()
+        .asVoid()
+        .execute();
+
+      fail();
+    } catch (HttpException e) {
+      final HttpResponse<?> httpResponse = e.getHttpResponse();
+      assertNotNull(httpResponse);
+      assertEquals(422, httpResponse.statusCode());
+
+      final ErrorResponse errorResponse = e.bean(ErrorResponse.class);
+      final Map<String, String> errorMap = errorResponse.getErrors();
+      assertThat(errorMap.get("url")).isEqualTo("must be a valid URL");
+      assertThat(errorMap.get("name")).isEqualTo("must not be null");
+    }
+  }
+
+  @Test
   void postForm_asBytes_validation_expect_badRequest_extractError() {
     try {
       clientContext.request()
@@ -655,16 +715,37 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(res.statusCode()).isEqualTo(204);
   }
 
+  @Test
+  void callAsVoid() {
+    final HttpResponse<Void> res =
+      clientContext.request()
+        .path("hello/52")
+        .DELETE()
+        .call().asVoid().execute();
+
+    assertThat(res.statusCode()).isEqualTo(204);
+  }
+
+  @Test
+  void callAsVoid_async() throws ExecutionException, InterruptedException {
+    final HttpResponse<Void> res =
+      clientContext.request()
+        .path("hello/52")
+        .DELETE()
+        .call().asVoid().async().get();
+
+    assertThat(res.statusCode()).isEqualTo(204);
+  }
 
   @Test
   void callAsDiscarding() {
-    final HttpResponse<Void> res2 =
+    final HttpResponse<Void> res =
       clientContext.request()
         .path("hello/52")
         .DELETE()
         .call().asDiscarding().execute();
 
-    assertThat(res2.statusCode()).isEqualTo(204);
+    assertThat(res.statusCode()).isEqualTo(204);
   }
 
   @Test

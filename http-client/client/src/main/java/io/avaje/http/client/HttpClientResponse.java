@@ -99,16 +99,19 @@ public interface HttpClientResponse {
   HttpResponse<Void> asVoid();
 
   /**
+   * Return the response discarding the response content.
+   * <p>
+   * Unlike {@link #asVoid()} this will discard any response body including
+   * any error response body. We should instead use {@link #asVoid()} if we
+   * might get an error response body that we want to read via
+   * for example {@link HttpException#bean(Class)}.
+   */
+  HttpResponse<Void> asDiscarding();
+
+  /**
    * Return the content as string.
    */
   HttpResponse<String> asString();
-
-  /**
-   * Return the response discarding the response content.
-   * <p>
-   * Unlike {@link #asVoid()} this does not check the response status code.
-   */
-  HttpResponse<Void> asDiscarding();
 
   /**
    * Return the content as InputStream.

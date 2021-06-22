@@ -14,6 +14,11 @@ class DHttpCall implements HttpCallResponse {
   }
 
   @Override
+  public HttpCall<HttpResponse<Void>> asVoid() {
+    return new CallVoid();
+  }
+
+  @Override
   public HttpCall<HttpResponse<Void>> asDiscarding() {
     return new CallDiscarding();
   }
@@ -43,10 +48,21 @@ class DHttpCall implements HttpCallResponse {
     return new CallStream<>(type);
   }
 
-  private class CallDiscarding implements HttpCall<HttpResponse<Void>> {
+  private class CallVoid implements HttpCall<HttpResponse<Void>> {
     @Override
     public HttpResponse<Void> execute() {
       return request.asVoid();
+    }
+    @Override
+    public CompletableFuture<HttpResponse<Void>> async() {
+      return request.async().asVoid();
+    }
+  }
+
+  private class CallDiscarding implements HttpCall<HttpResponse<Void>> {
+    @Override
+    public HttpResponse<Void> execute() {
+      return request.asDiscarding();
     }
     @Override
     public CompletableFuture<HttpResponse<Void>> async() {
