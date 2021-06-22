@@ -11,7 +11,56 @@ import java.util.stream.Stream;
 public interface HttpAsyncResponse {
 
   /**
+   * Process the response with check for 200 range status code
+   * returning as {@literal HttpResponse<Void>}.
+   * <p>
+   * Unlike {@link #asDiscarding()} this request will read any response
+   * content as bytes with the view that the response content can be
+   * an error message that could be read via for example
+   * {@link HttpException#bean(Class)}.
+   * <p>
+   * Will throw an HttpException if the status code is in the
+   * error range allowing the caller to access the error message
+   * body via for example {@link HttpException#bean(Class)}
+   * <p>
+   * This is intended to be used for POST, PUT, DELETE requests
+   * where the caller is only interested in the response body
+   * when an error occurs (status code not in 200 range).
+   *
+   * <pre>{@code
+   *
+   *   clientContext.request()
+   *       .path("hello/world")
+   *       .GET()
+   *       .async().asVoid()
+   *       .whenComplete((hres, throwable) -> {
+   *
+   *         if (throwable != null) {
+   *
+   *           // if throwable.getCause() is a HttpException for status code >= 300
+   *           HttpException httpException = (HttpException) throwable.getCause();
+   *           int status = httpException.getStatusCode();
+   *
+   *           // convert json error response body to a bean
+   *           ErrorResponse errorResponse = httpException.bean(ErrorResponse.class);
+   *           ...
+   *         } else {
+   *           int statusCode = hres.statusCode();
+   *           ...
+   *         }
+   *       });
+   *
+   * }</pre>
+   */
+  CompletableFuture<HttpResponse<Void>> asVoid();
+
+  /**
    * Process discarding response body as {@literal HttpResponse<Void>}.
+   * <p>
+   * Unlike {@link #asVoid()} this will discard any response body including
+   * any error response body. We should instead use {@link #asVoid()} if we
+   * might get an error response body that we want to read via
+   * for example {@link HttpException#bean(Class)}.
    *
    * <pre>{@code
    *

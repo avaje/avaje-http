@@ -404,6 +404,11 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return context.sendAsync(httpRequest, responseHandler);
   }
 
+  protected HttpResponse<Void> asyncVoid(HttpResponse<byte[]> response) {
+    afterAsyncEncoded(response);
+    return new HttpVoidResponse(response);
+  }
+
   protected <E> E asyncBean(Class<E> type, HttpResponse<byte[]> response) {
     afterAsyncEncoded(response);
     return context.readBean(type, encodedResponseBody);

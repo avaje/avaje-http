@@ -26,6 +26,13 @@ class DHttpAsync implements HttpAsyncResponse {
   }
 
   @Override
+  public CompletableFuture<HttpResponse<Void>> asVoid() {
+    return request
+      .performSendAsync(true, HttpResponse.BodyHandlers.ofByteArray())
+      .thenApply(request::asyncVoid);
+  }
+
+  @Override
   public CompletableFuture<HttpResponse<String>> asString() {
     return request
       .performSendAsync(true, HttpResponse.BodyHandlers.ofString())

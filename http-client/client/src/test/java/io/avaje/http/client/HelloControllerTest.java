@@ -580,6 +580,40 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void asyncAsVoid_extractError() throws InterruptedException {
+    AtomicReference<HttpException> ref = new AtomicReference<>();
+
+    final CompletableFuture<HttpResponse<Void>> future =
+      clientContext.request()
+        .path("hello/saveform")
+        .formParam("email", "user@foo.com")
+        .formParam("url", "notAValidUrl")
+        .POST()
+        .async()
+        .asVoid()
+        .whenComplete((hres, throwable) -> {
+
+          final HttpException cause = (HttpException) throwable.getCause();
+          ref.set(cause);
+
+          final HttpResponse<?> httpResponse = cause.getHttpResponse();
+          assertNotNull(httpResponse);
+          assertEquals(422, httpResponse.statusCode());
+
+          final ErrorResponse errorResponse = cause.bean(ErrorResponse.class);
+          final Map<String, String> errorMap = errorResponse.getErrors();
+          assertThat(errorMap.get("url")).isEqualTo("must be a valid URL");
+          assertThat(errorMap.get("name")).isEqualTo("must not be null");
+        });
+
+    try {
+      future.get();
+    } catch (ExecutionException e) {
+      assertThat(ref.get()).isNotNull();
+    }
+  }
+
+  @Test
   void postForm_asBytes_validation_expect_badRequest_extractError() {
     try {
       clientContext.request()
