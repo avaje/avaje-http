@@ -290,6 +290,11 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpCallResponse call() {
+    return new DHttpCall(this);
+  }
+
+  @Override
   public HttpClientResponse HEAD() {
     httpRequest = newHead(url.build());
     return this;

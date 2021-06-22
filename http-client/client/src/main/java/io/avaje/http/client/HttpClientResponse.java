@@ -18,6 +18,12 @@ public interface HttpClientResponse {
   HttpAsyncResponse async();
 
   /**
+   * Return a HttpCall which allows either sync or async
+   * execution of the request.
+   */
+  HttpCallResponse call();
+
+  /**
    * Returning the response using the given response reader.
    *
    * @param reader The response reader.

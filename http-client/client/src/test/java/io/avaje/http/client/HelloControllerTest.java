@@ -67,7 +67,34 @@ class HelloControllerTest extends BaseWebTest {
 
     // wait ...
     future.get();
+  }
 
+  @Test
+  void callStreamAsync() throws ExecutionException, InterruptedException {
+
+    final CompletableFuture<Stream<SimpleData>> future = clientContext.request()
+      .path("hello").path("stream")
+      .GET().call()
+      .stream(SimpleData.class).async();
+
+    future.whenComplete((stream, throwable) -> {
+      assertThat(throwable).isNull();
+      final List<SimpleData> data = stream.collect(Collectors.toList());
+      assertThat(data).hasSize(4);
+    });
+    // wait ...
+    future.get();
+  }
+
+  @Test
+  void callStream() {
+    final Stream<SimpleData> stream = clientContext.request()
+      .path("hello").path("stream")
+      .GET().call()
+      .stream(SimpleData.class).execute();
+
+    final List<SimpleData> data = stream.collect(Collectors.toList());
+    assertThat(data).hasSize(4);
   }
 
   @Test
@@ -134,6 +161,48 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void callString() {
+    final HttpResponse<String> hres = clientContext.request()
+      .path("hello").path("message")
+      .GET().call().asString().execute();
+
+    assertThat(hres.body()).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void callStringAsync() throws ExecutionException, InterruptedException {
+    final HttpResponse<String> hres = clientContext.request()
+      .path("hello").path("message")
+      .GET().call().asString().async().get();
+
+    assertThat(hres.body()).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void callWithHandler() {
+    final HttpResponse<String> hres = clientContext.request()
+      .path("hello").path("message")
+      .GET().call().withHandler(HttpResponse.BodyHandlers.ofString())
+      .execute();
+
+    assertThat(hres.body()).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void callWithHandlerAsync() throws ExecutionException, InterruptedException {
+    final HttpResponse<String> hres = clientContext.request()
+      .path("hello").path("message")
+      .GET().call().withHandler(HttpResponse.BodyHandlers.ofString())
+      .async().get();
+
+    assertThat(hres.body()).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
   void async_get_asString() throws ExecutionException, InterruptedException {
 
     AtomicReference<HttpResponse<String>> ref = new AtomicReference<>();
@@ -155,12 +224,40 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void asyncViaCall_get_asString() throws ExecutionException, InterruptedException {
+    AtomicReference<HttpResponse<String>> ref = new AtomicReference<>();
+    final CompletableFuture<HttpResponse<String>> future = clientContext.request()
+      .path("hello").path("message")
+      .GET()
+      .call().asString().async()
+      .whenComplete((hres, throwable) -> {
+        ref.set(hres);
+        assertThat(hres.statusCode()).isEqualTo(200);
+        assertThat(hres.body()).contains("hello world");
+      });
+
+    final HttpResponse<String> hres = future.get();
+    assertThat(hres).isSameAs(ref.get());
+  }
+
+  @Test
   void async_get_asDiscarding() throws ExecutionException, InterruptedException {
 
     final CompletableFuture<HttpResponse<Void>> future = clientContext.request()
       .path("hello").path("message")
       .GET()
       .async().asDiscarding();
+
+    final HttpResponse<Void> hres = future.get();
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void asyncViaCall_get_asDiscarding() throws ExecutionException, InterruptedException {
+    final CompletableFuture<HttpResponse<Void>> future = clientContext.request()
+      .path("hello").path("message")
+      .GET()
+      .call().asDiscarding().async();
 
     final HttpResponse<Void> hres = future.get();
     assertThat(hres.statusCode()).isEqualTo(200);
@@ -184,6 +281,24 @@ class HelloControllerTest extends BaseWebTest {
     final List<HelloDto> helloDtos = clientContext.request()
       .path("hello")
       .GET().list(HelloDto.class);
+
+    assertThat(helloDtos).hasSize(2);
+  }
+
+  @Test
+  void callList() {
+    final List<HelloDto> helloDtos = clientContext.request()
+      .path("hello")
+      .GET().call().list(HelloDto.class).execute();
+
+    assertThat(helloDtos).hasSize(2);
+  }
+
+  @Test
+  void callListAsync() throws ExecutionException, InterruptedException {
+    final List<HelloDto> helloDtos = clientContext.request()
+      .path("hello")
+      .GET().call().list(HelloDto.class).async().get();
 
     assertThat(helloDtos).hasSize(2);
   }
@@ -217,6 +332,31 @@ class HelloControllerTest extends BaseWebTest {
       .GET()
       .bean(HelloDto.class);
 
+    assertThat(dto.id).isEqualTo(43L);
+    assertThat(dto.name).isEqualTo("2020-03-05");
+    assertThat(dto.otherParam).isEqualTo("other");
+  }
+
+  @Test
+  void callBean() {
+    final HelloDto dto = clientContext.request()
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
+      .GET()
+      .call().bean(HelloDto.class).execute();
+
+    assertThat(dto.id).isEqualTo(43L);
+    assertThat(dto.name).isEqualTo("2020-03-05");
+    assertThat(dto.otherParam).isEqualTo("other");
+  }
+
+  @Test
+  void callBeanAsync() throws ExecutionException, InterruptedException {
+    final CompletableFuture<HelloDto> future = clientContext.request()
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
+      .GET()
+      .call().bean(HelloDto.class).async();
+
+    final HelloDto dto = future.get();
     assertThat(dto.id).isEqualTo(43L);
     assertThat(dto.name).isEqualTo("2020-03-05");
     assertThat(dto.otherParam).isEqualTo("other");
@@ -478,6 +618,29 @@ class HelloControllerTest extends BaseWebTest {
         .DELETE()
         .asDiscarding();
 
+    assertThat(res.statusCode()).isEqualTo(204);
+  }
+
+
+  @Test
+  void callAsDiscarding() {
+    final HttpResponse<Void> res2 =
+      clientContext.request()
+        .path("hello/52")
+        .DELETE()
+        .call().asDiscarding().execute();
+
+    assertThat(res2.statusCode()).isEqualTo(204);
+  }
+
+  @Test
+  void callAsDiscardingAsync() throws ExecutionException, InterruptedException {
+    final CompletableFuture<HttpResponse<Void>> future = clientContext.request()
+      .path("hello/52")
+      .DELETE()
+      .call().asDiscarding().async();
+
+    final HttpResponse<Void> res = future.get();
     assertThat(res.statusCode()).isEqualTo(204);
   }
 
