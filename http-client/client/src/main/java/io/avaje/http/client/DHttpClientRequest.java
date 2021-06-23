@@ -11,7 +11,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.time.*;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -212,9 +212,13 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public HttpClientRequest body(Path file) throws FileNotFoundException {
-    this.body = HttpRequest.BodyPublishers.ofFile(file);
-    return this;
+  public HttpClientRequest body(Path file) {
+    try {
+      this.body = HttpRequest.BodyPublishers.ofFile(file);
+      return this;
+    } catch (FileNotFoundException e) {
+      throw new IllegalArgumentException("File not found " + file, e);
+    }
   }
 
   @Override

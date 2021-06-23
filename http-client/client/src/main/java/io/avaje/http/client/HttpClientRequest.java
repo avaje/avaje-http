@@ -236,7 +236,7 @@ public interface HttpClientRequest {
    * @param file The file to send as body content
    * @return The request being built
    */
-  HttpClientRequest body(Path file) throws FileNotFoundException;
+  HttpClientRequest body(Path file);
 
   /**
    * Set the body content using http BodyPublisher.

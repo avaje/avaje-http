@@ -5,6 +5,7 @@ import io.javalin.http.Context;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -148,9 +149,9 @@ class HelloController {
   }
 
   @Produces("text/plain")
-  @Get("/withMatrix/{year};author;country/{other}")
-  String getWithMatrixParam(int year, String author, String country, String other, String extra) {
-    return "yr:" + year + " au:" + author + " co:" + country + " other:" + other + " extra:" + extra;
+  @Get("/withMatrix/{year};author;country;zone/{other}")
+  String getWithMatrixParam(int year, String author, String country, String zone, String other, String extra) {
+    return "yr:" + year + " au:" + author + " co:" + country + " zone:" + zone + " other:" + other + " extra:" + extra;
   }
 
   private List<HelloDto> findAll() {

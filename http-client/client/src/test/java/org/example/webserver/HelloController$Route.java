@@ -128,9 +128,10 @@ public class HelloController$Route implements WebRoutes {
       int year = asInt(year_segment.val());
       String author = year_segment.matrix("author");
       String country = year_segment.matrix("country");
+      String zone = year_segment.matrix("zone");
       String other = ctx.pathParam("other");
       String extra = ctx.queryParam("extra");
-      ctx.contentType("text/plain").result(controller.getWithMatrixParam(year, author, country, other, extra));
+      ctx.contentType("text/plain").result(controller.getWithMatrixParam(year, author, country, zone, other, extra));
     });
 
   }

@@ -3,9 +3,19 @@ package io.avaje.http.client;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class VerbTest extends BaseWebTest {
 
@@ -90,6 +100,62 @@ public class VerbTest extends BaseWebTest {
   }
 
   @Test
+  void delete_with_body_bytes() {
+
+    HttpResponse<String> res = clientContext.request()
+      .path("delete")
+      .body("dummyBytes".getBytes(StandardCharsets.UTF_8))
+      .DELETE().asString();
+
+    assertThat(res.body()).isEqualTo("delete body[dummyBytes]");
+  }
+
+  @Test
+  void delete_with_body_BodyPublishers() {
+
+    HttpResponse<String> res = clientContext.request()
+      .path("delete")
+      .body(HttpRequest.BodyPublishers.ofString("dummyBodyPublishers"))
+      .DELETE().asString();
+
+    assertThat(res.body()).isEqualTo("delete body[dummyBodyPublishers]");
+  }
+
+  @Test
+  void delete_with_body_Path() throws URISyntaxException {
+
+    final URL resource = getClass().getResource("/dummy.txt");
+    HttpResponse<String> res = clientContext.request()
+      .path("delete")
+      .body(Path.of(resource.toURI()))
+      .DELETE().asString();
+
+    assertThat(res.body()).isEqualTo("delete body[dummyFileContent]");
+  }
+
+  @Test
+  void delete_with_body_Path_NotFound_expects_IllegalArgumentException() {
+
+    final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+      clientContext.request()
+        .path("delete")
+        .body(Path.of(URI.create("file:///file-does-not-exist.txt")))
+        .DELETE().asString());
+
+    assertThat(e.getMessage()).startsWith("File not found");
+  }
+
+  @Test
+  void delete_with_body_InputStream() {
+    HttpResponse<String> res = clientContext.request()
+        .path("delete")
+        .body(() -> getClass().getResourceAsStream("/dummy.txt"))
+        .DELETE().asString();
+
+    assertThat(res.body()).isEqualTo("delete body[dummyFileContent]");
+  }
+
+  @Test
   void head() {
 
     HttpResponse<String> res = clientContext.request()
@@ -112,4 +178,14 @@ public class VerbTest extends BaseWebTest {
     assertThat(res.body()).isEqualTo("get");
   }
 
+  @Test
+  void get_BodyHandler_null_expect() {
+
+    HttpResponse<String> res = clientContext.request()
+      .path("post")
+      .body((HttpRequest.BodyPublisher)null)
+      .POST().asString();
+
+    assertThat(res.body()).isEqualTo("post");
+  }
 }

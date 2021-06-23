@@ -63,7 +63,7 @@ public class App {
     app.put("/put", ctx -> ctx.result("put"));
     app.patch("/patch", ctx -> ctx.result("patch"));
     //app.tra("/patch", ctx -> ctx.result("patch"));
-    app.delete("/delete", ctx -> ctx.result("delete body[" + ctx.body() + "]"));
+    app.delete("/delete", ctx -> ctx.result("delete body[" + ctx.body().trim() + "]"));
 
 //    // All WebRoutes / Controllers ... from DI Context
 //    List<WebRoutes> webRoutes = context.getBeans(WebRoutes.class);

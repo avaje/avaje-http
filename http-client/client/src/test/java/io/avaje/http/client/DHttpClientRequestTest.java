@@ -25,8 +25,11 @@ class DHttpClientRequestTest {
   void skipAuthToken_listenerEvent_expect_suppressedPayloadContent() {
 
     final DHttpClientRequest request = new DHttpClientRequest(mock(DHttpClientContext.class), Duration.ZERO);
+    assertThat(request.isSkipAuthToken()).isFalse();
 
     request.skipAuthToken();
+    assertThat(request.isSkipAuthToken()).isTrue();
+
     final RequestListener.Event event = request.listenerEvent();
 
     assertThat(event.requestBody()).isEqualTo("<suppressed request body>");

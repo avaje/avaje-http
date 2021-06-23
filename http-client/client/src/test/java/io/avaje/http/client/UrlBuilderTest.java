@@ -44,6 +44,15 @@ class UrlBuilderTest {
   }
 
   @Test
+  void matrixParam_object() {
+    UUID uid = UUID.randomUUID();
+    final String url = foo().path("bar").matrixParam("a", uid)
+      .build();
+
+    assertThat(url).isEqualTo("https://foo/bar;a=" + uid);
+  }
+
+  @Test
   void matrixParam_null() {
     final String url = foo().path("bar").matrixParam("a", null).matrixParam("b", "two")
       .build();

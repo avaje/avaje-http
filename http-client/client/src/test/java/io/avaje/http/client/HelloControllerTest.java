@@ -4,10 +4,16 @@ import org.example.webserver.ErrorResponse;
 import org.example.webserver.HelloDto;
 import org.junit.jupiter.api.Test;
 
+import java.io.*;
 import java.net.http.HttpResponse;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -23,6 +29,56 @@ import static org.junit.jupiter.api.Assertions.*;
 class HelloControllerTest extends BaseWebTest {
 
   final HttpClientContext clientContext = client();
+
+  @Test
+  void asLines() {
+    final HttpResponse<Stream<String>> hres =
+      clientContext.request()
+      .path("hello").path("stream")
+      .GET()
+      .asLines();
+
+    assertThat(hres.statusCode()).isEqualTo(200);
+    final List<String> lines = hres.body().collect(Collectors.toList());
+
+    assertThat(lines).hasSize(4);
+    assertThat(lines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
+  }
+
+  @Test
+  void asInputStream() throws IOException {
+    final HttpResponse<InputStream> hres =
+      clientContext.request()
+        .path("hello").path("stream")
+        .GET()
+        .asInputStream();
+
+    assertThat(hres.statusCode()).isEqualTo(200);
+    final LineNumberReader reader = new LineNumberReader(new InputStreamReader(hres.body()));
+
+    List<String> allLines = new ArrayList<>();
+    String line;
+    while ((line = reader.readLine()) != null) {
+      allLines.add(line);
+    }
+    assertThat(allLines).hasSize(4);
+    assertThat(allLines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
+  }
+
+  @Test
+  void asFile() throws IOException {
+    final Path path = File.createTempFile("test", "dump").toPath();
+    final HttpResponse<Path> hres =
+      clientContext.request()
+        .path("hello").path("stream")
+        .GET()
+        .asFile(path);
+
+    assertThat(hres.statusCode()).isEqualTo(200);
+    assertThat(path.toFile().length()).isGreaterThan(90L);
+
+    assertTrue(path.toFile().delete());
+  }
 
   @Test
   void get_stream() {
@@ -158,6 +214,23 @@ class HelloControllerTest extends BaseWebTest {
 
     assertThat(hres.body()).contains("hello world");
     assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void get_notFound() {
+    UUID nullUUID = null;
+    final HttpClientRequest request = clientContext.request()
+      .path("hello").path(UUID.randomUUID()).queryParam("zone", ZoneId.of("UTC"))
+      .header("X-Zone", ZoneId.of("UTC"))
+      .header("X-Foo", nullUUID);
+
+    assertThat(request.header("X-Zone")).containsExactly("UTC");
+    assertThat(request.header("X-Foo")).isEmpty();
+
+    final HttpResponse<String> hres = request.GET().asString();
+
+    assertThat(hres.statusCode()).isEqualTo(404);
+    assertThat(hres.body()).contains("Not found");
   }
 
   @Test
@@ -499,12 +572,16 @@ class HelloControllerTest extends BaseWebTest {
   @Test
   void postForm() {
 
+    UUID nullUUID = null;
+
     final HttpResponse<Void> res = clientContext.request()
       .path("hello/saveform")
       .formParam("name", "Bazz")
       .formParam("email", "user@foo.com")
       .formParam("url", "http://foo.com")
-      .formParam("startDate", "2030-12-03")
+      .formParam("startDate", LocalDate.of(2030, 12, 03))
+      .formParam("setToNull", null)
+      .formParam("nullUid", nullUUID)
       .POST()
       .asDiscarding();
 
@@ -741,7 +818,7 @@ class HelloControllerTest extends BaseWebTest {
   void callAsDiscarding() {
     final HttpResponse<Void> res =
       clientContext.request()
-        .path("hello/52")
+        .path("hello").path(52)
         .DELETE()
         .call().asDiscarding().execute();
 
@@ -751,7 +828,7 @@ class HelloControllerTest extends BaseWebTest {
   @Test
   void callAsDiscardingAsync() throws ExecutionException, InterruptedException {
     final CompletableFuture<HttpResponse<Void>> future = clientContext.request()
-      .path("hello/52")
+      .path("hello").path(52L)
       .DELETE()
       .call().asDiscarding().async();
 
@@ -761,18 +838,20 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void get_withMatrixParam() {
-
     final HttpResponse<String> httpRes = clientContext.request()
+      .requestTimeout(Duration.ofSeconds(40))
       .path("hello/withMatrix/2011")
       .matrixParam("author", "rob")
       .matrixParam("country", "nz")
+      .matrixParam("zone", ZoneId.of("UTC"))
       .path("foo")
       .queryParam("extra", "banana")
+      .matrixParam("setToNull", null)
       .GET()
       .asString();
 
     assertEquals(200, httpRes.statusCode());
-    assertEquals("yr:2011 au:rob co:nz other:foo extra:banana", httpRes.body());
+    assertEquals("yr:2011 au:rob co:nz zone:UTC other:foo extra:banana", httpRes.body());
   }
 
   public static class SimpleData {
