@@ -54,7 +54,7 @@ public class SimpleHttpClient implements Simple {
       context.request()
         .path("users").path(id).path("stream")
         .body(() -> is)
-        .GET().withResponseHandler(HttpResponse.BodyHandlers.ofInputStream());
+        .GET().withHandler(HttpResponse.BodyHandlers.ofInputStream());
 
     context.checkResponse(response);
     return response.body();

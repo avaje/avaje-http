@@ -71,7 +71,6 @@ class HelloController {
    * @param date       The name of the hello
    * @param otherParam Optional other parameter
    * @return The Hello DTO given the id and name.
-   * @deprecated Please migrate away
    */
   @Get("/{id}/{date}")
   HelloDto hello(int id, LocalDate date, String otherParam) {
