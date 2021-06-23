@@ -1,9 +1,6 @@
 package io.avaje.http.generator.core;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public interface UType {
 
@@ -20,9 +17,23 @@ public interface UType {
   String shortType();
 
   /**
+   * Return the main type (outer most type).
+   */
+  String mainType();
+
+  /**
    * Return the first generic parameter.
    */
-  String param0();
+  default String param0() {
+    return null;
+  }
+
+  /**
+   * Return the second generic parameter.
+   */
+  default String param1() {
+    return null;
+  }
 
   /**
    * Return the raw type.
@@ -42,8 +53,8 @@ public interface UType {
     }
 
     @Override
-    public String param0() {
-      return null;
+    public String mainType() {
+      return "java.lang.Void";
     }
 
     @Override
@@ -57,6 +68,7 @@ public interface UType {
    */
   class Basic implements UType {
     final String rawType;
+
     Basic(String rawType) {
       this.rawType = rawType;
     }
@@ -77,8 +89,8 @@ public interface UType {
     }
 
     @Override
-    public String param0() {
-      return null;
+    public String mainType() {
+      return rawType;
     }
   }
 
@@ -87,12 +99,25 @@ public interface UType {
    */
   class Generic implements UType {
     final String rawType;
-    final String mainType;
-    final List<String> params;
-    Generic(String rawType, String mainType, List<String> params) {
-      this.rawType = rawType;
-      this.mainType = mainType;
-      this.params = params;
+    final List<String> allTypes;
+    final String shortRawType;
+
+    Generic(String rawTypeInput) {
+      this.rawType = rawTypeInput.replace(" ",""); // trim whitespace
+      this.allTypes = Arrays.asList(rawType.split("[<|>|,]"));
+      this.shortRawType = shortRawType(rawType, allTypes);
+    }
+
+    private String shortRawType(String rawType, List<String> allTypes) {
+      Map<String, String> typeMap = new LinkedHashMap<>();
+      for (String val : allTypes) {
+        typeMap.put(val, Util.shortName(val));
+      }
+      String shortRaw = rawType;
+      for (Map.Entry<String, String> entry : typeMap.entrySet()) {
+        shortRaw = shortRaw.replace(entry.getKey(), entry.getValue());
+      }
+      return shortRaw;
     }
 
     @Override
@@ -103,27 +128,32 @@ public interface UType {
     @Override
     public Set<String> importTypes() {
       Set<String> set = new LinkedHashSet<>();
-      set.add(mainType);
-      set.addAll(params);
+      for (String type : allTypes) {
+        if (!type.startsWith("java.lang.")) {
+          set.add(type);
+        }
+      }
       return set;
     }
 
     @Override
     public String shortType() {
-      StringBuilder sb = new StringBuilder();
-      sb.append(Util.shortName(mainType)).append("<");
-      for (int i = 0; i < params.size(); i++) {
-        if (i > 0) {
-          sb.append(",");
-        }
-        sb.append(Util.shortName(params.get(i)));
-      }
-      return sb.append(">").toString();
+      return shortRawType;
+    }
+
+    @Override
+    public String mainType() {
+      return allTypes.isEmpty() ? null : allTypes.get(0);
     }
 
     @Override
     public String param0() {
-      return params.get(0);
+      return allTypes.size() < 2 ? null : allTypes.get(1);
+    }
+
+    @Override
+    public String param1() {
+      return allTypes.size() < 3 ? null : allTypes.get(2);
     }
   }
 }

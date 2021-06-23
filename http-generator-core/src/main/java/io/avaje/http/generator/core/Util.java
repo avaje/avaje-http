@@ -8,9 +8,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleAnnotationValueVisitor8;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Util {
 
@@ -22,20 +20,8 @@ public class Util {
     if (pos == -1) {
       return new UType.Basic(rawType);
     } else {
-      String mainType = rawType.substring(0, pos);
-      String genericParams = rawType.substring(pos + 1, rawType.length() - 1);
-      List<String> params = parseGenericParams(genericParams);
-      return new UType.Generic(rawType, mainType, params);
+      return new UType.Generic(rawType);
     }
-  }
-
-  private static List<String> parseGenericParams(String genericParams) {
-    String[] vals = genericParams.split(",");
-    List<String> result = new ArrayList<>(vals.length);
-    for (String val : vals) {
-      result.add(val.trim());
-    }
-    return result;
   }
 
   /**

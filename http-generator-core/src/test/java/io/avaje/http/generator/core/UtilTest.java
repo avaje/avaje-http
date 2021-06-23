@@ -97,4 +97,36 @@ public class UtilTest {
     assertThat(type.importTypes()).containsExactly("java.util.List", "org.example.Repo", "foo.Other");
     assertThat(type.shortType()).isEqualTo("List<Repo,Other>");
   }
+
+  @Test
+  void parse_CompletableFutureHttpVoid() {
+    UType type = Util.parse("java.util.concurrent.CompletableFuture<java.net.http.HttpResponse<java.lang.Void>>");
+
+    assertThat(type.importTypes()).containsExactly("java.util.concurrent.CompletableFuture", "java.net.http.HttpResponse");
+    assertThat(type.shortType()).isEqualTo("CompletableFuture<HttpResponse<Void>>");
+  }
+
+  @Test
+  void parse_CompletableFutureBean() {
+    UType type = Util.parse("java.util.concurrent.CompletableFuture<org.example.Repo>");
+
+    assertThat(type.importTypes()).containsExactly("java.util.concurrent.CompletableFuture", "org.example.Repo");
+    assertThat(type.shortType()).isEqualTo("CompletableFuture<Repo>");
+  }
+
+  @Test
+  void parse_CompletableFutureListBean() {
+    UType type = Util.parse("java.util.concurrent.CompletableFuture<java.util.List<org.example.Repo>>");
+
+    assertThat(type.importTypes()).containsExactly("java.util.concurrent.CompletableFuture", "java.util.List", "org.example.Repo");
+    assertThat(type.shortType()).isEqualTo("CompletableFuture<List<Repo>>");
+  }
+
+  @Test
+  void parse_CompletableFutureStreamBean() {
+    UType type = Util.parse("java.util.concurrent.CompletableFuture<java.util.Stream<org.example.Repo>>");
+
+    assertThat(type.importTypes()).containsExactly("java.util.concurrent.CompletableFuture", "java.util.Stream", "org.example.Repo");
+    assertThat(type.shortType()).isEqualTo("CompletableFuture<Stream<Repo>>");
+  }
 }

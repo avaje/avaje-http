@@ -20,7 +20,7 @@
     <swagger.version>2.0.8</swagger.version>
     <jackson.version>2.12.3</jackson.version>
     <avaje-inject.version>6.0</avaje-inject.version>
-    <avaje-http.version>1.6-SNAPSHOT</avaje-http.version>
+    <avaje-http.version>1.7-SNAPSHOT</avaje-http.version>
   </properties>
 
   <dependencies>
@@ -95,7 +95,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>1.6</version>
+      <version>1.7</version>
       <scope>test</scope>
     </dependency>
 

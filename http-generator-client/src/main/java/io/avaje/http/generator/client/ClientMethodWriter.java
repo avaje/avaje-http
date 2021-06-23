@@ -12,12 +12,16 @@ import java.util.Set;
 class ClientMethodWriter {
 
   private static final KnownResponse KNOWN_RESPONSE = new KnownResponse();
+  private static final String BODY_HANDLER = "java.net.http.HttpResponse.BodyHandler";
+  private static final String COMPLETABLE_FUTURE = "java.util.concurrent.CompletableFuture";
+  private static final String HTTP_CALL = "io.avaje.http.client.HttpCall";
 
   private final MethodReader method;
   private final Append writer;
   private final WebMethod webMethod;
   private final ProcessingContext ctx;
   private final UType returnType;
+  private MethodParam bodyHandlerParam;
 
   ClientMethodWriter(MethodReader method, Append writer, ProcessingContext ctx) {
     this.method = method;
@@ -45,8 +49,18 @@ class ClientMethodWriter {
       }
       writer.append(param.getShortType()).append(" ");
       writer.append(param.getName());
+      checkBodyHandler(param);
     }
     writer.append(") {").eol();
+  }
+
+  /**
+   * Assign a method parameter as *the* BodyHandler.
+   */
+  private void checkBodyHandler(MethodParam param) {
+    if (param.getRawType().startsWith(BODY_HANDLER)) {
+      bodyHandlerParam = param;
+    }
   }
 
   void write() {
@@ -74,13 +88,58 @@ class ClientMethodWriter {
       String known = KNOWN_RESPONSE.get(returnType.full());
       if (known != null) {
         writer.append("      %s", known).eol();
-      } else if (isReturnList()) {
-        writer.append("      .list(%s.class);", Util.shortName(returnType.param0())).eol();
       } else {
-        writer.append("      .bean(%s.class);", Util.shortName(returnType.full())).eol();
+        if (COMPLETABLE_FUTURE.equals(returnType.mainType())) {
+          writeAsyncResponse();
+        } else if (HTTP_CALL.equals(returnType.mainType())) {
+            writeCallResponse();
+        } else {
+          writeSyncResponse();
+        }
       }
     }
     writer.append("  }").eol().eol();
+  }
+
+  private void writeSyncResponse() {
+    writer.append("      ");
+    String type0 = returnType.mainType();
+    String type1 = returnType.param0();
+    writeResponse(type0, type1);
+  }
+
+  private void writeAsyncResponse() {
+    writer.append("      .async()");
+    String type0 = returnType.param0();
+    String type1 = returnType.param1();
+    writeResponse(type0, type1);
+  }
+
+  private void writeCallResponse() {
+    writer.append("      .call()");
+    String type0 = returnType.param0();
+    String type1 = returnType.param1();
+    writeResponse(type0, type1);
+  }
+
+  private void writeResponse(String type0, String type1) {
+    if (isList(type0)) {
+      writer.append(".list(%s.class);", Util.shortName(type1)).eol();
+    } else if (isStream(type0)) {
+      writer.append(".stream(%s.class);", Util.shortName(type1)).eol();
+    } else if (isHttpResponse(type0)){
+      writeWithHandler();
+    } else {
+      writer.append(".bean(%s.class);", Util.shortName(type0)).eol();
+    }
+  }
+
+  private void writeWithHandler() {
+    if (bodyHandlerParam != null) {
+      writer.append(".withHandler(%s);", bodyHandlerParam.getName()).eol();
+    } else {
+      writer.append(".withHandler(responseHandler);").eol(); // Better to barf here?
+    }
   }
 
   private void writeQueryParams(PathSegments pathSegments) {
@@ -144,8 +203,16 @@ class ClientMethodWriter {
     }
   }
 
-  private boolean isReturnList() {
-    return returnType.shortType().startsWith("List<");
+  private boolean isList(String type0) {
+    return type0.equals("java.util.List");
+  }
+
+  private boolean isStream(String type0) {
+    return type0.equals("java.util.stream.Stream");
+  }
+
+  private boolean isHttpResponse(String type0) {
+    return type0.equals("java.net.http.HttpResponse");
   }
 
 }
