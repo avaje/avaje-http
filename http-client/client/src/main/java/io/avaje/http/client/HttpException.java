@@ -117,15 +117,31 @@ public class HttpException extends RuntimeException {
   /**
    * Return the HTTP status code.
    */
-  public int getStatusCode() {
+  public int statusCode() {
     return statusCode;
+  }
+
+  /**
+   * Deprecated migrate to statusCode()
+   */
+  @Deprecated
+  public int getStatusCode() {
+    return statusCode();
   }
 
   /**
    * Return the underlying HttpResponse.
    */
-  public HttpResponse<?> getHttpResponse() {
+  public HttpResponse<?> httpResponse() {
     return httpResponse;
+  }
+
+  /**
+   * Deprecated migrate to httpResponse().
+   */
+  @Deprecated
+  public HttpResponse<?> getHttpResponse() {
+    return httpResponse();
   }
 
 }

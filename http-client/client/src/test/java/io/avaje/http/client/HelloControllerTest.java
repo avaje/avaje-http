@@ -5,6 +5,7 @@ import org.example.webserver.HelloDto;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -34,9 +35,9 @@ class HelloControllerTest extends BaseWebTest {
   void asLines() {
     final HttpResponse<Stream<String>> hres =
       clientContext.request()
-      .path("hello").path("stream")
-      .GET()
-      .asLines();
+        .path("hello").path("stream")
+        .GET()
+        .asLines();
 
     assertThat(hres.statusCode()).isEqualTo(200);
     final List<String> lines = hres.body().collect(Collectors.toList());
@@ -94,6 +95,18 @@ class HelloControllerTest extends BaseWebTest {
     final SimpleData first = data.get(0);
     assertThat(first.id).isEqualTo(1);
     assertThat(first.name).isEqualTo("one");
+  }
+
+  @Test
+  void get_stream_NotFoundException() {
+    final HttpException httpException = assertThrows(HttpException.class, () ->
+      clientContext.request()
+        .path("this-path-does-not-exist")
+        .GET()
+        .stream(SimpleData.class));
+
+    assertThat(httpException.statusCode()).isEqualTo(404);
+    assertThat(httpException.httpResponse().statusCode()).isEqualTo(404);
   }
 
   @Test
@@ -627,6 +640,13 @@ class HelloControllerTest extends BaseWebTest {
       .asVoid();
 
     assertEquals(201, res.statusCode());
+    assertThat(res.headers().map()).isNotEmpty();
+    assertThat(res.body()).isNull();
+    assertThat(res.request()).isNotNull();
+    assertThat(res.previousResponse()).isEmpty();
+    assertThat(res.sslSession()).isEmpty();
+    assertThat(res.version()).isEqualTo(HttpClient.Version.HTTP_1_1);
+    assertThat(res.uri().toString()).isEqualTo("http://localhost:8887/hello/saveform");
   }
 
   @Test
