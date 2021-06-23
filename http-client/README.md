@@ -1,15 +1,15 @@
 # avaje-http-client
 
-A light weight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/groups/net/httpclient/intro.html)
+A lightweight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/groups/net/httpclient/intro.html)
 
+- Use Java 11.0.8 or higher (some SSL related bugs prior to 11.0.8 with JDK HttpClient)
 - Adds a fluid API for request constructing URL and payload
 - Adds JSON marshalling/unmarshalling of request and response using Jackson or Gson
 - Gzip encoding/decoding
 - Logging of request/response logging
 - Interception of request/response
 - Built in support for authorization via Basic Auth and Bearer Token
-
-
+- Provides async and sync API
 
 
 ### Dependency
@@ -18,7 +18,7 @@ A light weight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net
 <dependency>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client</artifactId>
-  <version>1.6</version>
+  <version>1.7</version>
 </dependency>
 ```
 
