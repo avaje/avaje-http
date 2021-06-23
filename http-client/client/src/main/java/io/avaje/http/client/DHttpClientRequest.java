@@ -92,6 +92,16 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpClientRequest header(Map<String, ?> headers) {
+    if (headers != null) {
+      for (Map.Entry<String, ?> entry : headers.entrySet()) {
+        header(entry.getKey(), entry.getValue());
+      }
+    }
+    return this;
+  }
+
+  @Override
   public List<String> header(String name) {
     final List<String> values = headers.get(name);
     return values == null ? Collections.emptyList() : values;
@@ -145,7 +155,6 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return this;
   }
 
-
   @Override
   public HttpClientRequest queryParam(String name, String value) {
     url.queryParam(name, value);
@@ -155,6 +164,12 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   @Override
   public HttpClientRequest queryParam(String name, Object value) {
     url.queryParam(name, value);
+    return this;
+  }
+
+  @Override
+  public HttpClientRequest queryParam(Map<String, ?> params) {
+    url.queryParam(params);
     return this;
   }
 
@@ -173,6 +188,16 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   @Override
   public HttpClientRequest formParam(String name, Object value) {
     return value != null ? formParam(name, value.toString()) : this;
+  }
+
+  @Override
+  public HttpClientRequest formParam(Map<String, ?> params) {
+    if (params != null) {
+      for (Map.Entry<String, ?> entry : params.entrySet()) {
+        formParam(entry.getKey(), entry.getValue());
+      }
+    }
+    return this;
   }
 
   @Override

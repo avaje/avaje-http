@@ -11,10 +11,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -30,6 +27,21 @@ import static org.junit.jupiter.api.Assertions.*;
 class HelloControllerTest extends BaseWebTest {
 
   final HttpClientContext clientContext = client();
+
+  @Test
+  void queryParamMap() {
+    Map<String, String> params = new LinkedHashMap<>();
+    params.put("A", "a");
+    params.put("B", "b");
+
+    final HttpResponse<String> hres = clientContext.request()
+      .path("hello").path("message")
+      .queryParam(params)
+      .GET().asString();
+
+    assertThat(hres.statusCode()).isEqualTo(200);
+    assertThat(hres.uri().toString()).isEqualTo("http://localhost:8887/hello/message?A=a&B=b");
+  }
 
   @Test
   void asLines() {
@@ -244,6 +256,22 @@ class HelloControllerTest extends BaseWebTest {
 
     assertThat(hres.statusCode()).isEqualTo(404);
     assertThat(hres.body()).contains("Not found");
+  }
+
+  @Test
+  void headers() {
+    final HttpClientRequest request = clientContext.request();
+
+    Map<String, String> headers = new LinkedHashMap<>();
+    headers.put("A", "a");
+    headers.put("B", "b");
+    headers.put("C", "c");
+    request.header(headers);
+    request.header("B", "b2");
+
+    assertThat(request.header("A")).containsExactly("a");
+    assertThat(request.header("B")).containsExactly("b", "b2");
+    assertThat(request.header("C")).containsExactly("c");
   }
 
   @Test
@@ -535,7 +563,7 @@ class HelloControllerTest extends BaseWebTest {
     future.exceptionally(throwable -> {
       final HttpException httpException = (HttpException) throwable.getCause();
       causeRef.set(httpException);
-      assertThat(httpException.getStatusCode()).isEqualTo(422);
+      assertThat(httpException.statusCode()).isEqualTo(422);
 
       return new HelloDto(0, "ErrorResponse", "");
 
@@ -595,6 +623,23 @@ class HelloControllerTest extends BaseWebTest {
       .formParam("startDate", LocalDate.of(2030, 12, 03))
       .formParam("setToNull", null)
       .formParam("nullUid", nullUUID)
+      .POST()
+      .asDiscarding();
+
+    assertThat(res.statusCode()).isEqualTo(201);
+  }
+
+  @Test
+  void postForm_asMap() {
+    Map<String, String> formParams = new LinkedHashMap<>();
+    formParams.put("name", "Bazz");
+    formParams.put("email", "user@foo.com");
+    formParams.put("url", "http://foo.com");
+    formParams.put("startDate", LocalDate.of(2030, 12, 03).toString());
+
+    final HttpResponse<Void> res = clientContext.request()
+      .path("hello/saveform")
+      .formParam(formParams)
       .POST()
       .asDiscarding();
 
@@ -662,7 +707,7 @@ class HelloControllerTest extends BaseWebTest {
       fail();
 
     } catch (HttpException e) {
-      assertEquals(422, e.getStatusCode());
+      assertEquals(422, e.statusCode());
 
       final HttpResponse<?> httpResponse = e.getHttpResponse();
       assertNotNull(httpResponse);
@@ -693,7 +738,7 @@ class HelloControllerTest extends BaseWebTest {
           final HttpException cause = (HttpException) throwable.getCause();
           ref.set(cause);
 
-          final HttpResponse<?> httpResponse = cause.getHttpResponse();
+          final HttpResponse<?> httpResponse = cause.httpResponse();
           assertNotNull(httpResponse);
           assertEquals(422, httpResponse.statusCode());
 
@@ -728,7 +773,7 @@ class HelloControllerTest extends BaseWebTest {
           final HttpException cause = (HttpException) throwable.getCause();
           ref.set(cause);
 
-          final HttpResponse<?> httpResponse = cause.getHttpResponse();
+          final HttpResponse<?> httpResponse = cause.httpResponse();
           assertNotNull(httpResponse);
           assertEquals(422, httpResponse.statusCode());
 
@@ -759,7 +804,7 @@ class HelloControllerTest extends BaseWebTest {
 
       fail();
     } catch (HttpException e) {
-      final HttpResponse<?> httpResponse = e.getHttpResponse();
+      final HttpResponse<?> httpResponse = e.httpResponse();
       assertNotNull(httpResponse);
       assertEquals(422, httpResponse.statusCode());
 
@@ -782,9 +827,9 @@ class HelloControllerTest extends BaseWebTest {
       fail();
 
     } catch (HttpException e) {
-      assertEquals(422, e.getStatusCode());
+      assertEquals(422, e.statusCode());
 
-      final HttpResponse<?> httpResponse = e.getHttpResponse();
+      final HttpResponse<?> httpResponse = e.httpResponse();
       assertNotNull(httpResponse);
       assertEquals(422, httpResponse.statusCode());
 

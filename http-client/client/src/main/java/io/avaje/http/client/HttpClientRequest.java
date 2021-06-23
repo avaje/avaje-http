@@ -1,11 +1,11 @@
 package io.avaje.http.client;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.http.HttpRequest;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -70,6 +70,14 @@ public interface HttpClientRequest {
    * @return The request being built
    */
   HttpClientRequest header(String name, Object value);
+
+  /**
+   * Add the headers to the request via map.
+   *
+   * @param headers The headers as name value map to add
+   * @return The request being built
+   */
+  HttpClientRequest header(Map<String, ?> headers);
 
   /**
    * Return the header values that have been set for the given header name.
@@ -164,13 +172,21 @@ public interface HttpClientRequest {
   HttpClientRequest queryParam(String name, String value);
 
   /**
-   * Add a Integer query parameter
+   * Add a query parameter
    *
    * @param name  The name of the query parameter
    * @param value The value of the query parameter which can be null
    * @return The request being built
    */
   HttpClientRequest queryParam(String name, Object value);
+
+  /**
+   * Add a multiple query parameters as name value map.
+   *
+   * @param params The query parameters
+   * @return The request being built
+   */
+  HttpClientRequest queryParam(Map<String, ?> params);
 
   /**
    * Add a form parameter.
@@ -189,6 +205,14 @@ public interface HttpClientRequest {
    * @return The request being built
    */
   HttpClientRequest formParam(String name, Object value);
+
+  /**
+   * Add the form parameters via a map.
+   *
+   * @param params The form parameters as name value map
+   * @return The request being built
+   */
+  HttpClientRequest formParam(Map<String, ?> params);
 
   /**
    * Set encoded body content.

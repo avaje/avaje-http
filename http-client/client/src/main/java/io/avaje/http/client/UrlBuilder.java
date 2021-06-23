@@ -2,6 +2,7 @@ package io.avaje.http.client;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * Build a URL typically using a base url and adding path and query parameters.
@@ -85,6 +86,18 @@ public class UrlBuilder {
   public UrlBuilder queryParam(String name, Object value) {
     if (value != null) {
       addQueryParam(name, value.toString());
+    }
+    return this;
+  }
+
+  /**
+   * Append a query parameters.
+   */
+  public UrlBuilder queryParam(Map<String, ?> params) {
+    if (params != null) {
+      for (Map.Entry<String, ?> entry : params.entrySet()) {
+        queryParam(entry.getKey(), entry.getValue());
+      }
     }
     return this;
   }

@@ -7,6 +7,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -109,6 +111,20 @@ class UrlBuilderTest {
       .build();
 
     assertThat(url).isEqualTo("https://foo?a=a&b=true&c=false&d=1&e=2&f=13:42&g=2020-01-04&h=2020-01-04T13:44");
+  }
+
+  @Test
+  void queryParam_when_map() {
+    Map<String,String> params = new LinkedHashMap<>();
+    params.put("A", "a");
+    params.put("B", "b");
+    params.put("C", "c");
+
+    final UrlBuilder urlBuilder = foo()
+      .queryParam(params)
+      .queryParam("B", "b2");
+
+    assertThat(urlBuilder.build()).isEqualTo("https://foo?A=a&B=b&C=c&B=b2");
   }
 
   @Test
