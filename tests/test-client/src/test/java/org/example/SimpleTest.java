@@ -7,6 +7,7 @@ import io.avaje.http.client.HttpClientContext;
 import io.avaje.http.client.JacksonBodyAdapter;
 import io.avaje.http.client.RequestLogger;
 import org.example.httpclient.GitHubUsers$HttpClient;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SimpleTest {
 
+  @Disabled
   @Test
   void listRepos() {
 

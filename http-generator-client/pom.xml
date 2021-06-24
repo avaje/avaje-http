@@ -9,7 +9,7 @@
     <relativePath>..</relativePath>
   </parent>
 
-  <artifactId>avaje-http-generator-client</artifactId>
+  <artifactId>avaje-http-client-generator</artifactId>
 
   <properties>
     <java.version>11</java.version>
