@@ -3,7 +3,7 @@
 A lightweight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/groups/net/httpclient/intro.html)
 
 - Use Java 11.0.8 or higher (some SSL related bugs prior to 11.0.8 with JDK HttpClient)
-- Adds a fluid API for request constructing URL and payload
+- Adds a fluid API for building URL and payload
 - Adds JSON marshalling/unmarshalling of request and response using Jackson or Gson
 - Gzip encoding/decoding
 - Logging of request/response logging
@@ -18,7 +18,7 @@ A lightweight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/
 <dependency>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client</artifactId>
-  <version>1.7</version>
+  <version>1.9</version>
 </dependency>
 ```
 
@@ -495,8 +495,15 @@ obtained for initial request and then renewed when the token has expired.
 The following is a very quick and rough comparison of running 10,000 requests
 using `Async` vs `Loom`.
 
-To run this test myself I use [Jex](https://github.com/avaje/avaje-jex) as the
-server (Jetty based) and have it running using Loom.
+The intention is to test the thought that in a "future Loom world" the
+desire to use `async()` execution with HttpClient reduces.
+
+TLDR: Caveat, caveat, more caveats ... initial testing shows Loom to be just a
+touch faster (~10%) than async.
+
+To run my tests I use [Jex](https://github.com/avaje/avaje-jex) as the server
+(Jetty based) and have it running using Loom. For whatever testing you do
+you will need a server that can handle a very large number of concurrent requests.
 
 The Loom blocking request (make 10K of these)
 
@@ -527,41 +534,39 @@ HttpClient's reactive streams. The `whenComplete()` callback is invoked
 when the response is ready. Collect all the resulting CompletableFuture
 and wait for them all to complete.
 
+Outline:
+
 ```java
 
 // Collect all the CompletableFuture's
-List<CompletableFuture<HttpResponse<String>>> all = new ArrayList<>();
+List<CompletableFuture<HttpResponse<String>>> futures = new ArrayList<>();
 
-long start = System.currentTimeMillis();
 for (int i = 0; i < 10_000; i++) {
-    all.add(httpClient.request().path("s200")
-            .GET()
-            .async().asString()
-            .whenComplete((hres, throwable) -> {
-                output(hres);
-            }));
+  futures.add(httpClient.request().path("s200")
+    .GET()
+    .async().asString()
+    .whenComplete((hres, throwable) -> {
+        // confirm 200 response etc
+        ...
+    }));
 }
 
-// wait for them all to complete ..
-CompletableFuture.allOf(all.toArray(new CompletableFuture[0]))
-  .join();
+// wait for all requests to complete via join() ...
+CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
-long exeMs = System.currentTimeMillis() - start;
-System.out.println("Complete ... exeMillis:" + exeMs);
 ```
-Runs is approx 5 to 5.5 seconds on my environment (without sout).
 
 ### 10K requests using Loom
 
 With Loom Java 17 EA Release we can use `Executors.newVirtualThreadExecutor()`
-to return an ExecutorService that uses Loom Virtual Threads. These
-are backed by "Carrier threads" (via ForkedJoinPool).
+to return an ExecutorService that uses Loom Virtual Threads. These are backed
+by "Carrier threads" (via ForkedJoinPool).
+
+Outline:
 
 ```java
 
-long start = System.currentTimeMillis();
-
-// Use Loom's Executors.newVirtualThreadExecutor()
+// use Loom's Executors.newVirtualThreadExecutor()
 
 try (ExecutorService executorService = Executors.newVirtualThreadExecutor()) {
     for (int i = 0; i < 10_000; i++) {
@@ -569,30 +574,34 @@ try (ExecutorService executorService = Executors.newVirtualThreadExecutor()) {
     }
 }
 
-long exeMs = System.currentTimeMillis() - start;
-System.out.println("Complete ... exeMillis:" + exeMs);
 ```
 ```java
 private void task() {
-  HttpResponse<String> hres = performGet();
-  System.out.println(" status:" + hres.statusCode() + " length:" + hres.body().length());
+  HttpResponse<String> hres =
+    httpClient.request().path("s200")
+     .GET()
+     .asString();
+
+  // confirm 200 response etc
+  ...
 }
 
-private HttpResponse<String> performGet() {
-    return httpClient.request()
-            .path("s200")
-            .GET()
-            .asString();
-}
 ```
 
-Running in approx 4.5 to 5 seconds on my environment (without sout).
+Caveat: Proper performance benchmarks are really hard and take a lot of
+effort.
 
-It looks like Loom and Async run in pretty much the same time although
-it could be that Loom is just a slight touch faster. I need to do more
-investigation.
+Running some "rough/approx performance comparison tests" using `Loom`
+build `17 EA 2021-09-14 / (build 17-loom+7-342)` vs `Async` for my environment
+and 10K request scenarios has loom execution around 10% faster than async.
 
-Build used is: `17 EA 2021-09-14 / (build 17-loom+7-342)`.
+It looks like Loom and Async run in pretty much the same time although it
+currently looks that Loom is just a touch faster (perhaps due to how it does
+park/unpark). More investigation required.
+
+
+Date: 2021-06
+Build: `17 EA 2021-09-14 / (build 17-loom+7-342)`.
 
 ```
 openjdk version "17-loom" 2021-09-14
