@@ -159,17 +159,16 @@ public class MethodReader {
 
     final List<? extends VariableElement> parameters = element.getParameters();
     for (int i = 0; i < parameters.size(); i++) {
-
       VariableElement p = parameters.get(i);
-
-      String rawType;
+      TypeMirror typeMirror;
       if (actualParams != null) {
-        rawType = Util.typeDef(actualParams.get(i));
+        typeMirror = actualParams.get(i);
       } else {
-        rawType = Util.typeDef(p.asType());
+        typeMirror = p.asType();
       }
-
-      MethodParam param = new MethodParam(p, rawType, ctx, defaultParamType, formMarker);
+      String rawType = Util.typeDef(typeMirror);
+      UType type = Util.parse(typeMirror.toString());
+      MethodParam param = new MethodParam(p, type, rawType, ctx, defaultParamType, formMarker);
       params.add(param);
       param.addImports(bean);
     }

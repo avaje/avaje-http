@@ -17,6 +17,7 @@ public class ElementReader {
 
   private final ProcessingContext ctx;
   private final Element element;
+  private final UType type;
   private final String rawType;
   private final String shortType;
   private final TypeHandler typeHandler;
@@ -34,12 +35,13 @@ public class ElementReader {
   //private boolean notNullJavax;
 
   ElementReader(Element element, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
-    this(element, Util.typeDef(element.asType()), ctx, defaultType, formMarker);
+    this(element, null, Util.typeDef(element.asType()), ctx, defaultType, formMarker);
   }
 
-  ElementReader(Element element, String rawType, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
+  ElementReader(Element element, UType type, String rawType, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
     this.ctx = ctx;
     this.element = element;
+    this.type = type;
     this.rawType = rawType;
     this.shortType = Util.shortName(rawType);
     this.contextType = ctx.platform().isContextType(rawType);
@@ -289,6 +291,10 @@ public class ElementReader {
 
   public String getRawType() {
     return rawType;
+  }
+
+  public UType getType() {
+    return type;
   }
 
   public Element getElement() {

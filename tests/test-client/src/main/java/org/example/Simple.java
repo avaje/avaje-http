@@ -8,6 +8,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Client
 @Path("moo")
@@ -16,6 +17,15 @@ public interface Simple {
   // UUID goo, Boolean option,
   @Get("{uid}/{date}")
   HttpResponse<String> byIdg(long uid, LocalDate date, @Header URL access, @QueryParam("my-dat") LocalDate dt);
+
+  @Get("{uid}/withParams")
+  HttpResponse<String> withParams(long uid, @QueryParam Map<String, ?> params);
+
+  @Post("postFormWithParams")
+  void postFormWithParams(long uid, @FormParam Map<String, ?> frmParams, @Header Map<String, Object> headers, @QueryParam Map<String, String> qparams);
+
+  @Post("post3")
+  void post3(long uid, @Header String xHead, @Header("a-b") String ab);
 
   @Get("users/{user}/repos")
   List<Repo> listRepos(String user, String other);
@@ -73,6 +83,7 @@ public interface Simple {
     public String email() {
       return email;
     }
+
     public void setName(String name) {
       this.name = name;
     }

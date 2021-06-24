@@ -3,7 +3,6 @@ package io.avaje.http.generator.client;
 import io.avaje.http.generator.core.*;
 
 import javax.lang.model.element.TypeElement;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -47,7 +46,7 @@ class ClientMethodWriter {
       if (count++ > 0) {
         writer.append(", ");
       }
-      writer.append(param.getShortType()).append(" ");
+      writer.append(param.getUType().shortType()).append(" ");
       writer.append(param.getName());
       checkBodyHandler(param);
     }
@@ -143,13 +142,15 @@ class ClientMethodWriter {
   }
 
   private void writeQueryParams(PathSegments pathSegments) {
-    List<MethodParam> params = method.getParams();
-    for (MethodParam param : params) {
+    for (MethodParam param : method.getParams()) {
       ParamType paramType = param.getParamType();
       if (paramType == ParamType.QUERYPARAM) {
-        PathSegments.Segment segment = pathSegments.segment(param.getParamName());
-        if (segment == null) {
-          writer.append("      .queryParam(\"%s\", %s)", param.getParamName(), param.getName()).eol();
+        if (pathSegments.segment(param.getParamName()) == null) {
+          if (isMap(param)) {
+            writer.append("      .queryParam(%s)", param.getName()).eol();
+          } else {
+            writer.append("      .queryParam(\"%s\", %s)", param.getParamName(), param.getName()).eol();
+          }
         }
       }
     }
@@ -159,7 +160,11 @@ class ClientMethodWriter {
     for (MethodParam param : method.getParams()) {
       ParamType paramType = param.getParamType();
       if (paramType == ParamType.HEADER) {
-        writer.append("      .header(\"%s\", %s)", param.getParamName(), param.getName()).eol();
+        if (isMap(param)) {
+          writer.append("      .header(%s)", param.getName()).eol();
+        } else {
+          writer.append("      .header(\"%s\", %s)", param.getParamName(), param.getName()).eol();
+        }
       }
     }
   }
@@ -168,7 +173,11 @@ class ClientMethodWriter {
     for (MethodParam param : method.getParams()) {
       ParamType paramType = param.getParamType();
       if (paramType == ParamType.FORMPARAM) {
-        writer.append("      .formParam(\"%s\", %s)", param.getParamName(), param.getName()).eol();
+        if (isMap(param)) {
+          writer.append("      .formParam(%s)", param.getName()).eol();
+        } else {
+          writer.append("      .formParam(\"%s\", %s)", param.getParamName(), param.getName()).eol();
+        }
       } else if (paramType == ParamType.FORM) {
         TypeElement formBeanType = ctx.getTypeElement(param.getRawType());
         BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.getName(), param.getShortType(), ParamType.FORMPARAM);
@@ -201,6 +210,14 @@ class ClientMethodWriter {
     if (!segments.isEmpty()) {
       writer.eol();
     }
+  }
+
+  private boolean isMap(MethodParam param) {
+    return isMap(param.getUType().mainType());
+  }
+
+  private boolean isMap(String type0) {
+    return type0.equals("java.util.Map");
   }
 
   private boolean isList(String type0) {
