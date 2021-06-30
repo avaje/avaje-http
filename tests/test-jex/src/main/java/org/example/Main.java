@@ -1,14 +1,17 @@
 package org.example;
 
 import io.avaje.http.api.ValidationException;
+import io.avaje.http.api.Validator;
 import io.avaje.inject.ApplicationScope;
 import io.avaje.inject.BeanScope;
+import io.avaje.inject.InjectModule;
 import io.avaje.jex.Jex;
 import io.avaje.jex.Routing;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@InjectModule(requires = Validator.class)
 public class Main {
 
   public static void main(String[] args) {

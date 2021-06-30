@@ -129,7 +129,8 @@
             "nullable" : false
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "nullable" : false
           }
         }
       }

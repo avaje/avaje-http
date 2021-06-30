@@ -1,10 +1,8 @@
 package org.example.myapp;
 
-import io.avaje.http.api.InvalidPathArgumentException;
-import io.avaje.http.api.InvalidTypeArgumentException;
-import io.avaje.http.api.ValidationException;
-import io.avaje.http.api.WebRoutes;
+import io.avaje.http.api.*;
 import io.avaje.inject.ApplicationScope;
+import io.avaje.inject.InjectModule;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -16,7 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-//@ContextModule(name = "app", dependsOn= "validator")
+@InjectModule(name = "app", dependsOn= "validator", requires = Validator.class)
 @OpenAPIDefinition(info = @Info(title = "Example service", description = "Example Javalin controllers with Java and Maven"))
 public class Main {
 

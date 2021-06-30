@@ -43,7 +43,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject</artifactId>
-      <version>6.0</version>
+      <version>6.1</version>
     </dependency>
 
     <dependency>
@@ -69,7 +69,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject-generator</artifactId>
-      <version>6.0</version>
+      <version>6.1</version>
       <scope>provided</scope>
     </dependency>
 
