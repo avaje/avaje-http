@@ -26,33 +26,25 @@ import java.util.TreeSet;
 public class ControllerReader {
 
   private final ProcessingContext ctx;
-
   private final TypeElement beanType;
-
   private final List<Element> interfaces;
-
   private final List<ExecutableElement> interfaceMethods;
-
   private final List<String> roles;
-
   private final List<MethodReader> methods = new ArrayList<>();
-
   private final Set<String> staticImportTypes = new TreeSet<>();
-
   private final Set<String> importTypes = new TreeSet<>();
 
   /**
    * The produces media type for the controller. Null implies JSON.
    */
   private final String produces;
-
-  private final boolean includeValidator;
+  private final boolean hasValid;
+  private boolean methodHasValid;
 
   /**
    * Flag set when the controller is dependant on a request scope type.
    */
   private boolean requestScope;
-
   private boolean docHidden;
 
   public ControllerReader(TypeElement beanType, ProcessingContext ctx) {
@@ -64,14 +56,14 @@ public class ControllerReader {
     if (ctx.isOpenApiAvailable()) {
       docHidden = initDocHidden();
     }
-    includeValidator = initIncludeValidator();
+    this.hasValid = initHasValid();
     this.produces = initProduces();
   }
 
   protected void addImports(boolean withSingleton) {
     importTypes.add(Constants.IMPORT_HTTP_API);
     importTypes.add(beanType.getQualifiedName().toString());
-    if (includeValidator) {
+    if (hasValid || methodHasValid) {
       importTypes.add(Constants.VALIDATOR);
     }
     if (withSingleton) {
@@ -137,7 +129,7 @@ public class ControllerReader {
     return findAnnotation(Hidden.class) != null;
   }
 
-  private boolean initIncludeValidator() {
+  private boolean initHasValid() {
     return findAnnotation(Valid.class) != null;
   }
 
@@ -154,7 +146,11 @@ public class ControllerReader {
   }
 
   public boolean isIncludeValidator() {
-    return includeValidator;
+    return hasValid || methodHasValid;
+  }
+
+  public boolean hasValid() {
+    return hasValid;
   }
 
   /**
@@ -166,7 +162,6 @@ public class ControllerReader {
   }
 
   public void read(boolean withSingleton) {
-    addImports(withSingleton);
     if (!roles.isEmpty()) {
       ctx.platform().controllerRoles(roles, this);
     }
@@ -178,6 +173,21 @@ public class ControllerReader {
       }
     }
     readSuper(beanType);
+    deriveIncludeValidation();
+    addImports(withSingleton);
+  }
+
+  private void deriveIncludeValidation() {
+    methodHasValid = methodHasValid();
+  }
+
+  private boolean methodHasValid() {
+    for (MethodReader method : methods) {
+      if (method.hasValid()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void readField(Element element) {
@@ -215,13 +225,11 @@ public class ControllerReader {
   }
 
   private void readMethod(ExecutableElement method, DeclaredType declaredType) {
-
     ExecutableType actualExecutable = null;
     if (declaredType != null) {
       // actual taking into account generics
       actualExecutable = (ExecutableType) ctx.asMemberOf(declaredType, method);
     }
-
     MethodReader methodReader = new MethodReader(this, method, actualExecutable, ctx);
     if (methodReader.isWebMethod()) {
       methodReader.read();

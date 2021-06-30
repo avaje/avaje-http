@@ -9,6 +9,8 @@ import org.example.Main;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
+import java.time.Duration;
+
 public class BaseWebTest {
 
   static Jex.Server webServer;
@@ -29,6 +31,7 @@ public class BaseWebTest {
   public static HttpClientContext client() {
     return HttpClientContext.newBuilder()
       .withBaseUrl(baseUrl)
+      .withRequestTimeout(Duration.ofMinutes(2))
       .withRequestListener(new RequestLogger())
       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
       .build();

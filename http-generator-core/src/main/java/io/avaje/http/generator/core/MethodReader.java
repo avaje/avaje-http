@@ -18,6 +18,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.validation.Valid;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,7 @@ public class MethodReader {
   private final List<? extends TypeMirror> actualParams;
 
   private final PathSegments pathSegments;
+  private final boolean hasValid;
 
   MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable, ProcessingContext ctx) {
     this.ctx = ctx;
@@ -60,11 +62,12 @@ public class MethodReader {
     this.methodRoles = Util.findRoles(element);
     this.javadoc = Javadoc.parse(ctx.getDocComment(element));
     this.produces = produces(bean);
-
     initWebMethodViaAnnotation();
     if (isWebMethod()) {
+      this.hasValid = findAnnotation(Valid.class) != null;
       this.pathSegments = PathSegments.parse(Util.combinePath(bean.getPath(), webMethodPath));
     } else {
+      this.hasValid = false;
       this.pathSegments = null;
     }
   }
@@ -233,7 +236,11 @@ public class MethodReader {
   }
 
   public boolean includeValidate() {
-    return bean.isIncludeValidator();
+    return bean.hasValid() || hasValid;
+  }
+
+  boolean hasValid() {
+    return hasValid;
   }
 
   public String simpleName() {

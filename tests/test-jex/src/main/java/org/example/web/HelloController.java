@@ -1,10 +1,9 @@
 package org.example.web;
 
-import io.avaje.http.api.Controller;
-import io.avaje.http.api.Get;
-import io.avaje.http.api.Path;
-import io.avaje.http.api.Produces;
+import io.avaje.http.api.*;
 import io.avaje.jex.Context;
+
+import javax.validation.Valid;
 
 // @Roles(AppRoles.BASIC_USER)
 @Controller
@@ -36,5 +35,11 @@ public class HelloController {
   @Get("splat/{name}/*/other/*")
   String splat(String name, Context ctx) {
     return "got name:" + name + " splat0:" + ctx.splat(0) + " splat1:" + ctx.splat(1);
+  }
+
+  @Valid
+  @Put
+  void put(HelloDto dto) {
+    dto.hashCode();
   }
 }

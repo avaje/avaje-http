@@ -1,12 +1,14 @@
 package org.example.web;
 
 import io.avaje.http.client.HttpClientContext;
+import io.avaje.http.client.HttpException;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HelloControllerTest extends BaseWebTest {
 
@@ -39,5 +41,36 @@ class HelloControllerTest extends BaseWebTest {
   @Test
   void splat() {
     assertEquals("got name:one splat0:a/b splat1:x/y/z", client.request().path("splat/one/a/b/other/x/y/z").GET().asString().body());
+  }
+
+  @Test
+  void validation() {
+
+    HelloDto helloDto = new HelloDto();
+    helloDto.id = 42;
+
+    final HttpResponse<String> hres = client.request()
+      .body(helloDto)
+      .PUT().asString();
+
+    assertThat(hres.statusCode()).isEqualTo(422);
+    assertThat(hres.body()).contains("{\"name\":\"must not be null\"}");
+  }
+
+  @Test
+  void validation_expect_HttpException() {
+
+    HelloDto helloDto = new HelloDto();
+    helloDto.id = 42;
+
+    final HttpException ex = assertThrows(HttpException.class, () ->
+      client.request()
+        .body(helloDto)
+        .PUT().asVoid());
+
+    assertThat(ex.statusCode()).isEqualTo(422);
+
+    final ErrorResponse errBean = ex.bean(ErrorResponse.class);
+    assertThat(errBean.getErrors().get("name")).isEqualTo("must not be null");
   }
 }

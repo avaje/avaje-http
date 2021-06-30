@@ -14,6 +14,6 @@
 
   <logger name="org.example" level="DEBUG"/>
   <logger name="io.avaje.jex" level="DEBUG"/>
-  <logger name="io.avaje.http.client" level="DEBUG"/>
+  <logger name="io.avaje.http.client" level="TRACE"/>
 
 </configuration>

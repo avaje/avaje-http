@@ -1,12 +1,6 @@
 package io.avaje.http.generator.core;
 
-import io.avaje.http.api.BeanParam;
-import io.avaje.http.api.Cookie;
-import io.avaje.http.api.Default;
-import io.avaje.http.api.Form;
-import io.avaje.http.api.FormParam;
-import io.avaje.http.api.Header;
-import io.avaje.http.api.QueryParam;
+import io.avaje.http.api.*;
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 import io.avaje.http.generator.core.openapi.MethodParamDocBuilder;
 
@@ -26,6 +20,7 @@ public class ElementReader {
   private final String snakeName;
   private final boolean formMarker;
   private final boolean contextType;
+  private final boolean useValidation;
 
   private String paramName;
   private ParamType paramType;
@@ -53,9 +48,19 @@ public class ElementReader {
     this.paramName = varName;
     if (!contextType) {
       readAnnotations(element, defaultType);
+      useValidation = useValidation();
     } else {
       paramType = ParamType.CONTEXT;
+      useValidation = false;
     }
+  }
+
+  private boolean useValidation() {
+    if (typeHandler != null) {
+      return false;
+    }
+    TypeElement elementType = ctx.getTypeElement(rawType);
+    return elementType != null && elementType.getAnnotation(Valid.class) != null;
   }
 
   private void readAnnotations(Element element, ParamType defaultType) {
@@ -179,17 +184,13 @@ public class ElementReader {
   }
 
   void writeValidate(Append writer) {
-    if (!isPlatformContext() && typeHandler == null) {
-      TypeElement formBeanType = ctx.getTypeElement(rawType);
-      if (formBeanType != null) {
-        final Valid valid = formBeanType.getAnnotation(Valid.class);
-        if (valid != null) {
-          writer.append("validator.validate(%s);", varName).eol();
-        } else {
-          writer.append("// no validation required on %s", varName).eol();
-        }
-        writer.append("      ");
+    if (!contextType && typeHandler == null) {
+      if (useValidation) {
+        writer.append("validator.validate(%s);", varName).eol();
+      } else {
+        writer.append("// no validation required on %s", varName).eol();
       }
+      writer.append("      ");
     }
   }
 
