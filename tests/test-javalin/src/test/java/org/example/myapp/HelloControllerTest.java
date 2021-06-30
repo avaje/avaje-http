@@ -41,6 +41,7 @@ class HelloControllerTest extends BaseWebTest {
       .with(httpClient)
       .build();
   }
+
   @Test
   void hello() {
     final Response response = get(baseUrl + "/hello/message");
@@ -214,9 +215,9 @@ class HelloControllerTest extends BaseWebTest {
         .asVoid();
 
     } catch (HttpException e) {
-      assertEquals(422, e.getStatusCode());
+      assertEquals(422, e.statusCode());
 
-      final HttpResponse<?> httpResponse = e.getHttpResponse();
+      final HttpResponse<?> httpResponse = e.httpResponse();
       assertNotNull(httpResponse);
       assertEquals(422, httpResponse.statusCode());
 
@@ -227,6 +228,29 @@ class HelloControllerTest extends BaseWebTest {
       assertThat(errorMap.get("name")).isEqualTo("must not be null");
 
     }
+  }
+
+  @Test
+  void get_validate_bean_expect422() {
+    final HttpResponse<String> hres = clientContext.request()
+      .path("hello/withValidBean")
+      .queryParam("email", "user@foo.com")
+      .GET()
+      .asString();
+
+    assertThat(hres.statusCode()).isEqualTo(422);
+  }
+
+  @Test
+  void get_validate_bean_expect200() {
+    final HttpResponse<String> hres = clientContext.request()
+      .path("hello/withValidBean")
+      .queryParam("name", "hello")
+      .queryParam("email", "user@foo.com")
+      .GET()
+      .asString();
+
+    assertThat(hres.statusCode()).isEqualTo(200);
   }
 
   @Test

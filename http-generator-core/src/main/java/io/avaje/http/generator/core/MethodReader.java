@@ -233,7 +233,7 @@ public class MethodReader {
   }
 
   public boolean includeValidate() {
-    return bean.isIncludeValidator() && webMethod != WebMethod.GET;
+    return bean.isIncludeValidator();
   }
 
   public String simpleName() {

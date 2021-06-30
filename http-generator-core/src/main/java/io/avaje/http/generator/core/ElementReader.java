@@ -12,6 +12,7 @@ import io.avaje.http.generator.core.openapi.MethodParamDocBuilder;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.validation.Valid;
 
 public class ElementReader {
 
@@ -179,8 +180,16 @@ public class ElementReader {
 
   void writeValidate(Append writer) {
     if (!isPlatformContext() && typeHandler == null) {
-      writer.append("validator.validate(%s);", varName).eol();
-      writer.append("      ");
+      TypeElement formBeanType = ctx.getTypeElement(rawType);
+      if (formBeanType != null) {
+        final Valid valid = formBeanType.getAnnotation(Valid.class);
+        if (valid != null) {
+          writer.append("validator.validate(%s);", varName).eol();
+        } else {
+          writer.append("// no validation required on %s", varName).eol();
+        }
+        writer.append("      ");
+      }
     }
   }
 

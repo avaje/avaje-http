@@ -1,20 +1,12 @@
 package org.example.myapp.web;
 
-import io.avaje.http.api.Controller;
-import io.avaje.http.api.Default;
-import io.avaje.http.api.Delete;
-import io.avaje.http.api.Form;
-import io.avaje.http.api.Get;
-import io.avaje.http.api.MediaType;
-import io.avaje.http.api.Path;
-import io.avaje.http.api.Post;
-import io.avaje.http.api.Produces;
-import io.avaje.http.api.QueryParam;
+import io.avaje.http.api.*;
 import io.javalin.http.Context;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.example.myapp.service.MyService;
 
 import jakarta.inject.Inject;
+
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -124,6 +116,12 @@ class HelloController {
   @Form
   HelloDto saveForm3(HelloForm helloForm) {
     return new HelloDto(52, helloForm.name, helloForm.email);
+  }
+
+  @Produces("text/plain")
+  @Get("withValidBean")
+  String getGetBeanForm(@BeanParam GetBeanForm bean) {
+    return "ok name:" + bean.name;
   }
 
   @Hidden
