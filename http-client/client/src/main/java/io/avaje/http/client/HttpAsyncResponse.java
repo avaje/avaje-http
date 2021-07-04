@@ -1,5 +1,6 @@
 package io.avaje.http.client;
 
+import java.io.InputStream;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -111,6 +112,27 @@ public interface HttpAsyncResponse {
   CompletableFuture<HttpResponse<String>> asString();
 
   /**
+   * Process as response {@literal HttpResponse<byte[]>}.
+   *
+   * @return The CompletableFuture of the response
+   */
+  CompletableFuture<HttpResponse<byte[]>> asByteArray();
+
+  /**
+   * Process as response {@literal HttpResponse<Stream<String>>}.
+   *
+   * @return The CompletableFuture of the response
+   */
+  CompletableFuture<HttpResponse<Stream<String>>> asLines();
+
+  /**
+   * Process as response {@literal HttpResponse<InputStream>}.
+   *
+   * @return The CompletableFuture of the response
+   */
+  CompletableFuture<HttpResponse<InputStream>> asInputStream();
+
+  /**
    * Process with any given {@code HttpResponse.BodyHandler}.
    *
    * <h3>Example: line subscriber</h3>
@@ -147,10 +169,10 @@ public interface HttpAsyncResponse {
    *       });
    * }</pre>
    *
-   * @param bodyHandlers The body handler to use to process the response
+   * @param bodyHandler The body handler to use to process the response
    * @return The CompletableFuture of the response
    */
-  <E> CompletableFuture<HttpResponse<E>> withHandler(HttpResponse.BodyHandler<E> bodyHandlers);
+  <E> CompletableFuture<HttpResponse<E>> withHandler(HttpResponse.BodyHandler<E> bodyHandler);
 
   /**
    * Process expecting a bean response body (typically from json content).

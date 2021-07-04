@@ -1,5 +1,6 @@
 package io.avaje.http.client;
 
+import java.io.InputStream;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -13,20 +14,25 @@ class DHttpAsync implements HttpAsyncResponse {
     this.request = request;
   }
 
-  @Override
-  public <E> CompletableFuture<HttpResponse<E>> withHandler(HttpResponse.BodyHandler<E>  handler) {
+  private <E> CompletableFuture<HttpResponse<E>> with(boolean loggable, HttpResponse.BodyHandler<E>  handler) {
     return request
-      .performSendAsync(false, handler)
+      .performSendAsync(loggable, handler)
       .thenApply(request::afterAsync);
   }
 
   @Override
+  public <E> CompletableFuture<HttpResponse<E>> withHandler(HttpResponse.BodyHandler<E>  handler) {
+    return with(false, handler);
+  }
+
+  @Override
   public CompletableFuture<HttpResponse<Void>> asDiscarding() {
-    return withHandler(HttpResponse.BodyHandlers.discarding());
+    return with(false, HttpResponse.BodyHandlers.discarding());
   }
 
   @Override
   public CompletableFuture<HttpResponse<Void>> asVoid() {
+    // read the response content as bytes so that it is available for error response
     return request
       .performSendAsync(true, HttpResponse.BodyHandlers.ofByteArray())
       .thenApply(request::asyncVoid);
@@ -34,9 +40,22 @@ class DHttpAsync implements HttpAsyncResponse {
 
   @Override
   public CompletableFuture<HttpResponse<String>> asString() {
-    return request
-      .performSendAsync(true, HttpResponse.BodyHandlers.ofString())
-      .thenApply(request::afterAsync);
+    return with(true, HttpResponse.BodyHandlers.ofString());
+  }
+
+  @Override
+  public CompletableFuture<HttpResponse<byte[]>> asByteArray() {
+    return with(true, HttpResponse.BodyHandlers.ofByteArray());
+  }
+
+  @Override
+  public CompletableFuture<HttpResponse<Stream<String>>> asLines() {
+    return with(false, HttpResponse.BodyHandlers.ofLines());
+  }
+
+  @Override
+  public CompletableFuture<HttpResponse<InputStream>> asInputStream() {
+    return with(false, HttpResponse.BodyHandlers.ofInputStream());
   }
 
   @Override

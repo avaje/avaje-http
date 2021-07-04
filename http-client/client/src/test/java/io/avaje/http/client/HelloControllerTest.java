@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -59,6 +60,22 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void asLines_async() throws ExecutionException, InterruptedException {
+    final CompletableFuture<HttpResponse<Stream<String>>> future = clientContext.request()
+      .path("hello").path("stream")
+      .GET()
+      .async()
+      .asLines();
+
+    final HttpResponse<Stream<String>> hres = future.get();
+    assertThat(hres.statusCode()).isEqualTo(200);
+    final List<String> lines = hres.body().collect(Collectors.toList());
+
+    assertThat(lines).hasSize(4);
+    assertThat(lines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
+  }
+
+  @Test
   void asInputStream() throws IOException {
     final HttpResponse<InputStream> hres =
       clientContext.request()
@@ -66,6 +83,26 @@ class HelloControllerTest extends BaseWebTest {
         .GET()
         .asInputStream();
 
+    assertThat(hres.statusCode()).isEqualTo(200);
+    final LineNumberReader reader = new LineNumberReader(new InputStreamReader(hres.body()));
+
+    List<String> allLines = new ArrayList<>();
+    String line;
+    while ((line = reader.readLine()) != null) {
+      allLines.add(line);
+    }
+    assertThat(allLines).hasSize(4);
+    assertThat(allLines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
+  }
+
+  @Test
+  void asInputStream_async() throws IOException, ExecutionException, InterruptedException {
+    final CompletableFuture<HttpResponse<InputStream>> future = clientContext.request()
+      .path("hello").path("stream")
+      .GET()
+      .async().asInputStream();
+
+    final HttpResponse<InputStream> hres = future.get();
     assertThat(hres.statusCode()).isEqualTo(200);
     final LineNumberReader reader = new LineNumberReader(new InputStreamReader(hres.body()));
 
@@ -238,6 +275,28 @@ class HelloControllerTest extends BaseWebTest {
       .GET().asString();
 
     assertThat(hres.body()).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void asByteArray() {
+    final HttpResponse<byte[]> hres = clientContext.request()
+      .path("hello").path("message")
+      .GET().asByteArray();
+
+    final byte[] body = hres.body();
+    assertThat(new String(body, StandardCharsets.UTF_8)).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void asByteArray_async() throws ExecutionException, InterruptedException {
+    final CompletableFuture<HttpResponse<byte[]>> future = clientContext.request()
+      .path("hello").path("message")
+      .GET().async().asByteArray();
+
+    final HttpResponse<byte[]> hres = future.get();
+    assertThat(new String(hres.body(), StandardCharsets.UTF_8)).contains("hello world");
     assertThat(hres.statusCode()).isEqualTo(200);
   }
 
