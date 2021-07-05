@@ -8,6 +8,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.validation.Valid;
 
+import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
+
 public class ElementReader {
 
   private final ProcessingContext ctx;
@@ -309,5 +311,9 @@ public class ElementReader {
 
   public Element getElement() {
     return element;
+  }
+
+  public void setResponseHandler() {
+    paramType = RESPONSE_HANDLER;
   }
 }

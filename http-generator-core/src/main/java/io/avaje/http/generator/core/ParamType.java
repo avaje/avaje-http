@@ -10,7 +10,8 @@ public enum ParamType {
   QUERYPARAM("queryParam", "query"),
   FORMPARAM("formParam", "form"),
   COOKIE("cookie", "cookie"),
-  HEADER("header", "header");
+  HEADER("header", "header"),
+  RESPONSE_HANDLER("notUsed", "notUsed");
 
   private final String code;
   private final String type;

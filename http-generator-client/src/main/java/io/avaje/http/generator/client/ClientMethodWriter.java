@@ -61,6 +61,7 @@ class ClientMethodWriter {
    */
   private void checkBodyHandler(MethodParam param) {
     if (param.getRawType().startsWith(BODY_HANDLER)) {
+      param.setResponseHandler();
       bodyHandlerParam = param;
       methodGenericParams = param.getUType().genericParams();
     }

@@ -6,6 +6,7 @@ import io.avaje.http.api.Post;
 import io.avaje.http.client.HttpCall;
 
 import java.io.InputStream;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.util.List;
@@ -41,13 +42,24 @@ public interface JunkApi {
 
   @Post
   Repo bean();
-
   @Post
   List<Repo> list();
-
   @Post
   Stream<Repo> stream();
 
+  @Post
+  CompletableFuture<Repo> cfBean();
+  @Post
+  CompletableFuture<List<Repo>> cfList();
+  @Post
+  CompletableFuture<Stream<Repo>> cfStream();
+
+  @Post
+  HttpCall<Repo> callBean();
+  @Post
+  HttpCall<List<Repo>> callList();
+  @Post
+  HttpCall<Stream<Repo>> callStream();
   // -------
 
   // @Post CompletableFuture<Void> cfVoidErr();
@@ -107,5 +119,8 @@ public interface JunkApi {
 
   @Get
   HttpCall<HttpResponse<Path>> callWithHandPath(HttpResponse.BodyHandler<Path> handler);
+
+  @Post("/{id}/foo/{name}")
+  HttpResponse<Path> reqBodyResHand2(HttpResponse.BodyHandler<Path> handler, HttpRequest.BodyPublisher body, String id, String name, String other);
 
 }

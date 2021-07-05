@@ -63,4 +63,8 @@ public class MethodParam {
   public UType getUType() {
     return elementParam.getType();
   }
+
+  public void setResponseHandler() {
+    elementParam.setResponseHandler();
+  }
 }
