@@ -129,4 +129,40 @@ public class UtilTest {
     assertThat(type.importTypes()).containsExactly("java.util.concurrent.CompletableFuture", "java.util.Stream", "org.example.Repo");
     assertThat(type.shortType()).isEqualTo("CompletableFuture<Stream<Repo>>");
   }
+
+  @Test
+  void parse_BodyHandler_E() {
+    UType type = Util.parse("java.net.http.HttpResponse.BodyHandler<E>");
+
+    assertThat(type.importTypes()).containsExactly("java.net.http.HttpResponse.BodyHandler");
+    assertThat(type.shortType()).isEqualTo("BodyHandler<E>");
+    assertThat(type.genericParams()).isEqualTo("<E> ");
+  }
+
+  @Test
+  void parse_BodyHandler_Path() {
+    UType type = Util.parse("java.net.http.HttpResponse.BodyHandler<java.util.Path>");
+
+    assertThat(type.importTypes()).containsExactly("java.net.http.HttpResponse.BodyHandler", "java.util.Path");
+    assertThat(type.shortType()).isEqualTo("BodyHandler<Path>");
+    assertThat(type.genericParams()).isEqualTo("");
+  }
+
+  @Test
+  void parse_BodyHandler_Multi() {
+    UType type = Util.parse("java.net.http.HttpResponse.BodyHandler<some.Foo<A,B>>");
+
+    assertThat(type.importTypes()).containsExactly("java.net.http.HttpResponse.BodyHandler", "some.Foo");
+    assertThat(type.shortType()).isEqualTo("BodyHandler<Foo<A,B>>");
+    assertThat(type.genericParams()).isEqualTo("<A,B> ");
+  }
+
+  @Test
+  void parse_BodyHandler_Multi2() {
+    UType type = Util.parse("java.net.http.HttpResponse.BodyHandler<some.Foo<AB,BC,some.Bar<D>>>");
+
+    assertThat(type.importTypes()).containsExactly("java.net.http.HttpResponse.BodyHandler", "some.Foo", "some.Bar");
+    assertThat(type.shortType()).isEqualTo("BodyHandler<Foo<AB,BC,Bar<D>>>");
+    assertThat(type.genericParams()).isEqualTo("<AB,BC,D> ");
+  }
 }

@@ -21,6 +21,7 @@ class ClientMethodWriter {
   private final ProcessingContext ctx;
   private final UType returnType;
   private MethodParam bodyHandlerParam;
+  private String methodGenericParams = "";
 
   ClientMethodWriter(MethodReader method, Append writer, ProcessingContext ctx) {
     this.method = method;
@@ -43,7 +44,7 @@ class ClientMethodWriter {
     }
     writer.append("  // %s %s", webMethod, method.getWebMethodPath()).eol();
     writer.append("  @Override").eol();
-    writer.append("  public %s %s(", returnType.shortType(), method.simpleName());
+    writer.append("  public %s%s %s(", methodGenericParams, returnType.shortType(), method.simpleName());
     int count = 0;
     for (MethodParam param : method.getParams()) {
       if (count++ > 0) {
@@ -61,7 +62,7 @@ class ClientMethodWriter {
   private void checkBodyHandler(MethodParam param) {
     if (param.getRawType().startsWith(BODY_HANDLER)) {
       bodyHandlerParam = param;
-      param.getUType().param0();
+      methodGenericParams = param.getUType().genericParams();
     }
   }
 

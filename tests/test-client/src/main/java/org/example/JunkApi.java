@@ -1,11 +1,13 @@
 package org.example;
 
 import io.avaje.http.api.Client;
+import io.avaje.http.api.Get;
 import io.avaje.http.api.Post;
 import io.avaje.http.client.HttpCall;
 
 import java.io.InputStream;
 import java.net.http.HttpResponse;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -88,6 +90,22 @@ public interface JunkApi {
   @Post
   HttpCall<HttpResponse<Stream<String>>> callLines();
 
-//  @Get
-//  <E> HttpResponse<E> withH(HttpResponse.BodyHandler<E> handler);
+  @Get
+  <E> HttpResponse<E> withHandGeneric(HttpResponse.BodyHandler<E> handler);
+
+  @Get
+  HttpResponse<Path> withHandPath(HttpResponse.BodyHandler<Path> handler);
+
+  @Get
+  <E> CompletableFuture<HttpResponse<E>> cfWithHandGeneric(HttpResponse.BodyHandler<E> handler);
+
+  @Get
+  CompletableFuture<HttpResponse<Path>> cfWithHandPath(HttpResponse.BodyHandler<Path> handler);
+
+  @Get
+  <E> HttpCall<HttpResponse<E>> callWithHandGeneric(HttpResponse.BodyHandler<E> handler);
+
+  @Get
+  HttpCall<HttpResponse<Path>> callWithHandPath(HttpResponse.BodyHandler<Path> handler);
+
 }

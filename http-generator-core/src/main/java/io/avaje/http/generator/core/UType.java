@@ -40,6 +40,10 @@ public interface UType {
    */
   String full();
 
+  default String genericParams() {
+    return "";
+  }
+
   class VoidType implements UType {
 
     @Override
@@ -129,11 +133,23 @@ public interface UType {
     public Set<String> importTypes() {
       Set<String> set = new LinkedHashSet<>();
       for (String type : allTypes) {
-        if (!type.startsWith("java.lang.")) {
+        if (!type.startsWith("java.lang.") && type.indexOf('.') > -1) {
           set.add(type);
         }
       }
       return set;
+    }
+
+    @Override
+    public String genericParams() {
+      final StringJoiner joiner = new StringJoiner(",");
+      for (String type : allTypes) {
+        if (type.indexOf('.') == -1) {
+          joiner.add(type);
+        }
+      }
+      final String commaDelim = joiner.toString();
+      return commaDelim.isEmpty() ? "" : "<" + commaDelim + "> ";
     }
 
     @Override
