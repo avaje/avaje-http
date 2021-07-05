@@ -1,5 +1,6 @@
 package io.avaje.http.client;
 
+import java.io.InputStream;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.stream.Stream;
@@ -79,6 +80,27 @@ public interface HttpCallResponse {
    * @return The HttpCall to allow sync or async execution
    */
   HttpCall<HttpResponse<String>> asString();
+
+  /**
+   * Process as response {@literal HttpResponse<byte[]>}.
+   *
+   * @return The CompletableFuture of the response
+   */
+  HttpCall<HttpResponse<byte[]>> asByteArray();
+
+  /**
+   * Process as response {@literal HttpResponse<Stream<String>>}.
+   *
+   * @return The CompletableFuture of the response
+   */
+  HttpCall<HttpResponse<Stream<String>>> asLines();
+
+  /**
+   * Process as response {@literal HttpResponse<InputStream>}.
+   *
+   * @return The CompletableFuture of the response
+   */
+  HttpCall<HttpResponse<InputStream>> asInputStream();
 
   /**
    * Call using any given {@code HttpResponse.BodyHandler}.

@@ -76,6 +76,36 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void asLines_callExecute() {
+    final HttpResponse<Stream<String>> hres =
+      clientContext.request()
+        .path("hello").path("stream")
+        .GET()
+        .call().asLines().execute();
+
+    assertThat(hres.statusCode()).isEqualTo(200);
+    final List<String> lines = hres.body().collect(Collectors.toList());
+
+    assertThat(lines).hasSize(4);
+    assertThat(lines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
+  }
+
+  @Test
+  void asLines_callAsync() throws ExecutionException, InterruptedException {
+    final HttpResponse<Stream<String>> hres =
+      clientContext.request()
+        .path("hello").path("stream")
+        .GET()
+        .call().asLines().async().get();
+
+    assertThat(hres.statusCode()).isEqualTo(200);
+    final List<String> lines = hres.body().collect(Collectors.toList());
+
+    assertThat(lines).hasSize(4);
+    assertThat(lines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
+  }
+
+  @Test
   void asInputStream() throws IOException {
     final HttpResponse<InputStream> hres =
       clientContext.request()
@@ -84,13 +114,7 @@ class HelloControllerTest extends BaseWebTest {
         .asInputStream();
 
     assertThat(hres.statusCode()).isEqualTo(200);
-    final LineNumberReader reader = new LineNumberReader(new InputStreamReader(hres.body()));
-
-    List<String> allLines = new ArrayList<>();
-    String line;
-    while ((line = reader.readLine()) != null) {
-      allLines.add(line);
-    }
+    List<String> allLines = readLines(hres);
     assertThat(allLines).hasSize(4);
     assertThat(allLines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
   }
@@ -104,15 +128,49 @@ class HelloControllerTest extends BaseWebTest {
 
     final HttpResponse<InputStream> hres = future.get();
     assertThat(hres.statusCode()).isEqualTo(200);
-    final LineNumberReader reader = new LineNumberReader(new InputStreamReader(hres.body()));
+    List<String> allLines = readLines(hres);
+    assertThat(allLines).hasSize(4);
+    assertThat(allLines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
+  }
 
+  @Test
+  void asInputStream_callExecute() throws IOException {
+    final HttpResponse<InputStream> hres =
+      clientContext.request()
+        .path("hello").path("stream")
+        .GET()
+        .call()
+        .asInputStream().execute();
+
+    assertThat(hres.statusCode()).isEqualTo(200);
+    List<String> allLines = readLines(hres);
+    assertThat(allLines).hasSize(4);
+    assertThat(allLines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
+  }
+
+  @Test
+  void asInputStream_callAsync() throws IOException, ExecutionException, InterruptedException {
+    final HttpResponse<InputStream> hres =
+      clientContext.request()
+        .path("hello").path("stream")
+        .GET()
+        .call()
+        .asInputStream().async().get();
+
+    assertThat(hres.statusCode()).isEqualTo(200);
+    List<String> allLines = readLines(hres);
+    assertThat(allLines).hasSize(4);
+    assertThat(allLines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
+  }
+
+  private List<String> readLines(HttpResponse<InputStream> hres) throws IOException {
+    final LineNumberReader reader = new LineNumberReader(new InputStreamReader(hres.body()));
     List<String> allLines = new ArrayList<>();
     String line;
     while ((line = reader.readLine()) != null) {
       allLines.add(line);
     }
-    assertThat(allLines).hasSize(4);
-    assertThat(allLines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
+    return allLines;
   }
 
   @Test
@@ -350,6 +408,26 @@ class HelloControllerTest extends BaseWebTest {
       .GET().call().asString().async().get();
 
     assertThat(hres.body()).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void callBytes() {
+    final HttpResponse<byte[]> hres = clientContext.request()
+      .path("hello").path("message")
+      .GET().call().asByteArray().execute();
+
+    assertThat(new String(hres.body(), StandardCharsets.UTF_8)).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void callBytesAsync() throws ExecutionException, InterruptedException {
+    final HttpResponse<byte[]> hres = clientContext.request()
+      .path("hello").path("message")
+      .GET().call().asByteArray().async().get();
+
+    assertThat(new String(hres.body(), StandardCharsets.UTF_8)).contains("hello world");
     assertThat(hres.statusCode()).isEqualTo(200);
   }
 

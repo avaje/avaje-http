@@ -1,5 +1,6 @@
 package io.avaje.http.client;
 
+import java.io.InputStream;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -26,6 +27,21 @@ class DHttpCall implements HttpCallResponse {
   @Override
   public HttpCall<HttpResponse<String>> asString() {
     return new CallString();
+  }
+
+  @Override
+  public HttpCall<HttpResponse<byte[]>> asByteArray() {
+    return new CallBytes();
+  }
+
+  @Override
+  public HttpCall<HttpResponse<Stream<String>>> asLines() {
+    return new CallLines();
+  }
+
+  @Override
+  public HttpCall<HttpResponse<InputStream>> asInputStream() {
+    return new CallInputStream();
   }
 
   @Override
@@ -78,6 +94,39 @@ class DHttpCall implements HttpCallResponse {
     @Override
     public CompletableFuture<HttpResponse<String>> async() {
       return request.async().asString();
+    }
+  }
+
+  private class CallBytes implements HttpCall<HttpResponse<byte[]>> {
+    @Override
+    public HttpResponse<byte[]> execute() {
+      return request.asByteArray();
+    }
+    @Override
+    public CompletableFuture<HttpResponse<byte[]>> async() {
+      return request.async().asByteArray();
+    }
+  }
+
+  private class CallLines implements HttpCall<HttpResponse<Stream<String>>> {
+    @Override
+    public HttpResponse<Stream<String>> execute() {
+      return request.asLines();
+    }
+    @Override
+    public CompletableFuture<HttpResponse<Stream<String>>> async() {
+      return request.async().asLines();
+    }
+  }
+
+  private class CallInputStream implements HttpCall<HttpResponse<InputStream>> {
+    @Override
+    public HttpResponse<InputStream> execute() {
+      return request.asInputStream();
+    }
+    @Override
+    public CompletableFuture<HttpResponse<InputStream>> async() {
+      return request.async().asInputStream();
     }
   }
 
