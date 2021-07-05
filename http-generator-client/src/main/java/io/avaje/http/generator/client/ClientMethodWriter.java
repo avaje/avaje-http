@@ -38,6 +38,9 @@ class ClientMethodWriter {
   }
 
   private void methodStart(Append writer) {
+    for (MethodParam param : method.getParams()) {
+      checkBodyHandler(param);
+    }
     writer.append("  // %s %s", webMethod, method.getWebMethodPath()).eol();
     writer.append("  @Override").eol();
     writer.append("  public %s %s(", returnType.shortType(), method.simpleName());
@@ -48,7 +51,6 @@ class ClientMethodWriter {
       }
       writer.append(param.getUType().shortType()).append(" ");
       writer.append(param.getName());
-      checkBodyHandler(param);
     }
     writer.append(") {").eol();
   }
@@ -59,6 +61,7 @@ class ClientMethodWriter {
   private void checkBodyHandler(MethodParam param) {
     if (param.getRawType().startsWith(BODY_HANDLER)) {
       bodyHandlerParam = param;
+      param.getUType().param0();
     }
   }
 
@@ -82,7 +85,7 @@ class ClientMethodWriter {
     WebMethod webMethod = method.getWebMethod();
     writer.append("      .%s()", webMethod.name()).eol();
     if (returnType == UType.VOID) {
-      writer.append("      .asDiscarding();").eol();
+      writer.append("      .asVoid();").eol();
     } else {
       String known = KNOWN_RESPONSE.get(returnType.full());
       if (known != null) {
