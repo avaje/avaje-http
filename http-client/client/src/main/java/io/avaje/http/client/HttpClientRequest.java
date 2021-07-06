@@ -46,6 +46,22 @@ public interface HttpClientRequest {
   HttpClientRequest suppressLogging();
 
   /**
+   * Set a label for the request. The label is intended to be used to group and
+   * identify metrics for the request.
+   *
+   * @param label The label that can be used to identify metrics for the request
+   */
+  HttpClientRequest label(String label);
+
+  /**
+   * Return the label that has been set on this request.
+   * <p>
+   * Typically the label would be read in {@link RequestIntercept#afterResponse(HttpResponse, HttpClientRequest)}
+   * to assign request execution metrics.
+   */
+  String label();
+
+  /**
    * Set the request timeout to use for this request. When not set the default
    * request timeout will be used.
    *

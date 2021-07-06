@@ -25,6 +25,7 @@ public class RetryTest extends BaseWebTest {
   @Test
   void retryTest() {
     HttpResponse<String> res = clientContext.request()
+      .label("http_client_hello_retry")
       .path("hello/retry")
       .GET()
       .asString();
@@ -33,11 +34,13 @@ public class RetryTest extends BaseWebTest {
 
     assertThat(myIntercept.responseTimeMicros).isGreaterThan(1);
     assertThat(myIntercept.counter).isEqualTo(1);
+    assertThat(myIntercept.label).isEqualTo("http_client_hello_retry");
   }
 
   static class MyIntercept implements RequestIntercept {
     int counter;
     long responseTimeMicros;
+    String label;
 
     /**
      * Not called for the retry attempts. Only called on the final success or error response.
@@ -46,6 +49,7 @@ public class RetryTest extends BaseWebTest {
     public void afterResponse(HttpResponse<?> response, HttpClientRequest request) {
       counter++;
       responseTimeMicros = request.responseTimeMicros();
+      label = request.label();
     }
   }
 }

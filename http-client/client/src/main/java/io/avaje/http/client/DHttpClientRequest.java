@@ -51,6 +51,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private boolean skipAuthToken;
   private boolean suppressLogging;
   private long startAsyncNanos;
+  private String label;
 
   DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
     this.context = context;
@@ -69,6 +70,17 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   public HttpClientRequest suppressLogging() {
     this.suppressLogging = true;
     return this;
+  }
+
+  @Override
+  public HttpClientRequest label(String label) {
+    this.label = label;
+    return this;
+  }
+
+  @Override
+  public String label() {
+    return label;
   }
 
   @Override
