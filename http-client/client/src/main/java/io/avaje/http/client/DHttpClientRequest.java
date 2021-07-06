@@ -393,10 +393,10 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   private void readResponseContent() {
-    final HttpResponse<byte[]> response = asByteArray();
-    this.httpResponse = response;
-    context.checkMaybeThrow(response);
+    final HttpResponse<byte[]> response = sendWith(HttpResponse.BodyHandlers.ofByteArray());
     encodedResponseBody = context.readContent(response);
+    context.afterResponse(this);
+    context.checkMaybeThrow(response);
   }
 
   @Override
@@ -436,11 +436,19 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public <T> HttpResponse<T> withHandler(HttpResponse.BodyHandler<T> responseHandler) {
+    final HttpResponse<T> response = sendWith(responseHandler);
+    context.afterResponse(this);
+    return response;
+  }
+
+  /**
+   * Prepare and send the request but not performing afterResponse() handling.
+   */
+  private <T> HttpResponse<T> sendWith(HttpResponse.BodyHandler<T> responseHandler) {
     context.beforeRequest(this);
     addHeaders();
     HttpResponse<T> response = performSend(responseHandler);
     httpResponse = response;
-    context.afterResponse(this);
     return response;
   }
 
