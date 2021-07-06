@@ -52,6 +52,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private boolean suppressLogging;
   private long startAsyncNanos;
   private String label;
+  private Map<String, Object> customAttributes;
 
   DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
     this.context = context;
@@ -81,6 +82,21 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   @Override
   public String label() {
     return label;
+  }
+
+  @Override
+  public HttpClientRequest setAttribute(String key, Object value) {
+    if (customAttributes == null) {
+      customAttributes = new HashMap<>();
+    }
+    customAttributes.put(key, value);
+    return this;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <E> E getAttribute(String key) {
+    return customAttributes == null ? null : (E) customAttributes.get(key);
   }
 
   @Override

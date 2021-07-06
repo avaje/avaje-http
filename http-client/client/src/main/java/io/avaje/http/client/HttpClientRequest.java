@@ -62,6 +62,26 @@ public interface HttpClientRequest {
   String label();
 
   /**
+   * Used to pass custom attribute between {@link RequestIntercept} methods.
+   * <p>
+   * Allows us to pass something between {@code beforeRequest} and {@code afterResponse}
+   * methods of a {@link RequestIntercept} or between multiple {@link RequestIntercept}.
+   *
+   * @param key   The unique key used to store the attribute
+   * @param value The attribute to store
+   */
+  HttpClientRequest setAttribute(String key, Object value);
+
+  /**
+   * Return a custom attribute typically set by a {@link RequestIntercept#beforeRequest(HttpClientRequest)}.
+   *
+   * @param key The key for the custom attribute
+   * @param <E> The inferred type of the attribute
+   * @return The custom attribute
+   */
+  <E> E getAttribute(String key);
+
+  /**
    * Set the request timeout to use for this request. When not set the default
    * request timeout will be used.
    *
