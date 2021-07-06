@@ -25,7 +25,7 @@ public interface RequestListener {
     /**
      * Return the time from request to response in nanos.
      */
-    long responseTimeNanos();
+    long responseTimeMicros();
 
     /**
      * Return the URI for the request.

@@ -31,8 +31,4 @@ public class BasicAuthIntercept implements RequestIntercept {
     request.header("Authorization", headerValue);
   }
 
-  @Override
-  public void afterResponse(HttpResponse<?> response, HttpClientRequest request) {
-    // do nothing
-  }
 }

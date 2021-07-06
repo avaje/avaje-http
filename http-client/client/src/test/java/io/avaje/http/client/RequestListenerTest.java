@@ -1,7 +1,6 @@
 package io.avaje.http.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.webserver.HelloDto;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpResponse;
@@ -28,7 +27,7 @@ class RequestListenerTest extends BaseWebTest {
         assertThat(event.uri().toString()).isEqualTo("http://localhost:8887/hello/message");
         assertThat(event.requestBody()).isNull();
       }
-      assertThat(event.responseTimeNanos()).isGreaterThan(1L);
+      assertThat(event.responseTimeMicros()).isGreaterThan(1L);
       assertThat(event.response().statusCode()).isEqualTo(200);
       assertThat(event.request()).isEqualTo(event.response().request());
     }

@@ -43,7 +43,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private Map<String, List<String>> headers;
 
   private boolean bodyFormEncoded;
-  private long requestTimeNanos;
+  private long responseTimeNanos;
 
   private HttpResponse<?> httpResponse;
   private BodyContent encodedResponseBody;
@@ -421,7 +421,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     try {
       return context.send(httpRequest, responseHandler);
     } finally {
-      requestTimeNanos = System.nanoTime() - startNanos;
+      responseTimeNanos = System.nanoTime() - startNanos;
     }
   }
 
@@ -449,7 +449,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   protected <E> Stream<E> asyncStream(Class<E> type, HttpResponse<Stream<String>> response) {
-    requestTimeNanos = System.nanoTime() - startAsyncNanos;
+    responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     context.afterResponse(this);
     if (response.statusCode() >= 300) {
@@ -460,7 +460,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   private void afterAsyncEncoded(HttpResponse<byte[]> response) {
-    requestTimeNanos = System.nanoTime() - startAsyncNanos;
+    responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     encodedResponseBody = context.readContent(response);
     context.afterResponse(this);
@@ -468,10 +468,15 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   protected <E> HttpResponse<E> afterAsync(HttpResponse<E> response) {
-    requestTimeNanos = System.nanoTime() - startAsyncNanos;
+    responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     context.afterResponse(this);
     return response;
+  }
+
+  @Override
+  public long responseTimeMicros() {
+    return responseTimeNanos / 1000;
   }
 
   @Override
@@ -573,8 +578,8 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private class ListenerEvent implements RequestListener.Event {
 
     @Override
-    public long responseTimeNanos() {
-      return requestTimeNanos;
+    public long responseTimeMicros() {
+      return responseTimeNanos / 1000;
     }
 
     @Override

@@ -12,11 +12,15 @@ public interface RequestIntercept {
    * <p>
    * Typically we can add headers or modify the request prior to it being sent.
    */
-  void beforeRequest(HttpClientRequest request);
+  default void beforeRequest(HttpClientRequest request) {
+    // do nothing by default
+  }
 
   /**
    * After the response has been received.
    */
-  void afterResponse(HttpResponse<?> response, HttpClientRequest request);
+  default void afterResponse(HttpResponse<?> response, HttpClientRequest request) {
+    // do nothing by default
+  }
 
 }

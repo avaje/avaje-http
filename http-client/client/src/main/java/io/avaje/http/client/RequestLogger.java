@@ -42,7 +42,7 @@ public class RequestLogger implements RequestListener {
     if (log.isDebugEnabled()) {
       final HttpResponse<?> response = event.response();
       final HttpRequest request = response.request();
-      long micros = event.responseTimeNanos() / 1000;
+      long micros = event.responseTimeMicros();
 
       StringBuilder sb = new StringBuilder();
       sb.append("statusCode:").append(response.statusCode())

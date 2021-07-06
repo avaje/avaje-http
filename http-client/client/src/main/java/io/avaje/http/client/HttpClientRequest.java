@@ -2,6 +2,7 @@ package io.avaje.http.client;
 
 import java.io.InputStream;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
@@ -345,4 +346,10 @@ public interface HttpClientRequest {
    */
   HttpClientResponse HEAD();
 
+  /**
+   * After the response is returned this method returns the response time in microseconds.
+   * <p>
+   * This is useful for use in {@link RequestIntercept#afterResponse(HttpResponse, HttpClientRequest)}
+   */
+  long responseTimeMicros();
 }
