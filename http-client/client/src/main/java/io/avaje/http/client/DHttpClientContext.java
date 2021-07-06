@@ -6,6 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +107,20 @@ class DHttpClientContext implements HttpClientContext {
     }
   }
 
+  @SuppressWarnings("unchecked")
+  public BodyContent readErrorContent(boolean responseAsBytes, HttpResponse<?> httpResponse) {
+    if (responseAsBytes) {
+      return readContent((HttpResponse<byte[]>) httpResponse);
+    }
+    final String contentType = getContentType(httpResponse);
+    final Object body = httpResponse.body();
+    if (body instanceof String) {
+      return new BodyContent(contentType, ((String) body).getBytes(StandardCharsets.UTF_8));
+    }
+    String type = (body == null) ? "null" : body.getClass().toString();
+    throw new IllegalStateException("Unable to translate response body to bytes? Maybe use HttpResponse directly instead?  Response body type: " + type);
+  }
+
   @Override
   public BodyContent readContent(HttpResponse<byte[]> httpResponse) {
     byte[] bodyBytes = decodeContent(httpResponse);
@@ -113,11 +128,11 @@ class DHttpClientContext implements HttpClientContext {
     return new BodyContent(contentType, bodyBytes);
   }
 
-  String getContentType(HttpResponse<byte[]> httpResponse) {
+  String getContentType(HttpResponse<?> httpResponse) {
     return firstHeader(httpResponse.headers(), "Content-Type", "content-type");
   }
 
-  String getContentEncoding(HttpResponse<byte[]> httpResponse) {
+  String getContentEncoding(HttpResponse<?> httpResponse) {
     return firstHeader(httpResponse.headers(), "Content-Encoding", "content-encoding");
   }
 

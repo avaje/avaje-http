@@ -486,6 +486,14 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpResponse<String> asPlainString() {
+    loggableResponseBody = true;
+    final HttpResponse<String> hres = withHandler(HttpResponse.BodyHandlers.ofString());
+    context.checkResponse(hres);
+    return hres;
+  }
+
+  @Override
   public HttpResponse<Void> asDiscarding() {
     return withHandler(discarding());
   }

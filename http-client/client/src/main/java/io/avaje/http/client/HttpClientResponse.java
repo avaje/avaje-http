@@ -114,6 +114,14 @@ public interface HttpClientResponse {
   HttpResponse<String> asString();
 
   /**
+   * Return the content as string with check for 200 range status code.
+   * <p>
+   * If the status code is in the error range then a {@link HttpException}
+   * is thrown.
+   */
+  HttpResponse<String> asPlainString();
+
+  /**
    * Return the content as InputStream.
    */
   HttpResponse<InputStream> asInputStream();

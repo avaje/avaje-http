@@ -376,6 +376,63 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void asString_200() {
+    final HttpResponse<String> hres = clientContext.request()
+      .path("hello").path("message")
+      .GET().asString();
+
+    assertThat(hres.body()).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void asPlainString_200() {
+    final HttpResponse<String> hres = clientContext.request()
+      .path("hello").path("message")
+      .GET().asPlainString();
+
+    assertThat(hres.body()).contains("hello world");
+    assertThat(hres.statusCode()).isEqualTo(200);
+  }
+
+  @Test
+  void asPlainString_throwingHttpException() {
+    final HttpException httpException = assertThrows(HttpException.class, () ->
+      clientContext.request()
+      .path("hello/saveform3")
+      .formParam("name", "Bax")
+      .formParam("email", "notValidEmail")
+      .POST()
+      .asPlainString());
+
+    assertThat(httpException.statusCode()).isEqualTo(422);
+
+    // convert json error response body to a bean
+    final ErrorResponse errorResponse = httpException.bean(ErrorResponse.class);
+    final Map<String, String> errorMap = errorResponse.getErrors();
+    assertThat(errorMap.get("email")).isEqualTo("must be a well-formed email address");
+  }
+
+  @Test
+  void asString_readInvalidResponse() {
+    final HttpResponse<String> hres = clientContext.request()
+      .path("hello/saveform3")
+      .formParam("name", "Bax")
+      .formParam("email", "notValidEmail")
+      .POST()
+      .asString();
+
+    assertThat(hres.statusCode()).isEqualTo(422);
+
+    // convert json error response body to a bean
+    final ErrorResponse errorResponse = clientContext.converters()
+      .beanReader(ErrorResponse.class).readBody(hres.body());
+
+    final Map<String, String> errorMap = errorResponse.getErrors();
+    assertThat(errorMap.get("email")).isEqualTo("must be a well-formed email address");
+  }
+
+  @Test
   void headers() {
     final HttpClientRequest request = clientContext.request();
 

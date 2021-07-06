@@ -43,6 +43,7 @@ import java.nio.charset.StandardCharsets;
 public class HttpException extends RuntimeException {
 
   private final int statusCode;
+  private final boolean responseAsBytes;
   private DHttpClientContext context;
   private HttpResponse<?> httpResponse;
 
@@ -52,6 +53,7 @@ public class HttpException extends RuntimeException {
   public HttpException(int statusCode, String message) {
     super(message);
     this.statusCode = statusCode;
+    this.responseAsBytes = false;
   }
 
   /**
@@ -60,6 +62,7 @@ public class HttpException extends RuntimeException {
   public HttpException(int statusCode, String message, Throwable cause) {
     super(message, cause);
     this.statusCode = statusCode;
+    this.responseAsBytes = false;
   }
 
   /**
@@ -68,6 +71,7 @@ public class HttpException extends RuntimeException {
   public HttpException(int statusCode, Throwable cause) {
     super(cause);
     this.statusCode = statusCode;
+    this.responseAsBytes = false;
   }
 
   HttpException(HttpResponse<?> httpResponse, DHttpClientContext context) {
@@ -75,6 +79,7 @@ public class HttpException extends RuntimeException {
     this.httpResponse = httpResponse;
     this.statusCode = httpResponse.statusCode();
     this.context = context;
+    this.responseAsBytes = false;
   }
 
   HttpException(DHttpClientContext context, HttpResponse<byte[]> httpResponse) {
@@ -82,6 +87,7 @@ public class HttpException extends RuntimeException {
     this.httpResponse = httpResponse;
     this.statusCode = httpResponse.statusCode();
     this.context = context;
+    this.responseAsBytes = true;
   }
 
   /**
@@ -90,27 +96,24 @@ public class HttpException extends RuntimeException {
    * @param cls The type of bean to convert the response to
    * @return The response as a bean
    */
-  @SuppressWarnings("unchecked")
   public <T> T bean(Class<T> cls) {
-    final BodyContent body = context.readContent((HttpResponse<byte[]>) httpResponse);
+    final BodyContent body = context.readErrorContent(responseAsBytes, httpResponse);
     return context.readBean(cls, body);
   }
 
   /**
    * Return the response body content as a UTF8 string.
    */
-  @SuppressWarnings("unchecked")
   public String bodyAsString() {
-    final BodyContent body = context.readContent((HttpResponse<byte[]>) httpResponse);
+    final BodyContent body = context.readErrorContent(responseAsBytes, httpResponse);
     return new String(body.content(), StandardCharsets.UTF_8);
   }
 
   /**
    * Return the response body content as raw bytes.
    */
-  @SuppressWarnings("unchecked")
   public byte[] bodyAsBytes() {
-    final BodyContent body = context.readContent((HttpResponse<byte[]>) httpResponse);
+    final BodyContent body = context.readErrorContent(responseAsBytes, httpResponse);
     return body.content();
   }
 
