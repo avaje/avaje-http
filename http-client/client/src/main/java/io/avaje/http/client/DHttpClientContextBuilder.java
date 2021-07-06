@@ -1,7 +1,11 @@
 package io.avaje.http.client;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.net.ProxySelector;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -23,6 +27,11 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   private HttpClient.Redirect redirect = HttpClient.Redirect.NORMAL;
   private HttpClient.Version version;
   private Executor executor;
+  private ProxySelector proxy;
+  private SSLContext sslContext;
+  private SSLParameters sslParameters;
+  private Authenticator authenticator;
+  private int priority;
 
   private final List<RequestIntercept> interceptors = new ArrayList<>();
   private final List<RequestListener> listeners = new ArrayList<>();
@@ -103,6 +112,36 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   }
 
   @Override
+  public HttpClientContext.Builder withProxy(ProxySelector proxySelector) {
+    this.proxy = proxySelector;
+    return this;
+  }
+
+  @Override
+  public HttpClientContext.Builder withSSLContext(SSLContext sslContext) {
+    this.sslContext = sslContext;
+    return this;
+  }
+
+  @Override
+  public HttpClientContext.Builder withSSLParameters(SSLParameters sslParameters) {
+    this.sslParameters = sslParameters;
+    return this;
+  }
+
+  @Override
+  public HttpClientContext.Builder withAuthenticator(Authenticator authenticator) {
+    this.authenticator = authenticator;
+    return this;
+  }
+
+  @Override
+  public HttpClientContext.Builder withPriority(int priority) {
+    this.priority = priority;
+    return this;
+  }
+
+  @Override
   public HttpClientContext build() {
     requireNonNull(baseUrl, "baseUrl is not specified");
     requireNonNull(requestTimeout, "requestTimeout is not specified");
@@ -133,8 +172,7 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   }
 
   private HttpClient defaultClient() {
-    final HttpClient.Builder builder =
-      HttpClient.newBuilder()
+    final HttpClient.Builder builder = HttpClient.newBuilder()
         .followRedirects(redirect)
         .connectTimeout(Duration.ofSeconds(20));
     if (cookieHandler != null) {
@@ -145,6 +183,21 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
     }
     if (executor != null) {
       builder.executor(executor);
+    }
+    if (proxy != null) {
+      builder.proxy(proxy);
+    }
+    if (sslContext != null) {
+      builder.sslContext(sslContext);
+    }
+    if (sslParameters != null) {
+      builder.sslParameters(sslParameters);
+    }
+    if (authenticator != null) {
+      builder.authenticator(authenticator);
+    }
+    if (priority > 0) {
+      builder.priority(priority);
     }
     return builder.build();
   }

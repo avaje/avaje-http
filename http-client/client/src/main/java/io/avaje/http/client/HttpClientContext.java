@@ -1,6 +1,10 @@
 package io.avaje.http.client;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+import java.net.Authenticator;
 import java.net.CookieHandler;
+import java.net.ProxySelector;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.time.Duration;
@@ -222,6 +226,41 @@ public interface HttpClientContext {
      * @see HttpClient.Builder#executor(Executor)
      */
     Builder withExecutor(Executor executor);
+
+    /**
+     * Set the proxy to the underlying {@link HttpClient}.
+     *
+     * @see HttpClient.Builder#proxy(ProxySelector)
+     */
+    Builder withProxy(ProxySelector proxySelector);
+
+    /**
+     * Set the sslContext to the underlying {@link HttpClient}.
+     *
+     * @see HttpClient.Builder#sslContext(SSLContext)
+     */
+    Builder withSSLContext(SSLContext sslContext);
+
+    /**
+     * Set the sslParameters to the underlying {@link HttpClient}.
+     *
+     * @see HttpClient.Builder#sslParameters(SSLParameters)
+     */
+    Builder withSSLParameters(SSLParameters sslParameters);
+
+    /**
+     * Set a HttpClient authenticator to the underlying {@link HttpClient}.
+     *
+     * @see HttpClient.Builder#authenticator(Authenticator)
+     */
+    Builder withAuthenticator(Authenticator authenticator);
+
+    /**
+     * Set the priority for HTTP/2 requests to the underlying {@link HttpClient}.
+     *
+     * @see HttpClient.Builder#priority(int)
+     */
+    Builder withPriority(int priority);
 
     /**
      * Build and return the context.
