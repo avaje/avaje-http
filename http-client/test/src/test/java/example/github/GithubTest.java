@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import io.avaje.http.client.BodyAdapter;
-import io.avaje.http.client.HttpApi;
 import io.avaje.http.client.HttpClientContext;
 import io.avaje.http.client.JacksonBodyAdapter;
 import io.avaje.http.client.RequestLogger;
@@ -34,7 +33,7 @@ public class GithubTest {
       .withRequestListener(new RequestLogger())
       .build();
 
-    final Simple simple = HttpApi.provide(Simple.class, clientContext);
+    final Simple simple = clientContext.create(Simple.class);
 
     final List<Repo> repos = simple.listRepos("rbygrave", "junk");
     assertThat(repos).isNotEmpty();

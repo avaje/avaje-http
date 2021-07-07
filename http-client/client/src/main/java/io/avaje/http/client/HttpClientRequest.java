@@ -308,46 +308,6 @@ public interface HttpClientRequest {
   HttpClientRequest body(HttpRequest.BodyPublisher body);
 
   /**
-   * Deprecated migrate to GET().
-   */
-  @Deprecated
-  default HttpClientResponse get() {
-    return GET();
-  }
-
-  /**
-   * Deprecated migrate to POST().
-   */
-  @Deprecated
-  default HttpClientResponse post() {
-    return POST();
-  }
-
-  /**
-   * Deprecated migrate to PUT().
-   */
-  @Deprecated
-  default HttpClientResponse put() {
-    return PUT();
-  }
-
-  /**
-   * Deprecated migrate to PATCH().
-   */
-  @Deprecated
-  default HttpClientResponse patch() {
-    return PATCH();
-  }
-
-  /**
-   * Deprecated migrate to DELETE().
-   */
-  @Deprecated
-  default HttpClientResponse delete() {
-    return DELETE();
-  }
-
-  /**
    * Execute the request as a GET.
    */
   HttpClientResponse GET();

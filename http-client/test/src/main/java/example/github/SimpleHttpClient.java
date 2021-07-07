@@ -37,7 +37,7 @@ public class SimpleHttpClient implements HttpApiProvider<Simple> {
       return context.request()
         .path("users").path(user).path("repos")
         .queryParam("other", other)
-        .get().list(Repo.class);
+        .GET().list(Repo.class);
     }
 
   }

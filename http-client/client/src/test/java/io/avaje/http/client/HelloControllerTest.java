@@ -722,7 +722,7 @@ class HelloControllerTest extends BaseWebTest {
 
         final HttpException httpException = (HttpException) throwable.getCause();
         causeRef.set(httpException);
-        assertThat(httpException.getStatusCode()).isEqualTo(422);
+        assertThat(httpException.statusCode()).isEqualTo(422);
 
         // convert json error response body to a bean
         final ErrorResponse errorResponse = httpException.bean(ErrorResponse.class);
@@ -903,7 +903,7 @@ class HelloControllerTest extends BaseWebTest {
     } catch (HttpException e) {
       assertEquals(422, e.statusCode());
 
-      final HttpResponse<?> httpResponse = e.getHttpResponse();
+      final HttpResponse<?> httpResponse = e.httpResponse();
       assertNotNull(httpResponse);
       assertEquals(422, httpResponse.statusCode());
 

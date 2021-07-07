@@ -125,26 +125,10 @@ public class HttpException extends RuntimeException {
   }
 
   /**
-   * Deprecated migrate to statusCode()
-   */
-  @Deprecated
-  public int getStatusCode() {
-    return statusCode();
-  }
-
-  /**
    * Return the underlying HttpResponse.
    */
   public HttpResponse<?> httpResponse() {
     return httpResponse;
-  }
-
-  /**
-   * Deprecated migrate to httpResponse().
-   */
-  @Deprecated
-  public HttpResponse<?> getHttpResponse() {
-    return httpResponse();
   }
 
 }
