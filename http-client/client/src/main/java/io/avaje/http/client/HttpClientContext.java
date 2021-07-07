@@ -172,15 +172,16 @@ public interface HttpClientContext {
      * Disable or enable built in request and response logging.
      * <p>
      * By default request logging is enabled. Set this to false to stop
-     * the default {@link RequestLogger} being registered to log
-     * request and response headers and bodies etc.
+     * the default {@link RequestLogger} being registered to log request
+     * and response headers and bodies etc.
      * <p>
      * With logging level set to {@code DEBUG} for
-     * {@code io.avaje.http.client.RequestLogger} the request and
-     * response are logged with headers only.
+     * {@code io.avaje.http.client.RequestLogger} the request and response
+     * are logged as a summary with response status and time.
      * <p>
      * Set the logging level to {@code TRACE} to include the request
-     * and response body payloads (with truncation for large bodies).
+     * and response headers and body payloads with truncation for large
+     * bodies.
      *
      * <h3>Suppression</h3>
      * <p>
@@ -190,7 +191,7 @@ public interface HttpClientContext {
      * Logging of Authorization headers is suppressed.
      * {@link AuthTokenProvider} requests are suppressed.
      *
-     * @param requestLogging To turn disable/enable the registration of the default logger
+     * @param requestLogging Disable/enable the registration of the default logger
      * @see RequestLogger
      */
     Builder requestLogging(boolean requestLogging);

@@ -16,6 +16,14 @@ import java.util.Set;
  * This implementation logs the request and response with the same
  * single logging entry rather than separate logging of the request
  * and response.
+ * <p>
+ * With logging level set to {@code DEBUG} for
+ * {@code io.avaje.http.client.RequestLogger} the request and response
+ * are logged as a summary with response status and time.
+ * <p>
+ * Set the logging level to {@code TRACE} to include the request
+ * and response headers and body payloads with truncation for large
+ * bodies.
  */
 public class RequestLogger implements RequestListener {
 
