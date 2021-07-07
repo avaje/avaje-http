@@ -40,7 +40,7 @@ public interface HttpAsyncResponse {
    *
    *           // if throwable.getCause() is a HttpException for status code >= 300
    *           HttpException httpException = (HttpException) throwable.getCause();
-   *           int status = httpException.getStatusCode();
+   *           int status = httpException.statusCode();
    *
    *           // convert json error response body to a bean
    *           ErrorResponse errorResponse = httpException.bean(ErrorResponse.class);
@@ -190,7 +190,7 @@ public interface HttpAsyncResponse {
    *
    *         if (throwable != null) {
    *           HttpException httpException = (HttpException) throwable.getCause();
-   *           int statusCode = httpException.getStatusCode();
+   *           int statusCode = httpException.statusCode();
    *
    *           // maybe convert json error response body to a bean (using Jackson/Gson)
    *           MyErrorBean errorResponse = httpException.bean(MyErrorBean.class);
@@ -224,7 +224,7 @@ public interface HttpAsyncResponse {
    *
    *         if (throwable != null) {
    *           HttpException httpException = (HttpException) throwable.getCause();
-   *           int statusCode = httpException.getStatusCode();
+   *           int statusCode = httpException.statusCode();
    *           ...
    *
    *         } else {

@@ -23,9 +23,9 @@ import java.nio.charset.StandardCharsets;
  *     } catch (HttpException e) {
  *
  *       // obtain the statusCode from the exception ...
- *       int statusCode = e.getStatusCode());
+ *       int statusCode = e.statusCode());
  *
- *       HttpResponse<?> httpResponse = e.getHttpResponse();
+ *       HttpResponse<?> httpResponse = e.httpResponse();
  *
  *       // obtain the statusCode from httpResponse ...
  *       int statusCode = httpResponse.statusCode();
