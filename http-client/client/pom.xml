@@ -9,11 +9,11 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client</artifactId>
-  <version>1.8.1-SNAPSHOT</version>
+  <version>1.8.1</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http-client.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>avaje-http-client-1.8.1</tag>
   </scm>
 
   <dependencies>
