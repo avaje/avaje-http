@@ -16,12 +16,9 @@ public class DHttpApiTest {
   @Test
   void test_github_listRepos() {
 
-    JacksonBodyAdapter bodyAdapter = new JacksonBodyAdapter(new ObjectMapper()
-      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false));
-
     final HttpClientContext clientContext = HttpClientContext.newBuilder()
       .baseUrl("https://api.github.com")
-      .bodyAdapter(bodyAdapter)
+      .bodyAdapter(new JacksonBodyAdapter())
       .build();
 
     DHttpApi httpApi = new DHttpApi();

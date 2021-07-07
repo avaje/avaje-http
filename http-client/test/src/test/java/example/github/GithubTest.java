@@ -1,7 +1,5 @@
 package example.github;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import io.avaje.http.client.BodyAdapter;
 import io.avaje.http.client.HttpClientContext;
@@ -40,8 +38,7 @@ public class GithubTest {
   }
 
   private BodyAdapter jacksonBodyAdapter() {
-    return new JacksonBodyAdapter(new ObjectMapper()
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false));
+    return new JacksonBodyAdapter();
   }
 
   private BodyAdapter gsonBodyAdapter() {

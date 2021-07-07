@@ -1,9 +1,8 @@
 package io.avaje.http.client;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
 import java.io.IOException;
@@ -18,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *   HttpClientContext.newBuilder()
  *       .baseUrl(baseUrl)
  *       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
- *       //.bodyAdapter(new GsonBodyAdapter(new Gson()))
  *       .build();
  *
  * }</pre>
@@ -33,8 +31,22 @@ public class JacksonBodyAdapter implements BodyAdapter {
 
   private final ConcurrentHashMap<Class<?>, BodyReader<?>> listReaderCache = new ConcurrentHashMap<>();
 
+  /**
+   * Create passing the ObjectMapper to use.
+   */
   public JacksonBodyAdapter(ObjectMapper mapper) {
     this.mapper = mapper;
+  }
+
+  /**
+   * Create with a ObjectMapper that allows unknown properties and inclusion non empty.
+   */
+  public JacksonBodyAdapter() {
+    this.mapper = new ObjectMapper()
+      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+      .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+      .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+      .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
   }
 
   @Override

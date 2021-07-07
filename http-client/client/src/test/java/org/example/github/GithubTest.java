@@ -1,7 +1,5 @@
 package org.example.github;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.avaje.http.client.HttpClientContext;
 import io.avaje.http.client.JacksonBodyAdapter;
 import io.avaje.http.client.RequestLogger;
@@ -14,16 +12,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GithubTest {
 
-  private final JacksonBodyAdapter bodyAdapter = new JacksonBodyAdapter(new ObjectMapper()
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false));
-
   @Test
   @Disabled
   void test() throws InterruptedException {
 
     final HttpClientContext clientContext = HttpClientContext.newBuilder()
       .baseUrl("https://api.github.com")
-      .bodyAdapter(bodyAdapter)
+      .bodyAdapter(new JacksonBodyAdapter())
       .requestListener(new RequestLogger())
       .build();
 
