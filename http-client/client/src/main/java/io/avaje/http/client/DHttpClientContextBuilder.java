@@ -18,6 +18,7 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
 
   private HttpClient client;
   private String baseUrl;
+  private boolean requestLogging = true;
   private Duration requestTimeout = Duration.ofSeconds(20);
   private BodyAdapter bodyAdapter;
   private RetryHandler retryHandler;
@@ -66,6 +67,12 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   @Override
   public HttpClientContext.Builder retryHandler(RetryHandler retryHandler) {
     this.retryHandler = retryHandler;
+    return this;
+  }
+
+  @Override
+  public HttpClientContext.Builder requestLogging(boolean requestLogging) {
+    this.requestLogging = requestLogging;
     return this;
   }
 
@@ -148,6 +155,10 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
     if (client == null) {
       client = defaultClient();
     }
+    if (requestLogging) {
+      // register the built in request/response logging
+      requestListener(new RequestLogger());
+    }
     return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, retryHandler, buildListener(), authTokenProvider, buildIntercept());
   }
 
@@ -173,8 +184,8 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
 
   private HttpClient defaultClient() {
     final HttpClient.Builder builder = HttpClient.newBuilder()
-        .followRedirects(redirect)
-        .connectTimeout(Duration.ofSeconds(20));
+      .followRedirects(redirect)
+      .connectTimeout(Duration.ofSeconds(20));
     if (cookieHandler != null) {
       builder.cookieHandler(cookieHandler);
     }

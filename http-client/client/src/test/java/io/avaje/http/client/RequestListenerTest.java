@@ -36,6 +36,7 @@ class RequestListenerTest extends BaseWebTest {
   private HttpClientContext createClient(TDRequestListener tdRequestListener) {
     return HttpClientContext.newBuilder()
       .baseUrl(baseUrl)
+      .requestLogging(false)
       .requestListener(new RequestLogger())
       .bodyAdapter(new JacksonBodyAdapter())
       .requestListener(tdRequestListener)

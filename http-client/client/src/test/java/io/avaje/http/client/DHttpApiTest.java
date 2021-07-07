@@ -1,10 +1,8 @@
 package io.avaje.http.client;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.github.Repo;
 import org.example.github.Simple;
-import org.example.github.SimpleHttpClient;
+import org.example.github.httpclient.Simple$HttpClient;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -22,7 +20,7 @@ public class DHttpApiTest {
       .build();
 
     DHttpApi httpApi = new DHttpApi();
-    httpApi.addProvider(new SimpleHttpClient.Provider());
+    httpApi.addProvider(new Simple$HttpClient.Provider());
     final Simple simple = httpApi.provideFor(Simple.class, clientContext);
 
     final List<Repo> repos = simple.listRepos("rbygrave", "junk");

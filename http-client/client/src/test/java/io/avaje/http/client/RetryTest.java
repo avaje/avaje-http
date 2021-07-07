@@ -16,7 +16,6 @@ public class RetryTest extends BaseWebTest {
     return HttpClientContext.newBuilder()
       .baseUrl("http://localhost:8887")
       .bodyAdapter(new JacksonBodyAdapter())
-      .requestListener(new RequestLogger())
       .retryHandler(new SimpleRetryHandler(4, 1))
       .requestIntercept(myIntercept)
       .build();

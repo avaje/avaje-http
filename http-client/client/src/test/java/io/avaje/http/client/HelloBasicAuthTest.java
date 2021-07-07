@@ -14,7 +14,6 @@ class HelloBasicAuthTest extends BaseWebTest {
   public static HttpClientContext client() {
     return HttpClientContext.newBuilder()
       .baseUrl(baseUrl)
-      .requestListener(new RequestLogger())
       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
       .requestIntercept(new BasicAuthIntercept("rob", "bot"))
       .build();

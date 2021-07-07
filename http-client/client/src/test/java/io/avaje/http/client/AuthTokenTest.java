@@ -48,7 +48,6 @@ public class AuthTokenTest {
     HttpClientContext ctx = HttpClientContext.newBuilder()
       .baseUrl("https://foo")
       .bodyAdapter(new JacksonBodyAdapter(objectMapper))
-      .requestListener(new RequestLogger())
       .authTokenProvider(new MyAuthTokenProvider())
       .build();
 

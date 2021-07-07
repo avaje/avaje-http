@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import io.avaje.http.client.BodyAdapter;
 import io.avaje.http.client.HttpClientContext;
 import io.avaje.http.client.JacksonBodyAdapter;
-import io.avaje.http.client.RequestLogger;
 import io.avaje.http.client.gson.GsonBodyAdapter;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +27,8 @@ public class GithubTest {
     final HttpClientContext clientContext = HttpClientContext.newBuilder()
       .baseUrl("https://api.github.com")
       .bodyAdapter(bodyAdapter)
-      .requestListener(new RequestLogger())
+//      .requestLogging(false)
+//      .requestListener(new RequestLogger())
       .build();
 
     final Simple simple = clientContext.create(Simple.class);

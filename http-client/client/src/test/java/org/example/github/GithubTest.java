@@ -19,7 +19,7 @@ public class GithubTest {
     final HttpClientContext clientContext = HttpClientContext.newBuilder()
       .baseUrl("https://api.github.com")
       .bodyAdapter(new JacksonBodyAdapter())
-      .requestListener(new RequestLogger())
+      .requestLogging(false)
       .build();
 
     clientContext.request()

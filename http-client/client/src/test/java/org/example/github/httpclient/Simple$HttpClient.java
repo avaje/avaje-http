@@ -1,22 +1,24 @@
-package org.example.github;
+package org.example.github.httpclient;
 
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Post;
 import io.avaje.http.client.*;
+import org.example.github.Repo;
+import org.example.github.Simple;
 
 import java.io.InputStream;
 import java.net.http.HttpResponse;
 import java.util.List;
 
 
-public class SimpleHttpClient implements Simple {
+public class Simple$HttpClient implements Simple {
 
   private final HttpClientContext context;
   private final BodyReader<Repo> readRepo;
   private final BodyWriter writeRepo;
 //  private final BodyConverter<List<Repo>, String> toListOfRepo;
 
-  SimpleHttpClient(HttpClientContext context) {
+  public Simple$HttpClient(HttpClientContext context) {
     this.context = context;
     this.readRepo = context.converters().beanReader(Repo.class);
     this.writeRepo = context.converters().beanWriter(Repo.class);
@@ -74,7 +76,7 @@ public class SimpleHttpClient implements Simple {
 
     @Override
     public Simple provide(HttpClientContext client) {
-      return new SimpleHttpClient(client);
+      return new Simple$HttpClient(client);
     }
   }
 

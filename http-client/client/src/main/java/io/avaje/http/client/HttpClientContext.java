@@ -172,12 +172,41 @@ public interface HttpClientContext {
     Builder retryHandler(RetryHandler retryHandler);
 
     /**
+     * Disable or enable built in request and response logging.
+     * <p>
+     * By default request logging is enabled. Set this to false to stop
+     * the default {@link RequestLogger} being registered to log
+     * request and response headers and bodies etc.
+     * <p>
+     * With logging level set to {@code DEBUG} for
+     * {@code io.avaje.http.client.RequestLogger} the request and
+     * response are logged with headers only.
+     * <p>
+     * Set the logging level to {@code TRACE} to include the request
+     * and response body payloads (with truncation for large bodies).
+     *
+     * <h3>Suppression</h3>
+     * <p>
+     * We can also use {@link HttpClientRequest#suppressLogging()} to suppress
+     * logging on specific requests.
+     * <p>
+     * Logging of Authorization headers is suppressed.
+     * {@link AuthTokenProvider} requests are suppressed.
+     *
+     * @param requestLogging To turn disable/enable the registration of the default logger
+     * @see RequestLogger
+     */
+    Builder requestLogging(boolean requestLogging);
+
+    /**
      * Add a request listener. Multiple listeners may be added, when
      * do so they will process events in the order they were added.
      * <p>
-     * Note that {@link RequestLogger} is an
-     * implementation for debug logging request/response headers and
-     * content.
+     * Note that {@link RequestLogger} is an implementation for debug
+     * logging request/response headers and content which is registered
+     * by default depending on {@link #requestLogging(boolean)}.
+     *
+     * @see RequestLogger
      */
     Builder requestListener(RequestListener requestListener);
 
