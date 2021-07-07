@@ -20,8 +20,8 @@ public class DHttpApiTest {
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false));
 
     final HttpClientContext clientContext = HttpClientContext.newBuilder()
-      .withBaseUrl("https://api.github.com")
-      .withBodyAdapter(bodyAdapter)
+      .baseUrl("https://api.github.com")
+      .bodyAdapter(bodyAdapter)
       .build();
 
     DHttpApi httpApi = new DHttpApi();

@@ -22,9 +22,9 @@ public class GithubTest {
   void test() throws InterruptedException {
 
     final HttpClientContext clientContext = HttpClientContext.newBuilder()
-      .withBaseUrl("https://api.github.com")
-      .withBodyAdapter(bodyAdapter)
-      .withRequestListener(new RequestLogger())
+      .baseUrl("https://api.github.com")
+      .bodyAdapter(bodyAdapter)
+      .requestListener(new RequestLogger())
       .build();
 
     clientContext.request()

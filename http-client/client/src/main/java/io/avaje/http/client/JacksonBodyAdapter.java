@@ -16,10 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * <pre>{@code
  *
  *   HttpClientContext.newBuilder()
- *       .withBaseUrl(baseUrl)
- *       .withRequestListener(new RequestLogger())
- *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
- *       //.withBodyAdapter(new GsonBodyAdapter(new Gson()))
+ *       .baseUrl(baseUrl)
+ *       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+ *       //.bodyAdapter(new GsonBodyAdapter(new Gson()))
  *       .build();
  *
  * }</pre>

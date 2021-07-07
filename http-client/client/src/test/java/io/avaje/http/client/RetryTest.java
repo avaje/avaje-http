@@ -14,11 +14,11 @@ public class RetryTest extends BaseWebTest {
 
   HttpClientContext initClientWithRetry() {
     return HttpClientContext.newBuilder()
-      .withBaseUrl("http://localhost:8887")
-      .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
-      .withRequestListener(new RequestLogger())
-      .withRetryHandler(new SimpleRetryHandler(4, 1))
-      .withRequestIntercept(myIntercept)
+      .baseUrl("http://localhost:8887")
+      .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+      .requestListener(new RequestLogger())
+      .retryHandler(new SimpleRetryHandler(4, 1))
+      .requestIntercept(myIntercept)
       .build();
   }
 

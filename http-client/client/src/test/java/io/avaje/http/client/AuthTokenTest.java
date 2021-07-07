@@ -46,10 +46,10 @@ public class AuthTokenTest {
   void sendEmail() {
 
     HttpClientContext ctx = HttpClientContext.newBuilder()
-      .withBaseUrl("https://foo")
-      .withBodyAdapter(new JacksonBodyAdapter(objectMapper))
-      .withRequestListener(new RequestLogger())
-      .withAuthTokenProvider(new MyAuthTokenProvider())
+      .baseUrl("https://foo")
+      .bodyAdapter(new JacksonBodyAdapter(objectMapper))
+      .requestListener(new RequestLogger())
+      .authTokenProvider(new MyAuthTokenProvider())
       .build();
 
     String path = "bar";

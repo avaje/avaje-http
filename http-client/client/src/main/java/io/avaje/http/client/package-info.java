@@ -7,8 +7,8 @@
  * <pre>{@code
  *
  *   HttpClientContext ctx = HttpClientContext.newBuilder()
- *       .withBaseUrl("http://localhost:8080")
- *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+ *       .baseUrl("http://localhost:8080")
+ *       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
  *       .build();
  *
  *  HelloDto dto = ctx.request()

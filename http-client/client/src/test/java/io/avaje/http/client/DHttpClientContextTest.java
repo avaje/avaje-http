@@ -42,7 +42,7 @@ class DHttpClientContextTest {
 
     final HttpClientContext context =
       HttpClientContext.newBuilder()
-      .withBaseUrl("http://localhost")
+      .baseUrl("http://localhost")
       .build();
 
     // has default client created
@@ -61,9 +61,9 @@ class DHttpClientContextTest {
 
     final HttpClientContext context =
       HttpClientContext.newBuilder()
-        .withBaseUrl("http://localhost")
-        .withCookieHandler(null)
-        .withRedirect(HttpClient.Redirect.ALWAYS)
+        .baseUrl("http://localhost")
+        .cookieHandler(null)
+        .redirect(HttpClient.Redirect.ALWAYS)
         .build();
 
     // has default client created

@@ -145,7 +145,7 @@ public interface HttpClientRequest {
    *
    * @param url The url effectively replacing the base url.
    * @return The request being built
-   * @see HttpClientContext.Builder#withBaseUrl(String)
+   * @see HttpClientContext.Builder#baseUrl(String)
    */
   HttpClientRequest url(String url);
 

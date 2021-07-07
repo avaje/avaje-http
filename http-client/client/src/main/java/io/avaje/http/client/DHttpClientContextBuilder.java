@@ -40,103 +40,103 @@ class DHttpClientContextBuilder implements HttpClientContext.Builder {
   }
 
   @Override
-  public HttpClientContext.Builder with(HttpClient client) {
+  public HttpClientContext.Builder client(HttpClient client) {
     this.client = client;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withBaseUrl(String baseUrl) {
+  public HttpClientContext.Builder baseUrl(String baseUrl) {
     this.baseUrl = baseUrl;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withRequestTimeout(Duration requestTimeout) {
+  public HttpClientContext.Builder requestTimeout(Duration requestTimeout) {
     this.requestTimeout = requestTimeout;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withBodyAdapter(BodyAdapter adapter) {
+  public HttpClientContext.Builder bodyAdapter(BodyAdapter adapter) {
     this.bodyAdapter = adapter;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withRetryHandler(RetryHandler retryHandler) {
+  public HttpClientContext.Builder retryHandler(RetryHandler retryHandler) {
     this.retryHandler = retryHandler;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withRequestListener(RequestListener requestListener) {
+  public HttpClientContext.Builder requestListener(RequestListener requestListener) {
     this.listeners.add(requestListener);
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withRequestIntercept(RequestIntercept requestIntercept) {
+  public HttpClientContext.Builder requestIntercept(RequestIntercept requestIntercept) {
     this.interceptors.add(requestIntercept);
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withAuthTokenProvider(AuthTokenProvider authTokenProvider) {
+  public HttpClientContext.Builder authTokenProvider(AuthTokenProvider authTokenProvider) {
     this.authTokenProvider = authTokenProvider;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withCookieHandler(CookieHandler cookieHandler) {
+  public HttpClientContext.Builder cookieHandler(CookieHandler cookieHandler) {
     this.cookieHandler = cookieHandler;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withRedirect(HttpClient.Redirect redirect) {
+  public HttpClientContext.Builder redirect(HttpClient.Redirect redirect) {
     this.redirect = redirect;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withVersion(HttpClient.Version version) {
+  public HttpClientContext.Builder version(HttpClient.Version version) {
     this.version = version;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withExecutor(Executor executor) {
+  public HttpClientContext.Builder executor(Executor executor) {
     this.executor = executor;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withProxy(ProxySelector proxySelector) {
+  public HttpClientContext.Builder proxy(ProxySelector proxySelector) {
     this.proxy = proxySelector;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withSSLContext(SSLContext sslContext) {
+  public HttpClientContext.Builder sslContext(SSLContext sslContext) {
     this.sslContext = sslContext;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withSSLParameters(SSLParameters sslParameters) {
+  public HttpClientContext.Builder sslParameters(SSLParameters sslParameters) {
     this.sslParameters = sslParameters;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withAuthenticator(Authenticator authenticator) {
+  public HttpClientContext.Builder authenticator(Authenticator authenticator) {
     this.authenticator = authenticator;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder withPriority(int priority) {
+  public HttpClientContext.Builder priority(int priority) {
     this.priority = priority;
     return this;
   }

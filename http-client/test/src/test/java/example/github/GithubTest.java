@@ -28,9 +28,9 @@ public class GithubTest {
 
   private void assertListRepos(BodyAdapter bodyAdapter) {
     final HttpClientContext clientContext = HttpClientContext.newBuilder()
-      .withBaseUrl("https://api.github.com")
-      .withBodyAdapter(bodyAdapter)
-      .withRequestListener(new RequestLogger())
+      .baseUrl("https://api.github.com")
+      .bodyAdapter(bodyAdapter)
+      .requestListener(new RequestLogger())
       .build();
 
     final Simple simple = clientContext.create(Simple.class);

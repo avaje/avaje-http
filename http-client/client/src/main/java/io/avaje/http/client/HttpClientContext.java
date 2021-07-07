@@ -16,9 +16,9 @@ import java.util.concurrent.Executor;
  * <pre>{@code
  *
  *   HttpClientContext ctx = HttpClientContext.newBuilder()
- *       .withBaseUrl("http://localhost:8080")
- *       .withRequestListener(new RequestLogger())
- *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+ *       .baseUrl("http://localhost:8080")
+ *       .requestListener(new RequestLogger())
+ *       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
  *       .build();
  *
  *  HelloDto dto = ctx.request()
@@ -38,9 +38,9 @@ public interface HttpClientContext {
    * <pre>{@code
    *
    *   HttpClientContext ctx = HttpClientContext.newBuilder()
-   *       .withBaseUrl("http://localhost:8080")
-   *       .withRequestListener(new RequestLogger())
-   *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+   *       .baseUrl("http://localhost:8080")
+   *       .requestListener(new RequestLogger())
+   *       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
    *       .build();
    *
    *  HttpResponse<String> res = ctx.request()
@@ -123,9 +123,9 @@ public interface HttpClientContext {
    * <pre>{@code
    *
    *   HttpClientContext ctx = HttpClientContext.newBuilder()
-   *       .withBaseUrl("http://localhost:8080")
-   *       .withRequestListener(new RequestLogger())
-   *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+   *       .baseUrl("http://localhost:8080")
+   *       .requestListener(new RequestLogger())
+   *       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
    *       .build();
    *
    *  HelloDto dto = ctx.request()
@@ -144,32 +144,32 @@ public interface HttpClientContext {
      * <p>
      * Used when we wish to control all options of the HttpClient.
      */
-    Builder with(HttpClient client);
+    Builder client(HttpClient client);
 
     /**
      * Set the base URL to use for requests created from the context.
      * <p>
      * Note that the base url can be replaced via {@link HttpClientRequest#url(String)}.
      */
-    Builder withBaseUrl(String baseUrl);
+    Builder baseUrl(String baseUrl);
 
     /**
      * Set the default request timeout.
      *
      * @see java.net.http.HttpRequest.Builder#timeout(Duration)
      */
-    Builder withRequestTimeout(Duration requestTimeout);
+    Builder requestTimeout(Duration requestTimeout);
 
     /**
      * Set the body adapter to use to convert beans to body content
      * and response content back to beans.
      */
-    Builder withBodyAdapter(BodyAdapter adapter);
+    Builder bodyAdapter(BodyAdapter adapter);
 
     /**
      * Set a RetryHandler to use to retry requests.
      */
-    Builder withRetryHandler(RetryHandler retryHandler);
+    Builder retryHandler(RetryHandler retryHandler);
 
     /**
      * Add a request listener. Multiple listeners may be added, when
@@ -179,12 +179,12 @@ public interface HttpClientContext {
      * implementation for debug logging request/response headers and
      * content.
      */
-    Builder withRequestListener(RequestListener requestListener);
+    Builder requestListener(RequestListener requestListener);
 
     /**
      * Add a request interceptor. Multiple interceptors may be added.
      */
-    Builder withRequestIntercept(RequestIntercept requestIntercept);
+    Builder requestIntercept(RequestIntercept requestIntercept);
 
     /**
      * Add a Authorization token provider.
@@ -196,28 +196,28 @@ public interface HttpClientContext {
      * is automatically called as needed and the Authorization Bearer header set
      * on all requests (not marked with skipAuthToken()).
      */
-    Builder withAuthTokenProvider(AuthTokenProvider authTokenProvider);
+    Builder authTokenProvider(AuthTokenProvider authTokenProvider);
 
     /**
      * Specify a cookie handler to use on the HttpClient. This would override the default cookie handler.
      *
      * @see HttpClient.Builder#cookieHandler(CookieHandler)
      */
-    Builder withCookieHandler(CookieHandler cookieHandler);
+    Builder cookieHandler(CookieHandler cookieHandler);
 
     /**
      * Specify the redirect policy. Defaults to HttpClient.Redirect.NORMAL.
      *
      * @see HttpClient.Builder#followRedirects(HttpClient.Redirect)
      */
-    Builder withRedirect(HttpClient.Redirect redirect);
+    Builder redirect(HttpClient.Redirect redirect);
 
     /**
      * Specify the HTTP version. Defaults to not set.
      *
      * @see HttpClient.Builder#version(HttpClient.Version)
      */
-    Builder withVersion(HttpClient.Version version);
+    Builder version(HttpClient.Version version);
 
     /**
      * Specify the Executor to use for asynchronous tasks.
@@ -225,42 +225,42 @@ public interface HttpClientContext {
      *
      * @see HttpClient.Builder#executor(Executor)
      */
-    Builder withExecutor(Executor executor);
+    Builder executor(Executor executor);
 
     /**
      * Set the proxy to the underlying {@link HttpClient}.
      *
      * @see HttpClient.Builder#proxy(ProxySelector)
      */
-    Builder withProxy(ProxySelector proxySelector);
+    Builder proxy(ProxySelector proxySelector);
 
     /**
      * Set the sslContext to the underlying {@link HttpClient}.
      *
      * @see HttpClient.Builder#sslContext(SSLContext)
      */
-    Builder withSSLContext(SSLContext sslContext);
+    Builder sslContext(SSLContext sslContext);
 
     /**
      * Set the sslParameters to the underlying {@link HttpClient}.
      *
      * @see HttpClient.Builder#sslParameters(SSLParameters)
      */
-    Builder withSSLParameters(SSLParameters sslParameters);
+    Builder sslParameters(SSLParameters sslParameters);
 
     /**
      * Set a HttpClient authenticator to the underlying {@link HttpClient}.
      *
      * @see HttpClient.Builder#authenticator(Authenticator)
      */
-    Builder withAuthenticator(Authenticator authenticator);
+    Builder authenticator(Authenticator authenticator);
 
     /**
      * Set the priority for HTTP/2 requests to the underlying {@link HttpClient}.
      *
      * @see HttpClient.Builder#priority(int)
      */
-    Builder withPriority(int priority);
+    Builder priority(int priority);
 
     /**
      * Build and return the context.
@@ -268,9 +268,9 @@ public interface HttpClientContext {
      * <pre>{@code
      *
      *   HttpClientContext ctx = HttpClientContext.newBuilder()
-     *       .withBaseUrl("http://localhost:8080")
-     *       .withRequestListener(new RequestLogger())
-     *       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+     *       .baseUrl("http://localhost:8080")
+     *       .requestListener(new RequestLogger())
+     *       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
      *       .build();
      *
      *  HelloDto dto = ctx.request()

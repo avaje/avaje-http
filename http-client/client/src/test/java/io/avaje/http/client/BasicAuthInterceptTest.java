@@ -18,7 +18,7 @@ class BasicAuthInterceptTest {
   void beforeRequest() {
     // setup
     final BasicAuthIntercept intercept = new BasicAuthIntercept("Aladdin", "open sesame");
-    final HttpClientContext ctx = HttpClientContext.newBuilder().withBaseUrl("junk").build();
+    final HttpClientContext ctx = HttpClientContext.newBuilder().baseUrl("junk").build();
 
     // act
     final HttpClientRequest request = ctx.request();
