@@ -23,7 +23,7 @@ import java.util.concurrent.Executor;
  *  HelloDto dto = ctx.request()
  *       .path("hello")
  *       .queryParam("name", "Rob")
- *       .queryParam("say", "Ki ora")
+ *       .queryParam("say", "Whats up")
  *       .GET()
  *       .bean(HelloDto.class);
  *
@@ -128,7 +128,7 @@ public interface HttpClientContext {
    *  HelloDto dto = ctx.request()
    *       .path("hello")
    *       .queryParam("name", "Rob")
-   *       .queryParam("say", "Ki ora")
+   *       .queryParam("say", "Whats up")
    *       .GET()
    *       .bean(HelloDto.class);
    *
@@ -301,7 +301,7 @@ public interface HttpClientContext {
      *
      *  HelloDto dto = ctx.request()
      *       .path("hello")
-     *       .queryParam("say", "Ki ora")
+     *       .queryParam("say", "Whats up")
      *       .GET()
      *       .bean(HelloDto.class);
      *

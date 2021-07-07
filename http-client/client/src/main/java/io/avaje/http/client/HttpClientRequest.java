@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * <pre>{@code
  *
  *  HelloDto dto = clientContext.request()
- *       .path("hello").queryParam("name", "Rob").queryParam("say", "Ki ora")
+ *       .path("hello").queryParam("name", "Rob").queryParam("say", "Whats up")
  *       .GET()
  *       .bean(HelloDto.class);
  *

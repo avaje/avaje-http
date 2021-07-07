@@ -13,7 +13,7 @@
  *
  *  HelloDto dto = ctx.request()
  *       .path("hello")
- *       .queryParam("say", "Ki ora")
+ *       .queryParam("say", "Whats up")
  *       .GET()
  *       .bean(HelloDto.class);
  *
