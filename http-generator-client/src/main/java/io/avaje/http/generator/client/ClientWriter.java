@@ -15,6 +15,8 @@ import java.util.List;
 class ClientWriter extends BaseControllerWriter {
 
   private static final String HTTP_CLIENT_CONTEXT = "io.avaje.http.client.HttpClientContext";
+  private static final String HTTP_API_PROVIDER = "io.avaje.http.client.HttpApiProvider";
+
   private static final String AT_GENERATED = "@Generated(\"avaje-http-client-generator\")";
   private static final String SUFFIX = "$HttpClient";
 
@@ -23,6 +25,7 @@ class ClientWriter extends BaseControllerWriter {
   ClientWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
     super(reader, ctx, SUFFIX);
     reader.addImportType(HTTP_CLIENT_CONTEXT);
+    reader.addImportType(HTTP_API_PROVIDER);
     readMethods();
   }
 
@@ -42,12 +45,27 @@ class ClientWriter extends BaseControllerWriter {
     }
   }
 
-  void write() {
+  String write() {
     writePackage();
     writeImports();
     writeClassStart();
     writeMethods();
+    writeProvider();
     writeClassEnd();
+    return fullName;
+  }
+
+  private void writeProvider() {
+    writer.append("  public static class Provider implements HttpApiProvider<%s> {", shortName).eol();
+    writer.append("    @Override").eol();
+    writer.append("    public Class<%s> type() {", shortName).eol();
+    writer.append("      return %s.class;", shortName).eol();
+    writer.append("    }").eol();
+    writer.append("    @Override").eol();
+    writer.append("    public %s provide(HttpClientContext client) {", shortName).eol();
+    writer.append("      return new %s$HttpClient(client);", shortName).eol();
+    writer.append("    }").eol();
+    writer.append("  }").eol();
   }
 
   private void writeMethods() {

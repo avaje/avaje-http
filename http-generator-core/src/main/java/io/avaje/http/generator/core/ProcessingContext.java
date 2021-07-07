@@ -5,7 +5,6 @@ import io.avaje.http.generator.core.openapi.DocContext;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -13,7 +12,9 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 import java.io.IOException;
 
 public class ProcessingContext {
@@ -57,6 +58,13 @@ public class ProcessingContext {
    */
   public JavaFileObject createWriter(String cls, Element origin) throws IOException {
     return filer.createSourceFile(cls, origin);
+  }
+
+  /**
+   * Create a file writer for the META-INF services file.
+   */
+  public FileObject createMetaInfWriter(String target) throws IOException {
+    return filer.createResource(StandardLocation.CLASS_OUTPUT, "", target);
   }
 
   public String getDocComment(Element param) {

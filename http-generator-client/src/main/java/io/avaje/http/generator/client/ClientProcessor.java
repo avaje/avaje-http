@@ -12,12 +12,18 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.tools.FileObject;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 public class ClientProcessor extends AbstractProcessor {
+
+  private static final String METAINF_SERVICES_PROVIDER = "META-INF/services/io.avaje.http.client.HttpApiProvider";
+
+  private final Set<String> generatedClients = new LinkedHashSet<>();
 
   protected ProcessingContext ctx;
 
@@ -49,15 +55,30 @@ public class ClientProcessor extends AbstractProcessor {
     for (Element importedElement : round.getElementsAnnotatedWith(Client.Import.class)) {
       writeForImported(importedElement);
     }
+    if (round.processingOver()) {
+      writeServicesFile();
+    }
     return false;
+  }
+
+  private void writeServicesFile() {
+    try {
+      final FileObject metaInfWriter = ctx.createMetaInfWriter(METAINF_SERVICES_PROVIDER);
+      final Writer writer = metaInfWriter.openWriter();
+      for (String generatedClient : generatedClients) {
+        writer.append(generatedClient).append("$Provider\n");
+      }
+      writer.close();
+    } catch (IOException e) {
+      ctx.logError(null, "Error writing services file " + e, e);
+    }
   }
 
   private void writeForImported(Element importedElement) {
     for (AnnotationMirror annotationMirror : importedElement.getAnnotationMirrors()) {
       for (AnnotationValue value : annotationMirror.getElementValues().values()) {
         for (Object apiClassDef : (List<?>) value.getValue()) {
-          String fullName = apiClassDef.toString();
-          writeImported(fullName);
+          writeImported(apiClassDef.toString());
         }
       }
     }
@@ -66,7 +87,6 @@ public class ClientProcessor extends AbstractProcessor {
   private void writeImported(String fullName) {
     // trim .class suffix
     String apiClassName = fullName.substring(0, fullName.length() - 6);
-    //ctx.logError(null, "build import:" + apiClassName);
     TypeElement typeElement = ctx.getTypeElement(apiClassName);
     if (typeElement != null) {
       writeClient(typeElement);
@@ -78,7 +98,7 @@ public class ClientProcessor extends AbstractProcessor {
       ControllerReader reader = new ControllerReader((TypeElement) controller, ctx);
       reader.read(false);
       try {
-        writeClientAdapter(ctx, reader);
+        generatedClients.add(writeClientAdapter(ctx, reader));
       } catch (Throwable e) {
         e.printStackTrace();
         ctx.logError(reader.getBeanType(), "Failed to write client class " + e);
@@ -86,8 +106,8 @@ public class ClientProcessor extends AbstractProcessor {
     }
   }
 
-  protected void writeClientAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException {
-    new ClientWriter(reader, ctx).write();
+  protected String writeClientAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException {
+    return new ClientWriter(reader, ctx).write();
   }
 
 }
