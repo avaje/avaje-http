@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.avaje</groupId>
     <artifactId>java8-oss</artifactId>
-    <version>2.3</version>
+    <version>3.1</version>
   </parent>
 
   <scm>
@@ -19,7 +19,7 @@
   </scm>
 
   <properties>
-    <nexus.staging.autoReleaseAfterClose>false</nexus.staging.autoReleaseAfterClose>
+    <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
   </properties>
 
   <dependencies>
@@ -39,7 +39,7 @@
     <module>http-generator-jex</module>
     <module>http-generator-helidon</module>
     <module>http-generator-client</module>
-    <module>tests</module>
+<!--    <module>tests</module>-->
   </modules>
 
 </project>
