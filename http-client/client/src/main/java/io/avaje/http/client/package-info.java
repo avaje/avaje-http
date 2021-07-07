@@ -8,7 +8,7 @@
  *
  *   HttpClientContext ctx = HttpClientContext.newBuilder()
  *       .baseUrl("http://localhost:8080")
- *       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+ *       .bodyAdapter(new JacksonBodyAdapter())
  *       .build();
  *
  *  HelloDto dto = ctx.request()

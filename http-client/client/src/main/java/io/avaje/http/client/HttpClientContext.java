@@ -17,8 +17,7 @@ import java.util.concurrent.Executor;
  *
  *   HttpClientContext ctx = HttpClientContext.newBuilder()
  *       .baseUrl("http://localhost:8080")
- *       .requestListener(new RequestLogger())
- *       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+ *       .bodyAdapter(new JacksonBodyAdapter())
  *       .build();
  *
  *  HelloDto dto = ctx.request()
@@ -39,8 +38,7 @@ public interface HttpClientContext {
    *
    *   HttpClientContext ctx = HttpClientContext.newBuilder()
    *       .baseUrl("http://localhost:8080")
-   *       .requestListener(new RequestLogger())
-   *       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+   *       .bodyAdapter(new JacksonBodyAdapter())
    *       .build();
    *
    *  HttpResponse<String> res = ctx.request()
@@ -124,8 +122,7 @@ public interface HttpClientContext {
    *
    *   HttpClientContext ctx = HttpClientContext.newBuilder()
    *       .baseUrl("http://localhost:8080")
-   *       .requestListener(new RequestLogger())
-   *       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+   *       .bodyAdapter(new JacksonBodyAdapter())
    *       .build();
    *
    *  HelloDto dto = ctx.request()
@@ -298,8 +295,7 @@ public interface HttpClientContext {
      *
      *   HttpClientContext ctx = HttpClientContext.newBuilder()
      *       .baseUrl("http://localhost:8080")
-     *       .requestListener(new RequestLogger())
-     *       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+     *       .bodyAdapter(new JacksonBodyAdapter())
      *       .build();
      *
      *  HelloDto dto = ctx.request()
