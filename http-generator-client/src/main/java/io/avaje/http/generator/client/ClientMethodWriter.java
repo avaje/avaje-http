@@ -81,7 +81,7 @@ class ClientMethodWriter {
     writeHeaders();
     writePaths(segments);
     writeQueryParams(pathSegments);
-    writeFormParams();
+    writeFormParams(pathSegments);
     writeBody();
 
     WebMethod webMethod = method.getWebMethod();
@@ -174,20 +174,29 @@ class ClientMethodWriter {
     }
   }
 
-  private void writeFormParams() {
+  private void writeFormParams(PathSegments segments) {
     for (MethodParam param : method.getParams()) {
+      final String varName = param.getName();
       ParamType paramType = param.getParamType();
-      if (paramType == ParamType.FORMPARAM) {
-        if (isMap(param)) {
-          writer.append("      .formParam(%s)", param.getName()).eol();
-        } else {
-          writer.append("      .formParam(\"%s\", %s)", param.getParamName(), param.getName()).eol();
-        }
-      } else if (paramType == ParamType.FORM) {
-        TypeElement formBeanType = ctx.getTypeElement(param.getRawType());
-        BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.getName(), param.getShortType(), ParamType.FORMPARAM);
-        form.writeFormParams(writer);
+      PathSegments.Segment segment = segments.segment(varName);
+      if (segment == null) {
+        // not a path or matrix parameter
+        writeFormParam(param, paramType);
       }
+    }
+  }
+
+  private void writeFormParam(MethodParam param, ParamType paramType) {
+    if (paramType == ParamType.FORMPARAM) {
+      if (isMap(param)) {
+        writer.append("      .formParam(%s)", param.getName()).eol();
+      } else {
+        writer.append("      .formParam(\"%s\", %s)", param.getParamName(), param.getName()).eol();
+      }
+    } else if (paramType == ParamType.FORM) {
+      TypeElement formBeanType = ctx.getTypeElement(param.getRawType());
+      BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.getName(), param.getShortType(), ParamType.FORMPARAM);
+      form.writeFormParams(writer);
     }
   }
 

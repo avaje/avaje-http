@@ -1,6 +1,7 @@
 package org.example;
 
 import io.avaje.http.api.Client;
+import io.avaje.http.api.Form;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Post;
 import io.avaje.http.client.HttpCall;
@@ -131,4 +132,8 @@ public interface JunkApi {
 
   @Post("/{id}/foo/{name}")
   HttpResponse<Path> reqBodyResHand2(HttpResponse.BodyHandler<Path> handler, HttpRequest.BodyPublisher body, String id, String name, String other);
+
+  @Form
+  @Post("foo/{email}")
+  void postFormWithPath(String email, String name, String other);
 }
