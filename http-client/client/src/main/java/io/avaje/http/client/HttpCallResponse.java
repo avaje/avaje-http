@@ -120,9 +120,8 @@ public interface HttpCallResponse {
   /**
    * A bean response to execute async or sync.
    * <p>
-   * If the HTTP statusCode is 300 or above a HttpException is throw which contains
-   * the HttpResponse. This is the cause in the CompletionException. Redirects are
-   * by default followed apart from HTTPS to HTTP.
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException.
    *
    * <pre>{@code
    *
@@ -142,9 +141,8 @@ public interface HttpCallResponse {
   /**
    * Process expecting a list of beans response body (typically from json content).
    * <p>
-   * If the HTTP statusCode is 300 or above a HttpException is throw which contains
-   * the HttpResponse. This is the cause in the CompletionException. Redirects are
-   * by default followed apart from HTTPS to HTTP.
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException.
    *
    * <pre>{@code
    *
@@ -163,9 +161,8 @@ public interface HttpCallResponse {
   /**
    * Process expecting a stream of beans response body (typically from json content).
    * <p>
-   * If the HTTP statusCode is 300 or above a HttpException is throw which contains
-   * the HttpResponse. This is the cause in the CompletionException. Redirects are
-   * by default followed apart from HTTPS to HTTP.
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException.
    *
    * <pre>{@code
    *
