@@ -30,10 +30,9 @@ public class BaseWebTest {
 
   public static HttpClientContext client() {
     return HttpClientContext.newBuilder()
-      .withBaseUrl(baseUrl)
-      .withRequestTimeout(Duration.ofMinutes(2))
-      .withRequestListener(new RequestLogger())
-      .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+      .baseUrl(baseUrl)
+      .requestTimeout(Duration.ofMinutes(2))
+      .bodyAdapter(new JacksonBodyAdapter())
       .build();
   }
 }

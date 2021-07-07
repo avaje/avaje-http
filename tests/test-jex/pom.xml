@@ -95,7 +95,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>1.7</version>
+      <version>1.9</version>
       <scope>test</scope>
     </dependency>
 

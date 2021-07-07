@@ -25,9 +25,8 @@ public class SimpleTest {
 
     final HttpClientContext clientContext =
       HttpClientContext.newBuilder()
-        .withBaseUrl("https://api.github.com")
-        .withRequestListener(new RequestLogger())
-        .withBodyAdapter(new JacksonBodyAdapter(objectMapper))
+        .baseUrl("https://api.github.com")
+        .bodyAdapter(new JacksonBodyAdapter(objectMapper))
         .build();
 
     GitHubUsers simple = clientContext.create(GitHubUsers.class);

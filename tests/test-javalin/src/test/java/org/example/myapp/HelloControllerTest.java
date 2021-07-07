@@ -1,12 +1,6 @@
 package org.example.myapp;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.avaje.http.client.BodyReader;
-import io.avaje.http.client.BodyWriter;
-import io.avaje.http.client.HttpClientContext;
-import io.avaje.http.client.HttpException;
-import io.avaje.http.client.JacksonBodyAdapter;
-import io.avaje.http.client.RequestLogger;
+import io.avaje.http.client.*;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -35,10 +29,9 @@ class HelloControllerTest extends BaseWebTest {
       .build();
 
     this.clientContext = HttpClientContext.newBuilder()
-      .withBaseUrl(baseUrl)
-      .withRequestListener(new RequestLogger())
-      .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
-      .with(httpClient)
+      .baseUrl(baseUrl)
+      .bodyAdapter(new JacksonBodyAdapter())
+      .client(httpClient)
       .build();
   }
 

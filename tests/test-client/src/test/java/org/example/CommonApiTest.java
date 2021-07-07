@@ -24,13 +24,9 @@ class CommonApiTest {
     final int port = new Random().nextInt(1000) + 10_000;
     Main.start(port);
 
-    ObjectMapper objectMapper = new ObjectMapper()
-      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
     final HttpClientContext clientContext = HttpClientContext.newBuilder()
-      .withBaseUrl("http://localhost:" + port)
-      .withRequestListener(new RequestLogger())
-      .withBodyAdapter(new JacksonBodyAdapter(objectMapper))
+      .baseUrl("http://localhost:" + port)
+      .bodyAdapter(new JacksonBodyAdapter())
       .build();
 
     client = clientContext.create(CommonApi.class);

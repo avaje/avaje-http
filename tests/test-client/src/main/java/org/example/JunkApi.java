@@ -121,6 +121,14 @@ public interface JunkApi {
   HttpCall<HttpResponse<Path>> callWithHandPath(HttpResponse.BodyHandler<Path> handler);
 
   @Post("/{id}/foo/{name}")
-  HttpResponse<Path> reqBodyResHand2(HttpResponse.BodyHandler<Path> handler, HttpRequest.BodyPublisher body, String id, String name, String other);
+  HttpResponse<Void> postWithBody(String id, String name, HttpRequest.BodyPublisher body, String other);
 
+  @Get("/{id}")
+  HttpResponse<Path> getWithHandler(String id, HttpResponse.BodyHandler<Path> myHandler, String other);
+
+  @Get("/{id}")
+  <T> HttpResponse<T> getWithGeneralHandler(String id, HttpResponse.BodyHandler<T> myHandler);
+
+  @Post("/{id}/foo/{name}")
+  HttpResponse<Path> reqBodyResHand2(HttpResponse.BodyHandler<Path> handler, HttpRequest.BodyPublisher body, String id, String name, String other);
 }
