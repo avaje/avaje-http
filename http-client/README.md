@@ -1,5 +1,7 @@
 # avaje-http-client
 
+Documentation at [avaje.io/http-client](https://avaje.io/http-client/)
+
 A lightweight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/groups/net/httpclient/intro.html)
 
 - Use Java 11.0.8 or higher (some SSL related bugs prior to 11.0.8 with JDK HttpClient)
@@ -18,7 +20,7 @@ A lightweight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/
 <dependency>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client</artifactId>
-  <version>1.8</version>
+  <version>1.11</version>
 </dependency>
 ```
 
