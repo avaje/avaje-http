@@ -17,7 +17,7 @@
   <properties>
     <mainClass>org.example.Main</mainClass>
     <helidon-version>2.3.0</helidon-version>
-    <avaje-http-version>1.10-SNAPSHOT</avaje-http-version>
+    <avaje-http-version>1.11-SNAPSHOT</avaje-http-version>
   </properties>
 
   <dependencies>
