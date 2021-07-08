@@ -1,9 +1,6 @@
 package org.example;
 
-import io.avaje.http.api.Client;
-import io.avaje.http.api.Form;
-import io.avaje.http.api.Get;
-import io.avaje.http.api.Post;
+import io.avaje.http.api.*;
 import io.avaje.http.client.HttpCall;
 
 import java.io.InputStream;
@@ -11,6 +8,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -136,4 +134,11 @@ public interface JunkApi {
   @Form
   @Post("foo/{email}")
   void postFormWithPath(String email, String name, String other);
+
+  @Post("withBeanParam/{id}")
+  void postWithBeanParam(UUID id, @BeanParam CommonParams commonParams);
+
+  @Form @Post("withFormParam/{id}")
+  void postWithFormParam(UUID id, MyForm theForm, @BeanParam CommonParams commonParams);
+
 }

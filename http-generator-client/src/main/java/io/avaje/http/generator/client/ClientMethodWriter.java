@@ -81,9 +81,13 @@ class ClientMethodWriter {
     writeHeaders();
     writePaths(segments);
     writeQueryParams(pathSegments);
+    writeBeanParams(pathSegments);
     writeFormParams(pathSegments);
     writeBody();
+    writeEnd();
+  }
 
+  private void writeEnd() {
     WebMethod webMethod = method.getWebMethod();
     writer.append("      .%s()", webMethod.name()).eol();
     if (returnType == UType.VOID) {
@@ -170,6 +174,19 @@ class ClientMethodWriter {
         } else {
           writer.append("      .header(\"%s\", %s)", param.getParamName(), param.getName()).eol();
         }
+      }
+    }
+  }
+
+  private void writeBeanParams(PathSegments segments) {
+    for (MethodParam param : method.getParams()) {
+      final String varName = param.getName();
+      ParamType paramType = param.getParamType();
+      PathSegments.Segment segment = segments.segment(varName);
+      if (segment == null && paramType == ParamType.BEANPARAM) {
+        TypeElement formBeanType = ctx.getTypeElement(param.getRawType());
+        BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.getName(), param.getShortType(), ParamType.QUERYPARAM);
+        form.writeFormParams(writer);
       }
     }
   }
