@@ -1,11 +1,7 @@
 package io.avaje.http.api;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
+import java.time.*;
 import java.util.UUID;
 
 /**
@@ -14,6 +10,17 @@ import java.util.UUID;
  * These methods are intended to be used by APT source generators.
  */
 public class PathTypeConversion {
+
+  /**
+   * Return the value if non-null and otherwise the default value.
+   *
+   * @param value        The value to return if non-null
+   * @param defaultValue The default value to return
+   * @return The value if non-null and otherwise the default value.
+   */
+  public static String withDefault(String value, String defaultValue) {
+    return value != null ? value : defaultValue;
+  }
 
   /**
    * Check for null for a required property throwing RequiredArgumentException
