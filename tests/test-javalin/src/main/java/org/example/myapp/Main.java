@@ -28,7 +28,6 @@ public class Main {
 
     Javalin app = Javalin.create(config -> {
       config.showJavalinBanner = false;
-      config.logIfServerNotStarted = false;
       config.addStaticFiles("public", Location.CLASSPATH);
       config.accessManager((handler, ctx, permittedRoles) -> {
         log.debug("allow access ...");

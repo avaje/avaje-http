@@ -76,14 +76,13 @@ class ControllerMethodWriter {
 
     List<String> roles = method.roles();
     if (!roles.isEmpty()) {
-      writer.append(", roles(");
+      writer.append(", ");
       for (int i = 0; i < roles.size(); i++) {
         if (i > 0) {
           writer.append(", ");
         }
         writer.append(Util.shortName(roles.get(i)));
       }
-      writer.append(")");
     }
     writer.append(");").eol().eol();
   }

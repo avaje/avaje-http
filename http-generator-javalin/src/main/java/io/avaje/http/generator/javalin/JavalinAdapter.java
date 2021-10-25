@@ -10,7 +10,6 @@ import java.util.List;
 class JavalinAdapter implements PlatformAdapter {
 
   static final String JAVALIN3_CONTEXT = "io.javalin.http.Context";
-  static final String JAVALIN3_ROLES = "io.javalin.core.security.SecurityUtil.roles";
 
   @Override
   public boolean isContextType(String rawType) {
@@ -48,7 +47,6 @@ class JavalinAdapter implements PlatformAdapter {
   }
 
   private void addRoleImports(List<String> roles, ControllerReader controller) {
-    controller.addStaticImportType(JAVALIN3_ROLES);
     for (String role : roles) {
       controller.addStaticImportType(role);
     }
@@ -61,6 +59,6 @@ class JavalinAdapter implements PlatformAdapter {
 
   @Override
   public void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault) {
-    writer.append("ctx.%s(\"%s\",\"%s\")", paramType, paramName, paramDefault);
+    writer.append("withDefault(ctx.%s(\"%s\"), \"%s\")", paramType, paramName, paramDefault);
   }
 }
