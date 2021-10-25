@@ -31,7 +31,7 @@ class ControllerMethodWriter {
   void write(boolean requestScoped) {
 
     final PathSegments segments = method.getPathSegments();
-    final String fullPath = segments.fullPathColon();
+    final String fullPath = segments.fullPath();
 
     writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
     writer.append("      ctx.status(%s);", method.getStatusCode()).eol();
