@@ -1,7 +1,7 @@
 package org.example.myapp;
 
 import io.avaje.http.api.*;
-import io.avaje.inject.ApplicationScope;
+import io.avaje.inject.BeanScope;
 import io.avaje.inject.InjectModule;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@InjectModule(name = "app", dependsOn= "validator", requires = Validator.class)
+@InjectModule(name = "app", requires = Validator.class)
 @OpenAPIDefinition(info = @Info(title = "Example service", description = "Example Javalin controllers with Java and Maven"))
 public class Main {
 
@@ -68,7 +68,8 @@ public class Main {
     });
 
     // All WebRoutes / Controllers ... from DI Context
-    List<WebRoutes> webRoutes = ApplicationScope.list(WebRoutes.class);
+    BeanScope beanScope = BeanScope.newBuilder().build();
+    List<WebRoutes> webRoutes = beanScope.list(WebRoutes.class);
     app.routes(() -> webRoutes.forEach(WebRoutes::registerRoutes));
 
     app.start(port);

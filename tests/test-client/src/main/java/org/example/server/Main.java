@@ -1,6 +1,5 @@
 package org.example.server;
 
-import io.avaje.inject.ApplicationScope;
 import io.avaje.inject.BeanScope;
 import io.avaje.jex.Jex;
 import io.avaje.jex.Routing;
@@ -14,7 +13,8 @@ public class Main {
   }
 
   public static Jex.Server start(int port) {
-    return start(port, ApplicationScope.scope());
+    BeanScope beanScope = BeanScope.newBuilder().build();
+    return start(port, beanScope);
   }
 
   public static Jex.Server start(int port, BeanScope context) {
