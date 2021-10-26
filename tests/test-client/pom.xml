@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>test-client</artifactId>
-  <version>1.12</version>
+  <version>1</version>
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
@@ -35,7 +35,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>1.12</version>
+      <version>1.13-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -126,6 +126,7 @@
   </build>
 
   <scm>
-    <tag>avaje-http-generator-parent-1.12</tag>
+    <tag>HEAD</tag>
+    <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
   </scm>
 </project>
