@@ -28,13 +28,13 @@ public class PathSegments {
             final String name = section.substring(1);
             Segment segment = createSegment(name);
             segments.add(segment);
-            chunks.named(segment.path(name));
+            chunks.named(segment.path(name), ':');
 
-          } else if ((section.startsWith("{") && (section.endsWith("}")))) {
+          } else if (isPathParameter(section)) {
             String name = section.substring(1, section.length() - 1);
             Segment segment = createSegment(name);
             segments.add(segment);
-            chunks.named(segment.path(name));
+            chunks.named(segment.path(name), section.charAt(0));
 
           } else {
             Segment segment = createLiteralSegment(section);
@@ -44,8 +44,12 @@ public class PathSegments {
         }
       }
     }
-
     return new PathSegments(chunks, segments);
+  }
+
+  private static boolean isPathParameter(String section) {
+    return section.startsWith("{") && section.endsWith("}")
+      || section.startsWith("<") && section.endsWith(">");
   }
 
   private static Segment createLiteralSegment(String section) {
@@ -250,8 +254,8 @@ public class PathSegments {
   private static class Chunks {
     private final List<Chunk> chunks = new ArrayList<>();
 
-    void named(String name) {
-      chunks.add(new Chunk(name));
+    void named(String name, char firstChar) {
+      chunks.add(new Chunk(name, firstChar));
     }
 
     void literal(String val) {
@@ -269,7 +273,7 @@ public class PathSegments {
 
   private static class LiteralChunk extends Chunk {
     private LiteralChunk(String value) {
-      super(value);
+      super(value, ' ');
     }
 
     @Override
@@ -280,12 +284,18 @@ public class PathSegments {
 
   private static class Chunk {
     final String value;
-    private Chunk(String value) {
+    final char firstChar;
+    private Chunk(String value, char firstChar) {
       this.value = value;
+      this.firstChar = firstChar;
     }
 
     void append(StringBuilder fullPath, String prefix, String suffix) {
-      fullPath.append(prefix).append(value).append(suffix);
+      if ('<' == firstChar) {
+        fullPath.append('<').append(value).append('>');
+      } else {
+        fullPath.append(prefix).append(value).append(suffix);
+      }
     }
   }
 

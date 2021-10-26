@@ -90,13 +90,54 @@
         }
       }
     },
-    "/splat/{name}/*/other/*" : {
+    "/splat/{name}/<s0>/other/<s1>" : {
       "get" : {
         "tags" : [ ],
         "summary" : "",
         "description" : "",
         "parameters" : [ {
           "name" : "name",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "text/plain" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/splat2/{name}/<nam0>/other/<nam1>" : {
+      "get" : {
+        "tags" : [ ],
+        "summary" : "",
+        "description" : "",
+        "parameters" : [ {
+          "name" : "name",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "nam0",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "nam1",
           "in" : "path",
           "required" : true,
           "schema" : {
