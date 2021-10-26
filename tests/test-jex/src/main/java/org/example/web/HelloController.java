@@ -32,9 +32,15 @@ public class HelloController {
   }
 
   @Produces("text/plain")
-  @Get("splat/{name}/*/other/*")
+  @Get("splat/{name}/<s0>/other/<s1>")
   String splat(String name, Context ctx) {
-    return "got name:" + name + " splat0:" + ctx.splat(0) + " splat1:" + ctx.splat(1);
+    return "got name:" + name + " splat0:" + ctx.pathParam("s0") + " splat1:" + ctx.pathParam("s1");
+  }
+
+  @Produces("text/plain")
+  @Get("splat2/{name}/<nam0>/other/<nam1>")
+  String splat2(String name, String nam0, String nam1) {
+    return "got name:" + name + " splat0:" + nam0 + " splat1:" + nam1;
   }
 
   @Valid

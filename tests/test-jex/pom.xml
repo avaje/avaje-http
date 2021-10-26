@@ -17,7 +17,7 @@
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
     <main.class>org.example.myapp.Main</main.class>
-    <jex.version>1.6</jex.version>
+    <jex.version>2.0</jex.version>
     <swagger.version>2.0.8</swagger.version>
     <jackson.version>2.12.3</jackson.version>
     <avaje-inject.version>6.1</avaje-inject.version>
@@ -35,6 +35,12 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jex</artifactId>
+      <version>${jex.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-jex-jetty</artifactId>
       <version>${jex.version}</version>
     </dependency>
 
