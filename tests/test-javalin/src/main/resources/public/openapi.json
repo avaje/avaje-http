@@ -426,6 +426,47 @@
         }
       }
     },
+    "/hello/slash/{name}/<nam0>/other/<nam1>" : {
+      "get" : {
+        "tags" : [ ],
+        "summary" : "",
+        "description" : "",
+        "parameters" : [ {
+          "name" : "name",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "nam0",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "nam1",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "text/plain" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/hello/withMatrix/{year_segment}/{other}" : {
       "get" : {
         "tags" : [ ],

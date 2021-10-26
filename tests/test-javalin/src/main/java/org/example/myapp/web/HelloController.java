@@ -141,4 +141,10 @@ class HelloController {
   String getWithMatrixParam(int year, String author, String country, String other, String extra) {
     return "yr:" + year + " au:" + author + " co:" + country + " other:" + other + " extra:" + extra;
   }
+
+  @Produces("text/plain")
+  @Get("slash/{name}/<nam0>/other/<nam1>")
+  String slashAccepting(String name, String nam0, String nam1) {
+    return "got name:" + name + " splat0:" + nam0 + " splat1:" + nam1;
+  }
 }

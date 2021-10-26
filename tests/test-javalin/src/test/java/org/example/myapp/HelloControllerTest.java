@@ -298,4 +298,16 @@ class HelloControllerTest extends BaseWebTest {
     assertEquals(200, httpRes.statusCode());
     assertEquals("yr:2011 au:rob co:nz other:foo extra:banana", httpRes.body());
   }
+
+
+  @Test
+  void get_slashAcceptingPath_expect200() {
+    final HttpResponse<String> hres = clientContext.request()
+      .path("hello/slash/one/a/b/other/x/y/z")
+      .GET()
+      .asString();
+
+    assertThat(hres.statusCode()).isEqualTo(200);
+    assertEquals("got name:one splat0:a/b splat1:x/y/z", hres.body());
+  }
 }
