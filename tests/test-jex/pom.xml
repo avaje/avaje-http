@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.example</groupId>
   <artifactId>test-jex</artifactId>
-  <version>1</version>
+  <version>1.12</version>
 
   <parent>
     <groupId>org.avaje</groupId>
@@ -21,7 +19,7 @@
     <swagger.version>2.0.8</swagger.version>
     <jackson.version>2.12.3</jackson.version>
     <avaje-inject.version>6.1</avaje-inject.version>
-    <avaje-http.version>1.12-SNAPSHOT</avaje-http.version>
+    <avaje-http.version>1.12</avaje-http.version>
   </properties>
 
   <dependencies>
@@ -142,4 +140,8 @@
     </plugins>
   </build>
 
+
+  <scm>
+    <tag>avaje-http-generator-parent-1.12</tag>
+  </scm>
 </project>
