@@ -9,9 +9,8 @@ import java.util.Map;
  * like <code>chair;vendor=ikea;size=small</code>.
  * <p>
  * Matrix parameters are optional 'qualifiers' of the path segment.
- * </p>
  */
-public class PathSegment {
+public final class PathSegment {
 
   private final String val;
 
@@ -45,10 +44,8 @@ public class PathSegment {
    * Return the main segment value.
    * <p>
    * For "chair" this returns "chair"
-   * </p>
    * <p>
    * For "chair;vendor=ikea;size=small" this returns "chair"
-   * </p>
    */
   public String val() {
     return val;
@@ -58,13 +55,11 @@ public class PathSegment {
    * Return a metric value for the given key.
    * <p>
    * For example, given "chair;vendor=ikea;size=small"
-   * </p>
    * <p>
-   * metric("vendor") returns "ikea".
-   * </p>
+   * matrix("vendor") returns "ikea".
    *
-   * @param key The metric key
-   * @return The metric value if supplied or null
+   * @param key The matrix key
+   * @return The matrix value if supplied or null
    */
   public String matrix(String key) {
     return matrixValues == null ? null : matrixValues.get(key);

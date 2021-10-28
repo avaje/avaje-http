@@ -9,7 +9,7 @@ import java.util.UUID;
  * <p/>
  * These methods are intended to be used by APT source generators.
  */
-public class PathTypeConversion {
+public final class PathTypeConversion {
 
   /**
    * Return the value if non-null and otherwise the default value.
