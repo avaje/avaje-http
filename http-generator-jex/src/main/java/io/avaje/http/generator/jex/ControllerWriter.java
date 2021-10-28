@@ -68,9 +68,9 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append(", Validator validator");
     }
     writer.append(") {").eol();
-    writer.append("   this.%s = %s;", controllerName, controllerName).eol();
+    writer.append("    this.%s = %s;", controllerName, controllerName).eol();
     if (reader.isIncludeValidator()) {
-      writer.append("   this.validator = validator;").eol();
+      writer.append("    this.validator = validator;").eol();
     }
     writer.append("  }").eol().eol();
   }
