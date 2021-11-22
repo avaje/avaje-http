@@ -433,6 +433,35 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void headers_get_whenEmpty() {
+    final HttpClientRequest request = clientContext.request();
+
+    List<String> headers = request.header("x-client-id");
+    if (headers.isEmpty()) {
+      request.header("x-client-id", "42");
+    }
+    assertThat(request.header("x-client-id")).containsExactly("42");
+  }
+
+  @Test
+  void headers_headerAddIfAbsent_whenEmpty() {
+    final HttpClientRequest request = clientContext.request();
+    assertThat(request.header("x-client-id")).isEmpty();
+
+    request.headerAddIfAbsent("x-client-id", "42");
+    assertThat(request.header("x-client-id")).containsExactly("42");
+  }
+
+  @Test
+  void headers_headerAddIfAbsent_whenAlreadySet() {
+    final HttpClientRequest request = clientContext.request();
+    request.header("x-client-id", "someValue");
+
+    request.headerAddIfAbsent("x-client-id", "42");
+    assertThat(request.header("x-client-id")).containsExactly("someValue");
+  }
+
+  @Test
   void headers() {
     final HttpClientRequest request = clientContext.request();
 

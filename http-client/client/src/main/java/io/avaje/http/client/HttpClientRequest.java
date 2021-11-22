@@ -91,6 +91,15 @@ public interface HttpClientRequest {
   HttpClientRequest requestTimeout(Duration requestTimeout);
 
   /**
+   * Add the header to the request but only if there is no existing value for the given header.
+   *
+   * @param name  The header name
+   * @param value The header value
+   * @return The request being built
+   */
+  HttpClientRequest headerAddIfAbsent(String name, Object value);
+
+  /**
    * Add the header to the request.
    *
    * @param name  The header name

@@ -106,6 +106,14 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpClientRequest headerAddIfAbsent(String name, Object value) {
+    if (headers == null || !headers.containsKey(name)) {
+      header(name, value);
+    }
+    return this;
+  }
+
+  @Override
   public HttpClientRequest header(String name, String value) {
     if (headers == null) {
       headers = new LinkedHashMap<>();
@@ -131,6 +139,9 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public List<String> header(String name) {
+    if (headers == null) {
+      return Collections.emptyList();
+    }
     final List<String> values = headers.get(name);
     return values == null ? Collections.emptyList() : values;
   }
