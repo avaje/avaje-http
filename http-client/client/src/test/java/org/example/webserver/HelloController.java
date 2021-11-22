@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
  */
 //@Hidden
 @Valid
-@Controller
+//@Controller
 @Path("/hello")
 class HelloController {
 

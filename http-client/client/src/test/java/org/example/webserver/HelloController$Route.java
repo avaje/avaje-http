@@ -12,7 +12,7 @@ import static io.avaje.http.api.PathTypeConversion.asInt;
 import static io.avaje.http.api.PathTypeConversion.asLocalDate;
 import static io.avaje.http.api.PathTypeConversion.toLocalDate;
 
-@Singleton
+//@Singleton
 public class HelloController$Route implements WebRoutes {
 
   private final HelloController controller;
@@ -47,7 +47,7 @@ public class HelloController$Route implements WebRoutes {
       controller.stream(ctx);
     });
 
-    ApiBuilder.get("/hello/:id/:date", ctx -> {
+    ApiBuilder.get("/hello/{id}/{date}", ctx -> {
       ctx.status(200);
       int id = asInt(ctx.pathParam("id"));
       LocalDate date = asLocalDate(ctx.pathParam("date"));
@@ -55,7 +55,7 @@ public class HelloController$Route implements WebRoutes {
       ctx.json(controller.hello(id, date, otherParam));
     });
 
-    ApiBuilder.get("/hello/findbyname/:name", ctx -> {
+    ApiBuilder.get("/hello/findbyname/{name}", ctx -> {
       ctx.status(200);
       String name = ctx.pathParam("name");
       String otherParam = ctx.queryParam("otherParam");
@@ -69,7 +69,7 @@ public class HelloController$Route implements WebRoutes {
       ctx.json(controller.post(dto));
     });
 
-    ApiBuilder.post("/hello/savebean/:foo", ctx -> {
+    ApiBuilder.post("/hello/savebean/{foo}", ctx -> {
       ctx.status(201);
       String foo = ctx.pathParam("foo");
       HelloDto dto = ctx.bodyAsClass(HelloDto.class);
@@ -116,13 +116,13 @@ public class HelloController$Route implements WebRoutes {
       ctx.json(controller.getAll());
     });
 
-    ApiBuilder.delete("/hello/:id", ctx -> {
+    ApiBuilder.delete("/hello/{id}", ctx -> {
       ctx.status(204);
       int id = asInt(ctx.pathParam("id"));
       controller.deleteById(id);
     });
 
-    ApiBuilder.get("/hello/withMatrix/:year_segment/:other", ctx -> {
+    ApiBuilder.get("/hello/withMatrix/{year_segment}/{other}", ctx -> {
       ctx.status(200);
       PathSegment year_segment = PathSegment.of(ctx.pathParam("year_segment"));
       int year = asInt(year_segment.val());
