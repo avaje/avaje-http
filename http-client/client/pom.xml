@@ -31,6 +31,13 @@
       <optional>true</optional>
     </dependency>
 
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-jsonb</artifactId>
+      <version>0.5</version>
+      <optional>true</optional>
+    </dependency>
+
     <!-- test dependencies  -->
 
     <dependency>
@@ -84,6 +91,13 @@
       <scope>test</scope>
     </dependency>
 
+<!--    <dependency>-->
+<!--      <groupId>io.avaje</groupId>-->
+<!--      <artifactId>avaje-jsonb-generator</artifactId>-->
+<!--      <version>0.5</version>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
+
   </dependencies>
 
   <build>
@@ -94,11 +108,13 @@
         <configuration>
           <argLine>
             --add-modules com.fasterxml.jackson.databind
+            --add-modules io.avaje.jsonb
             --add-opens io.avaje.http.client/io.avaje.http.client=ALL-UNNAMED
             --add-opens io.avaje.http.client/org.example.webserver=ALL-UNNAMED
             --add-opens io.avaje.http.client/org.example.github=ALL-UNNAMED
             --add-opens io.avaje.http.client/org.example.webserver=com.fasterxml.jackson.databind
             --add-opens io.avaje.http.client/org.example.github=com.fasterxml.jackson.databind
+            --add-opens io.avaje.http.client/org.example.github=io.avaje.jsonb
           </argLine>
         </configuration>
       </plugin>

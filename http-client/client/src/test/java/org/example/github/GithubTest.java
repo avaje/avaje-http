@@ -2,7 +2,6 @@ package org.example.github;
 
 import io.avaje.http.client.HttpClientContext;
 import io.avaje.http.client.JacksonBodyAdapter;
-import io.avaje.http.client.RequestLogger;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

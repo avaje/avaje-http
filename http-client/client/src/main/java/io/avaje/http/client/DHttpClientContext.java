@@ -176,7 +176,7 @@ class DHttpClientContext implements HttpClientContext {
     return httpClient.sendAsync(requestBuilder.build(), bodyHandler);
   }
 
-  BodyContent write(Object bean, String contentType) {
+  <T> BodyContent write(T bean, String contentType) {
     return bodyAdapter.beanWriter(bean.getClass()).write(bean, contentType);
   }
 

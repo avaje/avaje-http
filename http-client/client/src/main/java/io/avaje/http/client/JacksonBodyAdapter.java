@@ -25,10 +25,8 @@ public class JacksonBodyAdapter implements BodyAdapter {
 
   private final ObjectMapper mapper;
 
-  private final ConcurrentHashMap<Class<?>, BodyWriter> beanWriterCache = new ConcurrentHashMap<>();
-
+  private final ConcurrentHashMap<Class<?>, BodyWriter<?>> beanWriterCache = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<Class<?>, BodyReader<?>> beanReaderCache = new ConcurrentHashMap<>();
-
   private final ConcurrentHashMap<Class<?>, BodyReader<?>> listReaderCache = new ConcurrentHashMap<>();
 
   /**
@@ -49,11 +47,12 @@ public class JacksonBodyAdapter implements BodyAdapter {
       .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public BodyWriter beanWriter(Class<?> cls) {
-    return beanWriterCache.computeIfAbsent(cls, aClass -> {
+  public <T> BodyWriter<T> beanWriter(Class<?> cls) {
+    return (BodyWriter<T>)beanWriterCache.computeIfAbsent(cls, aClass -> {
       try {
-        return new JWriter(mapper.writerFor(cls));
+        return new JWriter<>(mapper.writerFor(cls));
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
@@ -113,7 +112,7 @@ public class JacksonBodyAdapter implements BodyAdapter {
     }
   }
 
-  private static class JWriter implements BodyWriter {
+  private static class JWriter<T> implements BodyWriter<T> {
 
     private final ObjectWriter writer;
 
@@ -122,14 +121,14 @@ public class JacksonBodyAdapter implements BodyAdapter {
     }
 
     @Override
-    public BodyContent write(Object bean, String contentType) {
+    public BodyContent write(T bean, String contentType) {
       // ignoring the requested contentType and always
       // writing the body as json content
       return write(bean);
     }
 
     @Override
-    public BodyContent write(Object bean) {
+    public BodyContent write(T bean) {
       try {
         return BodyContent.asJson(writer.writeValueAsBytes(bean));
       } catch (JsonProcessingException e) {

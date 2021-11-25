@@ -14,7 +14,7 @@ public interface BodyAdapter {
    *
    * @param type The type of the bean this writer is for
    */
-  BodyWriter beanWriter(Class<?> type);
+  <T> BodyWriter<T> beanWriter(Class<?> type);
 
   /**
    * Return a BodyReader to read response content and convert to a bean.
