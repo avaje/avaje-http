@@ -10,11 +10,7 @@ import io.avaje.http.client.BodyContent;
 import io.avaje.http.client.BodyReader;
 import io.avaje.http.client.BodyWriter;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,10 +34,8 @@ public class GsonBodyAdapter implements BodyAdapter {
 
   private final Gson gson;
 
-  private final ConcurrentHashMap<Class<?>, BodyWriter> beanWriterCache = new ConcurrentHashMap<>();
-
+  private final ConcurrentHashMap<Class<?>, BodyWriter<?>> beanWriterCache = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<Class<?>, BodyReader<?>> beanReaderCache = new ConcurrentHashMap<>();
-
   private final ConcurrentHashMap<Class<?>, BodyReader<?>> listReaderCache = new ConcurrentHashMap<>();
 
   /**
@@ -51,11 +45,12 @@ public class GsonBodyAdapter implements BodyAdapter {
     this.gson = gson;
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   @Override
-  public BodyWriter beanWriter(Class<?> cls) {
-    return beanWriterCache.computeIfAbsent(cls, aClass -> {
+  public <T> BodyWriter<T> beanWriter(Class<?> cls) {
+    return (BodyWriter<T>) beanWriterCache.computeIfAbsent(cls, aClass -> {
       try {
-        final TypeAdapter<?> adapter = gson.getAdapter(cls);
+        final TypeAdapter adapter = gson.getAdapter(cls);
         return new Writer(gson, adapter);
       } catch (Exception e) {
         throw new RuntimeException(e);
@@ -76,14 +71,14 @@ public class GsonBodyAdapter implements BodyAdapter {
     });
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "rawtypes"})
   @Override
   public <T> BodyReader<List<T>> listReader(Class<T> cls) {
     return (BodyReader<List<T>>) listReaderCache.computeIfAbsent(cls, aClass -> {
       try {
-        final TypeToken<?> listType = TypeToken.getParameterized(List.class, cls);
-        final TypeAdapter adapter = gson.getAdapter(listType);
-        return new Reader(gson, adapter);
+        final TypeToken listType = TypeToken.getParameterized(List.class, cls);
+        final TypeAdapter<List<T>> adapter = gson.getAdapter(listType);
+        return new Reader<>(gson, adapter);
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
@@ -114,8 +109,7 @@ public class GsonBodyAdapter implements BodyAdapter {
 
     @Override
     public T read(BodyContent body) {
-      try {
-        InputStreamReader reader = new InputStreamReader(new ByteArrayInputStream(body.content()));
+      try (InputStreamReader reader = new InputStreamReader(new ByteArrayInputStream(body.content()))) {
         final JsonReader jsonReader = gson.newJsonReader(reader);
         return adapter.read(jsonReader);
       } catch (IOException e) {
@@ -124,24 +118,23 @@ public class GsonBodyAdapter implements BodyAdapter {
     }
   }
 
-  @SuppressWarnings({"rawtypes"})
-  private static class Writer implements BodyWriter {
+  private static class Writer<T> implements BodyWriter<T> {
 
     private final Gson gson;
-    private final TypeAdapter adapter;
+    private final TypeAdapter<T> adapter;
 
-    Writer(Gson gson, TypeAdapter adapter) {
+    Writer(Gson gson, TypeAdapter<T> adapter) {
       this.gson = gson;
       this.adapter = adapter;
     }
 
     @Override
-    public BodyContent write(Object bean, String contentType) {
+    public BodyContent write(T bean, String contentType) {
       return write(bean);
     }
 
     @Override
-    public BodyContent write(Object bean) {
+    public BodyContent write(T bean) {
       try {
         ByteArrayOutputStream os = new ByteArrayOutputStream(200);
         JsonWriter jsonWriter = gson.newJsonWriter(new OutputStreamWriter(os, UTF_8));
