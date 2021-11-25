@@ -1,3 +1,7 @@
+[![Build](https://github.com/avaje/avaje-http-client/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-http-client/actions/workflows/build.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.avaje/avaje-http-client.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/io.avaje/avaje-http-client)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-http-client/blob/master/LICENSE)
+
 # avaje-http-client
 
 Documentation at [avaje.io/http-client](https://avaje.io/http-client/)
@@ -20,7 +24,7 @@ A lightweight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/
 <dependency>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client</artifactId>
-  <version>1.11</version>
+  <version>1.12</version>
 </dependency>
 ```
 
