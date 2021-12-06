@@ -11,9 +11,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.LockSupport;
 
 class DHttpClientContext implements HttpClientContext {
 
@@ -33,7 +31,6 @@ class DHttpClientContext implements HttpClientContext {
   private final boolean withAuthToken;
   private final AuthTokenProvider authTokenProvider;
   private final AtomicReference<AuthToken> tokenRef = new AtomicReference<>();
-  private final AtomicLong activeAsync = new AtomicLong();
   private int loggingMaxBody = 1_000;
 
   DHttpClientContext(HttpClient httpClient, String baseUrl, Duration requestTimeout, BodyAdapter bodyAdapter, RetryHandler retryHandler, RequestListener requestListener, AuthTokenProvider authTokenProvider, RequestIntercept intercept) {
@@ -176,7 +173,6 @@ class DHttpClientContext implements HttpClientContext {
   }
 
   <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest.Builder requestBuilder, HttpResponse.BodyHandler<T> bodyHandler) {
-    activeAsync.incrementAndGet();
     return httpClient.sendAsync(requestBuilder.build(), bodyHandler);
   }
 
@@ -196,27 +192,12 @@ class DHttpClientContext implements HttpClientContext {
     return bodyAdapter.listReader(cls).read(content);
   }
 
-  @Override
-  public boolean waitForAsync(long millis) {
-    final long until = System.currentTimeMillis() + millis;
-    do {
-      if (activeAsync.get() <= 0) {
-        return true;
-      }
-      LockSupport.parkNanos(10_000_000);
-    } while (System.currentTimeMillis() < until);
-    return false;
-  }
-
   void afterResponse(DHttpClientRequest request) {
     if (requestListener != null) {
       requestListener.response(request.listenerEvent());
     }
     if (requestIntercept != null) {
       requestIntercept.afterResponse(request.response(), request);
-    }
-    if (request.startAsyncNanos > 0) {
-      activeAsync.decrementAndGet();
     }
   }
 

@@ -50,7 +50,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private boolean loggableResponseBody;
   private boolean skipAuthToken;
   private boolean suppressLogging;
-  protected long startAsyncNanos;
+  private long startAsyncNanos;
   private String label;
   private Map<String, Object> customAttributes;
 

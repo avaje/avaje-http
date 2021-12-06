@@ -116,14 +116,6 @@ public interface HttpClientContext {
   byte[] decodeContent(String encoding, byte[] content);
 
   /**
-   * Wait for any submitted async requests with a given maximum wait time.
-   *
-   * @param maxWaitMillis The maximum time to wait in milliseconds
-   * @return True if waiting was successful or false if there are still async requests that have not yet come back for completion.
-   */
-  boolean waitForAsync(long maxWaitMillis);
-
-  /**
    * Builds the HttpClientContext.
    *
    * <pre>{@code

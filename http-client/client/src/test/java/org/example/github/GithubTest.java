@@ -35,12 +35,7 @@ public class GithubTest {
       .thenAccept(res -> {
         System.out.println("RES: " + res.statusCode());
         System.out.println("BODY: " + res.body().substring(0, 150) + "...");
-      });
-
-    long st = System.currentTimeMillis();
-    System.out.println("waitForAsync");
-    boolean waitSuccess = clientContext.waitForAsync(2_000);
-    System.out.println("waitForAsync waitSuccess:" + waitSuccess + " waitMillis: " + (System.currentTimeMillis() - st));
+      }).join();
   }
 
 }

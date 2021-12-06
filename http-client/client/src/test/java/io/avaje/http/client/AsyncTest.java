@@ -30,10 +30,8 @@ class AsyncTest extends BaseWebTest {
       List<String> lines = hres.body().collect(Collectors.toList());
       assertThat(lines).hasSize(4);
       assertThat(lines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
-    });
+    }).join();
 
-    assertThat(flag).isFalse();
-    assertThat(clientContext.waitForAsync(1_000)).isTrue();
     assertThat(flag).isTrue();
   }
 
