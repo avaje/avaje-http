@@ -14,6 +14,32 @@ public interface HttpClientResponse {
 
   /**
    * Send the request async using CompletableFuture.
+   *
+   * <h4>Example async().bean()</h4>
+   * <p>
+   * In this example POST async that will return a bean converted from json response.
+   * <pre>{@code
+   *
+   *    clientContext.request()
+   *       ...
+   *       .POST().async()
+   *       .bean(HelloDto.class)
+   *       .whenComplete((helloDto, throwable) -> {
+   *
+   *         if (throwable != null) {
+   *           HttpException httpException = (HttpException) throwable.getCause();
+   *           int statusCode = httpException.statusCode();
+   *
+   *           // maybe convert json error response body to a bean (using Jackson/Gson)
+   *           MyErrorBean errorResponse = httpException.bean(MyErrorBean.class);
+   *           ..
+   *
+   *         } else {
+   *           // process helloDto
+   *           ...
+   *         }
+   *       });
+   * }</pre>
    */
   HttpAsyncResponse async();
 
