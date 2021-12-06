@@ -13,7 +13,7 @@ public class GithubTest {
 
   @Test
   @Disabled
-  void test() throws InterruptedException {
+  void test() {
 
     final HttpClientContext clientContext = HttpClientContext.newBuilder()
       .baseUrl("https://api.github.com")
@@ -21,24 +21,26 @@ public class GithubTest {
       .requestLogging(false)
       .build();
 
+    // will not work under module classpath without registering the HttpApiProvider
+    final Simple simple = clientContext.create(Simple.class);
+
+    final List<Repo> repos = simple.listRepos("rbygrave", "junk");
+    assertThat(repos).isNotEmpty();
+
     clientContext.request()
       .path("users").path("rbygrave").path("repos")
       .GET()
       .async()
       .asString()
       .thenAccept(res -> {
-
-        System.out.println("RES: "+res.statusCode());
-        System.out.println("BODY: "+res.body());
+        System.out.println("RES: " + res.statusCode());
+        System.out.println("BODY: " + res.body().substring(0, 150) + "...");
       });
 
-    Thread.sleep(1_000);
-
-    // will not work under module classpath without registering the HttpApiProvider
-    final Simple simple = clientContext.create(Simple.class);
-
-    final List<Repo> repos = simple.listRepos("rbygrave", "junk");
-    assertThat(repos).isNotEmpty();
+    long st = System.currentTimeMillis();
+    System.out.println("waitForAsync");
+    boolean waitSuccess = clientContext.waitForAsync(2_000);
+    System.out.println("waitForAsync waitSuccess:" + waitSuccess + " waitMillis: " + (System.currentTimeMillis() - st));
   }
 
 }
