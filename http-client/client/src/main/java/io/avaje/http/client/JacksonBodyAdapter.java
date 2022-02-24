@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -98,7 +99,7 @@ public class JacksonBodyAdapter implements BodyAdapter {
       try {
         return reader.readValue(content);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new UncheckedIOException(e);
       }
     }
 
@@ -107,7 +108,7 @@ public class JacksonBodyAdapter implements BodyAdapter {
       try {
         return reader.readValue(bodyContent.content());
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new UncheckedIOException(e);
       }
     }
   }
@@ -132,7 +133,7 @@ public class JacksonBodyAdapter implements BodyAdapter {
       try {
         return BodyContent.asJson(writer.writeValueAsBytes(bean));
       } catch (JsonProcessingException e) {
-        throw new RuntimeException(e);
+        throw new UncheckedIOException(e);
       }
     }
   }
