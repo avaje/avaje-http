@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.LongAccumulator;
+import java.util.concurrent.atomic.LongAdder;
 
-class DHttpClientContext implements HttpClientContext {
+final class DHttpClientContext implements HttpClientContext {
 
   /**
    * HTTP Authorization header.
@@ -32,6 +34,12 @@ class DHttpClientContext implements HttpClientContext {
   private final AuthTokenProvider authTokenProvider;
   private final AtomicReference<AuthToken> tokenRef = new AtomicReference<>();
   private int loggingMaxBody = 1_000;
+
+  private final LongAdder metricResTotal = new LongAdder();
+  private final LongAdder metricResError = new LongAdder();
+  private final LongAdder metricResBytes = new LongAdder();
+  private final LongAdder metricResMicros = new LongAdder();
+  private final LongAccumulator metricResMaxMicros = new LongAccumulator(Math::max, 0);
 
   DHttpClientContext(HttpClient httpClient, String baseUrl, Duration requestTimeout, BodyAdapter bodyAdapter, RetryHandler retryHandler, RequestListener requestListener, AuthTokenProvider authTokenProvider, RequestIntercept intercept) {
     this.httpClient = httpClient;
@@ -95,6 +103,76 @@ class DHttpClientContext implements HttpClientContext {
   }
 
   @Override
+  public Metrics metrics() {
+    return metrics(false);
+  }
+
+  @Override
+  public Metrics metrics(boolean reset) {
+    if (reset) {
+      return new DMetrics(metricResTotal.sumThenReset(), metricResError.sumThenReset(), metricResBytes.sumThenReset(), metricResMicros.sumThenReset(), metricResMaxMicros.getThenReset());
+    } else {
+      return new DMetrics(metricResTotal.sum(), metricResError.sum(), metricResBytes.sum(), metricResMicros.sum(), metricResMaxMicros.get());
+    }
+  }
+
+  void metricsString(int stringBody) {
+    metricResBytes.add(stringBody);
+  }
+
+  static final class DMetrics implements Metrics {
+
+    private final long totalCount;
+    private final long errorCount;
+    private final long responseBytes;
+    private final long totalMicros;
+    private final long maxMicros;
+
+    DMetrics(long totalCount, long errorCount, long responseBytes, long totalMicros, long maxMicros) {
+      this.totalCount = totalCount;
+      this.errorCount = errorCount;
+      this.responseBytes = responseBytes;
+      this.totalMicros = totalMicros;
+      this.maxMicros = maxMicros;
+    }
+
+    @Override
+    public String toString() {
+      return "totalCount:" + totalCount + " errorCount:" + errorCount + " responseBytes:" + responseBytes + " totalMicros:" + totalMicros + " avgMicros:" + avgMicros()+ " maxMicros:" + maxMicros;
+    }
+
+    @Override
+    public long totalCount() {
+      return totalCount;
+    }
+
+    @Override
+    public long errorCount() {
+      return errorCount;
+    }
+
+    @Override
+    public long responseBytes() {
+      return responseBytes;
+    }
+
+    @Override
+    public long totalMicros() {
+      return totalMicros;
+    }
+
+    @Override
+    public long maxMicros() {
+      return maxMicros;
+    }
+
+    @Override
+    public long avgMicros() {
+      return totalCount == 0 ? 0 : totalMicros / totalCount;
+    }
+  }
+
+  @Override
   public void checkResponse(HttpResponse<?> response) {
     if (response.statusCode() >= 300) {
       throw new HttpException(response, this);
@@ -123,6 +201,10 @@ class DHttpClientContext implements HttpClientContext {
 
   @Override
   public BodyContent readContent(HttpResponse<byte[]> httpResponse) {
+    final byte[] body = httpResponse.body();
+    if (body != null && body.length > 0) {
+      metricResBytes.add(body.length);
+    }
     byte[] bodyBytes = decodeContent(httpResponse);
     final String contentType = getContentType(httpResponse);
     return new BodyContent(contentType, bodyBytes);
@@ -193,6 +275,12 @@ class DHttpClientContext implements HttpClientContext {
   }
 
   void afterResponse(DHttpClientRequest request) {
+    metricResTotal.add(1);
+    metricResMicros.add(request.responseTimeMicros());
+    metricResMaxMicros.accumulate(request.responseTimeMicros());
+    if (request.response().statusCode() >= 300) {
+      metricResError.add(1);
+    }
     if (requestListener != null) {
       requestListener.response(request.listenerEvent());
     }

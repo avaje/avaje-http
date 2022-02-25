@@ -34,7 +34,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>0.11</version>
+      <version>0.12</version>
       <optional>true</optional>
     </dependency>
 

@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Build a URL typically using a base url and adding path and query parameters.
  */
-public class UrlBuilder {
+public final class UrlBuilder {
 
   private final StringBuilder buffer = new StringBuilder(100);
 

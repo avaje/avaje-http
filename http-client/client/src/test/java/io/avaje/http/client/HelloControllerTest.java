@@ -31,6 +31,7 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void queryParamMap() {
+    clientContext.metrics(true);
     Map<String, String> params = new LinkedHashMap<>();
     params.put("A", "a");
     params.put("B", "b");
@@ -42,6 +43,14 @@ class HelloControllerTest extends BaseWebTest {
 
     assertThat(hres.statusCode()).isEqualTo(200);
     assertThat(hres.uri().toString()).isEqualTo("http://localhost:8887/hello/message?A=a&B=b");
+
+    HttpClientContext.Metrics metrics = clientContext.metrics();
+    assertThat(metrics.totalCount()).isEqualTo(1);
+    assertThat(metrics.errorCount()).isEqualTo(0);
+    assertThat(metrics.responseBytes()).isGreaterThan(0);
+    assertThat(metrics.totalMicros()).isGreaterThan(0);
+    assertThat(metrics.maxMicros()).isEqualTo(metrics.totalMicros());
+    assertThat(metrics.avgMicros()).isEqualTo(metrics.totalMicros());
   }
 
   @Test
@@ -61,6 +70,7 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void asLines_async() throws ExecutionException, InterruptedException {
+    clientContext.metrics(true);
     final CompletableFuture<HttpResponse<Stream<String>>> future = clientContext.request()
       .path("hello").path("stream")
       .GET()
@@ -73,6 +83,11 @@ class HelloControllerTest extends BaseWebTest {
 
     assertThat(lines).hasSize(4);
     assertThat(lines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
+    HttpClientContext.Metrics metrics = clientContext.metrics();
+    assertThat(metrics.totalCount()).isEqualTo(1);
+    assertThat(metrics.errorCount()).isEqualTo(0);
+    assertThat(metrics.responseBytes()).isEqualTo(0);
+    assertThat(metrics.totalMicros()).isGreaterThan(0);
   }
 
   @Test
@@ -206,6 +221,7 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void get_stream_NotFoundException() {
+    clientContext.metrics(true);
     final HttpException httpException = assertThrows(HttpException.class, () ->
       clientContext.request()
         .path("this-path-does-not-exist")
@@ -214,6 +230,11 @@ class HelloControllerTest extends BaseWebTest {
 
     assertThat(httpException.statusCode()).isEqualTo(404);
     assertThat(httpException.httpResponse().statusCode()).isEqualTo(404);
+    HttpClientContext.Metrics metrics = clientContext.metrics(true);
+    assertThat(metrics.totalCount()).isEqualTo(1);
+    assertThat(metrics.errorCount()).isEqualTo(1);
+    assertThat(metrics.responseBytes()).isEqualTo(0);
+    assertThat(metrics.totalMicros()).isGreaterThan(0);
   }
 
   @Test
@@ -360,6 +381,7 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void get_notFound() {
+    clientContext.metrics(true);
     UUID nullUUID = null;
     final HttpClientRequest request = clientContext.request()
       .path("hello").path(UUID.randomUUID()).queryParam("zone", ZoneId.of("UTC"))
@@ -373,6 +395,11 @@ class HelloControllerTest extends BaseWebTest {
 
     assertThat(hres.statusCode()).isEqualTo(404);
     assertThat(hres.body()).contains("Not found");
+    HttpClientContext.Metrics metrics = clientContext.metrics(true);
+    assertThat(metrics.totalCount()).isEqualTo(1);
+    assertThat(metrics.errorCount()).isEqualTo(1);
+    assertThat(metrics.responseBytes()).isGreaterThan(0);
+    assertThat(metrics.totalMicros()).isGreaterThan(0);
   }
 
   @Test
@@ -732,7 +759,7 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void async_whenComplete_throwingHttpException() {
-
+    clientContext.metrics(true);
     AtomicReference<HttpException> causeRef = new AtomicReference<>();
 
     final CompletableFuture<HelloDto> future = clientContext.request()
@@ -766,6 +793,11 @@ class HelloControllerTest extends BaseWebTest {
     } catch (CompletionException e) {
       assertThat(e.getCause()).isSameAs(causeRef.get());
     }
+    HttpClientContext.Metrics metrics = clientContext.metrics(true);
+    assertThat(metrics.totalCount()).isEqualTo(1);
+    assertThat(metrics.errorCount()).isEqualTo(1);
+    assertThat(metrics.responseBytes()).isGreaterThan(0);
+    assertThat(metrics.totalMicros()).isGreaterThan(0);
   }
 
   @Test

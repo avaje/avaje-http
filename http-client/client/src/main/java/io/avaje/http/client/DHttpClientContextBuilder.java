@@ -14,7 +14,7 @@ import java.util.concurrent.Executor;
 
 import static java.util.Objects.requireNonNull;
 
-class DHttpClientContextBuilder implements HttpClientContext.Builder {
+final class DHttpClientContextBuilder implements HttpClientContext.Builder {
 
   private HttpClient client;
   private String baseUrl;

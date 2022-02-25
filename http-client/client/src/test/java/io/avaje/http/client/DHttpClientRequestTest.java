@@ -5,14 +5,14 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 class DHttpClientRequestTest {
 
+  final DHttpClientContext context = new DHttpClientContext(null, null, null, null, null, null, null, null);
+
   @Test
   void suppressLogging_listenerEvent_expect_suppressedPayloadContent() {
-
-    final DHttpClientRequest request = new DHttpClientRequest(mock(DHttpClientContext.class), Duration.ZERO);
+    final DHttpClientRequest request = new DHttpClientRequest(context, Duration.ZERO);
 
     request.suppressLogging();
     final RequestListener.Event event = request.listenerEvent();
@@ -23,8 +23,7 @@ class DHttpClientRequestTest {
 
   @Test
   void skipAuthToken_listenerEvent_expect_suppressedPayloadContent() {
-
-    final DHttpClientRequest request = new DHttpClientRequest(mock(DHttpClientContext.class), Duration.ZERO);
+    final DHttpClientRequest request = new DHttpClientRequest(context, Duration.ZERO);
     assertThat(request.isSkipAuthToken()).isFalse();
 
     request.skipAuthToken();

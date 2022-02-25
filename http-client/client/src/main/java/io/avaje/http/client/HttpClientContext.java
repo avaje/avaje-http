@@ -85,6 +85,20 @@ public interface HttpClientContext {
   HttpClient httpClient();
 
   /**
+   * Return the current aggregate metrics.
+   * <p>
+   * These metrics are collected for all requests sent via this context.
+   */
+  Metrics metrics();
+
+  /**
+   * Return the current metrics with the option of resetting the underlying counters.
+   * <p>
+   * These metrics are collected for all requests sent via this context.
+   */
+  Metrics metrics(boolean reset);
+
+  /**
    * Check the response status code and throw HttpException if the status
    * code is in the error range.
    */
@@ -308,5 +322,41 @@ public interface HttpClientContext {
      * }</pre>
      */
     HttpClientContext build();
+  }
+
+  /**
+   * Statistic metrics collected to provide an overview of activity of this client.
+   */
+  interface Metrics {
+
+    /**
+     * Return the total number of responses.
+     */
+    long totalCount();
+
+    /**
+     * Return the total number of error responses (status code >= 300).
+     */
+    long errorCount();
+
+    /**
+     * Return the total response bytes (excludes streaming responses).
+     */
+    long responseBytes();
+
+    /**
+     * Return the total response time in microseconds.
+     */
+    long totalMicros();
+
+    /**
+     * Return the max response time in microseconds (since the last reset).
+     */
+    long maxMicros();
+
+    /**
+     * Return the average response time in microseconds.
+     */
+    long avgMicros();
   }
 }

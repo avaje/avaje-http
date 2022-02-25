@@ -531,16 +531,21 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return withHandler(HttpResponse.BodyHandlers.ofByteArray());
   }
 
+  private HttpResponse<String> addMetrics(final HttpResponse<String> res) {
+    context.metricsString(res.body().length());
+    return res;
+  }
+
   @Override
   public HttpResponse<String> asString() {
     loggableResponseBody = true;
-    return withHandler(HttpResponse.BodyHandlers.ofString());
+    return addMetrics(withHandler(HttpResponse.BodyHandlers.ofString()));
   }
 
   @Override
   public HttpResponse<String> asPlainString() {
     loggableResponseBody = true;
-    final HttpResponse<String> hres = withHandler(HttpResponse.BodyHandlers.ofString());
+    final HttpResponse<String> hres = addMetrics(withHandler(HttpResponse.BodyHandlers.ofString()));
     context.checkResponse(hres);
     return hres;
   }

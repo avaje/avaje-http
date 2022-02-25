@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * }</pre>
  */
-public class JsonbBodyAdapter implements BodyAdapter {
+public final class JsonbBodyAdapter implements BodyAdapter {
 
   private final Jsonb jsonb;
   private final ConcurrentHashMap<Class<?>, BodyWriter<?>> beanWriterCache = new ConcurrentHashMap<>();

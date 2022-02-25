@@ -3,7 +3,7 @@ package io.avaje.http.client;
 /**
  * Helper methods to convert common types to String path values.
  */
-public class PathConversion {
+public final class PathConversion {
 
   /**
    * Convert to path.

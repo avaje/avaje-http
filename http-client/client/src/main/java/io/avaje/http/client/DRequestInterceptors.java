@@ -10,7 +10,7 @@ import java.util.List;
  * <p>
  * Noting that afterResponse interceptors are processed in reverse order.
  */
-class DRequestInterceptors implements RequestIntercept {
+final class DRequestInterceptors implements RequestIntercept {
 
   private final List<RequestIntercept> before;
   private final List<RequestIntercept> after;

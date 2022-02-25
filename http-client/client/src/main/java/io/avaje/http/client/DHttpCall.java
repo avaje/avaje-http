@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-class DHttpCall implements HttpCallResponse {
+final class DHttpCall implements HttpCallResponse {
 
   private final DHttpClientRequest request;
 

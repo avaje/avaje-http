@@ -2,7 +2,7 @@ package io.avaje.http.client;
 
 import java.util.List;
 
-class DRequestListeners implements RequestListener {
+final class DRequestListeners implements RequestListener {
 
   private final RequestListener[] listeners;
 

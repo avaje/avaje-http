@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-class GzipUtil {
+final class GzipUtil {
 
   static byte[] gzip(String content) {
     return gzip(content.getBytes(StandardCharsets.UTF_8));

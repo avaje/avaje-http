@@ -10,7 +10,7 @@ import java.util.ServiceLoader;
 /**
  * Service loads the HttpApiProvider for HttpApi.
  */
-class DHttpApi {
+final class DHttpApi {
 
   private static final Logger log = LoggerFactory.getLogger(DHttpApi.class);
 

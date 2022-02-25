@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-class DHttpAsync implements HttpAsyncResponse {
+final class DHttpAsync implements HttpAsyncResponse {
 
   private final DHttpClientRequest request;
 

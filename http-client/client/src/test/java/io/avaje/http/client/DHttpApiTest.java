@@ -36,6 +36,7 @@ public class DHttpApiTest {
 
     Jsonb jsonb = Jsonb.newBuilder()
       .add(Repo.class, RepoJsonAdapter::new)
+      //.adapter(new JacksonAdapter())
       .build();
 
     final HttpClientContext clientContext = HttpClientContext.newBuilder()

@@ -6,7 +6,7 @@ import java.time.Duration;
 /**
  * Extends DHttpClientRequest with retry attempts.
  */
-class DHttpClientRequestWithRetry extends DHttpClientRequest {
+final class DHttpClientRequestWithRetry extends DHttpClientRequest {
 
   private final RetryHandler retryHandler;
   private int retryCount;

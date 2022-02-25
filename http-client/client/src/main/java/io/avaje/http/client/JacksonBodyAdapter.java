@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * }</pre>
  */
-public class JacksonBodyAdapter implements BodyAdapter {
+public final class JacksonBodyAdapter implements BodyAdapter {
 
   private final ObjectMapper mapper;
 
