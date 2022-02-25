@@ -1,8 +1,6 @@
 package io.avaje.http.client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.lang.System.Logger.Level;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -11,23 +9,24 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Logs request and response details for debug logging purposes.
+ * Logs request and response details for debug logging purposes using <code>System.Logger</code>.
  * <p>
- * This implementation logs the request and response with the same
- * single logging entry rather than separate logging of the request
- * and response.
+ * This implementation logs the request and response with the same single logging entry
+ * rather than separate logging of the request and response.
  * <p>
- * With logging level set to {@code DEBUG} for
- * {@code io.avaje.http.client.RequestLogger} the request and response
- * are logged as a summary with response status and time.
+ * With logging level set to {@code DEBUG} for {@code io.avaje.http.client.RequestLogger} the
+ * request and response are logged as a summary with response status and time.
  * <p>
- * Set the logging level to {@code TRACE} to include the request
- * and response headers and body payloads with truncation for large
- * bodies.
+ * Set the logging level to {@code TRACE} to include the request and response headers and body
+ * payloads with truncation for large bodies.
+ * <p>
+ * Using System.Logger, messages by default go to JUL (Java Util Logging) unless a provider
+ * is registered. We can use <em>io.avaje:avaje-slf4j-jpl</em> to have System.Logger
+ * messages go to <em>slf4j-api</em>.
  */
 public class RequestLogger implements RequestListener {
 
-  private static final Logger log = LoggerFactory.getLogger(RequestLogger.class);
+  private static final System.Logger log = System.getLogger("io.avaje.http.client.RequestLogger");
 
   private final String delimiter;
 
@@ -47,7 +46,7 @@ public class RequestLogger implements RequestListener {
 
   @Override
   public void response(Event event) {
-    if (log.isDebugEnabled()) {
+    if (log.isLoggable(Level.DEBUG)) {
       final HttpResponse<?> response = event.response();
       final HttpRequest request = response.request();
       long micros = event.responseTimeMicros();
@@ -58,13 +57,13 @@ public class RequestLogger implements RequestListener {
         .append(" uri:").append(event.uri())
         .append(" timeMicros:").append(micros);
 
-      if (log.isTraceEnabled()) {
+      if (log.isLoggable(Level.TRACE)) {
         headers(sb, "req-head: ", request.headers());
         body(sb, "req-body: ", event.requestBody());
         headers(sb, "res-head: ", response.headers());
         body(sb, "res-body: ", event.responseBody());
       }
-      log.debug(sb.toString());
+      log.log(Level.DEBUG, sb.toString());
     }
   }
 

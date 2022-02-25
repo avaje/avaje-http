@@ -1,8 +1,6 @@
 package io.avaje.http.client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.lang.System.Logger.Level;
 import java.net.http.HttpResponse;
 import java.util.Random;
 
@@ -11,7 +9,7 @@ import java.util.Random;
  */
 public class SimpleRetryHandler implements RetryHandler {
 
-  private static final Logger log = LoggerFactory.getLogger(SimpleRetryHandler.class);
+  private static final System.Logger log = System.getLogger("io.avaje.http.client");
 
   private final int maxRetries;
   private final long backoffMillis;
@@ -47,7 +45,9 @@ public class SimpleRetryHandler implements RetryHandler {
     if (response.statusCode() < 500 || retryCount >= maxRetries) {
       return false;
     }
-    log.debug("retry count:{} status:{} uri:{}", retryCount, response.statusCode(), response.uri());
+    if (log.isLoggable(Level.DEBUG)) {
+      log.log(Level.DEBUG, "retry count:%s status:%s uri:%s", retryCount, response.statusCode(), response.uri());
+    }
     try {
       int gitter = gitterMillis < 1 ? 0 : random.nextInt(gitterMillis);
       Thread.sleep(backoffMillis + gitter);

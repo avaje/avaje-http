@@ -1,18 +1,17 @@
 package io.avaje.http.client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
+
+import static java.lang.System.Logger.Level.*;
 
 /**
  * Service loads the HttpApiProvider for HttpApi.
  */
 final class DHttpApi {
 
-  private static final Logger log = LoggerFactory.getLogger(DHttpApi.class);
+  private static final System.Logger log = System.getLogger("io.avaje.http.client");
 
   private static final DHttpApi INSTANCE = new DHttpApi();
 
@@ -27,7 +26,7 @@ final class DHttpApi {
     for (HttpApiProvider apiProvider : ServiceLoader.load(HttpApiProvider.class)) {
       addProvider(apiProvider);
     }
-    log.debug("providers for {}", providerMap.keySet());
+    log.log(DEBUG, "providers for %s", providerMap.keySet());
   }
 
   void addProvider(HttpApiProvider apiProvider) {
