@@ -1,28 +1,38 @@
 package io.avaje.http.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RetryTest extends BaseWebTest {
+class RetryTest extends BaseWebTest {
 
-  final MyIntercept myIntercept = new MyIntercept();
-  final HttpClientContext clientContext = initClientWithRetry();
 
-  HttpClientContext initClientWithRetry() {
+  HttpClientContext initClientWithRetry(MyIntercept myIntercept, RetryHandler retryHandler) {
     return HttpClientContext.newBuilder()
       .baseUrl("http://localhost:8887")
       .bodyAdapter(new JacksonBodyAdapter())
-      .retryHandler(new SimpleRetryHandler(4, 1))
+      .retryHandler(retryHandler)
       .requestIntercept(myIntercept)
       .build();
   }
 
   @Test
   void retryTest() {
+    final MyIntercept myIntercept = new MyIntercept();
+    final HttpClientContext clientContext = initClientWithRetry(myIntercept, new SimpleRetryHandler(4, 1));
+    performGetRequestAndAssert(myIntercept, clientContext);
+  }
+
+  @Test
+  void retryWithGitterTest() {
+    final MyIntercept myIntercept = new MyIntercept();
+    final HttpClientContext clientContext = initClientWithRetry(myIntercept, new SimpleRetryHandler(4, 10, 20));
+    performGetRequestAndAssert(myIntercept, clientContext);
+  }
+
+  private void performGetRequestAndAssert(MyIntercept myIntercept, HttpClientContext clientContext) {
     HttpResponse<String> res = clientContext.request()
       .label("http_client_hello_retry")
       .path("hello/retry")
