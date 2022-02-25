@@ -24,7 +24,7 @@ A lightweight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/
 <dependency>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client</artifactId>
-  <version>1.12</version>
+  <version>1.14</version>
 </dependency>
 ```
 
@@ -37,7 +37,6 @@ Create a HttpClientContext with a baseUrl, Jackson or Gson based JSON
   public HttpClientContext client() {
     return HttpClientContext.newBuilder()
       .withBaseUrl(baseUrl)
-      .withRequestListener(new RequestLogger())
       .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
 //      .withBodyAdapter(new GsonBodyAdapter(new Gson()))
       .build();
