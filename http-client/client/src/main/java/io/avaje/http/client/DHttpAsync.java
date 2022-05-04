@@ -21,7 +21,7 @@ final class DHttpAsync implements HttpAsyncResponse {
   }
 
   @Override
-  public <E> CompletableFuture<HttpResponse<E>> withHandler(HttpResponse.BodyHandler<E>  handler) {
+  public <E> CompletableFuture<HttpResponse<E>> handler(HttpResponse.BodyHandler<E>  handler) {
     return with(false, handler);
   }
 

@@ -307,7 +307,7 @@ class HelloControllerTest extends BaseWebTest {
     final CompletableFuture<HttpResponse<Void>> future = clientContext.request()
       .path("hello/stream")
       .GET()
-      .async().withHandler(HttpResponse.BodyHandlers.fromLineSubscriber(new Flow.Subscriber<>() {
+      .async().handler(HttpResponse.BodyHandlers.fromLineSubscriber(new Flow.Subscriber<>() {
         @Override
         public void onSubscribe(Flow.Subscription subscription) {
           subscription.request(Long.MAX_VALUE);
@@ -545,10 +545,10 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
-  void callWithHandler() {
+  void callHandler() {
     final HttpResponse<String> hres = clientContext.request()
       .path("hello").path("message")
-      .GET().call().withHandler(HttpResponse.BodyHandlers.ofString())
+      .GET().call().handler(HttpResponse.BodyHandlers.ofString())
       .execute();
 
     assertThat(hres.body()).contains("hello world");
@@ -559,7 +559,7 @@ class HelloControllerTest extends BaseWebTest {
   void callWithHandlerAsync() throws ExecutionException, InterruptedException {
     final HttpResponse<String> hres = clientContext.request()
       .path("hello").path("message")
-      .GET().call().withHandler(HttpResponse.BodyHandlers.ofString())
+      .GET().call().handler(HttpResponse.BodyHandlers.ofString())
       .async().get();
 
     assertThat(hres.body()).contains("hello world");

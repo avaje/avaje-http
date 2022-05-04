@@ -118,7 +118,7 @@ Overview of response types for sync calls.
 <tr><td>bean&lt;E&gt</td><td>E</td></tr>
 <tr><td>list&lt;E&gt</td><td>List&lt;E&gt;</td></tr>
 <tr><td>stream&lt;E&gt</td><td>Stream&lt;E&gt;</td></tr>
-<tr><td>withHandler(HttpResponse.BodyHandler&lt;E&gt;)</td><td>HttpResponse&lt;E&gt;</td></tr>
+<tr><td>handler(HttpResponse.BodyHandler&lt;E&gt;)</td><td>HttpResponse&lt;E&gt;</td></tr>
 <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
 <tr><td><b>async processing</b></td><td>&nbsp;</td></tr>
 <tr><td>asVoid</td><td>CompletableFuture&lt;HttpResponse&lt;Void&gt;&gt;</td></tr>
@@ -126,13 +126,13 @@ Overview of response types for sync calls.
 <tr><td>bean&lt;E&gt</td><td>CompletableFuture&lt;E&gt;</td></tr>
 <tr><td>list&lt;E&gt</td><td>CompletableFuture&lt;List&lt;E&gt;&gt;</td></tr>
 <tr><td>stream&lt;E&gt</td><td>CompletableFuture&lt;Stream&lt;E&gt;&gt;</td></tr>
-<tr><td>withHandler(HttpResponse.BodyHandler&lt;E&gt)</td><td>CompletableFuture&lt;HttpResponse&lt;E&gt;&gt;</td></tr>
+<tr><td>handler(HttpResponse.BodyHandler&lt;E&gt)</td><td>CompletableFuture&lt;HttpResponse&lt;E&gt;&gt;</td></tr>
 </table>
 
 ### HttpResponse BodyHandlers
 
 JDK HttpClient provides a number of [BodyHandlers](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandler.html)
-including reactive Flow based subscribers. With the `withHandler()` method we can use any of these or our own [`HttpResponse.BodyHandler`](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandler.html)
+including reactive Flow based subscribers. With the `handler()` method we can use any of these or our own [`HttpResponse.BodyHandler`](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandler.html)
 implementation.
 
 Refer to [HttpResponse.BodyHandlers](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandlers.html)
@@ -307,7 +307,7 @@ The `bean()`, `list()` and `stream()` responses throw a `HttpException` if the s
 <tr><td>bean&lt;E&gt</td><td>CompletableFuture&lt;E&gt;</td></tr>
 <tr><td>list&lt;E&gt</td><td>CompletableFuture&lt;List&lt;E&gt;&gt;</td></tr>
 <tr><td>stream&lt;E&gt</td><td>CompletableFuture&lt;Stream&lt;E&gt;&gt;</td></tr>
-<tr><td>withHandler(HttpResponse.BodyHandler&lt;E&gt)</td><td>CompletableFuture&lt;HttpResponse&lt;E&gt;&gt;</td></tr>
+<tr><td>handler(HttpResponse.BodyHandler&lt;E&gt)</td><td>CompletableFuture&lt;HttpResponse&lt;E&gt;&gt;</td></tr>
 </table>
 
 ### .async().asDiscarding() - HttpResponse&lt;Void&gt;
@@ -374,7 +374,7 @@ clientContext.request()
 
 ```
 
-### .async().withHandler(...) - Any `Response.BodyHandler` implementation
+### .async().handler(...) - Any `Response.BodyHandler` implementation
 
 The example below is a line subscriber processing response content line by line.
 
@@ -382,7 +382,7 @@ The example below is a line subscriber processing response content line by line.
 CompletableFuture<HttpResponse<Void>> future = clientContext.request()
    .path("hello/lineStream")
    .GET().async()
-   .withHandler(HttpResponse.BodyHandlers.fromLineSubscriber(new Flow.Subscriber<>() {
+   .handler(HttpResponse.BodyHandlers.fromLineSubscriber(new Flow.Subscriber<>() {
 
      @Override
      public void onSubscribe(Flow.Subscription subscription) {

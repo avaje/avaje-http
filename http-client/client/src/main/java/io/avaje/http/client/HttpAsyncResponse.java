@@ -193,7 +193,7 @@ public interface HttpAsyncResponse {
    *    CompletableFuture<HttpResponse<Void>> future = clientContext.request()
    *       .path("hello/lineStream")
    *       .GET().async()
-   *       .withHandler(HttpResponse.BodyHandlers.fromLineSubscriber(new Flow.Subscriber<>() {
+   *       .handler(HttpResponse.BodyHandlers.fromLineSubscriber(new Flow.Subscriber<>() {
    *
    *         @Override
    *         public void onSubscribe(Flow.Subscription subscription) {
@@ -221,7 +221,15 @@ public interface HttpAsyncResponse {
    * @param bodyHandler The body handler to use to process the response
    * @return The CompletableFuture of the response
    */
-  <E> CompletableFuture<HttpResponse<E>> withHandler(HttpResponse.BodyHandler<E> bodyHandler);
+  <E> CompletableFuture<HttpResponse<E>> handler(HttpResponse.BodyHandler<E> bodyHandler);
+
+  /**
+   * Deprecated - migrate to handler().
+   */
+  @Deprecated
+  default <E> CompletableFuture<HttpResponse<E>> withHandler(HttpResponse.BodyHandler<E> bodyHandler) {
+    return handler(bodyHandler);
+  }
 
   /**
    * Process expecting a bean response body (typically from json content).

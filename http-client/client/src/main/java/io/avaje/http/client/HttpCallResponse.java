@@ -109,13 +109,21 @@ public interface HttpCallResponse {
    *    HttpCall<E> call = clientContext.request()
    *       .path("hello/lineStream")
    *       .GET()
-   *       .call().withHandler(HttpResponse.BodyHandler<E> ...);
+   *       .call().handler(HttpResponse.BodyHandler<E> ...);
    * }</pre>
    *
    * @param bodyHandler The response body handler to use
    * @return The HttpCall to allow sync or async execution
    */
-  <E> HttpCall<HttpResponse<E>> withHandler(HttpResponse.BodyHandler<E> bodyHandler);
+  <E> HttpCall<HttpResponse<E>> handler(HttpResponse.BodyHandler<E> bodyHandler);
+
+  /**
+   * Deprecated - migrate to handler().
+   */
+  @Deprecated
+  default <E> HttpCall<HttpResponse<E>> withHandler(HttpResponse.BodyHandler<E> bodyHandler) {
+    return handler(bodyHandler);
+  }
 
   /**
    * A bean response to execute async or sync.

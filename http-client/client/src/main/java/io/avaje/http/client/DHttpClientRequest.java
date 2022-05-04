@@ -436,7 +436,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public <T> Stream<T> stream(Class<T> cls) {
-    final HttpResponse<Stream<String>> res = withHandler(HttpResponse.BodyHandlers.ofLines());
+    final HttpResponse<Stream<String>> res = handler(HttpResponse.BodyHandlers.ofLines());
     this.httpResponse = res;
     if (res.statusCode() >= 300) {
       throw new HttpException(res, context);
@@ -446,7 +446,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public <T> HttpResponse<T> withHandler(HttpResponse.BodyHandler<T> responseHandler) {
+  public <T> HttpResponse<T> handler(HttpResponse.BodyHandler<T> responseHandler) {
     final HttpResponse<T> response = sendWith(responseHandler);
     context.afterResponse(this);
     return response;
@@ -528,7 +528,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public HttpResponse<byte[]> asByteArray() {
-    return withHandler(HttpResponse.BodyHandlers.ofByteArray());
+    return handler(HttpResponse.BodyHandlers.ofByteArray());
   }
 
   private HttpResponse<String> addMetrics(final HttpResponse<String> res) {
@@ -539,35 +539,35 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   @Override
   public HttpResponse<String> asString() {
     loggableResponseBody = true;
-    return addMetrics(withHandler(HttpResponse.BodyHandlers.ofString()));
+    return addMetrics(handler(HttpResponse.BodyHandlers.ofString()));
   }
 
   @Override
   public HttpResponse<String> asPlainString() {
     loggableResponseBody = true;
-    final HttpResponse<String> hres = addMetrics(withHandler(HttpResponse.BodyHandlers.ofString()));
+    final HttpResponse<String> hres = addMetrics(handler(HttpResponse.BodyHandlers.ofString()));
     context.checkResponse(hres);
     return hres;
   }
 
   @Override
   public HttpResponse<Void> asDiscarding() {
-    return withHandler(discarding());
+    return handler(discarding());
   }
 
   @Override
   public HttpResponse<InputStream> asInputStream() {
-    return withHandler(HttpResponse.BodyHandlers.ofInputStream());
+    return handler(HttpResponse.BodyHandlers.ofInputStream());
   }
 
   @Override
   public HttpResponse<Path> asFile(Path file) {
-    return withHandler(HttpResponse.BodyHandlers.ofFile(file));
+    return handler(HttpResponse.BodyHandlers.ofFile(file));
   }
 
   @Override
   public HttpResponse<Stream<String>> asLines() {
-    return withHandler(HttpResponse.BodyHandlers.ofLines());
+    return handler(HttpResponse.BodyHandlers.ofLines());
   }
 
   private HttpRequest.Builder newReq(String url) {

@@ -45,7 +45,7 @@ final class DHttpCall implements HttpCallResponse {
   }
 
   @Override
-  public <E> HttpCall<HttpResponse<E>> withHandler(HttpResponse.BodyHandler<E> bodyHandler) {
+  public <E> HttpCall<HttpResponse<E>> handler(HttpResponse.BodyHandler<E> bodyHandler) {
     return new CallHandler<>(bodyHandler);
   }
 
@@ -182,11 +182,11 @@ final class DHttpCall implements HttpCallResponse {
     }
     @Override
     public HttpResponse<E> execute() {
-      return request.withHandler(handler);
+      return request.handler(handler);
     }
     @Override
     public CompletableFuture<HttpResponse<E>> async() {
-      return request.async().withHandler(handler);
+      return request.async().handler(handler);
     }
   }
 }
