@@ -15,7 +15,7 @@ public class GithubTest {
   @Disabled
   void test() {
 
-    final HttpClientContext clientContext = HttpClientContext.newBuilder()
+    final HttpClientContext clientContext = HttpClientContext.builder()
       .baseUrl("https://api.github.com")
       .bodyAdapter(new JacksonBodyAdapter())
       .requestLogging(false)

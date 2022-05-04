@@ -24,7 +24,7 @@ public class GithubTest {
   }
 
   private void assertListRepos(BodyAdapter bodyAdapter) {
-    final HttpClientContext clientContext = HttpClientContext.newBuilder()
+    final HttpClientContext clientContext = HttpClientContext.builder()
       .baseUrl("https://api.github.com")
       .bodyAdapter(bodyAdapter)
 //      .requestLogging(false)

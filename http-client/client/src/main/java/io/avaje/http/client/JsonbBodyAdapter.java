@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * <pre>{@code
  *
- *   HttpClientContext.newBuilder()
+ *   HttpClientContext.builder()
  *       .baseUrl(baseUrl)
  *       .bodyAdapter(new JsonbBodyAdapter())
  *       .build();

@@ -21,11 +21,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  *
  * <pre>{@code
  *
- *   HttpClientContext.newBuilder()
- *       .withBaseUrl(baseUrl)
- *       .withRequestListener(new RequestLogger())
- *       //.withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
- *       .withBodyAdapter(new GsonBodyAdapter(new Gson()))
+ *   HttpClientContext.builder()
+ *       .baseUrl(baseUrl)
+ *       .requestListener(new RequestLogger())
+ *       //.bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+ *       .bodyAdapter(new GsonBodyAdapter(new Gson()))
  *       .build();
  *
  * }</pre>

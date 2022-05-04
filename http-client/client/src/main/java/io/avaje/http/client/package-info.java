@@ -6,7 +6,7 @@
  *
  * <pre>{@code
  *
- *   HttpClientContext ctx = HttpClientContext.newBuilder()
+ *   HttpClientContext ctx = HttpClientContext.builder()
  *       .baseUrl("http://localhost:8080")
  *       .bodyAdapter(new JacksonBodyAdapter())
  *       .build();

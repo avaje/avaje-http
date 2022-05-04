@@ -15,7 +15,7 @@ import java.util.concurrent.Executor;
  *
  * <pre>{@code
  *
- *   HttpClientContext ctx = HttpClientContext.newBuilder()
+ *   HttpClientContext ctx = HttpClientContext.builder()
  *       .baseUrl("http://localhost:8080")
  *       .bodyAdapter(new JacksonBodyAdapter())
  *       .build();
@@ -36,7 +36,7 @@ public interface HttpClientContext {
    *
    * <pre>{@code
    *
-   *   HttpClientContext ctx = HttpClientContext.newBuilder()
+   *   HttpClientContext ctx = HttpClientContext.builder()
    *       .baseUrl("http://localhost:8080")
    *       .bodyAdapter(new JacksonBodyAdapter())
    *       .build();
@@ -47,8 +47,16 @@ public interface HttpClientContext {
    *
    * }</pre>
    */
-  static HttpClientContext.Builder newBuilder() {
+  static HttpClientContext.Builder builder() {
     return new DHttpClientContextBuilder();
+  }
+
+  /**
+   * Deprecated - migrate to builder().
+   */
+  @Deprecated
+  static HttpClientContext.Builder newBuilder() {
+    return builder();
   }
 
   /**
@@ -134,7 +142,7 @@ public interface HttpClientContext {
    *
    * <pre>{@code
    *
-   *   HttpClientContext ctx = HttpClientContext.newBuilder()
+   *   HttpClientContext ctx = HttpClientContext.builder()
    *       .baseUrl("http://localhost:8080")
    *       .bodyAdapter(new JacksonBodyAdapter())
    *       .build();
@@ -308,7 +316,7 @@ public interface HttpClientContext {
      *
      * <pre>{@code
      *
-     *   HttpClientContext ctx = HttpClientContext.newBuilder()
+     *   HttpClientContext ctx = HttpClientContext.builder()
      *       .baseUrl("http://localhost:8080")
      *       .bodyAdapter(new JacksonBodyAdapter())
      *       .build();

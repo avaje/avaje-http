@@ -1,6 +1,5 @@
 package io.avaje.http.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpResponse;
@@ -34,7 +33,7 @@ class RequestListenerTest extends BaseWebTest {
   }
 
   private HttpClientContext createClient(TDRequestListener tdRequestListener) {
-    return HttpClientContext.newBuilder()
+    return HttpClientContext.builder()
       .baseUrl(baseUrl)
       .requestLogging(false)
       .requestListener(new RequestLogger())

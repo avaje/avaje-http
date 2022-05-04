@@ -35,10 +35,11 @@ Create a HttpClientContext with a baseUrl, Jackson or Gson based JSON
 
 ```java
   public HttpClientContext client() {
-    return HttpClientContext.newBuilder()
-      .withBaseUrl(baseUrl)
-      .withBodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
-//      .withBodyAdapter(new GsonBodyAdapter(new Gson()))
+    return HttpClientContext.builder()
+      .baseUrl(baseUrl)
+      .bodyAdapter(new JsonbBodyAdapter())
+      //.bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+      //.bodyAdapter(new GsonBodyAdapter(new Gson()))
       .build();
   }
 
@@ -443,10 +444,10 @@ header ("Basic Auth").
 
 ```java
 HttpClientContext clientContext =
-   HttpClientContext.newBuilder()
-     .withBaseUrl(baseUrl)
+   HttpClientContext.builder()
+     .baseUrl(baseUrl)
      ...
-     .withRequestIntercept(new BasicAuthIntercept("myUsername", "myPassword"))  <!-- HERE
+     .requestIntercept(new BasicAuthIntercept("myUsername", "myPassword"))  <!-- HERE
      .build();
 ```
 
@@ -481,10 +482,10 @@ and register that when building the HttpClientContext.
 ### 2. Register with HttpClientContext
 
 ```java
-    HttpClientContext ctx = HttpClientContext.newBuilder()
-      .withBaseUrl("https://foo")
+    HttpClientContext ctx = HttpClientContext.builder()
+      .baseUrl("https://foo")
       ...
-      .withAuthTokenProvider(new MyAuthTokenProvider()) <!-- HERE
+      .authTokenProvider(new MyAuthTokenProvider()) <!-- HERE
       .build();
 ```
 

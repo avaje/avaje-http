@@ -41,7 +41,7 @@ class DHttpClientContextTest {
   void build_basic() {
 
     final HttpClientContext context =
-      HttpClientContext.newBuilder()
+      HttpClientContext.builder()
       .baseUrl("http://localhost")
       .build();
 
@@ -60,7 +60,7 @@ class DHttpClientContextTest {
   void build_noCookieHandler() {
 
     final HttpClientContext context =
-      HttpClientContext.newBuilder()
+      HttpClientContext.builder()
         .baseUrl("http://localhost")
         .cookieHandler(null)
         .redirect(HttpClient.Redirect.ALWAYS)
@@ -80,7 +80,7 @@ class DHttpClientContextTest {
   @Test
   void build_missingBaseUrl() {
     try {
-      HttpClientContext.newBuilder().build();
+      HttpClientContext.builder().build();
     } catch (NullPointerException e) {
       assertThat(e.getMessage()).contains("baseUrl is not specified");
     }

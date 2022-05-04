@@ -18,7 +18,7 @@ public class DHttpApiTest {
   @Test
   void test_github_listRepos() {
 
-    final HttpClientContext clientContext = HttpClientContext.newBuilder()
+    final HttpClientContext clientContext = HttpClientContext.builder()
       .baseUrl("https://api.github.com")
       .bodyAdapter(new JacksonBodyAdapter())
       .build();
@@ -39,7 +39,7 @@ public class DHttpApiTest {
       //.adapter(new JacksonAdapter())
       .build();
 
-    final HttpClientContext clientContext = HttpClientContext.newBuilder()
+    final HttpClientContext clientContext = HttpClientContext.builder()
       .baseUrl("https://api.github.com")
       .bodyAdapter(new JsonbBodyAdapter(jsonb))
       .build();
