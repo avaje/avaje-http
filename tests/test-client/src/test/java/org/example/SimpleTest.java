@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.avaje.http.client.HttpApiProvider;
 import io.avaje.http.client.HttpClientContext;
 import io.avaje.http.client.JacksonBodyAdapter;
-import io.avaje.http.client.RequestLogger;
-import org.example.httpclient.GitHubUsers$HttpClient;
+
+import org.example.httpclient.GitHubUsersHttpClient;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +46,7 @@ public class SimpleTest {
 
     @Override
     public GitHubUsers provide(HttpClientContext client) {
-      return new GitHubUsers$HttpClient(client);
+      return new GitHubUsersHttpClient(client);
     }
   }
 }
