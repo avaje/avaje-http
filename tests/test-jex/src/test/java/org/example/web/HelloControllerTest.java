@@ -24,7 +24,6 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void getPlain() {
-
     final HttpResponse<String> res = client.request().path("plain").GET().asString();
 
     assertEquals("something", res.body());
@@ -33,9 +32,15 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void getName() {
-
     assertEquals("hi bazz", client.request().path("other/bazz").GET().asString().body());
     assertEquals("hi bax", client.request().path("other/bax").GET().asString().body());
+  }
+
+  @Test
+  void withDefault() {
+    assertEquals("name|bazz;limit|42", client.request().path("withDefault/bazz").GET().asString().body());
+    assertEquals("name|bazz;limit|10", client.request().path("withDefault/bazz").queryParam("limit", 10).GET().asString().body());
+    assertEquals("name|foo;limit|11", client.request().path("withDefault/foo").queryParam("limit", 11).queryParam("limit", 12).GET().asString().body());
   }
 
   @Test
@@ -48,10 +53,8 @@ class HelloControllerTest extends BaseWebTest {
     assertEquals("got name:one splat0:a/b splat1:x/y/z", client.request().path("splat2/one/a/b/other/x/y/z").GET().asString().body());
   }
 
-
   @Test
   void validation() {
-
     HelloDto helloDto = new HelloDto();
     helloDto.id = 42;
 
@@ -65,7 +68,6 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void validation_expect_HttpException() {
-
     HelloDto helloDto = new HelloDto();
     helloDto.id = 42;
 

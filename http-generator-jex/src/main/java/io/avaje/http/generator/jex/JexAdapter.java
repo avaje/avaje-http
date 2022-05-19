@@ -59,6 +59,6 @@ class JexAdapter implements PlatformAdapter {
 
   @Override
   public void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault) {
-    writer.append("ctx.%s(\"%s\",\"%s\")", paramType, paramName, paramDefault);
+    writer.append("withDefault(ctx.%s(\"%s\"), \"%s\")", paramType, paramName, paramDefault);
   }
 }

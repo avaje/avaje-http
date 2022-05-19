@@ -32,6 +32,12 @@ public class HelloController {
   }
 
   @Produces("text/plain")
+  @Get("withDefault/{name}")
+  String withDefault(String name, @Default("42") String limit) {
+    return "name|" + name+";limit|"+limit;
+  }
+
+  @Produces("text/plain")
   @Get("splat/{name}/<s0>/other/<s1>")
   String splat(String name, Context ctx) {
     return "got name:" + name + " splat0:" + ctx.pathParam("s0") + " splat1:" + ctx.pathParam("s1");
