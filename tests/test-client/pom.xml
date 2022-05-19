@@ -36,7 +36,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>1.13-SNAPSHOT</version>
+      <version>1.16-SNAPSHOT</version>
     </dependency>
 
     <dependency>

@@ -20,7 +20,7 @@
     <swagger.version>2.0.8</swagger.version>
     <kotlin.version>1.3.71</kotlin.version>
     <jackson.version>2.12.3</jackson.version>
-    <avaje-http-version>1.13-SNAPSHOT</avaje-http-version>
+    <avaje-http-version>1.16-SNAPSHOT</avaje-http-version>
   </properties>
 
   <dependencies>
