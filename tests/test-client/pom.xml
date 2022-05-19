@@ -108,12 +108,12 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-http-client-generator</artifactId>
-              <version>1.12-SNAPSHOT</version>
+              <version>1.16-SNAPSHOT</version>
             </path>
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-http-jex-generator</artifactId>
-              <version>1.12-SNAPSHOT</version>
+              <version>1.16-SNAPSHOT</version>
             </path>
             <path>
               <groupId>io.avaje</groupId>
