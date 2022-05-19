@@ -36,7 +36,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>1.16-SNAPSHOT</version>
+      <version>1.17-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -108,12 +108,12 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-http-client-generator</artifactId>
-              <version>1.16-SNAPSHOT</version>
+              <version>1.17-SNAPSHOT</version>
             </path>
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-http-jex-generator</artifactId>
-              <version>1.16-SNAPSHOT</version>
+              <version>1.17-SNAPSHOT</version>
             </path>
             <path>
               <groupId>io.avaje</groupId>
