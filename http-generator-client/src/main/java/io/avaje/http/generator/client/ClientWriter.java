@@ -18,7 +18,7 @@ class ClientWriter extends BaseControllerWriter {
   private static final String HTTP_API_PROVIDER = "io.avaje.http.client.HttpApiProvider";
 
   private static final String AT_GENERATED = "@Generated(\"avaje-http-client-generator\")";
-  private static final String SUFFIX = "$HttpClient";
+  private static final String SUFFIX = "HttpClient";
 
   private final List<ClientMethodWriter> methodList = new ArrayList<>();
 
@@ -63,7 +63,7 @@ class ClientWriter extends BaseControllerWriter {
     writer.append("    }").eol();
     writer.append("    @Override").eol();
     writer.append("    public %s provide(HttpClientContext client) {", shortName).eol();
-    writer.append("      return new %s$HttpClient(client);", shortName).eol();
+    writer.append("      return new %s%s(client);", shortName, SUFFIX).eol();
     writer.append("    }").eol();
     writer.append("  }").eol();
   }
