@@ -68,7 +68,7 @@ public class Main {
     });
 
     // All WebRoutes / Controllers ... from DI Context
-    BeanScope beanScope = BeanScope.newBuilder().build();
+    BeanScope beanScope = BeanScope.builder().build();
     List<WebRoutes> webRoutes = beanScope.list(WebRoutes.class);
     app.routes(() -> webRoutes.forEach(WebRoutes::registerRoutes));
 

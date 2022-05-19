@@ -24,14 +24,9 @@ class HelloControllerTest extends BaseWebTest {
   final HttpClientContext clientContext;
 
   HelloControllerTest() {
-
-    final HttpClient httpClient = HttpClient.newBuilder()
-      .build();
-
-    this.clientContext = HttpClientContext.newBuilder()
+    this.clientContext = HttpClientContext.builder()
       .baseUrl(baseUrl)
       .bodyAdapter(new JacksonBodyAdapter())
-      .client(httpClient)
       .build();
   }
 

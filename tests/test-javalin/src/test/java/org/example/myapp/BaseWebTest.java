@@ -26,7 +26,7 @@ public class BaseWebTest {
   }
 
   public static HttpClientContext client() {
-    return HttpClientContext.newBuilder()
+    return HttpClientContext.builder()
       .baseUrl(baseUrl)
       .bodyAdapter(new JacksonBodyAdapter())
       .build();

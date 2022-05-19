@@ -24,7 +24,7 @@ public class SimpleTest {
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     final HttpClientContext clientContext =
-      HttpClientContext.newBuilder()
+      HttpClientContext.builder()
         .baseUrl("https://api.github.com")
         .bodyAdapter(new JacksonBodyAdapter(objectMapper))
         .build();

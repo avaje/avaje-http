@@ -24,7 +24,7 @@ class CommonApiTest {
     final int port = new Random().nextInt(1000) + 10_000;
     Main.start(port);
 
-    final HttpClientContext clientContext = HttpClientContext.newBuilder()
+    final HttpClientContext clientContext = HttpClientContext.builder()
       .baseUrl("http://localhost:" + port)
       .bodyAdapter(new JacksonBodyAdapter())
       .build();

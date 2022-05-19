@@ -58,7 +58,7 @@ public class Main {
       .register(MetricsSupport.create())
       .register("/greet", new GreetService());
 
-    BeanScope beanScope = BeanScope.newBuilder().build();
+    BeanScope beanScope = BeanScope.builder().build();
     beanScope.list(Service.class).forEach(builder::register);
 
     return builder.build();

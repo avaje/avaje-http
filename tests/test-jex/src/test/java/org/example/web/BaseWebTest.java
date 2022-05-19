@@ -29,7 +29,7 @@ public class BaseWebTest {
   }
 
   public static HttpClientContext client() {
-    return HttpClientContext.newBuilder()
+    return HttpClientContext.builder()
       .baseUrl(baseUrl)
       .requestTimeout(Duration.ofMinutes(2))
       .bodyAdapter(new JacksonBodyAdapter())

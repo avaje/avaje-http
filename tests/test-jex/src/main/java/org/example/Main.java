@@ -18,7 +18,7 @@ public class Main {
   }
 
   public static Jex.Server start(int port) {
-    BeanScope beanScope = BeanScope.newBuilder().build();
+    BeanScope beanScope = BeanScope.builder().build();
     return start(port, beanScope);
   }
 
