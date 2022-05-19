@@ -63,21 +63,29 @@ final class DHttpClientContext implements HttpClientContext {
     if (apiProvider != null) {
       return apiProvider.provide(this);
     }
-    String implClassName = clientImplementationClassName(clientInterface);
     try {
-      Class<?> serviceClass = Class.forName(implClassName);
-      Constructor<?> constructor = serviceClass.getConstructor(HttpClientContext.class);
-      Object service = constructor.newInstance(this);
-      return (T) service;
+      Class<?> implementationClass = implementationClass(clientInterface);
+      Constructor<?> constructor = implementationClass.getConstructor(HttpClientContext.class);
+      return (T) constructor.newInstance(this);
     } catch (Exception e) {
-      throw new IllegalStateException("Failed to create http client service " + implClassName, e);
+      String cn = implementationClassName(clientInterface, "HttpClient");
+      throw new IllegalStateException("Failed to create http client service " + cn, e);
     }
   }
 
-  private <T> String clientImplementationClassName(Class<T> clientInterface) {
+  private Class<?> implementationClass(Class<?> clientInterface) throws ClassNotFoundException {
+    try {
+      return Class.forName(implementationClassName(clientInterface, "HttpClient"));
+    } catch (ClassNotFoundException e) {
+      // try the older generated client suffix
+      return Class.forName(implementationClassName(clientInterface, "$HttpClient"));
+    }
+  }
+
+  private <T> String implementationClassName(Class<T> clientInterface, String suffix) {
     String packageName = clientInterface.getPackageName();
     String simpleName = clientInterface.getSimpleName();
-    return packageName + ".httpclient." + simpleName + "$HttpClient";
+    return packageName + ".httpclient." + simpleName + suffix;
   }
 
   @Override
