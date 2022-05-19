@@ -144,9 +144,9 @@ class ClientMethodWriter {
 
   private void writeWithHandler() {
     if (bodyHandlerParam != null) {
-      writer.append(".withHandler(%s);", bodyHandlerParam.getName()).eol();
+      writer.append(".handler(%s);", bodyHandlerParam.getName()).eol();
     } else {
-      writer.append(".withHandler(responseHandler);").eol(); // Better to barf here?
+      writer.append(".handler(responseHandler);").eol(); // Better to barf here?
     }
   }
 
