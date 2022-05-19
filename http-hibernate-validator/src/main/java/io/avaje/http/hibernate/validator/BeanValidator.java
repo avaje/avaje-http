@@ -3,8 +3,7 @@ package io.avaje.http.hibernate.validator;
 
 import io.avaje.http.api.ValidationException;
 import io.avaje.http.api.Validator;
-
-import jakarta.inject.Singleton;
+import io.avaje.inject.Component;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
@@ -14,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-@Singleton
+@Component
 public class BeanValidator implements Validator {
 
   private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
