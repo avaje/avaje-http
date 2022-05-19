@@ -9,7 +9,8 @@
   <parent>
     <groupId>org.avaje</groupId>
     <artifactId>java11-oss</artifactId>
-    <version>3.2</version>
+    <version>3.8</version>
+    <relativePath/>
   </parent>
 
   <properties>
@@ -125,7 +126,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.10.1</version>
         <configuration>
           <release>11</release>
         </configuration>
