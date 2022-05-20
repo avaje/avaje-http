@@ -16,7 +16,7 @@
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
     <main.class>org.example.myapp.Main</main.class>
-    <javalin.version>4.1.1</javalin.version>
+    <javalin.version>4.6.0</javalin.version>
     <swagger.version>2.0.8</swagger.version>
     <kotlin.version>1.3.71</kotlin.version>
     <jackson.version>2.12.6.1</jackson.version>
