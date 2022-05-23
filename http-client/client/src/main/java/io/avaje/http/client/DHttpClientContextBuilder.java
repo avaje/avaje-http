@@ -159,6 +159,9 @@ final class DHttpClientContextBuilder implements HttpClientContext.Builder {
       // register the builtin request/response logging
       requestListener(new RequestLogger());
     }
+    if (bodyAdapter == null) {
+      bodyAdapter = defaultBodyAdapter();
+    }
     return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, retryHandler, buildListener(), authTokenProvider, buildIntercept());
   }
 
@@ -211,6 +214,37 @@ final class DHttpClientContextBuilder implements HttpClientContext.Builder {
       builder.priority(priority);
     }
     return builder.build();
+  }
+
+  /**
+   * Create a reasonable default BodyAdapter if avaje-jsonb or Jackson are present.
+   */
+  BodyAdapter defaultBodyAdapter() {
+    try {
+      return detectJsonb() ? new JsonbBodyAdapter()
+        : detectJackson() ? new JacksonBodyAdapter()
+        : null;
+    } catch (IllegalAccessError e) {
+      // not in module path
+      return null;
+    }
+  }
+
+  boolean detectJsonb() {
+    return detectTypeExists("io.avaje.jsonb.Jsonb");
+  }
+
+  boolean detectJackson() {
+    return detectTypeExists("com.fasterxml.jackson.databind.ObjectMapper");
+  }
+
+  private boolean detectTypeExists(String className) {
+    try {
+      Class.forName(className);
+      return true;
+    } catch (ClassNotFoundException e) {
+      return false;
+    }
   }
 
 }
