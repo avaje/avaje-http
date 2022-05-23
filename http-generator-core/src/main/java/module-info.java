@@ -11,5 +11,6 @@ module io.avaje.http.generator.core {
   requires transitive io.swagger.v3.oas.annotations;
   requires transitive com.fasterxml.jackson.core;
   requires transitive com.fasterxml.jackson.databind;
+  requires transitive com.fasterxml.jackson.annotation;
   requires transitive java.validation;
 }
