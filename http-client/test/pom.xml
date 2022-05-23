@@ -16,13 +16,13 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>1.17-SNAPSHOT</version>
+      <version>1.18-SNAPSHOT</version>
     </dependency>
 
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client-gson</artifactId>
-      <version>1.17-SNAPSHOT</version>
+      <version>1.18-SNAPSHOT</version>
     </dependency>
 
     <dependency>
