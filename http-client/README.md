@@ -24,7 +24,7 @@ A lightweight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/
 <dependency>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client</artifactId>
-  <version>1.14</version>
+  <version>1.17</version>
 </dependency>
 ```
 
@@ -83,6 +83,15 @@ HttpResponse<String> hres = clientContext.request()
   .GET()
   .asString();
 ```
+
+#### Example GET as JSON marshalling into a java class/dto
+```java
+CustomerDto customer = clientContext.request()
+  .path("customers").path(42)
+  .GET()
+  .bean(CustomerDto.class);
+```
+
 #### Example Async GET as String
 - All async requests use CompletableFuture&lt;T&gt;
 - throwable is a CompletionException
