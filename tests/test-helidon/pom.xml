@@ -17,7 +17,7 @@
     <maven.deploy.skip>true</maven.deploy.skip>
     <mainClass>org.example.Main</mainClass>
     <helidon-version>2.3.0</helidon-version>
-    <avaje-http-version>1.17-SNAPSHOT</avaje-http-version>
+    <avaje-http-version>1.18-SNAPSHOT</avaje-http-version>
   </properties>
 
   <dependencies>
