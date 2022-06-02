@@ -229,6 +229,33 @@ public final class PathTypeConversion {
   }
 
   /**
+   * Convert to Double (allowing nulls).
+   */
+  public static Double toDouble(String value) {
+    if (isNullOrEmpty(value)) {
+      return null;
+    }
+    try {
+      return Double.valueOf(value);
+    } catch (NumberFormatException e) {
+      throw new InvalidTypeArgumentException(e);
+    }
+  }
+  /**
+   * Convert to Float (allowing nulls).
+   */
+  public static Float toFloat(String value) {
+    if (isNullOrEmpty(value)) {
+      return null;
+    }
+    try {
+      return Float.valueOf(value);
+    } catch (NumberFormatException e) {
+      throw new InvalidTypeArgumentException(e);
+    }
+  }
+
+  /**
    * Convert to BigDecimal (allowing nulls).
    */
   public static BigDecimal toBigDecimal(String value) {

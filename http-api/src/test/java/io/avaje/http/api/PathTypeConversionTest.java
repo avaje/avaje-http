@@ -253,6 +253,28 @@ class PathTypeConversionTest {
   }
 
   @Test
+  void toDouble() {
+    assertThat(PathTypeConversion.toDouble("42")).isEqualTo(42D);
+    assertThat(PathTypeConversion.toDouble(null)).isNull();
+  }
+
+  @Test
+  void toDouble_invalid() {
+    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toDouble("junk"));
+  }
+
+  @Test
+  void toFloat() {
+    assertThat(PathTypeConversion.toFloat("42")).isEqualTo(42F);
+    assertThat(PathTypeConversion.toFloat(null)).isNull();
+  }
+
+  @Test
+  void toFloat_invalid() {
+    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toFloat("junk"));
+  }
+
+  @Test
   void toBigDecimal() {
     assertThat(PathTypeConversion.toBigDecimal("42.45")).isEqualByComparingTo("42.45");
     assertThat(PathTypeConversion.toBigDecimal(null)).isNull();
