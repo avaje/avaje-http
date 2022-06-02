@@ -35,4 +35,9 @@ class BazController extends BaseController<Baz, Long> {
 
     return Arrays.asList(b1, b2);
   }
+
+  @Get("checkparams/{id}")
+  String checkParams(int id, String p1, Double p2, Integer p3, Float p4, String body) {
+    return "dummy-response";
+  }
 }
