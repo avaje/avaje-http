@@ -10,11 +10,11 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client</artifactId>
-  <version>1.18</version>
+  <version>1.19-SNAPSHOT</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http-client.git</developerConnection>
-    <tag>avaje-http-client-1.18</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
