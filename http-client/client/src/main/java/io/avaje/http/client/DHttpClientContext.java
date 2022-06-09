@@ -33,7 +33,6 @@ final class DHttpClientContext implements HttpClientContext {
   private final boolean withAuthToken;
   private final AuthTokenProvider authTokenProvider;
   private final AtomicReference<AuthToken> tokenRef = new AtomicReference<>();
-  private int loggingMaxBody = 1_000;
 
   private final LongAdder metricResTotal = new LongAdder();
   private final LongAdder metricResError = new LongAdder();
@@ -316,6 +315,6 @@ final class DHttpClientContext implements HttpClientContext {
   }
 
   String maxResponseBody(String body) {
-    return body.length() > loggingMaxBody ? body.substring(0, loggingMaxBody) + " <truncated> ..." : body;
+    return body.length() > 1_000 ? body.substring(0, 1_000) + " <truncated> ..." : body;
   }
 }
