@@ -1,5 +1,9 @@
 package io.avaje.http.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.avaje.inject.BeanScope;
+import io.avaje.jsonb.Jsonb;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import java.net.Authenticator;
@@ -10,11 +14,12 @@ import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 
 import static java.util.Objects.requireNonNull;
 
-final class DHttpClientContextBuilder implements HttpClientContext.Builder {
+final class DHttpClientContextBuilder implements HttpClientContext.Builder.State {
 
   private HttpClient client;
   private String baseUrl;
@@ -149,6 +154,39 @@ final class DHttpClientContextBuilder implements HttpClientContext.Builder {
   }
 
   @Override
+  public State state() {
+    return this;
+  }
+
+  @Override
+  public HttpClientContext.Builder configureWith(BeanScope beanScope) {
+    if (bodyAdapter == null) {
+      configureBodyAdapter(beanScope);
+    }
+    if (retryHandler == null) {
+      configureRetryHandler(beanScope);
+    }
+    return this;
+  }
+
+  private void configureRetryHandler(BeanScope beanScope) {
+    beanScope.getOptional(RetryHandler.class)
+      .ifPresent(this::retryHandler);
+  }
+
+  private void configureBodyAdapter(BeanScope beanScope) {
+    Optional<BodyAdapter> body = beanScope.getOptional(BodyAdapter.class);
+    if (body.isPresent()) {
+      bodyAdapter = body.get();
+    } else if (beanScope.contains("io.avaje.jsonb.Jsonb")) {
+      bodyAdapter = new JsonbBodyAdapter(beanScope.get(Jsonb.class));
+    } else if (beanScope.contains("com.fasterxml.jackson.databind.ObjectMapper")) {
+      ObjectMapper objectMapper = beanScope.get(ObjectMapper.class);
+      bodyAdapter = new JacksonBodyAdapter(objectMapper);
+    }
+  }
+
+  @Override
   public HttpClientContext build() {
     requireNonNull(baseUrl, "baseUrl is not specified");
     requireNonNull(requestTimeout, "requestTimeout is not specified");
@@ -163,6 +201,36 @@ final class DHttpClientContextBuilder implements HttpClientContext.Builder {
       bodyAdapter = defaultBodyAdapter();
     }
     return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, retryHandler, buildListener(), authTokenProvider, buildIntercept());
+  }
+
+  @Override
+  public String baseUrl() {
+    return baseUrl;
+  }
+
+  @Override
+  public BodyAdapter bodyAdapter() {
+    return bodyAdapter;
+  }
+
+  @Override
+  public HttpClient client() {
+    return client;
+  }
+
+  @Override
+  public boolean requestLogging() {
+    return requestLogging;
+  }
+
+  @Override
+  public Duration requestTimeout() {
+    return requestTimeout;
+  }
+
+  @Override
+  public RetryHandler retryHandler() {
+    return retryHandler;
   }
 
   private RequestListener buildListener() {

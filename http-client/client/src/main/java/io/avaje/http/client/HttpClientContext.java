@@ -1,5 +1,7 @@
 package io.avaje.http.client;
 
+import io.avaje.inject.BeanScope;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import java.net.Authenticator;
@@ -312,6 +314,16 @@ public interface HttpClientContext {
     Builder priority(int priority);
 
     /**
+     * Configure BodyAdapter and RetryHandler using dependency injection BeanScope.
+     */
+    Builder configureWith(BeanScope beanScope);
+
+    /**
+     * Return the state of the builder.
+     */
+    State state();
+
+    /**
      * Build and return the context.
      *
      * <pre>{@code
@@ -330,6 +342,42 @@ public interface HttpClientContext {
      * }</pre>
      */
     HttpClientContext build();
+
+    /**
+     * The state of the builder with methods to read the set state.
+     */
+    interface State extends Builder {
+
+      /**
+       * Return the base URL.
+       */
+      String baseUrl();
+
+      /**
+       * Return the body adapter.
+       */
+      BodyAdapter bodyAdapter();
+
+      /**
+       * Return the HttpClient.
+       */
+      HttpClient client();
+
+      /**
+       * Return true if requestLogging is on.
+       */
+      boolean requestLogging();
+
+      /**
+       * Return the request timeout.
+       */
+      Duration requestTimeout();
+
+      /**
+       * Return the retry handler.
+       */
+      RetryHandler retryHandler();
+    }
   }
 
   /**
