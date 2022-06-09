@@ -46,7 +46,7 @@ public class SimpleRetryHandler implements RetryHandler {
       return false;
     }
     if (log.isLoggable(Level.DEBUG)) {
-      log.log(Level.DEBUG, "retry count:%s status:%s uri:%s", retryCount, response.statusCode(), response.uri());
+      log.log(Level.DEBUG, "retry count:{0} status:{1} uri:{2}", retryCount, response.statusCode(), response.uri());
     }
     try {
       int gitter = gitterMillis < 1 ? 0 : random.nextInt(gitterMillis);

@@ -26,7 +26,7 @@ final class DHttpApi {
     for (HttpApiProvider apiProvider : ServiceLoader.load(HttpApiProvider.class)) {
       addProvider(apiProvider);
     }
-    log.log(DEBUG, "providers for %s", providerMap.keySet());
+    log.log(DEBUG, "providers for {0}", providerMap.keySet());
   }
 
   void addProvider(HttpApiProvider apiProvider) {
