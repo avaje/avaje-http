@@ -5,16 +5,16 @@
     <groupId>org.avaje</groupId>
     <artifactId>java11-oss</artifactId>
     <version>3.9</version>
-    <relativePath/>
+    <relativePath />
   </parent>
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client-gson</artifactId>
-  <version>1.19-SNAPSHOT</version>
+  <version>1.19</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http-client.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>avaje-http-client-gson-1.19</tag>
   </scm>
 
   <dependencies>
