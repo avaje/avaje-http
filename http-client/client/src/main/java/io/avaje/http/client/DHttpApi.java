@@ -1,5 +1,7 @@
 package io.avaje.http.client;
 
+import io.avaje.applog.AppLog;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -11,7 +13,7 @@ import static java.lang.System.Logger.Level.*;
  */
 final class DHttpApi {
 
-  private static final System.Logger log = System.getLogger("io.avaje.http.client");
+  private static final System.Logger log = AppLog.getLogger("io.avaje.http.client");
 
   private static final DHttpApi INSTANCE = new DHttpApi();
 

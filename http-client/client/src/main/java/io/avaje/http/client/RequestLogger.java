@@ -1,5 +1,7 @@
 package io.avaje.http.client;
 
+import io.avaje.applog.AppLog;
+
 import java.lang.System.Logger.Level;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
@@ -26,7 +28,7 @@ import java.util.Set;
  */
 public class RequestLogger implements RequestListener {
 
-  private static final System.Logger log = System.getLogger("io.avaje.http.client.RequestLogger");
+  private static final System.Logger log = AppLog.getLogger("io.avaje.http.client.RequestLogger");
 
   private final String delimiter;
 

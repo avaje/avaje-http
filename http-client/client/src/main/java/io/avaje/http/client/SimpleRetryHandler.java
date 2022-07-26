@@ -1,5 +1,7 @@
 package io.avaje.http.client;
 
+import io.avaje.applog.AppLog;
+
 import java.lang.System.Logger.Level;
 import java.net.http.HttpResponse;
 import java.util.Random;
@@ -9,7 +11,7 @@ import java.util.Random;
  */
 public class SimpleRetryHandler implements RetryHandler {
 
-  private static final System.Logger log = System.getLogger("io.avaje.http.client");
+  private static final System.Logger log = AppLog.getLogger("io.avaje.http.client");
 
   private final int maxRetries;
   private final long backoffMillis;
