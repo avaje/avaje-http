@@ -16,7 +16,7 @@
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
     <jex.version>1.6</jex.version>
-    <avaje-inject.version>8.3</avaje-inject.version>
+    <avaje-inject.version>8.9</avaje-inject.version>
   </properties>
 
   <dependencies>
