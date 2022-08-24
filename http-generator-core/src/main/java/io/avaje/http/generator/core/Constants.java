@@ -10,7 +10,7 @@ public class Constants {
 
   static final String OPENAPIDEFINITION = "io.swagger.v3.oas.annotations.OpenAPIDefinition";
 
-  static final String SINGLETON = "jakarta.inject.Singleton";
+  static final String COMPONENT = "io.avaje.inject.Component";
 
   static final String IMPORT_PATH_TYPE_CONVERT = "import static io.avaje.http.api.PathTypeConversion.*;";
 

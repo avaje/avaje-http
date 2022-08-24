@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  */
 class ControllerWriter extends BaseControllerWriter {
 
-  private static final String AT_GENERATED = "@Generated(\"io.dinject.helidon-generator\")";
+  private static final String AT_GENERATED = "@Generated(\"avaje-helidon-generator\")";
 
   ControllerWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
     super(reader, ctx);
@@ -60,7 +60,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
-    writer.append("@Singleton").eol();
+    writer.append("@Component").eol();
     writer.append("public class ").append(shortName).append("$Route implements Service {").eol().eol();
 
     String controllerName = "controller";

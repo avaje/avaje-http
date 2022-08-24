@@ -9,7 +9,7 @@ import java.io.IOException;
  */
 class ControllerWriter extends BaseControllerWriter {
 
-  private static final String AT_GENERATED = "@Generated(\"io.dinject.javalin-generator\")";
+  private static final String AT_GENERATED = "@Generated(\"avaje-javalin-generator\")";
   private static final String API_BUILDER = "io.javalin.apibuilder.ApiBuilder";
 
   ControllerWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
@@ -45,7 +45,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
-    writer.append("@Singleton").eol();
+    writer.append("@Component").eol();
     writer.append("public class ").append(shortName).append("$Route implements WebRoutes {").eol().eol();
 
     String controllerName = "controller";

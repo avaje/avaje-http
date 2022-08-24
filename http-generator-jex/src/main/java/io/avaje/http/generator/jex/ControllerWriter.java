@@ -47,7 +47,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
-    writer.append("@Singleton").eol();
+    writer.append("@Component").eol();
     writer.append("public class ").append(shortName).append("$Route implements Routing.Service {").eol().eol();
 
     String controllerName = "controller";

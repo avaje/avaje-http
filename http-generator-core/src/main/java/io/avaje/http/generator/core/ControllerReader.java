@@ -67,7 +67,7 @@ public class ControllerReader {
       importTypes.add(Constants.VALIDATOR);
     }
     if (withSingleton) {
-      importTypes.add(Constants.SINGLETON);
+      importTypes.add(Constants.COMPONENT);
     }
   }
 
