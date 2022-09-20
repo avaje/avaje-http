@@ -126,6 +126,10 @@ public class PathSegments {
     return chunks.fullPath(prefix, suffix);
   }
 
+  public boolean isEmpty() {
+    return segments.isEmpty();
+  }
+
   public static class Segment {
 
     private final String name;

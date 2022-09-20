@@ -134,6 +134,66 @@
         }
       }
     },
+    "/baz/checkparams/{id}" : {
+      "get" : {
+        "tags" : [ ],
+        "summary" : "",
+        "description" : "",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "nullable" : false
+          }
+        }, {
+          "name" : "p1",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "p2",
+          "in" : "query",
+          "schema" : {
+            "type" : "number"
+          }
+        }, {
+          "name" : "p3",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "p4",
+          "in" : "query",
+          "schema" : {
+            "type" : "number"
+          }
+        }, {
+          "name" : "body",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/baz/findbyname/{name}" : {
       "get" : {
         "tags" : [ ],
