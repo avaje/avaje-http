@@ -22,8 +22,8 @@ public class Main {
 
 
     WebServer.builder()
-      //.addRouting(httpRouting)
-      .routing(Main::routing)
+      .addRouting(httpRouting)
+      //.routing(Main::routing)
       .port(8081)
       .start();
 

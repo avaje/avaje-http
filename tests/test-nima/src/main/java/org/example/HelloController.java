@@ -15,7 +15,7 @@ public class HelloController {
   Person person(String name, String sortBy) {
     var p = new Person();
     p.setId(42);
-    p.setName("asdasd");
+    p.setName(name + " hello" + " sortBy:" + sortBy);
     return p;
   }
 }
