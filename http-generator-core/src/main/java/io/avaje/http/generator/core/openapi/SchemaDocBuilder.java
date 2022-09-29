@@ -177,7 +177,7 @@ class SchemaDocBuilder {
 
   private Schema<?> buildArraySchema(TypeMirror type) {
 
-    ArrayType arrayType = types.getArrayType(type);
+    ArrayType arrayType = (ArrayType) type;
     Schema<?> itemSchema = toSchema(arrayType.getComponentType());
 
     ArraySchema arraySchema = new ArraySchema();
