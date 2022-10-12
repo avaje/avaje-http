@@ -44,7 +44,7 @@ class WidgetController(private val hello: HelloComponent) {
 
 ```
 
-## Generated source
+## Generated source (Javalin)
 
 The annotation processor will generate a `$Route` for the controller like below.
 
@@ -55,7 +55,7 @@ get all the WebRoutes and register them with Javalin using.
 fun main(args: Array<String>) {
 
   // get all the webRoutes
-  val webRoutes = ApplicationScope.list(WebRoutes::class.java)
+  val webRoutes = BeanScope.builder().build().list(WebRoutes::class.java)
 
   val javalin = Javalin.create()
 
@@ -76,7 +76,7 @@ fun main(args: Array<String>) {
 
 ```
 
-### The generated WidgetController$Route.java is:
+### (Javalin) The generated WidgetController$Route.java is:
 
 
 ```java
@@ -114,6 +114,68 @@ public class WidgetController$Route implements WebRoutes {
     });
 
   }
+}
+```
+
+## Generated source (Helidon SE)
+
+The annotation processor will generate a `$Route` for the controller like below.
+
+Note that this class implements the Helidon Service interface, which means we can
+get all the Services and register them with Helidon `RoutingBuilder`.
+
+```
+var routes = BeanScope.builder().build().list(Service.class); 
+var routingBuilder = Routing.builder().register(routes.stream().toArray(Service[]::new));
+WebServer.builder()
+        .addMediaSupport(JacksonSupport.create())
+        .routing(routingBuilder)
+        .build()
+        .start();
+```
+### (Helidon SE) The generated WidgetController$Route.java is:
+
+```java
+package org.example.hello;
+
+import static io.avaje.http.api.PathTypeConversion.*;
+
+import io.avaje.http.api.*;
+import io.helidon.common.http.FormParams;
+import io.helidon.webserver.Handler;
+import io.helidon.webserver.Routing;
+import io.helidon.webserver.ServerRequest;
+import io.helidon.webserver.ServerResponse;
+import io.helidon.webserver.Service;
+import jakarta.inject.Singleton;
+import org.example.hello.WidgetController;
+
+@Generated("io.dinject.helidon-generator")
+@Singleton
+public class WidgetController$Route implements Service {
+
+  private final WidgetController controller;
+
+  public WidgetController$Route(WidgetController controller) {
+    this.controller = controller;
+  }
+
+  @Override
+  public void update(Routing.Rules rules) {
+
+    rules.get("/widgets/:id", this::_getById);
+    rules.post("/widgets", this::_getAll);
+  }
+
+  private void _getById(ServerRequest req, ServerResponse res) {
+    int id = asInt(req.path().param("id"));
+    res.send(controller.getById(id));
+  }
+
+  private void _getAll(ServerRequest req, ServerResponse res) {
+    res.send(controller.getAll());
+  }
+
 }
 ```
 
