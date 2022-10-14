@@ -100,12 +100,12 @@ class ControllerMethodWriter {
   private void writeContextReturn() {
     final var produces = method.getProduces();
 
-    final var contentTypeString =
-        "    res.headers().contentType(io.helidon.common.http.HttpMediaType.";
-
     if (produces == null) {
       return;
     }
+
+    final var contentTypeString =
+        "    res.headers().contentType(io.helidon.common.http.HttpMediaType.";
 
     switch (produces.toLowerCase()) {
       case MediaType.APPLICATION_JSON -> writer
