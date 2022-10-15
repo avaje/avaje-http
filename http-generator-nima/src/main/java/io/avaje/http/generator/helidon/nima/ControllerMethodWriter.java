@@ -106,9 +106,7 @@ class ControllerMethodWriter {
               || method.getProduces().toLowerCase().contains("json"))) {
 
         writer
-            .append(
-                "    %sMethodReturnJsonType.toJson(result, res.outputStream());",
-                method.simpleName())
+            .append("    res.send(%sMethodReturnJsonType.toJsonBytes(result));", method.simpleName())
             .eol();
 
       } else {

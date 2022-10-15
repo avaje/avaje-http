@@ -3,7 +3,8 @@ package io.avaje.http.generator.helidon.nima;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
+
+import javax.lang.model.type.DeclaredType;
 
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
@@ -56,7 +57,7 @@ class ControllerWriter extends BaseControllerWriter {
     return reader.getMethods().stream()
         .filter(MethodReader::isWebMethod)
         .map(it -> new ControllerMethodWriter(it, writer, ctx, useJsonB))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private void writeAddRoutes() {
@@ -104,15 +105,7 @@ class ControllerWriter extends BaseControllerWriter {
     }
 
     if (useJsonB) {
-      writer.append("  private final Jsonb jsonB;").eol();
-      jsonBMethodList.forEach(
-          m -> {
-            writer
-                .append(
-                    "  private final JsonType<%s> %sMethodReturnJsonType;",
-                    m.getReturnType().toString(), m.simpleName())
-                .eol();
-          });
+      writeJsonBTypeFields();
     }
 
     writer.eol();
@@ -133,17 +126,70 @@ class ControllerWriter extends BaseControllerWriter {
     }
 
     if (useJsonB) {
-      writer.append("    this.jsonB = jsonB;").eol();
-      jsonBMethodList.forEach(
-          m -> {
-            writer
-                .append(
-                    "    this.%sMethodReturnJsonType = jsonB.type(%s.class);",
-                    m.simpleName(), m.getReturnType().toString())
-                .eol();
-          });
+      writeJsonBTypeAssignments();
     }
 
     writer.append("  }").eol().eol();
+  }
+
+  public void writeJsonBTypeFields() {
+    for (final MethodReader methodReader : jsonBMethodList) {
+      if (methodReader.getReturnType() instanceof final DeclaredType fullType) {
+        final var typeArgs = fullType.getTypeArguments();
+        final var typeArgSize = typeArgs.size();
+
+        writer.append("  private final JsonType<");
+        switch (typeArgSize) {
+          case 1 -> {
+            if (fullType.toString().contains("java.util.Set"))
+              writer.append("java.util.Set<%s>>", typeArgs.get(0));
+            else writer.append("java.util.List<%s>>", typeArgs.get(0));
+          }
+          case 2 -> writer.append("java.util.Map<String, %s>>", typeArgs.get(1));
+          default -> writer.append("%s>", fullType);
+        }
+        writer.append(" %sMethodReturnJsonType;", methodReader.simpleName()).eol();
+      } else {
+        throw new UnsupportedOperationException(
+            "Only Objects and Strings are supported with Jsonb Return Types");
+      }
+    }
+  }
+
+  public void writeJsonBTypeAssignments() {
+
+    for (final MethodReader methodReader : jsonBMethodList) {
+      if (methodReader.getReturnType() instanceof final DeclaredType fullType) {
+        final var typeArgs = fullType.getTypeArguments();
+        final var typeArgSize = typeArgs.size();
+        final var jsonType =
+            switch (typeArgSize) {
+              case 1 -> typeArgs.get(0);
+              case 2 -> typeArgs.get(1);
+              default -> fullType;
+            };
+
+        writer.append(
+            "    this.%sMethodReturnJsonType = jsonB.type(%s.class)",
+            methodReader.simpleName(), jsonType);
+        final var returnType = fullType.toString();
+        if (typeArgSize != 0) {
+          writer.append(".");
+          if (returnType.contains("java.util.List")) writer.append("list");
+          else if (returnType.contains("java.util.Map")) writer.append("map");
+          else if (returnType.contains("java.util.Set")) writer.append("set");
+          else {
+            throw new UnsupportedOperationException(
+                "Only java.util Map, Set and List are supported JsonB Controller Collection Return Types");
+          }
+          writer.append("()");
+        }
+        writer.append(";").eol();
+
+      } else {
+        throw new UnsupportedOperationException(
+            "Only Objects and Strings are supported with Jsonb Controller Return Types");
+      }
+    }
   }
 }
