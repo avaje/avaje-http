@@ -2,6 +2,7 @@ package io.avaje.http.generator.helidon.nima;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import javax.lang.model.type.DeclaredType;
@@ -9,6 +10,7 @@ import javax.lang.model.type.DeclaredType;
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
 import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.ProcessingContext;
 
@@ -134,6 +136,20 @@ class ControllerWriter extends BaseControllerWriter {
 
   public void writeJsonBTypeFields() {
     for (final MethodReader methodReader : jsonBMethodList) {
+      // body types
+      if (methodReader.getBodyType() != null) {
+        methodReader.getParams().stream()
+            .filter(MethodParam::isBody)
+            .forEach(
+                param -> {
+                  writer
+                      .append(
+                          "  private final JsonType<%s> %sMethodBodyJsonType;",
+                          param.getUType().full(), methodReader.simpleName())
+                      .eol();
+                });
+      }
+      // return types
       if (methodReader.getReturnType() instanceof final DeclaredType fullType) {
         final var typeArgs = fullType.getTypeArguments();
         final var typeArgSize = typeArgs.size();
@@ -151,7 +167,7 @@ class ControllerWriter extends BaseControllerWriter {
         writer.append(" %sMethodReturnJsonType;", methodReader.simpleName()).eol();
       } else {
         throw new UnsupportedOperationException(
-            "Only Objects and Strings are supported with Jsonb Return Types");
+            "Only Objects are supported with Jsonb Return Types");
       }
     }
   }
@@ -159,6 +175,36 @@ class ControllerWriter extends BaseControllerWriter {
   public void writeJsonBTypeAssignments() {
 
     for (final MethodReader methodReader : jsonBMethodList) {
+      // body types
+      if (methodReader.getBodyType() != null) {
+        methodReader.getParams().stream()
+            .filter(MethodParam::isBody)
+            .forEach(
+                p -> {
+                  final var type = p.getUType();
+                  final var jsonType =
+                      Optional.ofNullable(type.param1())
+                          .or(() -> Optional.ofNullable(type.param0()))
+                          .orElseGet(type::full);
+                  writer.append(
+                      "    this.%sMethodBodyJsonType = jsonB.type(%s.class)",
+                      methodReader.simpleName(), jsonType);
+
+                  if (type.param0() != null) {
+                    writer.append(".");
+                    switch (type.mainType()) {
+                      case "java.util.List" -> writer.append("list");
+                      case "java.util.Map" -> writer.append("map");
+                      case "java.util.Set" -> writer.append("set");
+                      default -> throw new UnsupportedOperationException(
+                          "Only java.util Map, Set and List are supported JsonB Controller Body Return Types");
+                    }
+                    writer.append("()");
+                  }
+                  writer.append(";").eol();
+                });
+      }
+      // return types
       if (methodReader.getReturnType() instanceof final DeclaredType fullType) {
         final var typeArgs = fullType.getTypeArguments();
         final var typeArgSize = typeArgs.size();
@@ -175,13 +221,15 @@ class ControllerWriter extends BaseControllerWriter {
         final var returnType = fullType.toString();
         if (typeArgSize != 0) {
           writer.append(".");
-          if (returnType.contains("java.util.List")) writer.append("list");
-          else if (returnType.contains("java.util.Map")) writer.append("map");
-          else if (returnType.contains("java.util.Set")) writer.append("set");
-          else {
-            throw new UnsupportedOperationException(
+
+          switch (returnType.substring(0, 13)) {
+            case "java.util.Lis" -> writer.append("list");
+            case "java.util.Map" -> writer.append("map");
+            case "java.util.Set" -> writer.append("set");
+            default -> throw new UnsupportedOperationException(
                 "Only java.util Map, Set and List are supported JsonB Controller Collection Return Types");
           }
+
           writer.append("()");
         }
         writer.append(";").eol();

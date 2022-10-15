@@ -56,7 +56,15 @@ class ControllerMethodWriter {
 
     final var bodyType = method.getBodyType();
     if (bodyType != null) {
-      writer.append("    // body - %s %s", bodyType, method.getBodyName()).eol();
+      if (useJsonB) {
+
+        writer
+            .append(
+                "    var %s = %sMethodBodyJsonType.fromJson(req.content().inputStream());",
+                method.getBodyName(), method.simpleName())
+            .eol();
+
+      } else writer.append("    // body - %s %s", bodyType, method.getBodyName()).eol();
     } // else if (method.isFormBody()) {
     //  writer.append(", %s %s", "FormParams", "formParams");
     // }
