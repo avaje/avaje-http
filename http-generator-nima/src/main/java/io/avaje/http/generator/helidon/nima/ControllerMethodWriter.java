@@ -1,5 +1,7 @@
 package io.avaje.http.generator.helidon.nima;
 
+import java.util.Optional;
+
 import io.avaje.http.api.MediaType;
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.MethodParam;
@@ -17,12 +19,14 @@ class ControllerMethodWriter {
   private final Append writer;
   private final WebMethod webMethod;
   private final ProcessingContext ctx;
+  private final boolean useJsonB;
 
-  ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx) {
+  ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
     webMethod = method.getWebMethod();
     this.ctx = ctx;
+    this.useJsonB=useJsonB;
   }
 
   void writeRule() {
@@ -92,18 +96,28 @@ class ControllerMethodWriter {
     writer.append(");").eol();
     if (!method.isVoid()) {
       writeContextReturn();
-      writer.append("    res.send(result);").eol();
+      if (useJsonB && (method.getProduces() == null
+          || method.getProduces().toLowerCase().contains("json"))) {
+
+        writer
+            .append("    %sMethodReturnJsonType.toJson(result, res.outputStream());", method.simpleName())
+            .eol();
+
+      } else {
+        writer.append("    res.send(result);").eol();
+      }
     }
     writer.append("  }").eol().eol();
   }
 
   private void writeContextReturn() {
-    final var produces = method.getProduces();
+    final var producesOp = Optional.ofNullable(method.getProduces());
 
-    if (produces == null) {
+    if (producesOp.isEmpty() && !useJsonB) {
       return;
     }
 
+    final var produces = producesOp.orElse(MediaType.APPLICATION_JSON);
     final var contentTypeString =
         "    res.headers().contentType(io.helidon.common.http.HttpMediaType.";
 
