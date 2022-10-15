@@ -173,7 +173,7 @@ class ControllerWriter extends BaseControllerWriter {
   }
 
   public void writeJsonBTypeAssignments() {
-    writer.append("    final var jsonB = jsonbOp.orElseGet(()->Jsonb.builder().build())").eol();
+    writer.append("    final var jsonB = jsonbOp.orElseGet(()->Jsonb.builder().build());").eol();
     for (final MethodReader methodReader : jsonBMethodList) {
       // body types
       if (methodReader.getBodyType() != null) {
