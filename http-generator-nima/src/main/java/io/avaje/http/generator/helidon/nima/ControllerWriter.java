@@ -29,6 +29,7 @@ class ControllerWriter extends BaseControllerWriter {
           reader.getMethods().stream()
               .filter(MethodReader::isWebMethod)
               .filter(Predicate.not(MethodReader::isVoid))
+              .filter(m -> !"byte[]".equals(m.getReturnType().toString()))
               .filter(
                   m -> m.getProduces() == null || m.getProduces().toLowerCase().contains("json"))
               .toList();
@@ -41,7 +42,6 @@ class ControllerWriter extends BaseControllerWriter {
     // reader.addImportType("io.helidon.nima.webserver.Routing");
     // reader.addImportType("java.util.function.Supplier");
     reader.addImportType("io.helidon.nima.webserver.http.HttpService");
-
   }
 
   void write() {
@@ -55,7 +55,7 @@ class ControllerWriter extends BaseControllerWriter {
   private List<ControllerMethodWriter> getWriterMethods() {
     return reader.getMethods().stream()
         .filter(MethodReader::isWebMethod)
-        .map(it -> new ControllerMethodWriter(it, writer, ctx,useJsonB))
+        .map(it -> new ControllerMethodWriter(it, writer, ctx, useJsonB))
         .collect(Collectors.toList());
   }
 
@@ -104,17 +104,16 @@ class ControllerWriter extends BaseControllerWriter {
     }
 
     if (useJsonB) {
-        writer.append("  private final Jsonb jsonB;").eol();
-        jsonBMethodList.forEach(
-                m -> {
-                  writer
-                      .append(
-                          "  private final JsonType<%s> %sMethodReturnJsonType;",
-                          m.getReturnType().toString(),
-                          m.simpleName())
-                      .eol();
-                });
-      }
+      writer.append("  private final Jsonb jsonB;").eol();
+      jsonBMethodList.forEach(
+          m -> {
+            writer
+                .append(
+                    "  private final JsonType<%s> %sMethodReturnJsonType;",
+                    m.getReturnType().toString(), m.simpleName())
+                .eol();
+          });
+    }
 
     writer.eol();
 
@@ -124,8 +123,8 @@ class ControllerWriter extends BaseControllerWriter {
     }
 
     if (useJsonB) {
-        writer.append(", Jsonb jsonB");
-      }
+      writer.append(", Jsonb jsonB");
+    }
 
     writer.append(") {").eol();
     writer.append("    this.%s = %s;", controllerName, controllerName).eol();

@@ -10,9 +10,7 @@ import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.WebMethod;
 
-/**
- * Write code to register Web route for a given controller method.
- */
+/** Write code to register Web route for a given controller method. */
 class ControllerMethodWriter {
 
   private final MethodReader method;
@@ -21,45 +19,51 @@ class ControllerMethodWriter {
   private final ProcessingContext ctx;
   private final boolean useJsonB;
 
-  ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
+  ControllerMethodWriter(
+      MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
     webMethod = method.getWebMethod();
     this.ctx = ctx;
-    this.useJsonB=useJsonB;
+    this.useJsonB = useJsonB;
   }
 
   void writeRule() {
     final var fullPath = method.getFullPath();
-//    final String bodyType = method.getBodyType();
-//    if (bodyType != null) {
-//      writer.append("    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));", webMethod.name().toLowerCase(), fullPath, bodyType, method.simpleName()).eol();
-//    } else if (method.isFormBody()) {
-//      writer.append("    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));", webMethod.name().toLowerCase(), fullPath, "FormParams", method.simpleName()).eol();
-//    } else {
-      writer.append("    rules.%s(\"%s\", this::_%s);", webMethod.name().toLowerCase(), fullPath, method.simpleName()).eol();
-//    }
+    //    final String bodyType = method.getBodyType();
+    //    if (bodyType != null) {
+    //      writer.append("    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));",
+    // webMethod.name().toLowerCase(), fullPath, bodyType, method.simpleName()).eol();
+    //    } else if (method.isFormBody()) {
+    //      writer.append("    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));",
+    // webMethod.name().toLowerCase(), fullPath, "FormParams", method.simpleName()).eol();
+    //    } else {
+    writer
+        .append(
+            "    rules.%s(\"%s\", this::_%s);",
+            webMethod.name().toLowerCase(), fullPath, method.simpleName())
+        .eol();
+    //    }
   }
 
   void writeHandler(boolean requestScoped) {
     writer.append("  private void _%s(ServerRequest req, ServerResponse res", method.simpleName());
 
     writer.append(") {").eol();
-//    if (!method.isVoid()) {
-//      writeContextReturn();
-//    }
+    //    if (!method.isVoid()) {
+    //      writeContextReturn();
+    //    }
 
     final var bodyType = method.getBodyType();
     if (bodyType != null) {
       writer.append("    // body - %s %s", bodyType, method.getBodyName()).eol();
-    }// else if (method.isFormBody()) {
+    } // else if (method.isFormBody()) {
     //  writer.append(", %s %s", "FormParams", "formParams");
-    //}
+    // }
 
     final var segments = method.getPathSegments();
     if (!segments.isEmpty()) {
       writer.append("    var pathParams = req.path().pathParameters();").eol();
-
     }
     final var matrixSegments = segments.matrixSegments();
     for (final PathSegments.Segment matrixSegment : matrixSegments) {
@@ -73,7 +77,7 @@ class ControllerMethodWriter {
     writer.append("    ");
     if (!method.isVoid()) {
       writer.append("var result = ");
-      //writer.append("res.send(");
+      // writer.append("res.send(");
     }
 
     if (method.includeValidate()) {
@@ -96,11 +100,15 @@ class ControllerMethodWriter {
     writer.append(");").eol();
     if (!method.isVoid()) {
       writeContextReturn();
-      if (useJsonB && (method.getProduces() == null
-          || method.getProduces().toLowerCase().contains("json"))) {
+      if (useJsonB
+          && !"byte[]".equals(method.getReturnType().toString())
+          && (method.getProduces() == null
+              || method.getProduces().toLowerCase().contains("json"))) {
 
         writer
-            .append("    %sMethodReturnJsonType.toJson(result, res.outputStream());", method.simpleName())
+            .append(
+                "    %sMethodReturnJsonType.toJson(result, res.outputStream());",
+                method.simpleName())
             .eol();
 
       } else {
