@@ -28,6 +28,7 @@ class ControllerWriter extends BaseControllerWriter {
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
+      reader.addImportType("java.util.Optional");
       jsonBMethodList =
           reader.getMethods().stream()
               .filter(MethodReader::isWebMethod)
@@ -45,6 +46,7 @@ class ControllerWriter extends BaseControllerWriter {
     // reader.addImportType("io.helidon.nima.webserver.Routing");
     // reader.addImportType("java.util.function.Supplier");
     reader.addImportType("io.helidon.nima.webserver.http.HttpService");
+    reader.addImportType("jakarta.inject.Inject");
   }
 
   void write() {
@@ -71,6 +73,7 @@ class ControllerWriter extends BaseControllerWriter {
   }
 
   private void writeRoutes(List<ControllerMethodWriter> methods) {
+
     writer.append("  @Override").eol();
     writer.append("  public void routing(HttpRules rules) {").eol();
     // writer.append("    var rules = HttpRouting.builder();").eol();
@@ -112,6 +115,7 @@ class ControllerWriter extends BaseControllerWriter {
 
     writer.eol();
 
+    writer.append("  @Inject").eol();
     writer.append("  public %s$Route(%s %s", shortName, controllerType, controllerName);
     if (reader.isIncludeValidator()) {
       writer.append(", Validator validator");
