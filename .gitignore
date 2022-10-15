@@ -13,3 +13,4 @@ http-generator-nima/.classpath
 tests/test-nima/.classpath
 tests/test-nima/.factorypath
 tests/test-nima/.project
+*.class

@@ -12,4 +12,6 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/io/avaje/avaje-inject/8.9/avaje-inject-8.9.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/io/avaje/avaje-lang/1.1/avaje-lang-1.1.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/io/avaje/avaje-applog/1.0/avaje-applog-1.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/io/avaje/avaje-jsonb-generator/1.0-RC2/avaje-jsonb-generator-1.0-RC2.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/io/avaje/avaje-jsonb/1.0-RC2/avaje-jsonb-1.0-RC2.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>

@@ -26,9 +26,9 @@
       </activation>
       <modules>
         <module>test-nima</module>
+        <module>test-nima-jsonb</module>
       </modules>
     </profile>
   </profiles>
 
 </project>
-
