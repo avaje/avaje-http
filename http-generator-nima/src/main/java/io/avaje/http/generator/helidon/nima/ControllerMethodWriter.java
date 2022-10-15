@@ -64,7 +64,24 @@ class ControllerMethodWriter {
                 method.getBodyName(), method.simpleName())
             .eol();
 
-      } else writer.append("    // body - %s %s", bodyType, method.getBodyName()).eol();
+      } else {
+        // use default helidon content negotiation
+        method.getParams().stream()
+            .filter(MethodParam::isBody)
+            .forEach(
+                param -> {
+                  final var type = param.getUType();
+                  writer.append("    var %s = req.content().as(", method.getBodyName());
+
+                  if (type.param0() != null) {
+                    writer.append("new io.helidon.common.GenericType<%s>() {}", type.full());
+                  } else {
+                    writer.append("%s.class", type.full());
+                  }
+
+                  writer.append(");").eol();
+                });
+      }
     } // else if (method.isFormBody()) {
     //  writer.append(", %s %s", "FormParams", "formParams");
     // }
