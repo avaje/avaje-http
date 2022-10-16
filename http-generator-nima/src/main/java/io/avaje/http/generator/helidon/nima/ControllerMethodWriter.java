@@ -102,7 +102,6 @@ class ControllerMethodWriter {
     writer.append("    ");
     if (!method.isVoid()) {
       writer.append("var result = ");
-      // writer.append("res.send(");
     }
 
     if (method.includeValidate()) {
@@ -132,8 +131,7 @@ class ControllerMethodWriter {
 
         writer
             .append(
-                "    %sMethodReturnJsonType.toJson(result, res.outputStream());",
-                method.simpleName())
+                "    %sReturnedJsonType.toJson(result, res.outputStream());", method.simpleName())
             .eol();
 
       } else {
