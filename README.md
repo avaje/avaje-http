@@ -34,7 +34,7 @@ public class WidgetController {
     return new Widget(id, "you got it"+ hello.hello());
   }
 
-  @Get
+  @Get()
   List<Widget> getAll() {
     return List.of(new Widget(1, "Rob"), new Widget(2, "Fi"));
   }
@@ -186,42 +186,96 @@ package org.example.hello;
 import static io.avaje.http.api.PathTypeConversion.*;
 
 import io.avaje.http.api.*;
-import io.helidon.common.http.FormParams;
-import io.helidon.webserver.Handler;
-import io.helidon.webserver.Routing;
-import io.helidon.webserver.ServerRequest;
-import io.helidon.webserver.ServerResponse;
-import io.helidon.webserver.Service;
-import jakarta.inject.Singleton;
+import io.avaje.inject.Component;
+import io.helidon.nima.webserver.http.HttpRouting;
+import io.helidon.nima.webserver.http.HttpRules;
+import io.helidon.nima.webserver.http.HttpService;
+import io.helidon.nima.webserver.http.ServerRequest;
+import io.helidon.nima.webserver.http.ServerResponse;
 import org.example.hello.WidgetController;
 
-@Generated("io.dinject.helidon-generator")
-@Singleton
-public class WidgetController$Route implements Service {
+@Generated("avaje-helidon-nima-generator")
+@Component
+public class WidgetController$Route implements HttpService {
 
   private final WidgetController controller;
-
   public WidgetController$Route(WidgetController controller) {
     this.controller = controller;
   }
 
   @Override
-  public void update(Routing.Rules rules) {
-
+  public void routing(HttpRules rules) {
     rules.get("/widgets/{id}", this::_getById);
-    rules.post("/widgets", this::_getAll);
+    rules.get("/widgets", this::_getAll);
   }
 
   private void _getById(ServerRequest req, ServerResponse res) {
-    int id = asInt(req.path().param("id"));
-    res.send(controller.getById(id));
+    var pathParams = req.path().pathParameters();
+    int id = asInt(pathParams.first("id").get());
+    var result = controller.getById(id);
+    res.send(result);
   }
 
   private void _getAll(ServerRequest req, ServerResponse res) {
-    res.send(controller.getAll());
+    var pathParams = req.path().pathParameters();
+    var result = controller.getAll();
+    res.send(result);
   }
 
 }
 ```
 
+### (Helidon Nima with Avaje-Jsonb) The generated WidgetController$Route.java is:
 
+```java
+package org.example.hello;
+
+import static io.avaje.http.api.PathTypeConversion.*;
+
+import io.avaje.http.api.*;
+import io.avaje.inject.Component;
+import io.helidon.nima.webserver.http.HttpRouting;
+import io.helidon.nima.webserver.http.HttpRules;
+import io.helidon.nima.webserver.http.HttpService;
+import io.helidon.nima.webserver.http.ServerRequest;
+import io.helidon.nima.webserver.http.ServerResponse;
+import org.example.hello.WidgetController;
+
+@Generated("avaje-helidon-nima-generator")
+@Component
+public class WidgetController$Route implements HttpService {
+
+
+  private final WidgetController controller;
+  private final JsonType<org.example.hello.WidgetController.Widget> getByIdReturnedJsonType;
+  private final JsonType<java.util.List<org.example.hello.WidgetController.Widget>> getAllReturnedJsonType;
+
+  public WidgetController$Route(WidgetController controller, Jsonb jsonB) {
+    this.controller = controller;
+    this.getByIdReturnedJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class);
+    this.getAllReturnedJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class).list();
+  }
+
+  @Override
+  public void routing(HttpRules rules) {
+    rules.get("/widgets/{id}", this::_getById);
+    rules.get("/widgets", this::_getAll);
+  }
+
+  private void _getById(ServerRequest req, ServerResponse res) {
+    var pathParams = req.path().pathParameters();
+    int id = asInt(pathParams.first("id").get());
+    var result = controller.getById(id);
+    res.headers().contentType(io.helidon.common.http.HttpMediaType.APPLICATION_JSON);
+    getByIdReturnedJsonType.toJson(result, res.outputStream());
+  }
+
+  private void _getAll(ServerRequest req, ServerResponse res) {
+    var pathParams = req.path().pathParameters();
+    var result = controller.getAll();
+    res.headers().contentType(io.helidon.common.http.HttpMediaType.APPLICATION_JSON);
+    getAllReturnedJsonType.toJson(result, res.outputStream());
+  }
+
+}
+```
