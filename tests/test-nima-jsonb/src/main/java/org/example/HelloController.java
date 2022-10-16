@@ -9,6 +9,7 @@ import io.avaje.http.api.Get;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
+import io.helidon.nima.webserver.http.ServerResponse;
 
 @Controller
 public class HelloController {
@@ -18,6 +19,11 @@ public class HelloController {
   byte[] testBytes() {
 
     return "not really an image but ok".getBytes();
+  }
+
+  @Get("/void")
+  void testVoid(Person p, ServerResponse res) {
+    res.send("success");
   }
 
   @Get("hello")

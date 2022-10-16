@@ -102,6 +102,10 @@ class ControllerMethodWriter {
     writer.append("    ");
     if (!method.isVoid()) {
       writer.append("var result = ");
+    } else if (method.isVoid()
+        && params.stream().noneMatch(p -> "ServerResponse".equals(p.getShortType()))) {
+      throw new IllegalStateException(
+          "Void controller methods must have a ServerResponse parameter");
     }
 
     if (method.includeValidate()) {

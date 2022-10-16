@@ -20,8 +20,8 @@ public class NimaProcessor extends BaseProcessor {
     }
   }
 
-  public NimaProcessor(boolean b) {
-    jsonB = b;
+  public NimaProcessor(boolean useJsonb) {
+    jsonB = useJsonb;
   }
 
   @Override

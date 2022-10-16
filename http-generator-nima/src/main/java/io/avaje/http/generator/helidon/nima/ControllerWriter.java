@@ -3,7 +3,6 @@ package io.avaje.http.generator.helidon.nima;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import javax.lang.model.type.DeclaredType;
 
@@ -19,7 +18,6 @@ class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-helidon-nima-generator\")";
   private final boolean useJsonB;
-  private List<MethodReader> jsonBMethodList;
 
   ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB)
       throws IOException {
@@ -28,14 +26,6 @@ class ControllerWriter extends BaseControllerWriter {
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
-      jsonBMethodList =
-          reader.getMethods().stream()
-              .filter(MethodReader::isWebMethod)
-              .filter(Predicate.not(MethodReader::isVoid))
-              .filter(m -> !"byte[]".equals(m.getReturnType().toString()))
-              .filter(
-                  m -> m.getProduces() == null || m.getProduces().toLowerCase().contains("json"))
-              .toList();
     }
     // reader.addImportType("io.helidon.common.http.FormParams");
     reader.addImportType("io.helidon.nima.webserver.http.HttpRules");
@@ -103,8 +93,18 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append("  private final Validator validator;").eol();
     }
 
+    List<MethodReader> jsonMethods;
     if (useJsonB) {
-      writeJsonBTypeFields();
+      jsonMethods =
+          reader.getMethods().stream()
+              .filter(MethodReader::isWebMethod)
+              .filter(m -> !"byte[]".equals(m.getReturnType().toString()))
+              .filter(
+                  m -> m.getProduces() == null || m.getProduces().toLowerCase().contains("json"))
+              .toList();
+      writeJsonBTypeFields(jsonMethods);
+    } else {
+      jsonMethods = null;
     }
 
     writer.eol();
@@ -125,14 +125,14 @@ class ControllerWriter extends BaseControllerWriter {
     }
 
     if (useJsonB) {
-      writeJsonBTypeAssignments();
+      writeJsonBTypeAssignments(jsonMethods);
     }
 
     writer.append("  }").eol().eol();
   }
 
-  public void writeJsonBTypeFields() {
-    for (final MethodReader methodReader : jsonBMethodList) {
+  public void writeJsonBTypeFields(List<MethodReader> jsonMethods) {
+    for (final MethodReader methodReader : jsonMethods) {
       // body types
       if (methodReader.getBodyType() != null) {
         methodReader.getParams().stream()
@@ -145,6 +145,11 @@ class ControllerWriter extends BaseControllerWriter {
                             param.getUType().full(), methodReader.simpleName())
                         .eol());
       }
+
+      if (methodReader.isVoid()) {
+        continue;
+      }
+
       // return types
       if (methodReader.getReturnType() instanceof final DeclaredType fullType) {
         final var typeArgs = fullType.getTypeArguments();
@@ -168,11 +173,16 @@ class ControllerWriter extends BaseControllerWriter {
     }
   }
 
-  public void writeJsonBTypeAssignments() {
+  public void writeJsonBTypeAssignments(List<MethodReader> jsonMethods) {
 
-    for (final MethodReader methodReader : jsonBMethodList) {
+    for (final MethodReader methodReader : jsonMethods) {
       // body types
       writeBodyJsonType(methodReader);
+
+      if (methodReader.isVoid()) {
+        continue;
+      }
+
       writeReturnJsonType(methodReader);
     }
   }
