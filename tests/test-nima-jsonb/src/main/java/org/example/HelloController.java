@@ -1,9 +1,14 @@
 package org.example;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
+import io.avaje.http.api.Put;
 
 @Controller
 public class HelloController {
@@ -28,9 +33,36 @@ public class HelloController {
     return p;
   }
 
+  @Get("person/{sortBy}/list")
+  List<Person> personList(String sortBy) {
+    final var p = new Person();
+    p.setId(42);
+    return List.of(p, p);
+  }
+
+  @Get("person/{sortBy}/set")
+  Set<Person> personSet(String sortBy) {
+    final var p = new Person();
+    p.setId(42);
+    return Set.of(p, p);
+  }
+
+  @Get("person/{sortBy}/map")
+  Map<String, Person> personMap(String sortBy) {
+    final var p = new Person();
+    p.setId(42);
+    return Map.of(sortBy, p);
+  }
+
   @Post("person/update")
   String add(Person newGuy) {
 
     return "New Guy Added";
+  }
+
+  @Put("person/update")
+  String addMultiple(List<Person> newGuys) {
+
+    return "New Guys Added";
   }
 }
