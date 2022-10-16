@@ -76,7 +76,7 @@ WebServer.builder()
 ## Usage with Helidon Nima
 
 The annotation processor will generate controller classes implementing the Helidon HttpService interface, which we can use
-get all the services and register them with the Helidon `RoutingBuilder`.
+get all the services and register them with the Helidon `HttpRouting`.
 
 ```java
 var routes = BeanScope.builder().build().list(HttpService.class); 
