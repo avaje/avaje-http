@@ -9,6 +9,21 @@ import io.avaje.http.generator.core.ProcessingContext;
 
 public class NimaProcessor extends BaseProcessor {
 
+  boolean jsonB;
+
+  public NimaProcessor() {
+    try {
+      Class.forName("io.avaje.jsonb.Jsonb");
+      jsonB = true;
+    } catch (final ClassNotFoundException e) {
+      jsonB = false;
+    }
+  }
+
+  public NimaProcessor(boolean b) {
+    jsonB = b;
+  }
+
   @Override
   protected PlatformAdapter providePlatformAdapter() {
     return new NimaPlatformAdapter();
@@ -17,13 +32,7 @@ public class NimaProcessor extends BaseProcessor {
   @Override
   public void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader)
       throws IOException {
-    boolean jsonB;
-    try {
-      Class.forName("io.avaje.jsonb.Jsonb");
-      jsonB = true;
-    } catch (final ClassNotFoundException e) {
-      jsonB = false;
-    }
+
     new ControllerWriter(reader, ctx, jsonB).write();
   }
 }
