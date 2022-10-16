@@ -42,8 +42,6 @@ class ControllerWriter extends BaseControllerWriter {
     reader.addImportType("io.helidon.nima.webserver.http.HttpRouting");
     reader.addImportType("io.helidon.nima.webserver.http.ServerRequest");
     reader.addImportType("io.helidon.nima.webserver.http.ServerResponse");
-    // reader.addImportType("io.helidon.nima.webserver.Routing");
-    // reader.addImportType("java.util.function.Supplier");
     reader.addImportType("io.helidon.nima.webserver.http.HttpService");
   }
 
@@ -192,7 +190,7 @@ class ControllerWriter extends BaseControllerWriter {
                         .or(() -> Optional.ofNullable(type.param0()))
                         .orElseGet(type::full);
                 writer.append(
-                    "    this.%sMethodBodyJsonType = jsonB.type(%s.class)",
+                    "    this.%sBodyJsonType = jsonB.type(%s.class)",
                     methodReader.simpleName(), jsonType);
 
                 if (type.param0() != null) {

@@ -60,7 +60,7 @@ class ControllerMethodWriter {
 
         writer
             .append(
-                "    var %s = %sMethodBodyJsonType.fromJson(req.content().inputStream());",
+                "    var %s = %sBodyJsonType.fromJson(req.content().inputStream());",
                 method.getBodyName(), method.simpleName())
             .eol();
 
