@@ -1,17 +1,17 @@
 package io.avaje.http.generator.helidon.nima;
 
+import java.util.List;
+
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
 
-import java.util.List;
-
 class NimaPlatformAdapter implements PlatformAdapter {
 
   static final String NIMA_REQ = "io.helidon.nima.webserver.http.ServerRequest";
   static final String NIMA_RES = "io.helidon.nima.webserver.http.ServerResponse";
-  static final String HELIDON_FORMPARAMS = "io.helidon.common.http.FormParams";
+  static final String HELIDON_FORMPARAMS = "io.helidon.common.parameters.Parameters";
 
   @Override
   public boolean isContextType(String rawType) {
@@ -79,9 +79,7 @@ class NimaPlatformAdapter implements PlatformAdapter {
       case COOKIE:
         writer.append("req.headers().cookies().first(\"%s\").orElse(null)", paramName);
         break;
-      case BODY:
-      case BEANPARAM:
-      case FORM:
+      case BODY, BEANPARAM, FORM:
       default:
         writer.append("null // TODO req.%s().param(\"%s\")", paramType.getType(), paramName);
     }

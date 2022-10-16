@@ -6,6 +6,7 @@ import io.avaje.http.api.MediaType;
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.WebMethod;
@@ -30,30 +31,17 @@ class ControllerMethodWriter {
 
   void writeRule() {
     final var fullPath = method.getFullPath();
-    //    final String bodyType = method.getBodyType();
-    //    if (bodyType != null) {
-    //      writer.append("    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));",
-    // webMethod.name().toLowerCase(), fullPath, bodyType, method.simpleName()).eol();
-    //    } else if (method.isFormBody()) {
-    //      writer.append("    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));",
-    // webMethod.name().toLowerCase(), fullPath, "FormParams", method.simpleName()).eol();
-    //    } else {
     writer
         .append(
             "    rules.%s(\"%s\", this::_%s);",
             webMethod.name().toLowerCase(), fullPath, method.simpleName())
         .eol();
-    //    }
   }
 
   void writeHandler(boolean requestScoped) {
     writer.append("  private void _%s(ServerRequest req, ServerResponse res", method.simpleName());
 
     writer.append(") {").eol();
-    //    if (!method.isVoid()) {
-    //      writeContextReturn();
-    //    }
-
     final var bodyType = method.getBodyType();
     if (bodyType != null) {
       if (useJsonB) {
@@ -82,9 +70,10 @@ class ControllerMethodWriter {
                   writer.append(");").eol();
                 });
       }
-    } // else if (method.isFormBody()) {
-    //  writer.append(", %s %s", "FormParams", "formParams");
-    // }
+    } else if (method.getParams().stream()
+        .anyMatch(p -> p.isForm() || ParamType.FORMPARAM.equals(p.getParamType()))) {
+      writer.append("    var formParams = req.content().as(Parameters.class);").eol();
+    }
 
     final var segments = method.getPathSegments();
     if (!segments.isEmpty()) {
