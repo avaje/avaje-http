@@ -141,7 +141,7 @@ class ControllerWriter extends BaseControllerWriter {
                 param ->
                     writer
                         .append(
-                            "  private final JsonType<%s> %sMethodBodyJsonType;",
+                            "  private final JsonType<%s> %sBodyJsonType;",
                             param.getUType().full(), methodReader.simpleName())
                         .eol());
       }
