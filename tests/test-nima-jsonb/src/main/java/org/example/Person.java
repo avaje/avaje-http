@@ -1,23 +1,8 @@
 package org.example;
 
-public class Person {
+import io.avaje.jsonb.Json;
 
-  long id;
-  String name;
+@Json
+public record Person(long id, String name) {
 
-  public long getId() {
-    return id;
-  }
-
-  public void setId(long id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
 }
