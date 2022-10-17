@@ -178,7 +178,9 @@ class ControllerWriter extends BaseControllerWriter {
           fullType.toString(),
           type -> {
             final var baseType =
-                "int".equals(type) ? "Integer" : type.substring(0, 1).toUpperCase() + type.substring(1);
+                "int".equals(type)
+                    ? "Integer"
+                    : type.substring(0, 1).toUpperCase() + type.substring(1);
             writer.append("private final JsonType<%s> %sJsonType;", baseType, type).eol();
             return new JsonbType(baseType, type);
           });
