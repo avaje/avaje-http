@@ -9,7 +9,7 @@ import io.avaje.http.generator.core.ProcessingContext;
 
 public class NimaProcessor extends BaseProcessor {
 
-  boolean jsonB;
+  private boolean jsonB;
 
   public NimaProcessor() {
     try {
@@ -30,9 +30,7 @@ public class NimaProcessor extends BaseProcessor {
   }
 
   @Override
-  public void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader)
-      throws IOException {
-
+  public void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException {
     new ControllerWriter(reader, ctx, jsonB).write();
   }
 }

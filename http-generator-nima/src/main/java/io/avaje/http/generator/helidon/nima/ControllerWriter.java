@@ -19,10 +19,9 @@ class ControllerWriter extends BaseControllerWriter {
   private static final String AT_GENERATED = "@Generated(\"avaje-helidon-nima-generator\")";
   private final boolean useJsonB;
 
-  ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB)
-      throws IOException {
+  ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB) throws IOException {
     super(reader, ctx);
-    useJsonB = jsonB;
+    this.useJsonB = jsonB;
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
@@ -74,12 +73,7 @@ class ControllerWriter extends BaseControllerWriter {
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
     writer.append("@Component").eol();
-    writer
-        .append("public class ")
-        .append(shortName)
-        .append("$Route implements HttpService {")
-        .eol()
-        .eol();
+    writer.append("public class %s$Route implements HttpService {", shortName).eol().eol();
 
     var controllerName = "controller";
     var controllerType = shortName;
@@ -99,35 +93,29 @@ class ControllerWriter extends BaseControllerWriter {
           reader.getMethods().stream()
               .filter(MethodReader::isWebMethod)
               .filter(m -> !"byte[]".equals(m.getReturnType().toString()))
-              .filter(
-                  m -> m.getProduces() == null || m.getProduces().toLowerCase().contains("json"))
+              .filter(m -> m.getProduces() == null || m.getProduces().toLowerCase().contains("json"))
               .toList();
       writeJsonBTypeFields(jsonMethods);
     } else {
       jsonMethods = null;
     }
-
     writer.eol();
 
     writer.append("  public %s$Route(%s %s", shortName, controllerType, controllerName);
     if (reader.isIncludeValidator()) {
       writer.append(", Validator validator");
     }
-
     if (useJsonB) {
       writer.append(", Jsonb jsonB");
     }
-
     writer.append(") {").eol();
     writer.append("    this.%s = %s;", controllerName, controllerName).eol();
     if (reader.isIncludeValidator()) {
       writer.append("    this.validator = validator;").eol();
     }
-
     if (useJsonB) {
       writeJsonBTypeAssignments(jsonMethods);
     }
-
     writer.append("  }").eol().eol();
   }
 
@@ -167,28 +155,23 @@ class ControllerWriter extends BaseControllerWriter {
         }
         writer.append(" %sReturnedJsonType;", methodReader.simpleName()).eol();
       } else {
-        throw new UnsupportedOperationException(
-            "Only Objects are supported with Jsonb Return Types");
+        throw new UnsupportedOperationException("Only Objects are supported with Jsonb Return Types");
       }
     }
   }
 
   public void writeJsonBTypeAssignments(List<MethodReader> jsonMethods) {
-
     for (final MethodReader methodReader : jsonMethods) {
       // body types
       writeBodyJsonType(methodReader);
-
       if (methodReader.isVoid()) {
         continue;
       }
-
       writeReturnJsonType(methodReader);
     }
   }
 
   private void writeBodyJsonType(MethodReader methodReader) {
-
     if (methodReader.getBodyType() != null) {
       methodReader.getParams().stream()
           .filter(MethodParam::isBody)
@@ -220,7 +203,6 @@ class ControllerWriter extends BaseControllerWriter {
   }
 
   void writeReturnJsonType(MethodReader methodReader) {
-
     if (methodReader.getReturnType() instanceof final DeclaredType fullType) {
       final var typeArgs = fullType.getTypeArguments();
       final var typeArgSize = typeArgs.size();
@@ -251,8 +233,7 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append(";").eol();
 
     } else {
-      throw new UnsupportedOperationException(
-          "Only Objects and Strings are supported with Jsonb Controller Return Types");
+      throw new UnsupportedOperationException("Only Objects and Strings are supported with Jsonb Controller Return Types");
     }
   }
 }
