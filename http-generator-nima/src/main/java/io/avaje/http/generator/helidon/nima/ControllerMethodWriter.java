@@ -1,9 +1,12 @@
 package io.avaje.http.generator.helidon.nima;
 
 import io.avaje.http.api.MediaType;
-import io.avaje.http.generator.core.*;
-
-import java.util.List;
+import io.avaje.http.generator.core.Append;
+import io.avaje.http.generator.core.MethodParam;
+import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.PathSegments;
+import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.WebMethod;
 
 /**
  * Write code to register Web route for a given controller method.
@@ -18,12 +21,12 @@ class ControllerMethodWriter {
   ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx) {
     this.method = method;
     this.writer = writer;
-    this.webMethod = method.getWebMethod();
+    webMethod = method.getWebMethod();
     this.ctx = ctx;
   }
 
   void writeRule() {
-    final String fullPath = method.getFullPath();
+    final var fullPath = method.getFullPath();
 //    final String bodyType = method.getBodyType();
 //    if (bodyType != null) {
 //      writer.append("    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));", webMethod.name().toLowerCase(), fullPath, bodyType, method.simpleName()).eol();
@@ -42,25 +45,25 @@ class ControllerMethodWriter {
 //      writeContextReturn();
 //    }
 
-    final String bodyType = method.getBodyType();
+    final var bodyType = method.getBodyType();
     if (bodyType != null) {
       writer.append("    // body - %s %s", bodyType, method.getBodyName()).eol();
     }// else if (method.isFormBody()) {
     //  writer.append(", %s %s", "FormParams", "formParams");
     //}
 
-    final PathSegments segments = method.getPathSegments();
+    final var segments = method.getPathSegments();
     if (!segments.isEmpty()) {
       writer.append("    var pathParams = req.path().pathParameters();").eol();
 
     }
-    List<PathSegments.Segment> matrixSegments = segments.matrixSegments();
-    for (PathSegments.Segment matrixSegment : matrixSegments) {
+    final var matrixSegments = segments.matrixSegments();
+    for (final PathSegments.Segment matrixSegment : matrixSegments) {
       matrixSegment.writeCreateSegment(writer, ctx.platform());
     }
 
-    final List<MethodParam> params = method.getParams();
-    for (MethodParam param : params) {
+    final var params = method.getParams();
+    for (final MethodParam param : params) {
       param.writeCtxGet(writer, segments);
     }
     writer.append("    ");
@@ -70,7 +73,7 @@ class ControllerMethodWriter {
     }
 
     if (method.includeValidate()) {
-      for (MethodParam param : params) {
+      for (final MethodParam param : params) {
         param.writeValidate(writer);
       }
     }
@@ -80,7 +83,7 @@ class ControllerMethodWriter {
       writer.append("controller.");
     }
     writer.append(method.simpleName()).append("(");
-    for (int i = 0; i < params.size(); i++) {
+    for (var i = 0; i < params.size(); i++) {
       if (i > 0) {
         writer.append(", ");
       }
@@ -95,17 +98,22 @@ class ControllerMethodWriter {
   }
 
   private void writeContextReturn() {
-    final String produces = method.getProduces();
+    final var produces = method.getProduces();
+
     if (produces == null) {
-      // let it be automatically set
-    } else if (MediaType.APPLICATION_JSON.equalsIgnoreCase(produces)) {
-      writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.APPLICATION_JSON);").eol();
-    } else if (MediaType.TEXT_HTML.equalsIgnoreCase(produces)) {
-      writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_HTML);").eol();
-    } else if (MediaType.TEXT_PLAIN.equalsIgnoreCase(produces)) {
-      writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_PLAIN);").eol();
-    } else {
-      writer.append(    "res.writerContext().contentType(io.helidon.common.http.MediaType.parse(\"%s\"));", produces).eol();
+      return;
+    }
+
+    final var contentTypeString =
+        "    res.headers().contentType(io.helidon.common.http.HttpMediaType.";
+
+    switch (produces.toLowerCase()) {
+      case MediaType.APPLICATION_JSON -> writer
+          .append(contentTypeString + "APPLICATION_JSON);")
+          .eol();
+      case MediaType.TEXT_HTML -> writer.append(contentTypeString + "TEXT_HTML);").eol();
+      case MediaType.TEXT_PLAIN -> writer.append(contentTypeString + "TEXT_PLAIN);").eol();
+      default -> writer.append(contentTypeString + "create(\"%s\"));", produces).eol();
     }
   }
 
