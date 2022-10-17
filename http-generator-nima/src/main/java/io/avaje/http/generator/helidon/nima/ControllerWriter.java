@@ -221,13 +221,13 @@ class ControllerWriter extends BaseControllerWriter {
             .substring(baseType.lastIndexOf('.') + 1)
             .transform(str -> str.substring(0, 1).toLowerCase() + str.substring(1));
 
-    if (shortType.length() <= 13) return shortType;
+    if (fullType.length() <= 13) return shortType;
 
     return switch (fullType.substring(0, 13)) {
       case "java.util.Lis" -> "List";
       case "java.util.Map" -> "Map";
       case "java.util.Set" -> "Set";
-      default -> "";
+      default -> shortType;
     };
   }
 }
