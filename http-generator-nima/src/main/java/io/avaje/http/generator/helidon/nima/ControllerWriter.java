@@ -149,10 +149,10 @@ class ControllerWriter extends BaseControllerWriter {
                 final var fullType = param.getUType().full();
                 jsonTypes.computeIfAbsent(
                     fullType,
-                    k -> {
+                    type -> {
                       final var baseType = getBaseType(param.getUType());
-                      final var fieldName = createFieldName(baseType, k);
-                      writer.append("private final JsonType<%s> %sJsonType;", k, fieldName).eol();
+                      final var fieldName = createFieldName(baseType, type);
+                      writer.append("private final JsonType<%s> %sJsonType;", type, fieldName).eol();
                       return new JsonbType(baseType, fieldName);
                     });
               });
@@ -161,28 +161,26 @@ class ControllerWriter extends BaseControllerWriter {
 
   public void writeFieldJsonReturnType(MethodReader methodReader) {
 
-    methodReader.getReturnType().getKind();
-
     // return types
     if (methodReader.getReturnType() instanceof final DeclaredType fullType) {
       final var fullTypeString = fullType.toString();
       jsonTypes.computeIfAbsent(
           fullTypeString,
-          k -> {
+          type -> {
             final var baseType = getBaseType(fullType);
-            final var fieldName = createFieldName(baseType, k);
-            writer.append("private final JsonType<%s> %sJsonType;", k, fieldName).eol();
+            final var fieldName = createFieldName(baseType, type);
+            writer.append("private final JsonType<%s> %sJsonType;", type, fieldName).eol();
             return new JsonbType(baseType, fieldName);
           });
     } else if (methodReader.getReturnType() instanceof final PrimitiveType fullType) {
 
       jsonTypes.computeIfAbsent(
           fullType.toString(),
-          k -> {
+          type -> {
             final var baseType =
-                "int".equals(k) ? "Integer" : k.substring(0, 1).toUpperCase() + k.substring(1);
-            writer.append("private final JsonType<%s> %sJsonType;", baseType, k).eol();
-            return new JsonbType(baseType, k);
+                "int".equals(type) ? "Integer" : type.substring(0, 1).toUpperCase() + type.substring(1);
+            writer.append("private final JsonType<%s> %sJsonType;", baseType, type).eol();
+            return new JsonbType(baseType, type);
           });
     } else {
       throw new UnsupportedOperationException(
