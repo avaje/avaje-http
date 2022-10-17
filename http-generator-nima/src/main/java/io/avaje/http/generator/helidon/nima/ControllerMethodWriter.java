@@ -132,7 +132,7 @@ class ControllerMethodWriter {
     }
 
     final var produces = producesOp.orElse(MediaType.APPLICATION_JSON);
-    final var contentTypeString = "    res.headers().contentType(io.helidon.common.http.HttpMediaType.";
+    final var contentTypeString = "    res.headers().contentType(HttpMediaType.";
     switch (produces.toLowerCase()) {
       case MediaType.APPLICATION_JSON -> writer.append(contentTypeString + "APPLICATION_JSON);").eol();
       case MediaType.TEXT_HTML -> writer.append(contentTypeString + "TEXT_HTML);").eol();

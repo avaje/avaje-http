@@ -26,6 +26,7 @@ class ControllerWriter extends BaseControllerWriter {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
     }
+    reader.addImportType("io.helidon.common.http.HttpMediaType");
     reader.addImportType("io.helidon.common.parameters.Parameters");
     reader.addImportType("io.helidon.nima.webserver.http.HttpRules");
     reader.addImportType("io.helidon.nima.webserver.http.HttpRouting");
