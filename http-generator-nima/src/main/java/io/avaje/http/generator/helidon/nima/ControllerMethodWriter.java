@@ -3,6 +3,7 @@ package io.avaje.http.generator.helidon.nima;
 import io.avaje.http.api.MediaType;
 import io.avaje.http.generator.core.*;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -25,11 +26,8 @@ class ControllerMethodWriter {
   }
 
   void writeRule() {
-    final var fullPath = method.getFullPath();
-    writer
-      .append(
-        "    rules.%s(\"%s\", this::_%s);",
-        webMethod.name().toLowerCase(), fullPath, method.simpleName())
+    writer.append("    rules.%s(\"%s\", this::_%s);",
+        webMethod.name().toLowerCase(), method.getFullPath(), method.simpleName())
       .eol();
   }
 
@@ -60,7 +58,7 @@ class ControllerMethodWriter {
               writer.append(");").eol();
             });
       }
-    } else if (method.getParams().stream().anyMatch(p -> p.isForm() || ParamType.FORMPARAM.equals(p.getParamType()))) {
+    } else if (usesFormParams()) {
       writer.append("    var formParams = req.content().as(Parameters.class);").eol();
     }
 
@@ -80,7 +78,7 @@ class ControllerMethodWriter {
     writer.append("    ");
     if (!method.isVoid()) {
       writer.append("var result = ");
-    } else if (method.isVoid() && params.stream().noneMatch(p -> "ServerResponse".equals(p.getShortType()))) {
+    } else if (missingServerResponse(params)) {
       throw new IllegalStateException("Void controller methods must have a ServerResponse parameter");
     }
 
@@ -104,21 +102,27 @@ class ControllerMethodWriter {
     writer.append(");").eol();
     if (!method.isVoid()) {
       writeContextReturn();
-      if (useJsonB
-        && !"byte[]".equals(method.getReturnType().toString())
-        && (method.getProduces() == null
-        || method.getProduces().toLowerCase().contains("json"))) {
-
-        writer
-          .append(
-            "    %sReturnedJsonType.toJson(result, res.outputStream());", method.simpleName())
-          .eol();
-
+      if (producesJson()) {
+        writer.append("    %sReturnedJsonType.toJson(result, res.outputStream());", method.simpleName()).eol();
       } else {
         writer.append("    res.send(result);").eol();
       }
     }
     writer.append("  }").eol().eol();
+  }
+
+  private boolean producesJson() {
+    return useJsonB
+      && !"byte[]".equals(method.getReturnType().toString())
+      && (method.getProduces() == null || method.getProduces().toLowerCase().contains("json"));
+  }
+
+  private boolean missingServerResponse(List<MethodParam> params) {
+    return method.isVoid() && params.stream().noneMatch(p -> "ServerResponse".equals(p.getShortType()));
+  }
+
+  private boolean usesFormParams() {
+    return method.getParams().stream().anyMatch(p -> p.isForm() || ParamType.FORMPARAM.equals(p.getParamType()));
   }
 
   private void writeContextReturn() {
