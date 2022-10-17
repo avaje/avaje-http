@@ -51,18 +51,19 @@ class ControllerMethodWriter {
     if (bodyType != null) {
       if (useJsonB) {
 
-        final var jsonbType =
+        final var fieldName =
             method.getParams().stream()
                 .filter(MethodParam::isBody)
                 .findFirst()
                 .orElseThrow()
                 .getUType()
                 .full()
-                .transform(jsonTypes::get);
+                .transform(jsonTypes::get)
+                .fieldName();
         writer
             .append(
                 "    var %s = %sJsonType.fromJson(req.content().inputStream());",
-                method.getBodyName(), jsonbType.fieldName())
+                method.getBodyName(), fieldName)
             .eol();
 
       } else {
@@ -127,10 +128,9 @@ class ControllerMethodWriter {
       writeContextReturn();
       if (producesJson()) {
 
-        final var jsonbType = method.getReturnType().toString().transform(jsonTypes::get);
-        writer
-            .append("    %sJsonType.toJson(result, res.outputStream());", jsonbType.fieldName())
-            .eol();
+        final var fieldName =
+            method.getReturnType().toString().transform(jsonTypes::get).fieldName();
+        writer.append("    %sJsonType.toJson(result, res.outputStream());", fieldName).eol();
       } else {
         writer.append("    res.send(result);").eol();
       }
