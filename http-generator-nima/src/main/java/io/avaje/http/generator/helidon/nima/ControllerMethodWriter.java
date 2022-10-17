@@ -1,10 +1,17 @@
 package io.avaje.http.generator.helidon.nima;
 
-import io.avaje.http.api.MediaType;
-import io.avaje.http.generator.core.*;
-
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import io.avaje.http.api.MediaType;
+import io.avaje.http.generator.core.Append;
+import io.avaje.http.generator.core.MethodParam;
+import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.ParamType;
+import io.avaje.http.generator.core.PathSegments;
+import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.WebMethod;
 
 /**
  * Write code to register Web route for a given controller method.
@@ -16,13 +23,20 @@ class ControllerMethodWriter {
   private final WebMethod webMethod;
   private final ProcessingContext ctx;
   private final boolean useJsonB;
+  private final Map<String, JsonbType> jsonTypes;
 
-  ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
+  ControllerMethodWriter(
+      MethodReader method,
+      Append writer,
+      ProcessingContext ctx,
+      boolean useJsonB,
+      Map<String, JsonbType> jsonTypes) {
     this.method = method;
     this.writer = writer;
-    this.webMethod = method.getWebMethod();
+    webMethod = method.getWebMethod();
     this.ctx = ctx;
     this.useJsonB = useJsonB;
+    this.jsonTypes=jsonTypes;
   }
 
   void writeRule() {
@@ -36,11 +50,20 @@ class ControllerMethodWriter {
     final var bodyType = method.getBodyType();
     if (bodyType != null) {
       if (useJsonB) {
+
+        final var jsonbType =
+            method.getParams().stream()
+                .filter(MethodParam::isBody)
+                .findFirst()
+                .orElseThrow()
+                .getUType()
+                .full()
+                .transform(jsonTypes::get);
         writer
-          .append(
-            "    var %s = %sBodyJsonType.fromJson(req.content().inputStream());",
-            method.getBodyName(), method.simpleName())
-          .eol();
+            .append(
+                "    var %s = %sJsonType.fromJson(req.content().inputStream());",
+                method.getBodyName(), jsonbType.fieldName())
+            .eol();
 
       } else {
         // use default helidon content negotiation
@@ -103,7 +126,11 @@ class ControllerMethodWriter {
     if (!method.isVoid()) {
       writeContextReturn();
       if (producesJson()) {
-        writer.append("    %sReturnedJsonType.toJson(result, res.outputStream());", method.simpleName()).eol();
+
+        final var jsonbType = method.getReturnType().toString().transform(jsonTypes::get);
+        writer
+            .append("    %sJsonType.toJson(result, res.outputStream());", jsonbType.fieldName())
+            .eol();
       } else {
         writer.append("    res.send(result);").eol();
       }
