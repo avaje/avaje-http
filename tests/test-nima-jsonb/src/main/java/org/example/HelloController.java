@@ -1,13 +1,19 @@
 package org.example;
 
-import io.avaje.http.api.*;
-import io.helidon.common.http.HttpMediaType;
-import io.helidon.nima.webserver.http.ServerRequest;
-import io.helidon.nima.webserver.http.ServerResponse;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import io.avaje.http.api.Controller;
+import io.avaje.http.api.Form;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.MediaType;
+import io.avaje.http.api.Post;
+import io.avaje.http.api.Produces;
+import io.avaje.http.api.Put;
+import io.helidon.common.http.HttpMediaType;
+import io.helidon.nima.webserver.http.ServerRequest;
+import io.helidon.nima.webserver.http.ServerResponse;
 
 @Controller
 public class HelloController {
@@ -47,7 +53,13 @@ public class HelloController {
     return new Person(42, name + " hello");
   }
 
-  // curl -X POST http://localhost:8081/person -H 'Content-Type: application/json' -d '{"id":942,"name":"Jimmy"}'
+  @Get("person/{long}")
+  Person testLong(long id) {
+    return new Person(id, "Giorno hello");
+  }
+
+  // curl -X POST http://localhost:8081/person -H 'Content-Type: application/json' -d
+  // '{"id":942,"name":"Jimmy"}'
   @Post("/person")
   Person postPerson(Person body) {
     return new Person(42, "Returning " + body.name());
@@ -80,18 +92,29 @@ public class HelloController {
     return "New Guys Added";
   }
 
-  // curl -X POST http://localhost:8081/form -H "Content-Type: application/x-www-form-urlencoded" -d "name=Jimmy&email=jim@foo&url=notaurl"
+  @Put("person/int")
+  int testIntReturn() {
+    return 422;
+  }
+
+  @Put("person/long")
+  long testLongReturn() {
+    return 69;
+  }
+
+  // curl -X POST http://localhost:8081/form -H "Content-Type: application/x-www-form-urlencoded" -d
+  // "name=Jimmy&email=jim@foo&url=notaurl"
   @Form
   @Post("form")
   String form(String name, String email, String url) {
     return name + "-" + email + "-" + url;
   }
 
-  // curl -X POST http://localhost:8081/formBean -H "Content-Type: application/x-www-form-urlencoded" -d "name=FormBeanJimmy&email=jim@foo&url=notaurl"
+  // curl -X POST http://localhost:8081/formBean -H "Content-Type:
+  // application/x-www-form-urlencoded" -d "name=FormBeanJimmy&email=jim@foo&url=notaurl"
   @Form
   @Post("formBean")
   String formBean(MyForm form) {
     return form.name + "-" + form.email + "-" + form.url;
   }
-
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
 
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
@@ -136,7 +137,9 @@ class ControllerWriter extends BaseControllerWriter {
       }
       writeFieldJsonReturnType(methodReader);
     }
-  }  public void writeFieldJsonBodyType(MethodReader methodReader) {
+  }
+
+  public void writeFieldJsonBodyType(MethodReader methodReader) {
     // body types
     if (methodReader.getBodyType() != null) {
       methodReader.getParams().stream()
@@ -158,6 +161,8 @@ class ControllerWriter extends BaseControllerWriter {
 
   public void writeFieldJsonReturnType(MethodReader methodReader) {
 
+    methodReader.getReturnType().getKind();
+
     // return types
     if (methodReader.getReturnType() instanceof final DeclaredType fullType) {
       final var fullTypeString = fullType.toString();
@@ -169,8 +174,19 @@ class ControllerWriter extends BaseControllerWriter {
             writer.append("private final JsonType<%s> %sJsonType;", k, fieldName).eol();
             return new JsonbType(baseType, fieldName);
           });
+    } else if (methodReader.getReturnType() instanceof final PrimitiveType fullType) {
+
+      jsonTypes.computeIfAbsent(
+          fullType.toString(),
+          k -> {
+            final var baseType =
+                "int".equals(k) ? "Integer" : k.substring(0, 1).toUpperCase() + k.substring(1);
+            writer.append("private final JsonType<%s> %sJsonType;", baseType, k).eol();
+            return new JsonbType(baseType, k);
+          });
     } else {
-      throw new UnsupportedOperationException("Only Objects are supported with Jsonb Return Types");
+      throw new UnsupportedOperationException(
+          "Only Primitives and Objects are supported with Jsonb Return Types");
     }
   }
 
