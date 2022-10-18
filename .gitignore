@@ -8,3 +8,4 @@ build/
 *.factorypath
 *.project
 *.processors
+*/bin/
