@@ -53,7 +53,7 @@ public class TestController {
 
   @Post("/person")
   Person testPostPerson(Person body) {
-    return new Person(42, "Returning " + body.name());
+    return new Person(42, "Returning " + body.getName());
   }
 
   @Get("person/{sortBy}/list")

@@ -3,6 +3,8 @@ package org.example.myapp.web;
 import java.time.Instant;
 import java.util.UUID;
 
+import io.avaje.jsonb.Json;
+@Json
 public class HelloDto {
 
   public int id;

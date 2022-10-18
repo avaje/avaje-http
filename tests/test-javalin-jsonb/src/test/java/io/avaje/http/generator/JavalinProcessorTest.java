@@ -1,5 +1,7 @@
 package io.avaje.http.generator;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,7 +22,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import io.avaje.http.generator.javalin.JavalinProcessor;
-import io.avaje.inject.generator.Processor;
+import io.avaje.jsonb.generator.Processor;
 
 class JavalinProcessorTest {
 
@@ -54,9 +56,9 @@ class JavalinProcessorTest {
             List.of("--enable-preview", "--release=19"),
             null,
             files);
-    task.setProcessors(List.of(new JavalinProcessor(), new Processor()));
+    task.setProcessors(List.of(new JavalinProcessor()));
 
-    task.call();
+    assertThat(task.call()).isTrue();
   }
 
   @Test
@@ -75,9 +77,10 @@ class JavalinProcessorTest {
             List.of("--enable-preview", "--release=19"),
             null,
             files);
-    task.setProcessors(List.of(new JavalinProcessor(false), new Processor()));
+    task.setProcessors(List.of(new JavalinProcessor(false),new Processor()));
 
     task.call();
+    assertThat(task.call()).isTrue();
   }
 
   private Iterable<JavaFileObject> getSourceFiles(String source) throws Exception {

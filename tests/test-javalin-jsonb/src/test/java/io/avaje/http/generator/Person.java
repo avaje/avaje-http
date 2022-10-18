@@ -1,19 +1,31 @@
 package io.avaje.http.generator;
 
+import io.avaje.jsonb.Json;
+
+@Json
 public class Person {
-  private final long id;
-  private final String name;
+
+  long id;
+  String name;
 
   public Person(long id, String name) {
     this.id = id;
     this.name = name;
   }
 
-  public long id() {
+  public long getId() {
     return id;
   }
 
-  public String name() {
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public String getName() {
     return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }

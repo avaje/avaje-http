@@ -12,7 +12,6 @@ import io.avaje.http.api.MediaType;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
-import io.avaje.http.generator.MyForm;
 import io.helidon.common.http.HttpMediaType;
 import io.helidon.nima.webserver.http.ServerRequest;
 import io.helidon.nima.webserver.http.ServerResponse;
