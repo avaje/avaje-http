@@ -6,7 +6,7 @@
   <parent>
     <artifactId>avaje-http-generator-parent</artifactId>
     <groupId>io.avaje</groupId>
-    <version>1.18-SNAPSHOT</version>
+    <version>1.19-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
@@ -30,7 +30,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>1.18-SNAPSHOT</version>
+      <version>1.19-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>io.helidon.nima.webserver</groupId>
@@ -67,7 +67,7 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-http-nima-generator</artifactId>
-              <version>1.18-SNAPSHOT</version>
+              <version>1.19-SNAPSHOT</version>
             </path>
             <path>
               <groupId>io.avaje</groupId>
