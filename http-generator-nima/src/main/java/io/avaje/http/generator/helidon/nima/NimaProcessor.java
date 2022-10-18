@@ -14,9 +14,9 @@ public class NimaProcessor extends BaseProcessor {
   public NimaProcessor() {
     try {
       Class.forName("io.avaje.jsonb.Jsonb");
-      jsonB = true;
+      this.jsonB = true;
     } catch (final ClassNotFoundException e) {
-      jsonB = false;
+      this.jsonB = false;
     }
   }
 
@@ -30,7 +30,8 @@ public class NimaProcessor extends BaseProcessor {
   }
 
   @Override
-  public void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException {
+  public void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader)
+      throws IOException {
     new ControllerWriter(reader, ctx, jsonB).write();
   }
 }

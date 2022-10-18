@@ -27,7 +27,7 @@ class ControllerMethodWriter {
   ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
-    webMethod = method.getWebMethod();
+    this.webMethod = method.getWebMethod();
     this.ctx = ctx;
     this.useJsonB = useJsonB;
   }
