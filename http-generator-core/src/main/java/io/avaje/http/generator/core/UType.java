@@ -17,6 +17,11 @@ public interface UType {
   String shortType();
 
   /**
+   * Return the short name.
+   */
+  String shortName();
+
+  /**
    * Return the main type (outer most type).
    */
   String mainType();
@@ -40,6 +45,10 @@ public interface UType {
    */
   String full();
 
+  default boolean isGeneric() {
+    return false;
+  }
+
   default String genericParams() {
     return "";
   }
@@ -53,6 +62,11 @@ public interface UType {
 
     @Override
     public String shortType() {
+      return "void";
+    }
+
+    @Override
+    public String shortName() {
       return "void";
     }
 
@@ -93,6 +107,11 @@ public interface UType {
     }
 
     @Override
+    public String shortName() {
+      return Util.initLower(shortType());
+    }
+
+    @Override
     public String mainType() {
       return rawType;
     }
@@ -105,11 +124,13 @@ public interface UType {
     final String rawType;
     final List<String> allTypes;
     final String shortRawType;
+    final String shortName;
 
     Generic(String rawTypeInput) {
       this.rawType = rawTypeInput.replace(" ",""); // trim whitespace
       this.allTypes = Arrays.asList(rawType.split("[<|>|,]"));
       this.shortRawType = shortRawType(rawType, allTypes);
+      this.shortName = Util.name(shortRawType);
     }
 
     private String shortRawType(String rawType, List<String> allTypes) {
@@ -141,6 +162,11 @@ public interface UType {
     }
 
     @Override
+    public boolean isGeneric() {
+      return true;
+    }
+
+    @Override
     public String genericParams() {
       final StringJoiner joiner = new StringJoiner(",");
       for (String type : allTypes) {
@@ -155,6 +181,11 @@ public interface UType {
     @Override
     public String shortType() {
       return shortRawType;
+    }
+
+    @Override
+    public String shortName() {
+      return shortName;
     }
 
     @Override

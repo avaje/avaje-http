@@ -80,6 +80,7 @@ public class UtilTest {
 
     assertThat(type.importTypes()).containsExactly("org.example.Repo");
     assertThat(type.shortType()).isEqualTo("Repo");
+    assertThat(type.shortName()).isEqualTo("repo");
   }
 
   @Test
@@ -88,6 +89,7 @@ public class UtilTest {
 
     assertThat(type.importTypes()).containsExactly("java.util.List", "org.example.Repo");
     assertThat(type.shortType()).isEqualTo("List<Repo>");
+    assertThat(type.shortName()).isEqualTo("listRepo");
   }
 
   @Test
@@ -128,6 +130,7 @@ public class UtilTest {
 
     assertThat(type.importTypes()).containsExactly("java.util.concurrent.CompletableFuture", "java.util.Stream", "org.example.Repo");
     assertThat(type.shortType()).isEqualTo("CompletableFuture<Stream<Repo>>");
+    assertThat(type.shortName()).isEqualTo("completableFutureStreamRepo");
   }
 
   @Test
@@ -145,6 +148,7 @@ public class UtilTest {
 
     assertThat(type.importTypes()).containsExactly("java.net.http.HttpResponse.BodyHandler", "java.util.Path");
     assertThat(type.shortType()).isEqualTo("BodyHandler<Path>");
+    assertThat(type.shortName()).isEqualTo("bodyHandlerPath");
     assertThat(type.genericParams()).isEqualTo("");
   }
 
@@ -154,6 +158,7 @@ public class UtilTest {
 
     assertThat(type.importTypes()).containsExactly("java.net.http.HttpResponse.BodyHandler", "some.Foo");
     assertThat(type.shortType()).isEqualTo("BodyHandler<Foo<A,B>>");
+    assertThat(type.shortName()).isEqualTo("bodyHandlerFooAB");
     assertThat(type.genericParams()).isEqualTo("<A,B> ");
   }
 
@@ -163,6 +168,22 @@ public class UtilTest {
 
     assertThat(type.importTypes()).containsExactly("java.net.http.HttpResponse.BodyHandler", "some.Foo", "some.Bar");
     assertThat(type.shortType()).isEqualTo("BodyHandler<Foo<AB,BC,Bar<D>>>");
+    assertThat(type.shortName()).isEqualTo("bodyHandlerFooABBCBarD");
     assertThat(type.genericParams()).isEqualTo("<AB,BC,D> ");
   }
+
+  @Test
+  void utypeShortName() {
+    UType type = Util.parse("java.util.Map<java.util.String,org.foo.Person>");
+    assertThat(type.shortName()).isEqualTo("mapStringPerson");
+    assertThat(type.shortType()).isEqualTo("Map<String,Person>");
+  }
+
+  @Test
+  void shortName() {
+    assertThat(Util.name("List<Person>")).isEqualTo("listPerson");
+    assertThat(Util.name("Set<Person>")).isEqualTo("setPerson");
+    assertThat(Util.name("Map<String,Person>")).isEqualTo("mapStringPerson");
+  }
+
 }

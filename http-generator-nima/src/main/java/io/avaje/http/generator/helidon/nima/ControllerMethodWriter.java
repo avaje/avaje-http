@@ -1,18 +1,11 @@
 package io.avaje.http.generator.helidon.nima;
 
-import java.util.AbstractMap.SimpleImmutableEntry;
+import io.avaje.http.api.MediaType;
+import io.avaje.http.generator.core.*;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import io.avaje.http.api.MediaType;
-import io.avaje.http.generator.core.Append;
-import io.avaje.http.generator.core.MethodParam;
-import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.ParamType;
-import io.avaje.http.generator.core.PathSegments;
-import io.avaje.http.generator.core.ProcessingContext;
-import io.avaje.http.generator.core.WebMethod;
 
 /**
  * Write code to register Web route for a given controller method.
@@ -24,14 +17,14 @@ class ControllerMethodWriter {
   private final WebMethod webMethod;
   private final ProcessingContext ctx;
   private final boolean useJsonB;
-  private final Map<String, SimpleImmutableEntry<String, String>> jsonTypes;
+  private final Map<String, UType> jsonTypes;
 
   ControllerMethodWriter(
       MethodReader method,
       Append writer,
       ProcessingContext ctx,
       boolean useJsonB,
-      Map<String, SimpleImmutableEntry<String, String>> jsonTypes) {
+      Map<String, UType> jsonTypes) {
     this.method = method;
     this.writer = writer;
     webMethod = method.getWebMethod();
@@ -51,19 +44,16 @@ class ControllerMethodWriter {
     final var bodyType = method.getBodyType();
     if (bodyType != null) {
       if (useJsonB) {
-
         final var fieldName =
             method.getParams().stream()
                 .filter(MethodParam::isBody)
                 .findFirst()
                 .orElseThrow()
                 .getUType()
-                .full()
-                .transform(jsonTypes::get)
-                .getValue();
+                .shortName();
         writer
             .append(
-                "    var %s = %sJsonType.fromJson(req.content().inputStream());",
+                "    var %s = %sJsonType.fromJson(req.content().inputStream()); // RB1",
                 method.getBodyName(), fieldName)
             .eol();
 
@@ -128,10 +118,9 @@ class ControllerMethodWriter {
     if (!method.isVoid()) {
       writeContextReturn();
       if (producesJson()) {
-
-        final var fieldName =
-            method.getReturnType().toString().transform(jsonTypes::get).getValue();
-        writer.append("    %sJsonType.toJson(result, res.outputStream());", fieldName).eol();
+        UType uType = Util.parseType(method.getReturnType());
+        final var fieldName = uType.shortName();
+        writer.append("    %sJsonType.toJson(result, res.outputStream()); // RB0", fieldName).eol();
       } else {
         writer.append("    res.send(result);").eol();
       }
