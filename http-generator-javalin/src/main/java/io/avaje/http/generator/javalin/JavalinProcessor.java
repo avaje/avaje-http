@@ -14,9 +14,9 @@ public class JavalinProcessor extends BaseProcessor {
   public JavalinProcessor() {
     try {
       Class.forName("io.avaje.jsonb.Jsonb");
-      useJsonB = true;
+      this.useJsonB = true;
     } catch (final ClassNotFoundException e) {
-      useJsonB = false;
+      this.useJsonB = false;
     }
   }
 

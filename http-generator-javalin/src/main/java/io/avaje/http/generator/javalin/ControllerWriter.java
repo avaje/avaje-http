@@ -23,13 +23,13 @@ class ControllerWriter extends BaseControllerWriter {
   ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB)
       throws IOException {
     super(reader, ctx);
-    useJsonB = jsonB;
+    this.useJsonB = jsonB;
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
-      jsonTypes = JsonBUtil.getJsonTypes(reader);
+      this.jsonTypes = JsonBUtil.getJsonTypes(reader);
     } else {
-      jsonTypes = Map.of();
+      this.jsonTypes = Map.of();
     }
     reader.addImportType(API_BUILDER);
   }

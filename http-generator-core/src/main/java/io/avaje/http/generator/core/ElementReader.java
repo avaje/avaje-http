@@ -46,19 +46,19 @@ public class ElementReader {
     this.element = element;
     this.type = type;
     this.rawType = rawType;
-    shortType = Util.shortName(rawType);
-    contextType = ctx.platform().isContextType(rawType);
-    typeHandler = TypeMap.get(rawType);
+    this.shortType = Util.shortName(rawType);
+    this.contextType = ctx.platform().isContextType(rawType);
+    this.typeHandler = TypeMap.get(rawType);
     this.formMarker = formMarker;
-    varName = element.getSimpleName().toString();
-    snakeName = Util.snakeCase(varName);
-    paramName = varName;
+    this.varName = element.getSimpleName().toString();
+    this.snakeName = Util.snakeCase(varName);
+    this.paramName = varName;
     if (!contextType) {
       readAnnotations(element, defaultType);
-      useValidation = useValidation();
+      this.useValidation = useValidation();
     } else {
-      paramType = ParamType.CONTEXT;
-      useValidation = false;
+      this.paramType = ParamType.CONTEXT;
+      this.useValidation = false;
     }
   }
 
