@@ -1,11 +1,12 @@
 package io.avaje.http.generator.client;
 
+import java.util.List;
+
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
-
-import java.util.List;
+import io.avaje.http.generator.core.UType;
 
 class ClientPlatformAdapter implements PlatformAdapter {
 
@@ -20,7 +21,7 @@ class ClientPlatformAdapter implements PlatformAdapter {
   }
 
   @Override
-  public String bodyAsClass(String shortType) {
+  public String bodyAsClass(UType uType) {
     return null;
   }
 

@@ -29,7 +29,7 @@ class ControllerWriter extends BaseControllerWriter {
       reader.addImportType("io.avaje.jsonb.JsonType");
       jsonTypes = JsonBUtil.getJsonTypes(reader);
     } else {
-      jsonTypes = null;
+      jsonTypes = Map.of();
     }
     reader.addImportType("io.helidon.common.http.HttpMediaType");
     reader.addImportType("io.helidon.common.parameters.Parameters");
@@ -96,7 +96,7 @@ class ControllerWriter extends BaseControllerWriter {
       writer
           .append(
               "  private final JsonType<%s> %sJsonType;",
-              primitiveWrap(type.full()), type.shortName())
+              PrimitiveUtil.wrap(type.full()), type.shortName())
           .eol();
     }
     writer.eol();
@@ -115,29 +115,9 @@ class ControllerWriter extends BaseControllerWriter {
     }
     if (useJsonB) {
       for (final UType type : jsonTypes.values()) {
-        writer.append("    this.%sJsonType = jsonB.type(", type.shortName());
-        writeJsonbType(type);
+        JsonBUtil.writeJsonbType(type, writer);
       }
     }
     writer.append("  }").eol().eol();
-  }
-
-  private void writeJsonbType(UType type) {
-    if (!type.isGeneric()) {
-      writer.append("%s.class)", type.full());
-    } else {
-      switch (type.mainType()) {
-        case "java.util.List" -> writer.append("%s.class).list()", type.param0());
-        case "java.util.Set" -> writer.append("%s.class).set()", type.param0());
-        case "java.util.Map" -> writer.append("%s.class).map()", type.param1());
-        default -> throw new UnsupportedOperationException(
-            "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
-      }
-    }
-    writer.append(";").eol();
-  }
-
-  private String primitiveWrap(String full) {
-    return PrimitiveUtil.wrap(full);
   }
 }

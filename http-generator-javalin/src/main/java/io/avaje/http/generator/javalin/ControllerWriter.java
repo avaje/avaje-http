@@ -1,26 +1,37 @@
 package io.avaje.http.generator.javalin;
 
 import java.io.IOException;
+import java.util.Map;
 
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
 import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.JsonBUtil;
 import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.PrimitiveUtil;
 import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.UType;
 
 /** Write Javalin specific Controller WebRoute handling adapter. */
 class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-javalin-generator\")";
   private static final String API_BUILDER = "io.javalin.apibuilder.ApiBuilder";
-  private final boolean useJsonb;
+  private final boolean useJsonB;
+  private final Map<String, UType> jsonTypes;
 
-  ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean useJsonb)
+  ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB)
       throws IOException {
-
     super(reader, ctx);
+    useJsonB = jsonB;
+    if (useJsonB) {
+      reader.addImportType("io.avaje.jsonb.Jsonb");
+      reader.addImportType("io.avaje.jsonb.JsonType");
+      jsonTypes = JsonBUtil.getJsonTypes(reader);
+    } else {
+      jsonTypes = Map.of();
+    }
     reader.addImportType(API_BUILDER);
-    this.useJsonb = useJsonb;
   }
 
   void write() {
@@ -43,7 +54,7 @@ class ControllerWriter extends BaseControllerWriter {
   }
 
   private void writeForMethod(MethodReader method) {
-    new ControllerMethodWriter(method, writer, ctx, useJsonb).write(isRequestScoped());
+    new ControllerMethodWriter(method, writer, ctx, useJsonB).write(isRequestScoped());
     if (!reader.isDocHidden()) {
       method.buildApiDocumentation(ctx);
     }
@@ -70,16 +81,33 @@ class ControllerWriter extends BaseControllerWriter {
     if (reader.isIncludeValidator()) {
       writer.append("  private final Validator validator;").eol();
     }
+
+    for (final UType type : jsonTypes.values()) {
+      writer
+          .append(
+              "  private final JsonType<%s> %sJsonType;",
+              PrimitiveUtil.wrap(type.full()), type.shortName())
+          .eol();
+    }
+
     writer.eol();
 
     writer.append("  public %s$Route(%s %s", shortName, controllerType, controllerName);
     if (reader.isIncludeValidator()) {
       writer.append(", Validator validator");
     }
+    if (useJsonB) {
+      writer.append(", Jsonb jsonB");
+    }
     writer.append(") {").eol();
     writer.append("    this.%s = %s;", controllerName, controllerName).eol();
     if (reader.isIncludeValidator()) {
       writer.append("    this.validator = validator;").eol();
+    }
+    if (useJsonB) {
+      for (final UType type : jsonTypes.values()) {
+        JsonBUtil.writeJsonbType(type, writer);
+      }
     }
     writer.append("  }").eol().eol();
   }

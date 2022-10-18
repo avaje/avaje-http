@@ -1,11 +1,17 @@
 package io.avaje.http.generator.helidon.nima;
 
-import io.avaje.http.api.MediaType;
-import io.avaje.http.generator.core.*;
-
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+
+import io.avaje.http.api.MediaType;
+import io.avaje.http.generator.core.Append;
+import io.avaje.http.generator.core.MethodParam;
+import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.ParamType;
+import io.avaje.http.generator.core.PathSegments;
+import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.UType;
+import io.avaje.http.generator.core.WebMethod;
 
 /**
  * Write code to register Web route for a given controller method.
@@ -21,7 +27,7 @@ class ControllerMethodWriter {
   ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
-    this.webMethod = method.getWebMethod();
+    webMethod = method.getWebMethod();
     this.ctx = ctx;
     this.useJsonB = useJsonB;
   }
@@ -109,7 +115,7 @@ class ControllerMethodWriter {
     if (!method.isVoid()) {
       writeContextReturn();
       if (producesJson()) {
-        UType uType = UType.parse(method.getReturnType());
+        final UType uType = UType.parse(method.getReturnType());
         writer.append("    %sJsonType.toJson(result, res.outputStream());", uType.shortName()).eol();
       } else {
         writer.append("    res.send(result);").eol();

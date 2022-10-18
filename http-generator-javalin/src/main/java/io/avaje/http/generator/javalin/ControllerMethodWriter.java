@@ -1,14 +1,12 @@
 package io.avaje.http.generator.javalin;
 
-import java.util.List;
-
 import io.avaje.http.api.MediaType;
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.UType;
 import io.avaje.http.generator.core.Util;
 import io.avaje.http.generator.core.WebMethod;
 
@@ -55,8 +53,9 @@ class ControllerMethodWriter {
         param.writeValidate(writer);
       }
     }
+
     if (!method.isVoid()) {
-      writeContextReturn();
+      writer.append("var result = ");
     }
 
     if (requestScoped) {
@@ -71,11 +70,13 @@ class ControllerMethodWriter {
       }
       params.get(i).buildParamName(writer);
     }
-    writer.append(")");
+
+    writer.append(");").eol();
     if (!method.isVoid()) {
-      writer.append(")");
+      writeContextReturn();
+      writer.eol();
     }
-    writer.append(";").eol();
+
     writer.append("    }");
 
     final var roles = method.roles();
@@ -94,29 +95,21 @@ class ControllerMethodWriter {
   private void writeContextReturn() {
     final var produces = method.getProduces();
     if (produces == null || MediaType.APPLICATION_JSON.equalsIgnoreCase(produces)) {
-      writer.append("ctx.json(");
+      if (useJsonB) {
+        final var uType = UType.parse(method.getReturnType());
+        writer.append(
+            "      %sJsonType.toJson(result, ctx.contentType(\"application/json\").outputStream());",
+            uType.shortName());
+
+      } else {
+        writer.append("      ctx.json(result);");
+      }
     } else if (MediaType.TEXT_HTML.equalsIgnoreCase(produces)) {
-      writer.append("ctx.html(");
+      writer.append("      ctx.html(result);");
     } else if (MediaType.TEXT_PLAIN.equalsIgnoreCase(produces)) {
-      writer.append("ctx.contentType(\"text/plain\").result(");
+      writer.append("      ctx.contentType(\"text/plain\").result(result);");
     } else {
-      writer.append("ctx.contentType(\"%s\").result(", produces);
+      writer.append("      ctx.contentType(\"%s\").result(result);", produces);
     }
-  }
-
-  private boolean producesJson() {
-    return useJsonB
-        && !"byte[]".equals(method.getReturnType().toString())
-        && (method.getProduces() == null || method.getProduces().toLowerCase().contains("json"));
-  }
-
-  private boolean missingServerResponse(List<MethodParam> params) {
-    return method.isVoid()
-        && params.stream().noneMatch(p -> "ServerResponse".equals(p.getShortType()));
-  }
-
-  private boolean usesFormParams() {
-    return method.getParams().stream()
-        .anyMatch(p -> p.isForm() || ParamType.FORMPARAM.equals(p.getParamType()));
   }
 }

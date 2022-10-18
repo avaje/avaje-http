@@ -35,4 +35,28 @@ public class JsonBUtil {
           .forEach(param -> addJsonType(param.getUType()));
     }
   }
+
+  public static void writeJsonbType(UType type, Append writer) {
+
+    writer.append("    this.%sJsonType = jsonB.type(", type.shortName());
+    if (!type.isGeneric()) {
+      writer.append("%s.class)", type.full());
+    } else {
+      switch (type.mainType()) {
+        case "java.util.List":
+          writer.append("%s.class).list()", type.param0());
+          break;
+        case "java.util.Set":
+          writer.append("%s.class).set()", type.param0());
+          break;
+        case "java.util.Map":
+          writer.append("%s.class).map()", type.param1());
+          break;
+        default:
+          throw new UnsupportedOperationException(
+              "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
+      }
+    }
+    writer.append(";").eol();
+  }
 }

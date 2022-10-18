@@ -26,7 +26,7 @@ public class JavalinProcessor extends BaseProcessor {
 
   @Override
   protected PlatformAdapter providePlatformAdapter() {
-    return new JavalinAdapter();
+    return new JavalinAdapter(useJsonB);
   }
 
   @Override
