@@ -15,9 +15,20 @@
     <module>test-helidon</module>
     <module>test-javalin</module>
     <module>test-jex</module>
-    <!--    <module>test-spark</module>-->
     <module>test-client</module>
   </modules>
 
-</project>
+  <profiles>
+    <profile>
+      <id>jdk19plus</id>
+      <activation>
+        <jdk>[19,20]</jdk>
+      </activation>
+      <modules>
+        <module>test-nima</module>
+        <module>test-nima-jsonb</module>
+      </modules>
+    </profile>
+  </profiles>
 
+</project>

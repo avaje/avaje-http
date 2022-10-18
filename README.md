@@ -6,78 +6,94 @@ Http server and client libraries and code generation.
 
 A jax-rs style controllers with annotations (`@Path`, `@Get` ...)
 that is lightweight by using source code generation (annotation processors)
-to generate adapter code for Javalin and Helidon SE.
+to generate adapter code for Javalin and Helidon SE/Nima.
 
 - Lightweight as in 65Kb library + generated source code
-- Full use of Javalin or Helidon SE as desired
+- Full use of Javalin or Helidon SE/Nima as desired
 
 
-## Define a Controller
+## Define a Controller (Note that these APT processors works with both Java and Kotlin.)
 ```java
-package org.example.hello
+package org.example.hello;
 
-import io.avaje.http.api.Controller
-import io.avaje.http.api.Get
-import io.avaje.http.api.Path
+import io.avaje.http.api.Controller;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.Path;
+import java.util.List;
 
 @Path("/widgets")
 @Controller
-class WidgetController(private val hello: HelloComponent) {
-
-  @Get("/:id")
-  fun getById(id : Int): Widget {
-    return Widget(id, "you got it${hello.hello()}")
+public class WidgetController {
+  private final HelloComponent hello;
+  public WidgetController(HelloComponent hello) {
+    this.hello = hello;
+  }
+  
+  @Get("/{id}")
+  Widget getById(int id) {
+    return new Widget(id, "you got it"+ hello.hello());
   }
 
-  @Get
-  fun getAll(): MutableList<Widget> {
-
-    val list = mutableListOf<Widget>()
-    list.add(Widget(1, "Rob"))
-    list.add(Widget(2, "Fi"))
-
-    return list
+  @Get()
+  List<Widget> getAll() {
+    return List.of(new Widget(1, "Rob"), new Widget(2, "Fi"));
   }
 
-  data class Widget(var id: Int, var name: String)
+  record Widget(int id, String name){};
 }
 
 ```
 
-## Generated source (Javalin)
+## Usage with Javalin
 
-The annotation processor will generate a `$Route` for the controller like below.
-
-Note that this class implements the WebRoutes interface, which means we can
-get all the WebRoutes and register them with Javalin using.
+The annotation processor will generate controller classes implementing the WebRoutes interface, which means we can
+get all the WebRoutes and register them with Javalin using:
 
 ```java
-fun main(args: Array<String>) {
+var routes = BeanScope.builder().build().list(WebRoutes.class); 
 
-  // get all the webRoutes
-  val webRoutes = BeanScope.builder().build().list(WebRoutes::class.java)
-
-  val javalin = Javalin.create()
-
-  javalin.routes {
-    // register all the routes with Javalin
-    webRoutes.forEach { it.registerRoutes() }
-
-    // other routes etc as desired
-    ApiBuilder.get("/foo") { ctx ->
-      ctx.html("bar")
-      ctx.status(200)
-    }
-    ...
-  }
-
-  javalin.start(7000)
-}
-
+Javalin.create()
+        .routes(() -> routes.forEach(WebRoutes::registerRoutes))
+        .start();
 ```
 
-### (Javalin) The generated WidgetController$Route.java is:
 
+## Usage with Helidon SE
+
+The annotation processor will generate controller classes implementing the Helidon Service interface, which we can use
+get all the Services and register them with Helidon `RoutingBuilder`.
+
+```java
+var routes = BeanScope.builder().build().list(Service.class); 
+var routingBuilder = Routing.builder().register(routes.stream().toArray(Service[]::new));
+WebServer.builder()
+        .addMediaSupport(JacksonSupport.create())
+        .routing(routingBuilder)
+        .build()
+        .start();
+```
+
+## Usage with Helidon Nima
+
+The annotation processor will generate controller classes implementing the Helidon HttpService interface, which we can use
+get all the services and register them with the Helidon `HttpRouting`.
+
+```java
+var routes = BeanScope.builder().build().list(HttpService.class); 
+final var builder = HttpRouting.builder();
+
+for (final HttpService httpService : routes) {
+   httpService.routing(builder);
+}
+
+WebServer.builder()
+         .addRouting(builder.build())
+         .build()
+         .start();
+```
+## Generated sources
+
+### (Javalin) The generated WidgetController$Route.java is:
 
 ```java
 package org.example.hello;
@@ -102,7 +118,7 @@ public class WidgetController$Route implements WebRoutes {
   @Override
   public void registerRoutes() {
 
-    ApiBuilder.get("/widgets/:id", ctx -> {
+    ApiBuilder.get("/widgets/{id}", ctx -> {
       int id = asInt(ctx.pathParam("id"));
       ctx.json(controller.getById(id));
       ctx.status(200);
@@ -117,24 +133,7 @@ public class WidgetController$Route implements WebRoutes {
 }
 ```
 
-## Generated source (Helidon SE)
-
-The annotation processor will generate a `$Route` for the controller like below.
-
-Note that this class implements the Helidon Service interface, which means we can
-get all the Services and register them with Helidon `RoutingBuilder`.
-
-```
-var routes = BeanScope.builder().build().list(Service.class); 
-var routingBuilder = Routing.builder().register(routes.stream().toArray(Service[]::new));
-WebServer.builder()
-        .addMediaSupport(JacksonSupport.create())
-        .routing(routingBuilder)
-        .build()
-        .start();
-```
 ### (Helidon SE) The generated WidgetController$Route.java is:
-
 ```java
 package org.example.hello;
 
@@ -163,7 +162,7 @@ public class WidgetController$Route implements Service {
   @Override
   public void update(Routing.Rules rules) {
 
-    rules.get("/widgets/:id", this::_getById);
+    rules.get("/widgets/{id}", this::_getById);
     rules.post("/widgets", this::_getAll);
   }
 
@@ -179,6 +178,104 @@ public class WidgetController$Route implements Service {
 }
 ```
 
-Note that this APT processor works with both Java and Kotlin.
+### (Helidon Nima) The generated WidgetController$Route.java is:
+
+```java
+package org.example.hello;
+
+import static io.avaje.http.api.PathTypeConversion.*;
+
+import io.avaje.http.api.*;
+import io.avaje.inject.Component;
+import io.helidon.nima.webserver.http.HttpRouting;
+import io.helidon.nima.webserver.http.HttpRules;
+import io.helidon.nima.webserver.http.HttpService;
+import io.helidon.nima.webserver.http.ServerRequest;
+import io.helidon.nima.webserver.http.ServerResponse;
+import org.example.hello.WidgetController;
+
+@Generated("avaje-helidon-nima-generator")
+@Component
+public class WidgetController$Route implements HttpService {
+
+  private final WidgetController controller;
+  public WidgetController$Route(WidgetController controller) {
+    this.controller = controller;
+  }
+
+  @Override
+  public void routing(HttpRules rules) {
+    rules.get("/widgets/{id}", this::_getById);
+    rules.get("/widgets", this::_getAll);
+  }
+
+  private void _getById(ServerRequest req, ServerResponse res) {
+    var pathParams = req.path().pathParameters();
+    int id = asInt(pathParams.first("id").get());
+    var result = controller.getById(id);
+    res.send(result);
+  }
+
+  private void _getAll(ServerRequest req, ServerResponse res) {
+    var pathParams = req.path().pathParameters();
+    var result = controller.getAll();
+    res.send(result);
+  }
+
+}
+```
+
+### (Helidon Nima with Avaje-Jsonb) The generated WidgetController$Route.java is:
+
+```java
+package org.example.hello;
+
+import static io.avaje.http.api.PathTypeConversion.*;
+
+import io.avaje.http.api.*;
+import io.avaje.inject.Component;
+import io.helidon.nima.webserver.http.HttpRouting;
+import io.helidon.nima.webserver.http.HttpRules;
+import io.helidon.nima.webserver.http.HttpService;
+import io.helidon.nima.webserver.http.ServerRequest;
+import io.helidon.nima.webserver.http.ServerResponse;
+import org.example.hello.WidgetController;
+
+@Generated("avaje-helidon-nima-generator")
+@Component
+public class WidgetController$Route implements HttpService {
 
 
+  private final WidgetController controller;
+  private final JsonType<org.example.hello.WidgetController.Widget> getByIdReturnedJsonType;
+  private final JsonType<java.util.List<org.example.hello.WidgetController.Widget>> getAllReturnedJsonType;
+
+  public WidgetController$Route(WidgetController controller, Jsonb jsonB) {
+    this.controller = controller;
+    this.getByIdReturnedJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class);
+    this.getAllReturnedJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class).list();
+  }
+
+  @Override
+  public void routing(HttpRules rules) {
+    rules.get("/widgets/{id}", this::_getById);
+    rules.get("/widgets", this::_getAll);
+  }
+
+  private void _getById(ServerRequest req, ServerResponse res) {
+    var pathParams = req.path().pathParameters();
+    int id = asInt(pathParams.first("id").get());
+    var result = controller.getById(id);
+    res.headers().contentType(io.helidon.common.http.HttpMediaType.APPLICATION_JSON);
+    getByIdReturnedJsonType.toJson(result, res.outputStream());
+  }
+
+  private void _getAll(ServerRequest req, ServerResponse res) {
+    var pathParams = req.path().pathParameters();
+    var result = controller.getAll();
+    res.headers().contentType(io.helidon.common.http.HttpMediaType.APPLICATION_JSON);
+    getAllReturnedJsonType.toJson(result, res.outputStream());
+  }
+
+}
+```
