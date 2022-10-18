@@ -1,5 +1,6 @@
 package io.avaje.http.generator.helidon.nima;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,14 +24,14 @@ class ControllerMethodWriter {
   private final WebMethod webMethod;
   private final ProcessingContext ctx;
   private final boolean useJsonB;
-  private final Map<String, JsonbType> jsonTypes;
+  private final Map<String, SimpleImmutableEntry<String, String>> jsonTypes;
 
   ControllerMethodWriter(
       MethodReader method,
       Append writer,
       ProcessingContext ctx,
       boolean useJsonB,
-      Map<String, JsonbType> jsonTypes) {
+      Map<String, SimpleImmutableEntry<String, String>> jsonTypes) {
     this.method = method;
     this.writer = writer;
     webMethod = method.getWebMethod();
@@ -59,7 +60,7 @@ class ControllerMethodWriter {
                 .getUType()
                 .full()
                 .transform(jsonTypes::get)
-                .fieldName();
+                .getValue();
         writer
             .append(
                 "    var %s = %sJsonType.fromJson(req.content().inputStream());",
@@ -129,7 +130,7 @@ class ControllerMethodWriter {
       if (producesJson()) {
 
         final var fieldName =
-            method.getReturnType().toString().transform(jsonTypes::get).fieldName();
+            method.getReturnType().toString().transform(jsonTypes::get).getValue();
         writer.append("    %sJsonType.toJson(result, res.outputStream());", fieldName).eol();
       } else {
         writer.append("    res.send(result);").eol();

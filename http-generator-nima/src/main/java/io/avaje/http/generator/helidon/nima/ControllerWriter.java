@@ -1,6 +1,7 @@
 package io.avaje.http.generator.helidon.nima;
 
 import java.io.IOException;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-helidon-nima-generator\")";
   private final boolean useJsonB;
-  private final Map<String, JsonbType> jsonTypes;
+  private final Map<String, SimpleImmutableEntry<String, String>> jsonTypes;
 
   ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB)
       throws IOException {
@@ -152,8 +153,10 @@ class ControllerWriter extends BaseControllerWriter {
                     type -> {
                       final var baseType = getBaseType(param.getUType());
                       final var fieldName = createFieldName(baseType, type);
-                      writer.append("private final JsonType<%s> %sJsonType;", type, fieldName).eol();
-                      return new JsonbType(baseType, fieldName);
+                      writer
+                          .append("private final JsonType<%s> %sJsonType;", type, fieldName)
+                          .eol();
+                      return new SimpleImmutableEntry<>(baseType, fieldName);
                     });
               });
     }
@@ -170,7 +173,7 @@ class ControllerWriter extends BaseControllerWriter {
             final var baseType = getBaseType(fullType);
             final var fieldName = createFieldName(baseType, type);
             writer.append("private final JsonType<%s> %sJsonType;", type, fieldName).eol();
-            return new JsonbType(baseType, fieldName);
+            return new SimpleImmutableEntry<>(baseType, fieldName);
           });
     } else if (methodReader.getReturnType() instanceof final PrimitiveType fullType) {
 
@@ -182,7 +185,7 @@ class ControllerWriter extends BaseControllerWriter {
                     ? "Integer"
                     : type.substring(0, 1).toUpperCase() + type.substring(1);
             writer.append("private final JsonType<%s> %sJsonType;", baseType, type).eol();
-            return new JsonbType(baseType, type);
+            return new SimpleImmutableEntry<>(baseType, type);
           });
     } else {
       throw new UnsupportedOperationException(
@@ -194,8 +197,8 @@ class ControllerWriter extends BaseControllerWriter {
     for (final var entry : jsonTypes.entrySet()) {
       final var fullType = entry.getKey();
       final var element = entry.getValue();
-      final var fieldName = element.fieldName();
-      final var baseType = element.baseType();
+      final var baseType = element.getKey();
+      final var fieldName = element.getValue();
 
       writer.append("    this.%sJsonType = jsonB.type(%s.class)", fieldName, baseType);
 
