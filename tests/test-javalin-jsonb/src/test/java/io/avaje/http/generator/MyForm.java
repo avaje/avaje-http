@@ -1,4 +1,4 @@
-package org.example;
+package io.avaje.http.generator;
 
 public class MyForm {
 

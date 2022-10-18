@@ -1,4 +1,4 @@
-package org.example;
+package io.avaje.http.generator;
 
 import java.util.List;
 import java.util.Map;
@@ -12,42 +12,33 @@ import io.avaje.http.api.MediaType;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
-import io.avaje.http.generator.MyForm;
-import io.helidon.common.http.HttpMediaType;
-import io.helidon.nima.webserver.http.ServerRequest;
-import io.helidon.nima.webserver.http.ServerResponse;
+import io.javalin.http.Context;
 
 @Controller
-public class HelloController {
+public class TestController {
 
-  @Produces(MediaType.TEXT_PLAIN)
   @Get
+  @Produces(MediaType.TEXT_PLAIN)
   String index() {
     return "Hello world - index";
   }
 
-  @Produces(MediaType.TEXT_PLAIN)
   @Get("hello")
+  @Produces(MediaType.TEXT_PLAIN)
   String helloWorld() {
     return "Hello world";
   }
 
-  @Produces("image/png")
   @Get("/get")
+  @Produces("image/png")
   byte[] testBytes() {
     return "not really an image but ok".getBytes();
   }
 
-  @Get("/helidon")
-  void testHelidon(ServerRequest req, ServerResponse res) {
+  @Get("/ctx")
+  void testVoid(Context ctx) {
 
-    res.headers().contentType(HttpMediaType.TEXT_PLAIN);
-    res.send("success path:" + req.path());
-  }
-
-  @Get("/void")
-  void testVoid(ServerResponse res) {
-    res.send("GET-Returning-void");
+    ctx.result("success path:" + ctx.path());
   }
 
   @Get("/header")
@@ -55,48 +46,34 @@ public class HelloController {
     return head;
   }
 
-  // curl -v localhost:8081/person/jack
   @Get("person/{name}")
-  Person person(String name) {
+  Person testParamAndBody(String name) {
     return new Person(42, name + " hello");
   }
 
-  @Get("person/{long}")
-  Person testLong(long id) {
-    return new Person(id, "Giorno hello");
-  }
-
-  // curl -X POST http://localhost:8081/person -H 'Content-Type: application/json' -d
-  // '{"id":942,"name":"Jimmy"}'
   @Post("/person")
-  Person postPerson(Person body) {
+  Person testPostPerson(Person body) {
     return new Person(42, "Returning " + body.name());
   }
 
-  // curl -v localhost:8081/person/foo/list
   @Get("person/{sortBy}/list")
-  List<Person> personList(String sortBy) {
+  List<Person> testPersonList(String sortBy) {
     return List.of(new Person(42, "fooList"), new Person(43, "barList"));
   }
 
   // curl -v localhost:8081/person/foo/set
   @Get("person/{sortBy}/set")
-  Set<Person> personSet(String sortBy) {
+  Set<Person> testPersonSet(String sortBy) {
     return Set.of(new Person(42, "fooSet"), new Person(43, "barSet"));
   }
 
   @Get("person/{sortBy}/map")
-  Map<String, Person> personMap(String sortBy) {
+  Map<String, Person> testPersonMap(String sortBy) {
     return Map.of("one", new Person(42, "fooMap"), "two", new Person(43, "barMap"));
   }
 
-  @Post("person/update")
-  String add(Person newGuy) {
-    return "New Guy Added - " + newGuy;
-  }
-
   @Put("person/update")
-  String addMultiple(List<Person> newGuys) {
+  String testPersonListBody(List<Person> newGuys) {
     return "New Guys Added";
   }
 
@@ -115,7 +92,7 @@ public class HelloController {
   //   -d "name=Jimmy&email=jim@foo&url=notaurl"
   @Form
   @Post("form")
-  String form(String name, String email, String url) {
+  String testForm(String name, String email, String url) {
     return name + "-" + email + "-" + url;
   }
 
@@ -124,7 +101,7 @@ public class HelloController {
   //   -d "name=FormBeanJimmy&email=jim@foo&url=notaurl"
   @Form
   @Post("formBean")
-  String formBean(MyForm form) {
+  String testFormBean(MyForm form) {
     return form.name + "|" + form.email + "|" + form.url;
   }
 }
