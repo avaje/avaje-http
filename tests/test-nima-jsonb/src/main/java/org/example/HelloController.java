@@ -92,29 +92,31 @@ public class HelloController {
     return "New Guys Added";
   }
 
-  @Put("person/int")
+  @Put("test/int")
   int testIntReturn() {
     return 422;
   }
 
-  @Put("person/long")
+  @Put("test/long")
   long testLongReturn() {
     return 69;
   }
 
-  // curl -X POST http://localhost:8081/form -H "Content-Type: application/x-www-form-urlencoded" -d
-  // "name=Jimmy&email=jim@foo&url=notaurl"
+  // curl -X POST http://localhost:8081/form
+  //   -H "Content-Type: application/x-www-form-urlencoded"
+  //   -d "name=Jimmy&email=jim@foo&url=notaurl"
   @Form
   @Post("form")
   String form(String name, String email, String url) {
     return name + "-" + email + "-" + url;
   }
 
-  // curl -X POST http://localhost:8081/formBean -H "Content-Type:
-  // application/x-www-form-urlencoded" -d "name=FormBeanJimmy&email=jim@foo&url=notaurl"
+  // curl -X POST http://localhost:8081/formBean
+  //   -H "Content-Type:application/x-www-form-urlencoded"
+  //   -d "name=FormBeanJimmy&email=jim@foo&url=notaurl"
   @Form
   @Post("formBean")
   String formBean(MyForm form) {
-    return form.name + "-" + form.email + "-" + form.url;
+    return form.name + "|" + form.email + "|" + form.url;
   }
 }

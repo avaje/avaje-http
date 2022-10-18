@@ -1,8 +1,16 @@
 package io.avaje.http.generator.core;
 
+import javax.lang.model.type.TypeMirror;
 import java.util.*;
 
 public interface UType {
+
+  /**
+   * Create the UType from the given TypeMirror.
+   */
+  static UType parse(TypeMirror type) {
+    return Util.parseType(type);
+  }
 
   UType VOID = new VoidType();
 

@@ -17,20 +17,13 @@ class ControllerMethodWriter {
   private final WebMethod webMethod;
   private final ProcessingContext ctx;
   private final boolean useJsonB;
-  private final Map<String, UType> jsonTypes;
 
-  ControllerMethodWriter(
-      MethodReader method,
-      Append writer,
-      ProcessingContext ctx,
-      boolean useJsonB,
-      Map<String, UType> jsonTypes) {
+  ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
-    webMethod = method.getWebMethod();
+    this.webMethod = method.getWebMethod();
     this.ctx = ctx;
     this.useJsonB = useJsonB;
-    this.jsonTypes=jsonTypes;
   }
 
   void writeRule() {
@@ -52,9 +45,7 @@ class ControllerMethodWriter {
                 .getUType()
                 .shortName();
         writer
-            .append(
-                "    var %s = %sJsonType.fromJson(req.content().inputStream()); // RB1",
-                method.getBodyName(), fieldName)
+            .append("    var %s = %sJsonType.fromJson(req.content().inputStream());", method.getBodyName(), fieldName)
             .eol();
 
       } else {
@@ -118,9 +109,8 @@ class ControllerMethodWriter {
     if (!method.isVoid()) {
       writeContextReturn();
       if (producesJson()) {
-        UType uType = Util.parseType(method.getReturnType());
-        final var fieldName = uType.shortName();
-        writer.append("    %sJsonType.toJson(result, res.outputStream()); // RB0", fieldName).eol();
+        UType uType = UType.parse(method.getReturnType());
+        writer.append("    %sJsonType.toJson(result, res.outputStream());", uType.shortName()).eol();
       } else {
         writer.append("    res.send(result);").eol();
       }

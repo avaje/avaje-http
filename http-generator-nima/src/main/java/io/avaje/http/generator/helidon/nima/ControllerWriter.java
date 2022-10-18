@@ -1,11 +1,11 @@
 package io.avaje.http.generator.helidon.nima;
 
-import java.io.IOException;
-import java.util.*;
-
-import javax.lang.model.type.TypeMirror;
-
 import io.avaje.http.generator.core.*;
+
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /** Write Helidon specific web route adapter (a Helidon Service). */
 class ControllerWriter extends BaseControllerWriter {
@@ -39,13 +39,12 @@ class ControllerWriter extends BaseControllerWriter {
         .forEach(methodReader -> {
           addJsonBodyType(methodReader);
           if (!methodReader.isVoid()) {
-            TypeMirror returnType = methodReader.getReturnType();
-            addJsonBodyType(Util.parseType(returnType));
+            addJsonType(UType.parse(methodReader.getReturnType()));
           }
         });
   }
 
-  private void addJsonBodyType(UType type) {
+  private void addJsonType(UType type) {
     jsonTypes.put(type.full(), type);
   }
 
@@ -53,7 +52,7 @@ class ControllerWriter extends BaseControllerWriter {
     if (methodReader.getBodyType() != null) {
       methodReader.getParams().stream()
         .filter(MethodParam::isBody)
-        .forEach(param -> addJsonBodyType(param.getUType()));
+        .forEach(param -> addJsonType(param.getUType()));
     }
   }
 
@@ -65,15 +64,15 @@ class ControllerWriter extends BaseControllerWriter {
     writeClassEnd();
   }
 
-  private List<ControllerMethodWriter> getWriterMethods() {
+  private List<ControllerMethodWriter> writerMethods() {
     return reader.getMethods().stream()
         .filter(MethodReader::isWebMethod)
-        .map(it -> new ControllerMethodWriter(it, writer, ctx, useJsonB, jsonTypes))
+        .map(it -> new ControllerMethodWriter(it, writer, ctx, useJsonB))
         .toList();
   }
 
   private void writeAddRoutes() {
-    final var methods = getWriterMethods();
+    final var methods = writerMethods();
     writeRoutes(methods);
     for (final ControllerMethodWriter methodWriter : methods) {
       methodWriter.writeHandler(isRequestScoped());
@@ -109,8 +108,8 @@ class ControllerWriter extends BaseControllerWriter {
     if (reader.isIncludeValidator()) {
       writer.append("  private final Validator validator;").eol();
     }
-    for (UType value : jsonTypes.values()) {
-      writer.append("private final JsonType<%s> %sJsonType; //RBx1", primitiveWrap(value.full()), value.shortName()).eol();
+    for (UType type : jsonTypes.values()) {
+      writer.append("  private final JsonType<%s> %sJsonType;", primitiveWrap(type.full()), type.shortName()).eol();
     }
     writer.eol();
 
@@ -127,9 +126,9 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append("    this.validator = validator;").eol();
     }
     if (useJsonB) {
-      for (UType value : jsonTypes.values()) {
-        writer.append("    this.%sJsonType = jsonB.type(", value.shortName());
-        writeJsonbType(value);
+      for (UType type : jsonTypes.values()) {
+        writer.append("    this.%sJsonType = jsonB.type(", type.shortName());
+        writeJsonbType(type);
       }
     }
     writer.append("  }").eol().eol();
@@ -146,7 +145,7 @@ class ControllerWriter extends BaseControllerWriter {
         default -> throw new UnsupportedOperationException("Only java.util Map, Set and List are supported JsonB Controller Collection Types");
       }
     }
-    writer.append("; // Rbx3").eol();
+    writer.append(";").eol();
   }
 
   private String primitiveWrap(String full) {
