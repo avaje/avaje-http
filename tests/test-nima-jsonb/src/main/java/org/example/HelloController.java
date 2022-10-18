@@ -7,6 +7,7 @@ import java.util.Set;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Form;
 import io.avaje.http.api.Get;
+import io.avaje.http.api.Header;
 import io.avaje.http.api.MediaType;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
@@ -38,6 +39,7 @@ public class HelloController {
 
   @Get("/helidon")
   void testHelidon(ServerRequest req, ServerResponse res) {
+
     res.headers().contentType(HttpMediaType.TEXT_PLAIN);
     res.send("success path:" + req.path());
   }
@@ -45,6 +47,11 @@ public class HelloController {
   @Get("/void")
   void testVoid(ServerResponse res) {
     res.send("GET-Returning-void");
+  }
+
+  @Get("/header")
+  String testHeader(@Header String head) {
+    return head;
   }
 
   // curl -v localhost:8081/person/jack
