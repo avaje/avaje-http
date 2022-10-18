@@ -5,7 +5,10 @@ import java.util.Map;
 
 public final class PrimitiveUtil {
 
-  static Map<String,String> wrapperMap = new HashMap<>();
+  private PrimitiveUtil() {}
+
+  static final Map<String, String> wrapperMap = new HashMap<>();
+
   static {
     wrapperMap.put("char", "Character");
     wrapperMap.put("byte", "Byte");
