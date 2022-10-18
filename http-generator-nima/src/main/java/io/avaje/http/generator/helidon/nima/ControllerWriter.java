@@ -1,11 +1,18 @@
 package io.avaje.http.generator.helidon.nima;
 
-import io.avaje.http.generator.core.*;
-
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.avaje.http.generator.core.BaseControllerWriter;
+import io.avaje.http.generator.core.Constants;
+import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.MethodParam;
+import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.PrimitiveUtil;
+import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.UType;
 
 /** Write Helidon specific web route adapter (a Helidon Service). */
 class ControllerWriter extends BaseControllerWriter {
@@ -16,7 +23,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB) throws IOException {
     super(reader, ctx);
-    this.useJsonB = jsonB;
+    useJsonB = jsonB;
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
@@ -108,7 +115,7 @@ class ControllerWriter extends BaseControllerWriter {
     if (reader.isIncludeValidator()) {
       writer.append("  private final Validator validator;").eol();
     }
-    for (UType type : jsonTypes.values()) {
+    for (final UType type : jsonTypes.values()) {
       writer.append("  private final JsonType<%s> %sJsonType;", primitiveWrap(type.full()), type.shortName()).eol();
     }
     writer.eol();
@@ -126,7 +133,7 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append("    this.validator = validator;").eol();
     }
     if (useJsonB) {
-      for (UType type : jsonTypes.values()) {
+      for (final UType type : jsonTypes.values()) {
         writer.append("    this.%sJsonType = jsonB.type(", type.shortName());
         writeJsonbType(type);
       }

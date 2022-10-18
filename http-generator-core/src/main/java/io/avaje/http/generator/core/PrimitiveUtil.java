@@ -1,9 +1,9 @@
-package io.avaje.http.generator.helidon.nima;
+package io.avaje.http.generator.core;
 
 import java.util.HashMap;
 import java.util.Map;
 
-final class PrimitiveUtil {
+public final class PrimitiveUtil {
 
   static Map<String,String> wrapperMap = new HashMap<>();
   static {
@@ -17,8 +17,8 @@ final class PrimitiveUtil {
     wrapperMap.put("boolean", "Boolean");
   }
 
-  static String wrap(String shortName) {
-    String wrapped = wrapperMap.get(shortName);
+  public static String wrap(String shortName) {
+    final var wrapped = wrapperMap.get(shortName);
     return wrapped != null ? wrapped : shortName;
   }
 }
