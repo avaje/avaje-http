@@ -13,7 +13,7 @@
 
   <properties>
     <swagger.version>2.0.8</swagger.version>
-    <jackson.version>2.13.3</jackson.version>
+    <jackson.version>2.13.4.1</jackson.version>
   </properties>
 
   <dependencies>
