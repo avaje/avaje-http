@@ -86,42 +86,42 @@ public class ElementReader {
     }
     final var beanParam = element.getAnnotation(BeanParam.class);
     if (beanParam != null) {
-      paramType = ParamType.BEANPARAM;
+      this.paramType = ParamType.BEANPARAM;
       return;
     }
     final var queryParam = element.getAnnotation(QueryParam.class);
     if (queryParam != null) {
-      paramName = nameFrom(queryParam.value(), varName);
-      paramType = ParamType.QUERYPARAM;
+      this.paramName = nameFrom(queryParam.value(), varName);
+      this.paramType = ParamType.QUERYPARAM;
       return;
     }
     final var formParam = element.getAnnotation(FormParam.class);
     if (formParam != null) {
-      paramName = nameFrom(formParam.value(), varName);
-      paramType = ParamType.FORMPARAM;
+      this.paramName = nameFrom(formParam.value(), varName);
+      this.paramType = ParamType.FORMPARAM;
       return;
     }
     final var cookieParam = element.getAnnotation(Cookie.class);
     if (cookieParam != null) {
-      paramName = nameFrom(cookieParam.value(), varName);
-      paramType = ParamType.COOKIE;
-      paramDefault = null;
+      this.paramName = nameFrom(cookieParam.value(), varName);
+      this.paramType = ParamType.COOKIE;
+      this.paramDefault = null;
       return;
     }
     final var headerParam = element.getAnnotation(Header.class);
     if (headerParam != null) {
-      paramName = nameFrom(headerParam.value(), Util.initcapSnake(snakeName));
-      paramType = ParamType.HEADER;
-      paramDefault = null;
+      this.paramName = nameFrom(headerParam.value(), Util.initcapSnake(snakeName));
+      this.paramType = ParamType.HEADER;
+      this.paramDefault = null;
       return;
     }
     if (paramType == null) {
-      impliedParamType = true;
+      this.impliedParamType = true;
       if (typeHandler != null) {
         // a scalar type that we know how to convert
-        paramType = defaultType;
+        this.paramType = defaultType;
       } else {
-        paramType = formMarker ? ParamType.FORM : ParamType.BODY;
+        this.paramType = formMarker ? ParamType.FORM : ParamType.BODY;
       }
     }
   }
