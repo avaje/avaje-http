@@ -247,13 +247,13 @@ public class WidgetController$Route implements HttpService {
 
 
   private final WidgetController controller;
-  private final JsonType<org.example.hello.WidgetController.Widget> getByIdReturnedJsonType;
-  private final JsonType<java.util.List<org.example.hello.WidgetController.Widget>> getAllReturnedJsonType;
+  private final JsonType<org.example.hello.WidgetController.Widget> widgetJsonType;
+  private final JsonType<java.util.List<org.example.hello.WidgetController.Widget>> listWidgetJsonType;
 
   public WidgetController$Route(WidgetController controller, Jsonb jsonB) {
     this.controller = controller;
-    this.getByIdReturnedJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class);
-    this.getAllReturnedJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class).list();
+    this.widgetJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class);
+    this.listWidgetJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class).list();
   }
 
   @Override
@@ -267,14 +267,14 @@ public class WidgetController$Route implements HttpService {
     int id = asInt(pathParams.first("id").get());
     var result = controller.getById(id);
     res.headers().contentType(io.helidon.common.http.HttpMediaType.APPLICATION_JSON);
-    getByIdReturnedJsonType.toJson(result, res.outputStream());
+    widgetJsonType.toJson(result, res.outputStream());
   }
 
   private void _getAll(ServerRequest req, ServerResponse res) {
     var pathParams = req.path().pathParameters();
     var result = controller.getAll();
     res.headers().contentType(io.helidon.common.http.HttpMediaType.APPLICATION_JSON);
-    getAllReturnedJsonType.toJson(result, res.outputStream());
+    listWidgetJsonType.toJson(result, res.outputStream());
   }
 
 }
