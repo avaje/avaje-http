@@ -41,7 +41,7 @@ public class JsonBUtil {
 
     writer.append("    this.%sJsonType = jsonB.type(", type.shortName());
     if (!type.isGeneric()) {
-      writer.append("%s.class)", type.full());
+      writer.append("%s.class)", PrimitiveUtil.wrap(type.full()));
     } else {
       switch (type.mainType()) {
         case "java.util.List":

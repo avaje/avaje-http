@@ -1,4 +1,4 @@
-package io.avaje.http.generator;
+package org.example.myapp.web.test;
 
 import java.util.List;
 import java.util.Map;
@@ -9,27 +9,28 @@ import io.avaje.http.api.Form;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Header;
 import io.avaje.http.api.MediaType;
+import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
 import io.javalin.http.Context;
-
+@Path("test/")
 @Controller
 public class TestController {
 
   @Get
   @Produces(MediaType.TEXT_PLAIN)
-  String index() {
+  String basic() {
     return "Hello world - index";
   }
 
-  @Get("hello")
+  @Get("hey")
   @Produces(MediaType.TEXT_PLAIN)
   String helloWorld() {
     return "Hello world";
   }
 
-  @Get("/get")
+  @Get("/byte")
   @Produces("image/png")
   byte[] testBytes() {
     return "not really an image but ok".getBytes();
@@ -77,12 +78,12 @@ public class TestController {
     return "New Guys Added";
   }
 
-  @Put("test/int")
+  @Put("int")
   int testIntReturn() {
     return 422;
   }
 
-  @Put("test/long")
+  @Put("long")
   long testLongReturn() {
     return 69;
   }

@@ -36,7 +36,7 @@
 			<artifactId>javalin</artifactId>
 			<version>${javalin.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -86,7 +86,7 @@
 		<dependency>
 			<groupId>io.avaje</groupId>
 			<artifactId>avaje-jsonb-generator</artifactId>
-			<version>1.0-RC2</version>
+			<version>1.0-RC3</version>
 			<scope>provided</scope>
 		</dependency>
 

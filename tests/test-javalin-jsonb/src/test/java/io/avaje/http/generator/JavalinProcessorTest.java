@@ -30,11 +30,9 @@ class JavalinProcessorTest {
   void deleteGeneratedFiles() throws IOException {
 
     Paths.get("openapi.json").toAbsolutePath().toFile().delete();
+    Paths.get("io.avaje.jsonb.Jsonb$GeneratedComponent").toAbsolutePath().toFile().delete();
+
     Files.walk(Paths.get("org").toAbsolutePath())
-        .sorted(Comparator.reverseOrder())
-        .map(Path::toFile)
-        .forEach(File::delete);
-    Files.walk(Paths.get("io").toAbsolutePath())
         .sorted(Comparator.reverseOrder())
         .map(Path::toFile)
         .forEach(File::delete);
@@ -77,9 +75,8 @@ class JavalinProcessorTest {
             List.of("--enable-preview", "--release=19"),
             null,
             files);
-    task.setProcessors(List.of(new JavalinProcessor(false),new Processor()));
+    task.setProcessors(List.of(new JavalinProcessor(false), new Processor()));
 
-    task.call();
     assertThat(task.call()).isTrue();
   }
 

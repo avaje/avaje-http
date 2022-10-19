@@ -1,4 +1,4 @@
-package io.avaje.http.generator;
+package org.example.myapp.web.test;
 
 import io.avaje.jsonb.Json;
 
