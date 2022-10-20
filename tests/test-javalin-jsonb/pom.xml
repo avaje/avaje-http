@@ -1,156 +1,157 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.example</groupId>
-	<artifactId>test-javalin-jsonb</artifactId>
-	<version>1</version>
+  <groupId>org.example</groupId>
+  <artifactId>test-javalin-jsonb</artifactId>
+  <version>1</version>
 
-	<parent>
-		<groupId>org.avaje</groupId>
-		<artifactId>java11-oss</artifactId>
-		<version>3.8</version>
-		<relativePath />
-	</parent>
+  <parent>
+    <groupId>org.avaje</groupId>
+    <artifactId>java11-oss</artifactId>
+    <version>3.8</version>
+    <relativePath/>
+  </parent>
 
-	<properties>
-		<maven.deploy.skip>true</maven.deploy.skip>
-		<main.class>org.example.myapp.Main</main.class>
-		<javalin.version>5.1.1</javalin.version>
-		<swagger.version>2.0.8</swagger.version>
-		<kotlin.version>1.3.71</kotlin.version>
-		<jackson.version>2.13.4.1</jackson.version>
-		<avaje-http-version>1.19-SNAPSHOT</avaje-http-version>
-	</properties>
+  <properties>
+    <maven.deploy.skip>true</maven.deploy.skip>
+    <main.class>org.example.myapp.Main</main.class>
+    <javalin.version>5.1.1</javalin.version>
+    <swagger.version>2.0.8</swagger.version>
+    <kotlin.version>1.3.71</kotlin.version>
+    <jackson.version>2.13.4.1</jackson.version>
+    <avaje-http-version>1.19-SNAPSHOT</avaje-http-version>
+  </properties>
 
-	<dependencies>
+  <dependencies>
 
-		<dependency>
-			<groupId>org.avaje</groupId>
-			<artifactId>logback</artifactId>
-			<version>1.0</version>
-		</dependency>
+    <dependency>
+      <groupId>org.avaje</groupId>
+      <artifactId>logback</artifactId>
+      <version>1.0</version>
+    </dependency>
 
-		<dependency>
-			<groupId>io.javalin</groupId>
-			<artifactId>javalin</artifactId>
-			<version>${javalin.version}</version>
-		</dependency>
+    <dependency>
+      <groupId>io.javalin</groupId>
+      <artifactId>javalin</artifactId>
+      <version>${javalin.version}</version>
+    </dependency>
 
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
 
-		<dependency>
-			<groupId>io.avaje</groupId>
-			<artifactId>avaje-inject</artifactId>
-			<version>8.9</version>
-		</dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-inject</artifactId>
+      <version>8.9</version>
+    </dependency>
 
-		<dependency>
-			<groupId>io.avaje</groupId>
-			<artifactId>avaje-http-api</artifactId>
-			<version>${avaje-http-version}</version>
-		</dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-api</artifactId>
+      <version>${avaje-http-version}</version>
+    </dependency>
 
-		<dependency>
-			<groupId>io.avaje</groupId>
-			<artifactId>avaje-http-hibernate-validator</artifactId>
-			<version>2.8</version>
-		</dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-hibernate-validator</artifactId>
+      <version>2.8</version>
+    </dependency>
 
-		<dependency>
-			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-annotations</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swagger.version}</version>
+    </dependency>
 
-		<!-- java annotation processors -->
+    <!-- java annotation processors -->
 
-		<dependency>
-			<groupId>io.avaje</groupId>
-			<artifactId>avaje-inject-generator</artifactId>
-			<version>8.9</version>
-			<scope>provided</scope>
-		</dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-inject-generator</artifactId>
+      <version>8.9</version>
+      <scope>provided</scope>
+    </dependency>
 
-		<dependency>
-			<groupId>io.avaje</groupId>
-			<artifactId>avaje-http-javalin-generator</artifactId>
-			<version>${avaje-http-version}</version>
-			<scope>provided</scope>
-		</dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-javalin-generator</artifactId>
+      <version>${avaje-http-version}</version>
+      <scope>provided</scope>
+    </dependency>
 
-		<dependency>
-			<groupId>io.avaje</groupId>
-			<artifactId>avaje-jsonb-generator</artifactId>
-			<version>1.0-RC3</version>
-			<scope>provided</scope>
-		</dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-jsonb-generator</artifactId>
+      <version>1.0-RC3</version>
+      <scope>provided</scope>
+    </dependency>
 
-		<!-- test dependencies -->
-		<dependency>
-			<groupId>io.avaje</groupId>
-			<artifactId>junit</artifactId>
-			<version>1.1</version>
-			<scope>test</scope>
-		</dependency>
+    <!-- test dependencies -->
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>junit</artifactId>
+      <version>1.1</version>
+      <scope>test</scope>
+    </dependency>
 
-		<dependency>
-			<groupId>io.rest-assured</groupId>
-			<artifactId>rest-assured</artifactId>
-			<version>5.0.1</version>
-			<scope>test</scope>
-		</dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>5.0.1</version>
+      <scope>test</scope>
+    </dependency>
 
-		<dependency>
-			<groupId>io.avaje</groupId>
-			<artifactId>avaje-http-client</artifactId>
-			<version>1.16</version>
-			<scope>test</scope>
-		</dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-client</artifactId>
+      <version>1.16</version>
+      <scope>test</scope>
+    </dependency>
 
-	</dependencies>
+  </dependencies>
 
-	<build>
-		<finalName>app</finalName>
-		<plugins>
+  <build>
+    <finalName>app</finalName>
+    <plugins>
 
-			<plugin>
-				<groupId>io.dinject</groupId>
-				<artifactId>openapi-maven-plugin</artifactId>
-				<version>1.2</version>
-				<executions>
-					<execution>
-						<id>main</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>openapi</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+      <plugin>
+        <groupId>io.dinject</groupId>
+        <artifactId>openapi-maven-plugin</artifactId>
+        <version>1.2</version>
+        <executions>
+          <execution>
+            <id>main</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>openapi</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
-			<plugin>
-				<groupId>io.repaint.maven</groupId>
-				<artifactId>tiles-maven-plugin</artifactId>
-				<version>2.22</version>
-				<extensions>true</extensions>
-				<configuration>
-					<tiles>
-						<tile>org.avaje.tile:lib-classpath:1.1</tile>
-					</tiles>
-				</configuration>
-			</plugin>
+      <plugin>
+        <groupId>io.repaint.maven</groupId>
+        <artifactId>tiles-maven-plugin</artifactId>
+        <version>2.22</version>
+        <extensions>true</extensions>
+        <configuration>
+          <tiles>
+            <tile>org.avaje.tile:lib-classpath:1.1</tile>
+          </tiles>
+        </configuration>
+      </plugin>
 
-		</plugins>
-	</build>
+    </plugins>
+  </build>
 
 
-	<scm>
-		<tag>HEAD</tag>
-		<developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
-	</scm>
+  <scm>
+    <tag>HEAD</tag>
+    <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
+  </scm>
 </project>
