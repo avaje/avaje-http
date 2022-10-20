@@ -27,39 +27,39 @@ class ControllerMethodWriter {
   ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
-    this.webMethod = method.getWebMethod();
+    this.webMethod = method.webMethod();
     this.ctx = ctx;
     this.useJsonB = useJsonB;
   }
 
   void writeRule() {
     writer.append("    rules.%s(\"%s\", this::_%s);",
-        webMethod.name().toLowerCase(), method.getFullPath(), method.simpleName())
+        webMethod.name().toLowerCase(), method.fullPath(), method.simpleName())
       .eol();
   }
 
   void writeHandler(boolean requestScoped) {
     writer.append("  private void _%s(ServerRequest req, ServerResponse res) {", method.simpleName()).eol();
-    final var bodyType = method.getBodyType();
+    final var bodyType = method.bodyType();
     if (bodyType != null) {
       if (useJsonB) {
         final var fieldName =
-            method.getParams().stream()
+            method.params().stream()
                 .filter(MethodParam::isBody)
                 .findFirst()
                 .orElseThrow()
-                .getUType()
+                .utype()
                 .shortName();
-        writer.append("    var %s = %sJsonType.fromJson(req.content().inputStream());", method.getBodyName(), fieldName).eol();
+        writer.append("    var %s = %sJsonType.fromJson(req.content().inputStream());", method.bodyName(), fieldName).eol();
 
       } else {
         // use default helidon content negotiation
-        method.getParams().stream()
+        method.params().stream()
           .filter(MethodParam::isBody)
           .forEach(
             param -> {
-              final var type = param.getUType();
-              writer.append("    var %s = req.content().as(", method.getBodyName());
+              final var type = param.utype();
+              writer.append("    var %s = req.content().as(", method.bodyName());
               if (type.param0() != null) {
                 writer.append("new io.helidon.common.GenericType<%s>() {}", type.full());
               } else {
@@ -72,7 +72,7 @@ class ControllerMethodWriter {
       writer.append("    var formParams = req.content().as(Parameters.class);").eol();
     }
 
-    final var segments = method.getPathSegments();
+    final var segments = method.pathSegments();
     if (!segments.isEmpty()) {
       writer.append("    var pathParams = req.path().pathParameters();").eol();
     }
@@ -81,7 +81,7 @@ class ControllerMethodWriter {
       matrixSegment.writeCreateSegment(writer, ctx.platform());
     }
 
-    final var params = method.getParams();
+    final var params = method.params();
     for (final MethodParam param : params) {
       param.writeCtxGet(writer, segments);
     }
@@ -113,7 +113,7 @@ class ControllerMethodWriter {
     if (!method.isVoid()) {
       writeContextReturn();
       if (producesJson()) {
-        final UType uType = UType.parse(method.getReturnType());
+        final UType uType = UType.parse(method.returnType());
         writer.append("    %sJsonType.toJson(result, res.outputStream());", uType.shortName()).eol();
       } else {
         writer.append("    res.send(result);").eol();
@@ -124,20 +124,20 @@ class ControllerMethodWriter {
 
   private boolean producesJson() {
     return useJsonB
-      && !"byte[]".equals(method.getReturnType().toString())
-      && (method.getProduces() == null || method.getProduces().toLowerCase().contains("json"));
+      && !"byte[]".equals(method.returnType().toString())
+      && (method.produces() == null || method.produces().toLowerCase().contains("json"));
   }
 
   private boolean missingServerResponse(List<MethodParam> params) {
-    return method.isVoid() && params.stream().noneMatch(p -> "ServerResponse".equals(p.getShortType()));
+    return method.isVoid() && params.stream().noneMatch(p -> "ServerResponse".equals(p.shortType()));
   }
 
   private boolean usesFormParams() {
-    return method.getParams().stream().anyMatch(p -> p.isForm() || ParamType.FORMPARAM.equals(p.getParamType()));
+    return method.params().stream().anyMatch(p -> p.isForm() || ParamType.FORMPARAM.equals(p.paramType()));
   }
 
   private void writeContextReturn() {
-    final var producesOp = Optional.ofNullable(method.getProduces());
+    final var producesOp = Optional.ofNullable(method.produces());
     if (producesOp.isEmpty() && !useJsonB) {
       return;
     }

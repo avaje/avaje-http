@@ -21,7 +21,7 @@ class ControllerWriter extends BaseControllerWriter {
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
-      this.jsonTypes = JsonBUtil.getJsonTypes(reader);
+      this.jsonTypes = JsonBUtil.jsonTypes(reader);
     } else {
       this.jsonTypes = Map.of();
     }
@@ -39,7 +39,7 @@ class ControllerWriter extends BaseControllerWriter {
   private void writeAddRoutes() {
     writer.append("  @Override").eol();
     writer.append("  public void registerRoutes() {").eol().eol();
-    for (final MethodReader method : reader.getMethods()) {
+    for (final MethodReader method : reader.methods()) {
       if (method.isWebMethod()) {
         writeForMethod(method);
       }

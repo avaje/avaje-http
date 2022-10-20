@@ -24,7 +24,7 @@ public class MethodDocBuilder {
   public MethodDocBuilder(MethodReader methodReader, DocContext ctx) {
     this.methodReader = methodReader;
     this.ctx = ctx;
-    this.javadoc = methodReader.getJavadoc();
+    this.javadoc = methodReader.javadoc();
   }
 
   public void build() {
@@ -36,7 +36,7 @@ public class MethodDocBuilder {
     //operation.setOperationId();
     operation.setSummary(javadoc.getSummary());
     operation.setDescription(javadoc.getDescription());
-    operation.setTags(methodReader.getTags());
+    operation.setTags(methodReader.tags());
 
     if (javadoc.isDeprecated()) {
       operation.setDeprecated(true);
@@ -44,8 +44,8 @@ public class MethodDocBuilder {
       operation.setDeprecated(true);
     }
 
-    PathItem pathItem = ctx.pathItem(methodReader.getFullPath());
-    switch (methodReader.getWebMethod()) {
+    PathItem pathItem = ctx.pathItem(methodReader.fullPath());
+    switch (methodReader.webMethod()) {
       case GET:
         pathItem.setGet(operation);
         break;
@@ -63,7 +63,7 @@ public class MethodDocBuilder {
         break;
     }
 
-    for (MethodParam param : methodReader.getParams()) {
+    for (MethodParam param : methodReader.params()) {
       param.buildApiDocumentation(this);
     }
 
@@ -78,11 +78,11 @@ public class MethodDocBuilder {
         response.setDescription("No content");
       }
     } else {
-      final String produces = methodReader.getProduces();
+      final String produces = methodReader.produces();
       String contentMediaType = (produces == null) ? MediaType.APPLICATION_JSON : produces;
-      response.setContent(ctx.createContent(methodReader.getReturnType(), contentMediaType));
+      response.setContent(ctx.createContent(methodReader.returnType(), contentMediaType));
     }
-    responses.addApiResponse(methodReader.getStatusCode(), response);
+    responses.addApiResponse(methodReader.statusCode(), response);
   }
 
   DocContext getContext() {

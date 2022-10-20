@@ -7,21 +7,20 @@ import java.util.function.Consumer;
 public class JsonBUtil {
   private JsonBUtil() {}
 
-  public static Map<String, UType> getJsonTypes(ControllerReader reader) {
+  public static Map<String, UType> jsonTypes(ControllerReader reader) {
 
     final Map<String, UType> jsonTypes = new LinkedHashMap<>();
-
     final Consumer<UType> addToMap = uType -> jsonTypes.put(uType.full(), uType);
 
-    reader.getMethods().stream()
+    reader.methods().stream()
         .filter(MethodReader::isWebMethod)
-        .filter(m -> !"byte[]".equals(m.getReturnType().toString()))
-        .filter(m -> m.getProduces() == null || m.getProduces().toLowerCase().contains("json"))
+        .filter(m -> !"byte[]".equals(m.returnType().toString()))
+        .filter(m -> m.produces() == null || m.produces().toLowerCase().contains("json"))
         .forEach(
             methodReader -> {
               addJsonBodyType(methodReader, addToMap);
               if (!methodReader.isVoid()) {
-                addToMap.accept(UType.parse(methodReader.getReturnType()));
+                addToMap.accept(UType.parse(methodReader.returnType()));
               }
             });
 
@@ -29,10 +28,10 @@ public class JsonBUtil {
   }
 
   private static void addJsonBodyType(MethodReader methodReader, Consumer<UType> addToMap) {
-    if (methodReader.getBodyType() != null) {
-      methodReader.getParams().stream()
+    if (methodReader.bodyType() != null) {
+      methodReader.params().stream()
           .filter(MethodParam::isBody)
-          .map(MethodParam::getUType)
+          .map(MethodParam::utype)
           .forEach(addToMap);
     }
   }

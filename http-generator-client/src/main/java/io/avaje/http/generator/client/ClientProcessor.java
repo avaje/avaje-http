@@ -87,7 +87,7 @@ public class ClientProcessor extends AbstractProcessor {
   private void writeImported(String fullName) {
     // trim .class suffix
     String apiClassName = fullName.substring(0, fullName.length() - 6);
-    TypeElement typeElement = ctx.getTypeElement(apiClassName);
+    TypeElement typeElement = ctx.typeElement(apiClassName);
     if (typeElement != null) {
       writeClient(typeElement);
     }
@@ -101,7 +101,7 @@ public class ClientProcessor extends AbstractProcessor {
         generatedClients.add(writeClientAdapter(ctx, reader));
       } catch (Throwable e) {
         e.printStackTrace();
-        ctx.logError(reader.getBeanType(), "Failed to write client class " + e);
+        ctx.logError(reader.beanType(), "Failed to write client class " + e);
       }
     }
   }

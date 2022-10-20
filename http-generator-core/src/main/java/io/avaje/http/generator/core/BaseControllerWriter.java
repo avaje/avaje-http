@@ -27,7 +27,7 @@ public abstract class BaseControllerWriter {
     this.reader = reader;
     this.ctx = ctx;
     this.router = "$Route".equals(suffix);
-    TypeElement origin = reader.getBeanType();
+    TypeElement origin = reader.beanType();
     this.originName = origin.getQualifiedName().toString();
     this.shortName = origin.getSimpleName().toString();
     this.packageName = initPackageName(originName);
@@ -50,7 +50,7 @@ public abstract class BaseControllerWriter {
   }
 
   protected Writer createFileWriter() throws IOException {
-    JavaFileObject jfo = ctx.createWriter(fullName, reader.getBeanType());
+    JavaFileObject jfo = ctx.createWriter(fullName, reader.beanType());
     return jfo.openWriter();
   }
 
@@ -64,11 +64,11 @@ public abstract class BaseControllerWriter {
     if (router) {
       writer.append(Constants.IMPORT_PATH_TYPE_CONVERT).eol();
     }
-    for (String type : reader.getStaticImportTypes()) {
+    for (String type : reader.staticImportTypes()) {
       writer.append("import static %s;", type).eol();
     }
     writer.eol();
-    for (String type : reader.getImportTypes()) {
+    for (String type : reader.importTypes()) {
       writer.append("import %s;", type).eol();
     }
     writer.eol();

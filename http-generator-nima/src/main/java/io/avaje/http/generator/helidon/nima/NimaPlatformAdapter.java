@@ -78,7 +78,7 @@ class NimaPlatformAdapter implements PlatformAdapter {
         break;
       case BODY, BEANPARAM, FORM:
       default:
-        writer.append("null // TODO req.%s().param(\"%s\")", paramType.getType(), paramName);
+        writer.append("null // TODO req.%s().param(\"%s\")", paramType.type(), paramName);
     }
   }
 
@@ -104,7 +104,7 @@ class NimaPlatformAdapter implements PlatformAdapter {
       case BEANPARAM:
       case FORM:
       default:
-        writer.append("null // TODO req.%s().param(\"%s\")", paramType.getType(), paramName);
+        writer.append("null // TODO req.%s().param(\"%s\")", paramType.type(), paramName);
     }
   }
 }
