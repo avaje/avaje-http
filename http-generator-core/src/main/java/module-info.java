@@ -1,5 +1,4 @@
 module io.avaje.http.generator.core {
-
   exports io.avaje.http.generator.core;
   exports io.avaje.http.generator.core.javadoc;
   exports io.avaje.http.generator.core.openapi;

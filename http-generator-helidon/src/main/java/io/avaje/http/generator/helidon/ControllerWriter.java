@@ -1,14 +1,11 @@
 package io.avaje.http.generator.helidon;
 
 import io.avaje.http.generator.core.*;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Write Helidon specific web route adapter (a Helidon Service).
- */
+/** Write Helidon specific web route adapter (a Helidon Service). */
 class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-helidon-generator\")";
@@ -33,9 +30,9 @@ class ControllerWriter extends BaseControllerWriter {
 
   private List<ControllerMethodWriter> getWriterMethods() {
     return reader.methods().stream()
-      .filter(MethodReader::isWebMethod)
-      .map(it -> new ControllerMethodWriter(it, writer, ctx))
-      .collect(Collectors.toList());
+        .filter(MethodReader::isWebMethod)
+        .map(it -> new ControllerMethodWriter(it, writer, ctx))
+        .collect(Collectors.toList());
   }
 
   private void writeAddRoutes() {
@@ -61,7 +58,12 @@ class ControllerWriter extends BaseControllerWriter {
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
     writer.append("@Component").eol();
-    writer.append("public class ").append(shortName).append("$Route implements Service {").eol().eol();
+    writer
+        .append("public class ")
+        .append(shortName)
+        .append("$Route implements Service {")
+        .eol()
+        .eol();
 
     String controllerName = "controller";
     String controllerType = shortName;
@@ -86,5 +88,4 @@ class ControllerWriter extends BaseControllerWriter {
     }
     writer.append("  }").eol().eol();
   }
-
 }

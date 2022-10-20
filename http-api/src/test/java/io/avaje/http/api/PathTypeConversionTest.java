@@ -1,6 +1,8 @@
 package io.avaje.http.api;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -8,10 +10,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 class PathTypeConversionTest {
 
@@ -158,12 +157,14 @@ class PathTypeConversionTest {
 
   @Test
   void asOffsetDateTime_when_null() {
-    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asOffsetDateTime(null));
+    assertThrows(
+        InvalidPathArgumentException.class, () -> PathTypeConversion.asOffsetDateTime(null));
   }
 
   @Test
   void asLocalDateTime_when_null() {
-    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asLocalDateTime(null));
+    assertThrows(
+        InvalidPathArgumentException.class, () -> PathTypeConversion.asLocalDateTime(null));
   }
 
   @Test
@@ -173,12 +174,14 @@ class PathTypeConversionTest {
 
   @Test
   void asOffsetDateTime_when_invalid() {
-    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asOffsetDateTime("junk"));
+    assertThrows(
+        InvalidPathArgumentException.class, () -> PathTypeConversion.asOffsetDateTime("junk"));
   }
 
   @Test
   void asLocalDateTime_when_invalid() {
-    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asLocalDateTime("junk"));
+    assertThrows(
+        InvalidPathArgumentException.class, () -> PathTypeConversion.asLocalDateTime("junk"));
   }
 
   @Test
@@ -343,7 +346,8 @@ class PathTypeConversionTest {
 
   @Test
   void OffsetDateTime_invalid() {
-    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toOffsetDateTime("junk"));
+    assertThrows(
+        InvalidTypeArgumentException.class, () -> PathTypeConversion.toOffsetDateTime("junk"));
   }
 
   @Test
@@ -354,6 +358,7 @@ class PathTypeConversionTest {
 
   @Test
   void LocalDateTime_invalid() {
-    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toLocalDateTime("junk"));
+    assertThrows(
+        InvalidTypeArgumentException.class, () -> PathTypeConversion.toLocalDateTime("junk"));
   }
 }

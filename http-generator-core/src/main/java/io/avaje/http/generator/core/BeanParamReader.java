@@ -1,7 +1,7 @@
 package io.avaje.http.generator.core;
 
-import javax.lang.model.element.*;
 import java.util.*;
+import javax.lang.model.element.*;
 
 public class BeanParamReader {
 
@@ -15,7 +15,12 @@ public class BeanParamReader {
   private final List<ExecutableElement> constructors = new ArrayList<>();
   private final Map<String, ExecutableElement> methodMap = new LinkedHashMap<>();
 
-  public BeanParamReader(ProcessingContext ctx, TypeElement beanType, String beanVarName, String beanShortType, ParamType defaultParamType) {
+  public BeanParamReader(
+      ProcessingContext ctx,
+      TypeElement beanType,
+      String beanVarName,
+      String beanShortType,
+      ParamType defaultParamType) {
     this.ctx = ctx;
     this.beanType = beanType;
     this.beanVarName = beanVarName;
@@ -108,9 +113,12 @@ public class BeanParamReader {
       ParamType paramType = field.element.paramType();
       String type = propertyParamType(paramType);
       if (type != null) {
-        String accessor = (getter != null) ? getter.toString() : field.isPublic() ? field.varName() : null;
+        String accessor =
+            (getter != null) ? getter.toString() : field.isPublic() ? field.varName() : null;
         if (accessor != null) {
-          writer.append("      .%s(\"%s\", %s.%s)", type, field.paramName(), beanVarName, accessor).eol();
+          writer
+              .append("      .%s(\"%s\", %s.%s)", type, field.paramName(), beanVarName, accessor)
+              .eol();
         }
       }
     }
@@ -197,5 +205,4 @@ public class BeanParamReader {
       this.setterMethod = setterMethod;
     }
   }
-
 }

@@ -4,16 +4,15 @@ import io.avaje.http.api.Controller;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
-
+import java.io.IOException;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import java.io.IOException;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 public abstract class BaseProcessor extends AbstractProcessor {
 
@@ -38,9 +37,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
     this.ctx = new ProcessingContext(processingEnv, providePlatformAdapter());
   }
 
-  /**
-   * Provide the platform specific adapter to use for Javalin, Helidon etc.
-   */
+  /** Provide the platform specific adapter to use for Javalin, Helidon etc. */
   protected abstract PlatformAdapter providePlatformAdapter();
 
   @Override
@@ -98,9 +95,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
     }
   }
 
-  /**
-   * Write the adapter code for the given controller.
-   */
-  public abstract void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException;
-
+  /** Write the adapter code for the given controller. */
+  public abstract void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader)
+      throws IOException;
 }

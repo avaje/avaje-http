@@ -1,13 +1,11 @@
 package io.avaje.http.generator.core;
 
-import javax.lang.model.element.TypeElement;
-import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
+import javax.lang.model.element.TypeElement;
+import javax.tools.JavaFileObject;
 
-/**
- * Common controller writer.
- */
+/** Common controller writer. */
 public abstract class BaseControllerWriter {
 
   protected final ControllerReader reader;
@@ -19,11 +17,13 @@ public abstract class BaseControllerWriter {
   protected final boolean router;
   protected Append writer;
 
-  protected BaseControllerWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
+  protected BaseControllerWriter(ControllerReader reader, ProcessingContext ctx)
+      throws IOException {
     this(reader, ctx, "$Route");
   }
 
-  protected BaseControllerWriter(ControllerReader reader, ProcessingContext ctx, String suffix) throws IOException {
+  protected BaseControllerWriter(ControllerReader reader, ProcessingContext ctx, String suffix)
+      throws IOException {
     this.reader = reader;
     this.ctx = ctx;
     this.router = "$Route".equals(suffix);

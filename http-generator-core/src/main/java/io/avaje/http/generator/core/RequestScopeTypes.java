@@ -16,9 +16,7 @@ class RequestScopeTypes {
     TYPES.add(HELIDON_RES);
   }
 
-  /**
-   * Return true if the type is a request scoped type.
-   */
+  /** Return true if the type is a request scoped type. */
   static boolean isRequestType(String rawType) {
     return TYPES.contains(rawType);
   }

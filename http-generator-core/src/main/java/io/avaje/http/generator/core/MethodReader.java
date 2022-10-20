@@ -11,7 +11,9 @@ import io.avaje.http.generator.core.javadoc.Javadoc;
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
-
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -19,9 +21,6 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.validation.Valid;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MethodReader {
 
@@ -39,9 +38,7 @@ public class MethodReader {
 
   private boolean formMarker;
 
-  /**
-   * Holds enum Roles that are required for the method.
-   */
+  /** Holds enum Roles that are required for the method. */
   private final List<String> methodRoles;
 
   private final String produces;
@@ -52,7 +49,11 @@ public class MethodReader {
   private final PathSegments pathSegments;
   private final boolean hasValid;
 
-  MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable, ProcessingContext ctx) {
+  MethodReader(
+      ControllerReader bean,
+      ExecutableElement element,
+      ExecutableType actualExecutable,
+      ProcessingContext ctx) {
     this.ctx = ctx;
     this.bean = bean;
     this.element = element;
@@ -132,15 +133,13 @@ public class MethodReader {
   }
 
   private List<String> addTagsToList(Element element, List<String> list) {
-    if (element == null)
-      return list;
+    if (element == null) return list;
 
     if (element.getAnnotation(Tag.class) != null) {
       list.add(element.getAnnotation(Tag.class).name());
     }
     if (element.getAnnotation(Tags.class) != null) {
-      for (Tag tag : element.getAnnotation(Tags.class).value())
-        list.add(tag.name());
+      for (Tag tag : element.getAnnotation(Tags.class).value()) list.add(tag.name());
     }
     return list;
   }
@@ -181,9 +180,7 @@ public class MethodReader {
     buildApiDocumentation(ctx);
   }
 
-  /**
-   * Build the OpenAPI documentation for the method / operation.
-   */
+  /** Build the OpenAPI documentation for the method / operation. */
   public void buildApiDocumentation(ProcessingContext ctx) {
     new MethodDocBuilder(this, ctx.doc()).build();
   }
@@ -273,5 +270,4 @@ public class MethodReader {
     }
     return "body";
   }
-
 }

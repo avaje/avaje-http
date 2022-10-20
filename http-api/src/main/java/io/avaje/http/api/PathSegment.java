@@ -4,11 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A path segment that can simple like value like <code>chair</code>
- * or contain matrix parameter values using semi-colon delimitation
- * like <code>chair;vendor=ikea;size=small</code>.
- * <p>
- * Matrix parameters are optional 'qualifiers' of the path segment.
+ * A path segment that can simple like value like <code>chair</code> or contain matrix parameter
+ * values using semi-colon delimitation like <code>chair;vendor=ikea;size=small</code>.
+ *
+ * <p>Matrix parameters are optional 'qualifiers' of the path segment.
  */
 public final class PathSegment {
 
@@ -16,16 +15,12 @@ public final class PathSegment {
 
   private Map<String, String> matrixValues;
 
-  /**
-   * Create with a given value that may contain matrix parameters.
-   */
+  /** Create with a given value that may contain matrix parameters. */
   public static PathSegment of(String value) {
     return new PathSegment(value);
   }
 
-  /**
-   * Create with a given value that may contain matric parameters.
-   */
+  /** Create with a given value that may contain matric parameters. */
   public PathSegment(String value) {
     String[] vals = value.split(";");
     this.val = vals[0];
@@ -42,10 +37,10 @@ public final class PathSegment {
 
   /**
    * Return the main segment value.
-   * <p>
-   * For "chair" this returns "chair"
-   * <p>
-   * For "chair;vendor=ikea;size=small" this returns "chair"
+   *
+   * <p>For "chair" this returns "chair"
+   *
+   * <p>For "chair;vendor=ikea;size=small" this returns "chair"
    */
   public String val() {
     return val;
@@ -53,10 +48,10 @@ public final class PathSegment {
 
   /**
    * Return a metric value for the given key.
-   * <p>
-   * For example, given "chair;vendor=ikea;size=small"
-   * <p>
-   * matrix("vendor") returns "ikea".
+   *
+   * <p>For example, given "chair;vendor=ikea;size=small"
+   *
+   * <p>matrix("vendor") returns "ikea".
    *
    * @param key The matrix key
    * @return The matrix value if supplied or null
@@ -64,5 +59,4 @@ public final class PathSegment {
   public String matrix(String key) {
     return matrixValues == null ? null : matrixValues.get(key);
   }
-
 }

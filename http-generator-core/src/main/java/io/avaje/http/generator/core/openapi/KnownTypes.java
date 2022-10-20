@@ -8,7 +8,6 @@ import io.swagger.v3.oas.models.media.IntegerSchema;
 import io.swagger.v3.oas.models.media.NumberSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
-
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -24,18 +23,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Helper to translate known Java types to OpenAPI Schema.
- */
+/** Helper to translate known Java types to OpenAPI Schema. */
 class KnownTypes {
 
   interface KnownType {
     Schema<?> createSchema();
   }
 
-  /**
-   * Map of known types by canonical name.
-   */
+  /** Map of known types by canonical name. */
   private final Map<String, KnownType> typeMap = new HashMap<>();
 
   KnownTypes() {
@@ -50,7 +45,14 @@ class KnownTypes {
     add(new PNumberType(), double.class, float.class);
     add(new NumberType(), Double.class, Float.class, BigDecimal.class, BigInteger.class);
     add(new DateType(), LocalDate.class, java.sql.Date.class);
-    add(new DateTimeType(), Instant.class, OffsetDateTime.class, ZonedDateTime.class, Timestamp.class, java.util.Date.class, LocalDateTime.class);
+    add(
+        new DateTimeType(),
+        Instant.class,
+        OffsetDateTime.class,
+        ZonedDateTime.class,
+        Timestamp.class,
+        java.util.Date.class,
+        LocalDateTime.class);
 
     add(new UUIDType(), UUID.class);
     add(new URLType(), URL.class);
@@ -58,9 +60,7 @@ class KnownTypes {
     add(new FileType(), File.class);
   }
 
-  /**
-   * Return the OpenAPI Schema for the given Java type or Null.
-   */
+  /** Return the OpenAPI Schema for the given Java type or Null. */
   Schema<?> createSchema(String type) {
     final KnownType knownType = typeMap.get(type);
     return (knownType != null) ? knownType.createSchema() : null;

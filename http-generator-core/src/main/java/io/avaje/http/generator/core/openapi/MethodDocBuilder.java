@@ -10,9 +10,7 @@ import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 
-/**
- * Build the OpenAPI documentation for a method.
- */
+/** Build the OpenAPI documentation for a method. */
 public class MethodDocBuilder {
 
   private final Javadoc javadoc;
@@ -33,7 +31,7 @@ public class MethodDocBuilder {
       return;
     }
 
-    //operation.setOperationId();
+    // operation.setOperationId();
     operation.setSummary(javadoc.getSummary());
     operation.setDescription(javadoc.getDescription());
     operation.setTags(methodReader.tags());

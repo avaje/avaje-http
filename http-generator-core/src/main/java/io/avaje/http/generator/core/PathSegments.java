@@ -49,7 +49,7 @@ public class PathSegments {
 
   private static boolean isPathParameter(String section) {
     return section.startsWith("{") && section.endsWith("}")
-      || section.startsWith("<") && section.endsWith(">");
+        || section.startsWith("<") && section.endsWith(">");
   }
 
   private static Segment createLiteralSegment(String section) {
@@ -61,7 +61,8 @@ public class PathSegments {
     if (matrixSplit.length == 1) {
       return new Segment(matrixSplit[0]);
     }
-    Set<String> matrixKeys = new HashSet<>(Arrays.asList(matrixSplit).subList(1, matrixSplit.length));
+    Set<String> matrixKeys =
+        new HashSet<>(Arrays.asList(matrixSplit).subList(1, matrixSplit.length));
     return new Segment(matrixSplit[0], matrixKeys);
   }
 
@@ -92,9 +93,7 @@ public class PathSegments {
     return withMatrixs;
   }
 
-  /**
-   * Return all segments including literal segments.
-   */
+  /** Return all segments including literal segments. */
   public Set<Segment> segments() {
     return segments;
   }
@@ -115,9 +114,7 @@ public class PathSegments {
     return fullPath("{", "}");
   }
 
-  /**
-   * Return full path with colon for named path params (Javalin).
-   */
+  /** Return full path with colon for named path params (Javalin). */
   public String fullPathColon() {
     return fullPath(":", "");
   }
@@ -135,19 +132,13 @@ public class PathSegments {
     private final String name;
     private final String literalSection;
 
-    /**
-     * Matrix keys.
-     */
+    /** Matrix keys. */
     private final Set<String> matrixKeys;
 
-    /**
-     * Variable names the matrix map to (Java method param names).
-     */
+    /** Variable names the matrix map to (Java method param names). */
     private final Set<String> matrixVarNames;
 
-    /**
-     * Create a normal segment.
-     */
+    /** Create a normal segment. */
     Segment(String name) {
       this.name = name;
       this.literalSection = null;
@@ -155,9 +146,7 @@ public class PathSegments {
       this.matrixVarNames = null;
     }
 
-    /**
-     * Create a segment with matrix keys.
-     */
+    /** Create a segment with matrix keys. */
     Segment(String name, Set<String> matrixKeys) {
       this.name = name;
       this.literalSection = null;
@@ -168,9 +157,7 @@ public class PathSegments {
       }
     }
 
-    /**
-     * Create a literal path segment.
-     */
+    /** Create a literal path segment. */
     public Segment(String section, boolean literalDummy) {
       this.literalSection = section;
       this.name = null;
@@ -209,12 +196,12 @@ public class PathSegments {
     }
 
     boolean isPathParameter(String varName) {
-      return (name != null && name.equals(varName)) || (matrixKeys != null && (matrixVarNames.contains(varName) || matrixKeys.contains(varName)));
+      return (name != null && name.equals(varName))
+          || (matrixKeys != null
+              && (matrixVarNames.contains(varName) || matrixKeys.contains(varName)));
     }
 
-    /**
-     * Reading the value from a segment (rather than directly from pathParam).
-     */
+    /** Reading the value from a segment (rather than directly from pathParam). */
     void writeGetVal(Append writer, String varName, PlatformAdapter platform) {
       if (!hasMatrixParams()) {
         platform.writeReadParameter(writer, ParamType.PATHPARAM, name);
@@ -289,6 +276,7 @@ public class PathSegments {
   private static class Chunk {
     final String value;
     final char firstChar;
+
     private Chunk(String value, char firstChar) {
       this.value = value;
       this.firstChar = firstChar;
@@ -302,5 +290,4 @@ public class PathSegments {
       }
     }
   }
-
 }

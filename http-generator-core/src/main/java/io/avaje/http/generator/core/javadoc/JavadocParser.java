@@ -1,16 +1,17 @@
 package io.avaje.http.generator.core.javadoc;
 
+import static java.util.Arrays.asList;
+
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 
-import static java.util.Arrays.asList;
-
 class JavadocParser {
 
-  private static final Set<String> IGNORED = new HashSet<>(asList("see", "since", "author", "version", "deprecated", "throws"));
+  private static final Set<String> IGNORED =
+      new HashSet<>(asList("see", "since", "author", "version", "deprecated", "throws"));
 
   private static final int TEXT = 1;
   private static final int TAG_START = 2;
@@ -35,9 +36,7 @@ class JavadocParser {
 
   private boolean deprecated;
 
-  /**
-   * Parse the javadoc.
-   */
+  /** Parse the javadoc. */
   Javadoc parse(String text) {
 
     if (isEmpty(text)) {
@@ -147,7 +146,6 @@ class JavadocParser {
       currentDoclet.append(c);
     }
   }
-
 
   private Javadoc splitMain(String mainText) {
 

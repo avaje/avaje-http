@@ -1,5 +1,6 @@
 package io.avaje.http.generator.core;
 
+import java.util.*;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -8,13 +9,10 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleAnnotationValueVisitor8;
-import java.util.*;
 
 public class Util {
 
-  /**
-   * Parse the raw type potentially handling generic parameters.
-   */
+  /** Parse the raw type potentially handling generic parameters. */
   public static UType parse(String rawType) {
     int pos = rawType.indexOf('<');
     if (pos == -1) {
@@ -24,9 +22,7 @@ public class Util {
     }
   }
 
-  /**
-   * Return the type removing validation annotations etc.
-   */
+  /** Return the type removing validation annotations etc. */
   public static String typeDef(TypeMirror typeMirror) {
     if (typeMirror.getKind() == TypeKind.DECLARED) {
       DeclaredType declaredType = (DeclaredType) typeMirror;
@@ -70,9 +66,7 @@ public class Util {
     }
   }
 
-  /**
-   * Return a field or variable name to match the short type.
-   */
+  /** Return a field or variable name to match the short type. */
   public static String name(String name) {
     return initLower(name.replaceAll("([,<>\\[\\]])", ""));
   }
@@ -138,10 +132,9 @@ public class Util {
 
   /**
    * Find and return the list of roles on the given element.
-   * <p>
-   * This assumes the application uses either <code>@Role</code> annotation
-   * or <code>@PermittedRoles</code> annotation.
-   * </p>
+   *
+   * <p>This assumes the application uses either <code>@Role</code> annotation or <code>
+   * @PermittedRoles</code> annotation.
    *
    * @param element The bean or method
    */
@@ -161,9 +154,7 @@ public class Util {
     return name.endsWith("Roles") || name.endsWith("PermittedRoles");
   }
 
-  /**
-   * Return the bean property name given the setter method.
-   */
+  /** Return the bean property name given the setter method. */
   public static String propertyName(String setterMethod) {
 
     String prop = setterMethod.substring(3);

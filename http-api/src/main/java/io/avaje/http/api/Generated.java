@@ -1,12 +1,8 @@
 package io.avaje.http.api;
 
-/**
- * Marker for generated code.
- */
+/** Marker for generated code. */
 public @interface Generated {
 
-  /**
-   * The name of the code generator.
-   */
+  /** The name of the code generator. */
   String value();
 }

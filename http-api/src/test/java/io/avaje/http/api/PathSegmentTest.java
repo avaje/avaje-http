@@ -1,9 +1,9 @@
 package io.avaje.http.api;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.Test;
 
 public class PathSegmentTest {
 
@@ -15,7 +15,6 @@ public class PathSegmentTest {
     assertEquals("simple", seg.val());
     assertNull(seg.matrix("foo"));
   }
-
 
   @Test
   public void singleMetric() {

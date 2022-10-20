@@ -1,56 +1,40 @@
 package io.avaje.http.generator.core;
 
-import javax.lang.model.type.TypeMirror;
 import java.util.*;
+import javax.lang.model.type.TypeMirror;
 
 public interface UType {
 
-  /**
-   * Create the UType from the given TypeMirror.
-   */
+  /** Create the UType from the given TypeMirror. */
   static UType parse(TypeMirror type) {
     return Util.parseType(type);
   }
 
   UType VOID = new VoidType();
 
-  /**
-   * Return the import types.
-   */
+  /** Return the import types. */
   Set<String> importTypes();
 
-  /**
-   * Return the short name.
-   */
+  /** Return the short name. */
   String shortType();
 
-  /**
-   * Return the short name.
-   */
+  /** Return the short name. */
   String shortName();
 
-  /**
-   * Return the main type (outer most type).
-   */
+  /** Return the main type (outer most type). */
   String mainType();
 
-  /**
-   * Return the first generic parameter.
-   */
+  /** Return the first generic parameter. */
   default String param0() {
     return null;
   }
 
-  /**
-   * Return the second generic parameter.
-   */
+  /** Return the second generic parameter. */
   default String param1() {
     return null;
   }
 
-  /**
-   * Return the raw type.
-   */
+  /** Return the raw type. */
   String full();
 
   default boolean isGeneric() {
@@ -89,9 +73,7 @@ public interface UType {
     }
   }
 
-  /**
-   * Simple non-generic type.
-   */
+  /** Simple non-generic type. */
   class Basic implements UType {
     final String rawType;
 
@@ -125,9 +107,7 @@ public interface UType {
     }
   }
 
-  /**
-   * Generic type.
-   */
+  /** Generic type. */
   class Generic implements UType {
     final String rawType;
     final List<String> allTypes;
@@ -135,7 +115,7 @@ public interface UType {
     final String shortName;
 
     Generic(String rawTypeInput) {
-      this.rawType = rawTypeInput.replace(" ",""); // trim whitespace
+      this.rawType = rawTypeInput.replace(" ", ""); // trim whitespace
       this.allTypes = Arrays.asList(rawType.split("[<|>|,]"));
       this.shortRawType = shortRawType(rawType, allTypes);
       this.shortName = Util.name(shortRawType);

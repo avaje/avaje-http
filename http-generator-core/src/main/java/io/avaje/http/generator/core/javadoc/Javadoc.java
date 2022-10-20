@@ -1,12 +1,9 @@
 package io.avaje.http.generator.core.javadoc;
 
-
 import java.util.Collections;
 import java.util.Map;
 
-/**
- * Parsed javadoc.
- */
+/** Parsed javadoc. */
 public class Javadoc {
 
   static final Javadoc EMPTY = new Javadoc();
@@ -21,14 +18,17 @@ public class Javadoc {
 
   private final boolean deprecated;
 
-  /**
-   * Parse and return the Javadoc.
-   */
+  /** Parse and return the Javadoc. */
   public static Javadoc parse(String content) {
     return new JavadocParser().parse(content);
   }
 
-  Javadoc(String summary, String description, Map<String, String> params, String returnDescription, boolean deprecated) {
+  Javadoc(
+      String summary,
+      String description,
+      Map<String, String> params,
+      String returnDescription,
+      boolean deprecated) {
     this.summary = summary;
     this.description = description;
     this.params = params;

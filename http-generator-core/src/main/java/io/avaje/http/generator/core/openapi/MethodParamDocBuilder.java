@@ -6,12 +6,9 @@ import io.avaje.http.generator.core.javadoc.Javadoc;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
-
 import javax.lang.model.element.Element;
 
-/**
- * Build the OpenAPI for a method parameter.
- */
+/** Build the OpenAPI for a method parameter. */
 public class MethodParamDocBuilder {
 
   private final DocContext ctx;
@@ -36,9 +33,7 @@ public class MethodParamDocBuilder {
     this.element = param.element();
   }
 
-  /**
-   * Build the OpenAPI documentation for the method parameter.
-   */
+  /** Build the OpenAPI documentation for the method parameter. */
   public void build() {
 
     if (paramType == ParamType.FORM || paramType == ParamType.BODY) {
@@ -69,5 +64,4 @@ public class MethodParamDocBuilder {
     boolean asForm = (paramType == ParamType.FORM);
     ctx.addRequestBody(operation, schema, asForm, description);
   }
-
 }

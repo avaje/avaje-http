@@ -4,14 +4,11 @@ import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.ProcessingContext;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Write Http client adapter.
- */
+/** Write Http client adapter. */
 class ClientWriter extends BaseControllerWriter {
 
   private static final String HTTP_CLIENT_CONTEXT = "io.avaje.http.client.HttpClientContext";
@@ -56,7 +53,9 @@ class ClientWriter extends BaseControllerWriter {
   }
 
   private void writeProvider() {
-    writer.append("  public static class Provider implements HttpApiProvider<%s> {", shortName).eol();
+    writer
+        .append("  public static class Provider implements HttpApiProvider<%s> {", shortName)
+        .eol();
     writer.append("    @Override").eol();
     writer.append("    public Class<%s> type() {", shortName).eol();
     writer.append("      return %s.class;", shortName).eol();
@@ -84,5 +83,4 @@ class ClientWriter extends BaseControllerWriter {
     writer.append("    this.clientContext = ctx;").eol();
     writer.append("  }").eol().eol();
   }
-
 }

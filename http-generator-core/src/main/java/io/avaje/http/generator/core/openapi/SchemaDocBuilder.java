@@ -1,5 +1,7 @@
 package io.avaje.http.generator.core.openapi;
 
+import static io.avaje.http.generator.core.Util.typeDef;
+
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ArraySchema;
@@ -9,7 +11,11 @@ import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
@@ -24,17 +30,8 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
-import static io.avaje.http.generator.core.Util.typeDef;
-
-/**
- * Help build OpenAPI Schema objects.
- */
+/** Help build OpenAPI Schema objects. */
 class SchemaDocBuilder {
 
   private static final String APP_FORM = "application/x-www-form-urlencoded";
@@ -66,9 +63,7 @@ class SchemaDocBuilder {
     return content;
   }
 
-  /**
-   * Add parameter as a form parameter.
-   */
+  /** Add parameter as a form parameter. */
   void addFormParam(Operation operation, String varName, Schema schema) {
     RequestBody body = requestBody(operation);
     Schema formSchema = requestFormParamSchema(body);
@@ -93,9 +88,7 @@ class SchemaDocBuilder {
     return schema;
   }
 
-  /**
-   * Add as request body.
-   */
+  /** Add as request body. */
   void addRequestBody(Operation operation, Schema schema, boolean asForm, String description) {
 
     RequestBody body = requestBody(operation);
@@ -244,12 +237,10 @@ class SchemaDocBuilder {
 
   private boolean isNotNullable(Element element) {
     return element.getAnnotation(org.jetbrains.annotations.NotNull.class) != null
-      || element.getAnnotation(javax.validation.constraints.NotNull.class) != null;
+        || element.getAnnotation(javax.validation.constraints.NotNull.class) != null;
   }
 
-  /**
-   * Gather all the fields (properties) for the given bean element.
-   */
+  /** Gather all the fields (properties) for the given bean element. */
   private List<VariableElement> allFields(Element element) {
 
     List<VariableElement> list = new ArrayList<>();
@@ -257,9 +248,7 @@ class SchemaDocBuilder {
     return list;
   }
 
-  /**
-   * Recursively gather all the fields (properties) for the given bean element.
-   */
+  /** Recursively gather all the fields (properties) for the given bean element. */
   private void gatherProperties(List<VariableElement> fields, Element element) {
 
     if (element == null) {
@@ -278,9 +267,7 @@ class SchemaDocBuilder {
     }
   }
 
-  /**
-   * Ignore static or transient fields.
-   */
+  /** Ignore static or transient fields. */
   private boolean ignoreField(VariableElement field) {
     return isStaticOrTransient(field) || isHiddenField(field);
   }
@@ -292,7 +279,8 @@ class SchemaDocBuilder {
       return true;
     }
     for (AnnotationMirror annotationMirror : field.getAnnotationMirrors()) {
-      String simpleName = annotationMirror.getAnnotationType().asElement().getSimpleName().toString();
+      String simpleName =
+          annotationMirror.getAnnotationType().asElement().getSimpleName().toString();
       if ("JsonIgnore".equals(simpleName)) {
         return true;
       }
@@ -304,5 +292,4 @@ class SchemaDocBuilder {
     Set<Modifier> modifiers = field.getModifiers();
     return (modifiers.contains(Modifier.STATIC) || modifiers.contains(Modifier.TRANSIENT));
   }
-
 }

@@ -5,8 +5,8 @@ import java.util.Map;
 
 /**
  * Map of supported types with conversions from url path and query parameters.
- * <p/>
- * These types convert from String to types on controller methods.
+ *
+ * <p>These types convert from String to types on controller methods.
  */
 class TypeMap {
 
@@ -169,7 +169,7 @@ class TypeMap {
     }
   }
 
-  static abstract class JavaLangType implements TypeHandler {
+  abstract static class JavaLangType implements TypeHandler {
 
     final String shortName;
 
@@ -193,7 +193,7 @@ class TypeMap {
     }
   }
 
-  static abstract class Primitive implements TypeHandler {
+  abstract static class Primitive implements TypeHandler {
 
     private final String type;
 
@@ -277,8 +277,7 @@ class TypeMap {
     }
   }
 
-
-  static abstract class ObjectHandler implements TypeHandler {
+  abstract static class ObjectHandler implements TypeHandler {
 
     private final String importType;
     private final String shortName;

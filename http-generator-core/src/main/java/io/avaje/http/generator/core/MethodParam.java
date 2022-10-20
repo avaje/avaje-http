@@ -1,14 +1,19 @@
 package io.avaje.http.generator.core;
 
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
-
 import javax.lang.model.element.VariableElement;
 
 public class MethodParam {
 
   private final ElementReader elementParam;
 
-  MethodParam(VariableElement param, UType type, String rawType, ProcessingContext ctx, ParamType defaultParamType, boolean formMarker) {
+  MethodParam(
+      VariableElement param,
+      UType type,
+      String rawType,
+      ProcessingContext ctx,
+      ParamType defaultParamType,
+      boolean formMarker) {
     this.elementParam = new ElementReader(param, type, rawType, ctx, defaultParamType, formMarker);
   }
 

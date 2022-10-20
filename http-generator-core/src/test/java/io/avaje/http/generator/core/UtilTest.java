@@ -1,9 +1,9 @@
 package io.avaje.http.generator.core;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 public class UtilTest {
 
@@ -96,15 +96,19 @@ public class UtilTest {
   void parse_generic_twoParams() {
     UType type = Util.parse("java.util.List<org.example.Repo, foo.Other>");
 
-    assertThat(type.importTypes()).containsExactly("java.util.List", "org.example.Repo", "foo.Other");
+    assertThat(type.importTypes())
+        .containsExactly("java.util.List", "org.example.Repo", "foo.Other");
     assertThat(type.shortType()).isEqualTo("List<Repo,Other>");
   }
 
   @Test
   void parse_CompletableFutureHttpVoid() {
-    UType type = Util.parse("java.util.concurrent.CompletableFuture<java.net.http.HttpResponse<java.lang.Void>>");
+    UType type =
+        Util.parse(
+            "java.util.concurrent.CompletableFuture<java.net.http.HttpResponse<java.lang.Void>>");
 
-    assertThat(type.importTypes()).containsExactly("java.util.concurrent.CompletableFuture", "java.net.http.HttpResponse");
+    assertThat(type.importTypes())
+        .containsExactly("java.util.concurrent.CompletableFuture", "java.net.http.HttpResponse");
     assertThat(type.shortType()).isEqualTo("CompletableFuture<HttpResponse<Void>>");
   }
 
@@ -112,23 +116,30 @@ public class UtilTest {
   void parse_CompletableFutureBean() {
     UType type = Util.parse("java.util.concurrent.CompletableFuture<org.example.Repo>");
 
-    assertThat(type.importTypes()).containsExactly("java.util.concurrent.CompletableFuture", "org.example.Repo");
+    assertThat(type.importTypes())
+        .containsExactly("java.util.concurrent.CompletableFuture", "org.example.Repo");
     assertThat(type.shortType()).isEqualTo("CompletableFuture<Repo>");
   }
 
   @Test
   void parse_CompletableFutureListBean() {
-    UType type = Util.parse("java.util.concurrent.CompletableFuture<java.util.List<org.example.Repo>>");
+    UType type =
+        Util.parse("java.util.concurrent.CompletableFuture<java.util.List<org.example.Repo>>");
 
-    assertThat(type.importTypes()).containsExactly("java.util.concurrent.CompletableFuture", "java.util.List", "org.example.Repo");
+    assertThat(type.importTypes())
+        .containsExactly(
+            "java.util.concurrent.CompletableFuture", "java.util.List", "org.example.Repo");
     assertThat(type.shortType()).isEqualTo("CompletableFuture<List<Repo>>");
   }
 
   @Test
   void parse_CompletableFutureStreamBean() {
-    UType type = Util.parse("java.util.concurrent.CompletableFuture<java.util.Stream<org.example.Repo>>");
+    UType type =
+        Util.parse("java.util.concurrent.CompletableFuture<java.util.Stream<org.example.Repo>>");
 
-    assertThat(type.importTypes()).containsExactly("java.util.concurrent.CompletableFuture", "java.util.Stream", "org.example.Repo");
+    assertThat(type.importTypes())
+        .containsExactly(
+            "java.util.concurrent.CompletableFuture", "java.util.Stream", "org.example.Repo");
     assertThat(type.shortType()).isEqualTo("CompletableFuture<Stream<Repo>>");
     assertThat(type.shortName()).isEqualTo("completableFutureStreamRepo");
   }
@@ -146,7 +157,8 @@ public class UtilTest {
   void parse_BodyHandler_Path() {
     UType type = Util.parse("java.net.http.HttpResponse.BodyHandler<java.util.Path>");
 
-    assertThat(type.importTypes()).containsExactly("java.net.http.HttpResponse.BodyHandler", "java.util.Path");
+    assertThat(type.importTypes())
+        .containsExactly("java.net.http.HttpResponse.BodyHandler", "java.util.Path");
     assertThat(type.shortType()).isEqualTo("BodyHandler<Path>");
     assertThat(type.shortName()).isEqualTo("bodyHandlerPath");
     assertThat(type.genericParams()).isEqualTo("");
@@ -156,7 +168,8 @@ public class UtilTest {
   void parse_BodyHandler_Multi() {
     UType type = Util.parse("java.net.http.HttpResponse.BodyHandler<some.Foo<A,B>>");
 
-    assertThat(type.importTypes()).containsExactly("java.net.http.HttpResponse.BodyHandler", "some.Foo");
+    assertThat(type.importTypes())
+        .containsExactly("java.net.http.HttpResponse.BodyHandler", "some.Foo");
     assertThat(type.shortType()).isEqualTo("BodyHandler<Foo<A,B>>");
     assertThat(type.shortName()).isEqualTo("bodyHandlerFooAB");
     assertThat(type.genericParams()).isEqualTo("<A,B> ");
@@ -166,7 +179,8 @@ public class UtilTest {
   void parse_BodyHandler_Multi2() {
     UType type = Util.parse("java.net.http.HttpResponse.BodyHandler<some.Foo<AB,BC,some.Bar<D>>>");
 
-    assertThat(type.importTypes()).containsExactly("java.net.http.HttpResponse.BodyHandler", "some.Foo", "some.Bar");
+    assertThat(type.importTypes())
+        .containsExactly("java.net.http.HttpResponse.BodyHandler", "some.Foo", "some.Bar");
     assertThat(type.shortType()).isEqualTo("BodyHandler<Foo<AB,BC,Bar<D>>>");
     assertThat(type.shortName()).isEqualTo("bodyHandlerFooABBCBarD");
     assertThat(type.genericParams()).isEqualTo("<AB,BC,D> ");
@@ -185,5 +199,4 @@ public class UtilTest {
     assertThat(Util.name("Set<Person>")).isEqualTo("setPerson");
     assertThat(Util.name("Map<String,Person>")).isEqualTo("mapStringPerson");
   }
-
 }

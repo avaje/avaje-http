@@ -1,12 +1,11 @@
 package io.avaje.http.generator.helidon;
 
-import java.util.List;
-
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
 import io.avaje.http.generator.core.UType;
+import java.util.List;
 
 class HelidonPlatformAdapter implements PlatformAdapter {
 
@@ -16,7 +15,9 @@ class HelidonPlatformAdapter implements PlatformAdapter {
 
   @Override
   public boolean isContextType(String rawType) {
-    return HELIDON_REQ.equals(rawType) || HELIDON_RES.equals(rawType) || HELIDON_FORMPARAMS.equals(rawType);
+    return HELIDON_REQ.equals(rawType)
+        || HELIDON_RES.equals(rawType)
+        || HELIDON_FORMPARAMS.equals(rawType);
   }
 
   @Override
@@ -30,7 +31,7 @@ class HelidonPlatformAdapter implements PlatformAdapter {
     if (HELIDON_FORMPARAMS.equals(rawType)) {
       return "formParams";
     }
-    return "unknownVariable for: "+rawType;
+    return "unknownVariable for: " + rawType;
   }
 
   @Override
@@ -89,7 +90,8 @@ class HelidonPlatformAdapter implements PlatformAdapter {
   }
 
   @Override
-  public void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault) {
+  public void writeReadParameter(
+      Append writer, ParamType paramType, String paramName, String paramDefault) {
     switch (paramType) {
       case PATHPARAM:
         writer.append("req.path().param(\"%s\")", paramName);
@@ -104,7 +106,8 @@ class HelidonPlatformAdapter implements PlatformAdapter {
         writer.append("req.headers().value(\"%s\").orElse(\"%s\")", paramName, paramDefault);
         break;
       case COOKIE:
-        writer.append("req.headers().cookies().first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+        writer.append(
+            "req.headers().cookies().first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
         break;
       case BODY:
       case BEANPARAM:

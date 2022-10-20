@@ -3,7 +3,11 @@ package io.avaje.http.generator.client;
 import io.avaje.http.api.Client;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ProcessingContext;
-
+import java.io.IOException;
+import java.io.Writer;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -13,15 +17,11 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 public class ClientProcessor extends AbstractProcessor {
 
-  private static final String METAINF_SERVICES_PROVIDER = "META-INF/services/io.avaje.http.client.HttpApiProvider";
+  private static final String METAINF_SERVICES_PROVIDER =
+      "META-INF/services/io.avaje.http.client.HttpApiProvider";
 
   private final Set<String> generatedClients = new LinkedHashSet<>();
 
@@ -106,8 +106,8 @@ public class ClientProcessor extends AbstractProcessor {
     }
   }
 
-  protected String writeClientAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException {
+  protected String writeClientAdapter(ProcessingContext ctx, ControllerReader reader)
+      throws IOException {
     return new ClientWriter(reader, ctx).write();
   }
-
 }

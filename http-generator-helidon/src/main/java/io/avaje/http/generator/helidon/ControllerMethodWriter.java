@@ -7,12 +7,9 @@ import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.WebMethod;
-
 import java.util.List;
 
-/**
- * Write code to register Web route for a given controller method.
- */
+/** Write code to register Web route for a given controller method. */
 class ControllerMethodWriter {
 
   private final MethodReader method;
@@ -31,11 +28,23 @@ class ControllerMethodWriter {
     final String fullPath = method.fullPath();
     final String bodyType = method.bodyType();
     if (bodyType != null) {
-      writer.append("    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));", webMethod.name().toLowerCase(), fullPath, bodyType, method.simpleName()).eol();
+      writer
+          .append(
+              "    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));",
+              webMethod.name().toLowerCase(), fullPath, bodyType, method.simpleName())
+          .eol();
     } else if (method.isFormBody()) {
-      writer.append("    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));", webMethod.name().toLowerCase(), fullPath, "FormParams", method.simpleName()).eol();
+      writer
+          .append(
+              "    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));",
+              webMethod.name().toLowerCase(), fullPath, "FormParams", method.simpleName())
+          .eol();
     } else {
-      writer.append("    rules.%s(\"%s\", this::_%s);", webMethod.name().toLowerCase(), fullPath, method.simpleName()).eol();
+      writer
+          .append(
+              "    rules.%s(\"%s\", this::_%s);",
+              webMethod.name().toLowerCase(), fullPath, method.simpleName())
+          .eol();
     }
   }
 
@@ -97,13 +106,26 @@ class ControllerMethodWriter {
     if (produces == null) {
       // let it be automatically set
     } else if (MediaType.APPLICATION_JSON.equalsIgnoreCase(produces)) {
-      writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.APPLICATION_JSON);").eol();
+      writer
+          .append(
+              "    res.writerContext().contentType(io.helidon.common.http.MediaType.APPLICATION_JSON);")
+          .eol();
     } else if (MediaType.TEXT_HTML.equalsIgnoreCase(produces)) {
-      writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_HTML);").eol();
+      writer
+          .append(
+              "    res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_HTML);")
+          .eol();
     } else if (MediaType.TEXT_PLAIN.equalsIgnoreCase(produces)) {
-      writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_PLAIN);").eol();
+      writer
+          .append(
+              "    res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_PLAIN);")
+          .eol();
     } else {
-      writer.append(    "res.writerContext().contentType(io.helidon.common.http.MediaType.parse(\"%s\"));", produces).eol();
+      writer
+          .append(
+              "res.writerContext().contentType(io.helidon.common.http.MediaType.parse(\"%s\"));",
+              produces)
+          .eol();
     }
   }
 

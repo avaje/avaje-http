@@ -1,7 +1,7 @@
 package io.avaje.http.generator.core;
 
 import io.avaje.http.generator.core.openapi.DocContext;
-
+import java.io.IOException;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -15,7 +15,6 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
-import java.io.IOException;
 
 public class ProcessingContext {
 
@@ -53,16 +52,12 @@ public class ProcessingContext {
     messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
 
-  /**
-   * Create a file writer for the given class name.
-   */
+  /** Create a file writer for the given class name. */
   public JavaFileObject createWriter(String cls, Element origin) throws IOException {
     return filer.createSourceFile(cls, origin);
   }
 
-  /**
-   * Create a file writer for the META-INF services file.
-   */
+  /** Create a file writer for the META-INF services file. */
   public FileObject createMetaInfWriter(String target) throws IOException {
     return filer.createResource(StandardLocation.CLASS_OUTPUT, "", target);
   }

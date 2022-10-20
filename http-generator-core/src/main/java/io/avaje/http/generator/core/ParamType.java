@@ -1,7 +1,6 @@
 package io.avaje.http.generator.core;
 
 public enum ParamType {
-
   CONTEXT("ctx", "ctx"),
   BODY("body", "body"),
   PATHPARAM("pathParam", "path"),

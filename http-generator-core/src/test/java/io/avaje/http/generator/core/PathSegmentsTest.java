@@ -1,15 +1,13 @@
 package io.avaje.http.generator.core;
 
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class PathSegmentsTest {
 
@@ -123,5 +121,4 @@ public class PathSegmentsTest {
     segments = PathSegments.parse("/start/{id;key;other}/middle/{foo;baz}/end");
     assertEquals("/start/{id_segment}/middle/{foo_segment}/end", segments.fullPath());
   }
-
 }

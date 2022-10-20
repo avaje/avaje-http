@@ -3,9 +3,7 @@ package io.avaje.http.generator.core;
 import java.io.IOException;
 import java.io.Writer;
 
-/**
- * Helper that wraps a writer with some useful methods to append content.
- */
+/** Helper that wraps a writer with some useful methods to append content. */
 public class Append {
 
   private final Writer writer;
@@ -41,11 +39,8 @@ public class Append {
     }
   }
 
-  /**
-   * Append content with formatted arguments.
-   */
+  /** Append content with formatted arguments. */
   public Append append(String format, Object... args) {
     return append(String.format(format, args));
   }
-
 }

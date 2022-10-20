@@ -15,7 +15,10 @@ import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
-
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Map;
+import java.util.TreeMap;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -26,14 +29,8 @@ import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Map;
-import java.util.TreeMap;
 
-/**
- * Context for building the OpenAPI documentation.
- */
+/** Context for building the OpenAPI documentation. */
 public class DocContext {
 
   private final boolean openApiAvailable;
@@ -102,9 +99,7 @@ public class DocContext {
     schemaBuilder.addRequestBody(operation, schema, asForm, description);
   }
 
-  /**
-   * Return the OpenAPI adding the paths and schemas.
-   */
+  /** Return the OpenAPI adding the paths and schemas. */
   private OpenAPI getApiForWriting() {
 
     Paths paths = openAPI.getPaths();
@@ -121,9 +116,7 @@ public class DocContext {
     return openAPI;
   }
 
-  /**
-   * Return the components creating if needed.
-   */
+  /** Return the components creating if needed. */
   private Components components() {
     Components components = openAPI.getComponents();
     if (components == null) {
@@ -133,7 +126,7 @@ public class DocContext {
     return components;
   }
 
-  private io.swagger.v3.oas.models.tags.Tag createTagItem(Tag tag){
+  private io.swagger.v3.oas.models.tags.Tag createTagItem(Tag tag) {
     io.swagger.v3.oas.models.tags.Tag tagsItem = new io.swagger.v3.oas.models.tags.Tag();
     tagsItem.setName(tag.name());
     tagsItem.setDescription(tag.description());
@@ -144,18 +137,16 @@ public class DocContext {
 
   public void addTagsDefinition(Element element) {
     Tags tags = element.getAnnotation(Tags.class);
-    if(tags == null)
-      return;
+    if (tags == null) return;
 
-    for(Tag tag: tags.value()){
+    for (Tag tag : tags.value()) {
       openAPI.addTagsItem(createTagItem(tag));
     }
   }
 
-  public void addTagDefinition(Element element){
+  public void addTagDefinition(Element element) {
     Tag tag = element.getAnnotation(Tag.class);
-    if(tag == null)
-      return;
+    if (tag == null) return;
 
     openAPI.addTagsItem(createTagItem(tag));
   }
@@ -173,7 +164,6 @@ public class DocContext {
     if (!info.version().isEmpty()) {
       openAPI.getInfo().setVersion(info.version());
     }
-
   }
 
   public void writeApi() {
@@ -192,9 +182,10 @@ public class DocContext {
   private ObjectMapper createObjectMapper() {
 
     ObjectMapper mapper = new ObjectMapper();
-    mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
-      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-      .enable(SerializationFeature.INDENT_OUTPUT);
+    mapper
+        .setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .enable(SerializationFeature.INDENT_OUTPUT);
 
     return mapper;
   }
@@ -207,5 +198,4 @@ public class DocContext {
   private void logError(Element e, String msg, Object... args) {
     messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
-
 }

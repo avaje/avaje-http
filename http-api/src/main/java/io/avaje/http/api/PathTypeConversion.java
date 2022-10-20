@@ -6,15 +6,15 @@ import java.util.UUID;
 
 /**
  * Helper type conversion methods.
- * <p/>
- * These methods are intended to be used by APT source generators.
+ *
+ * <p>These methods are intended to be used by APT source generators.
  */
 public final class PathTypeConversion {
 
   /**
    * Return the value if non-null and otherwise the default value.
    *
-   * @param value        The value to return if non-null
+   * @param value The value to return if non-null
    * @param defaultValue The default value to return
    * @return The value if non-null and otherwise the default value.
    */
@@ -23,14 +23,14 @@ public final class PathTypeConversion {
   }
 
   /**
-   * Check for null for a required property throwing RequiredArgumentException
-   * if the value is null.
+   * Check for null for a required property throwing RequiredArgumentException if the value is null.
    *
    * @return The value being checked
    */
   public static String checkNull(String value, String property) {
     if (value == null) {
-      throw new RequiredArgumentException("Required property " + property + " was not supplied.", property);
+      throw new RequiredArgumentException(
+          "Required property " + property + " was not supplied.", property);
     }
     return value;
   }
@@ -41,9 +41,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to int.
-   */
+  /** Convert to int. */
   public static int asInt(String value) {
     checkNull(value);
     try {
@@ -53,9 +51,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to long.
-   */
+  /** Convert to long. */
   public static long asLong(String value) {
     checkNull(value);
     try {
@@ -65,9 +61,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to double.
-   */
+  /** Convert to double. */
   public static double asDouble(String value) {
     checkNull(value);
     try {
@@ -77,9 +71,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to float.
-   */
+  /** Convert to float. */
   public static float asFloat(String value) {
     checkNull(value);
     try {
@@ -89,24 +81,18 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to boolean.
-   */
+  /** Convert to boolean. */
   public static boolean asBoolean(String value) {
     checkNull(value);
     return Boolean.parseBoolean(value);
   }
 
-  /**
-   * Convert to boolean.
-   */
+  /** Convert to boolean. */
   public static boolean asBool(String value) {
     return asBoolean(value);
   }
 
-  /**
-   * Convert to BigDecimal (not nullable).
-   */
+  /** Convert to BigDecimal (not nullable). */
   public static BigDecimal asBigDecimal(String value) {
     checkNull(value);
     try {
@@ -116,9 +102,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to LocalDate (not nullable).
-   */
+  /** Convert to LocalDate (not nullable). */
   public static LocalDate asLocalDate(String value) {
     checkNull(value);
     try {
@@ -128,9 +112,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to LocalTime (not nullable).
-   */
+  /** Convert to LocalTime (not nullable). */
   public static LocalTime asLocalTime(String value) {
     checkNull(value);
     try {
@@ -140,9 +122,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to Instant (not nullable).
-   */
+  /** Convert to Instant (not nullable). */
   public static Instant asInstant(String value) {
     checkNull(value);
     try {
@@ -152,9 +132,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to OffsetDateTime (not nullable).
-   */
+  /** Convert to OffsetDateTime (not nullable). */
   public static OffsetDateTime asOffsetDateTime(String value) {
     checkNull(value);
     try {
@@ -164,9 +142,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to LocalDateTime (not nullable).
-   */
+  /** Convert to LocalDateTime (not nullable). */
   public static LocalDateTime asLocalDateTime(String value) {
     checkNull(value);
     try {
@@ -176,9 +152,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to UUID (not nullable).
-   */
+  /** Convert to UUID (not nullable). */
   public static UUID asUUID(String value) {
     checkNull(value);
     try {
@@ -188,9 +162,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to Integer (not nullable).
-   */
+  /** Convert to Integer (not nullable). */
   public static Integer asInteger(String value) {
     checkNull(value);
     try {
@@ -200,9 +172,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to Integer (allowing nulls).
-   */
+  /** Convert to Integer (allowing nulls). */
   public static Integer toInteger(String value) {
     if (isNullOrEmpty(value)) {
       return null;
@@ -214,9 +184,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to Long (allowing nulls).
-   */
+  /** Convert to Long (allowing nulls). */
   public static Long toLong(String value) {
     if (isNullOrEmpty(value)) {
       return null;
@@ -228,9 +196,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to Double (allowing nulls).
-   */
+  /** Convert to Double (allowing nulls). */
   public static Double toDouble(String value) {
     if (isNullOrEmpty(value)) {
       return null;
@@ -241,9 +207,7 @@ public final class PathTypeConversion {
       throw new InvalidTypeArgumentException(e);
     }
   }
-  /**
-   * Convert to Float (allowing nulls).
-   */
+  /** Convert to Float (allowing nulls). */
   public static Float toFloat(String value) {
     if (isNullOrEmpty(value)) {
       return null;
@@ -255,9 +219,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to BigDecimal (allowing nulls).
-   */
+  /** Convert to BigDecimal (allowing nulls). */
   public static BigDecimal toBigDecimal(String value) {
     if (isNullOrEmpty(value)) {
       return null;
@@ -269,9 +231,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to Boolean (allowing nulls).
-   */
+  /** Convert to Boolean (allowing nulls). */
   public static Boolean toBoolean(String value) {
     if (isNullOrEmpty(value)) {
       return null;
@@ -279,9 +239,7 @@ public final class PathTypeConversion {
     return Boolean.valueOf(value);
   }
 
-  /**
-   * Convert to UUID (allowing nulls).
-   */
+  /** Convert to UUID (allowing nulls). */
   public static UUID toUUID(String value) {
     if (isNullOrEmpty(value)) {
       return null;
@@ -293,9 +251,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to LocalDate (allowing nulls).
-   */
+  /** Convert to LocalDate (allowing nulls). */
   public static LocalDate toLocalDate(String value) {
     if (isNullOrEmpty(value)) {
       return null;
@@ -307,9 +263,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to LocalTime (allowing nulls).
-   */
+  /** Convert to LocalTime (allowing nulls). */
   public static LocalTime toLocalTime(String value) {
     if (isNullOrEmpty(value)) {
       return null;
@@ -321,9 +275,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to Instant (allowing nulls).
-   */
+  /** Convert to Instant (allowing nulls). */
   public static Instant toInstant(String value) {
     if (isNullOrEmpty(value)) {
       return null;
@@ -335,9 +287,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to OffsetDateTime (allowing nulls).
-   */
+  /** Convert to OffsetDateTime (allowing nulls). */
   public static OffsetDateTime toOffsetDateTime(String value) {
     if (isNullOrEmpty(value)) {
       return null;
@@ -349,9 +299,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to LocalDateTime (allowing nulls).
-   */
+  /** Convert to LocalDateTime (allowing nulls). */
   public static LocalDateTime toLocalDateTime(String value) {
     if (isNullOrEmpty(value)) {
       return null;
@@ -366,5 +314,4 @@ public final class PathTypeConversion {
   private static boolean isNullOrEmpty(String value) {
     return value == null || value.isEmpty();
   }
-
 }

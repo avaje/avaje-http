@@ -3,7 +3,11 @@ package io.avaje.http.generator.core;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Produces;
 import io.swagger.v3.oas.annotations.Hidden;
-
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -14,15 +18,8 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.validation.Valid;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
-/**
- * Reads the type information for the Controller (bean).
- */
+/** Reads the type information for the Controller (bean). */
 public class ControllerReader {
 
   private final ProcessingContext ctx;
@@ -34,17 +31,15 @@ public class ControllerReader {
   private final Set<String> staticImportTypes = new TreeSet<>();
   private final Set<String> importTypes = new TreeSet<>();
 
-  /**
-   * The produces media type for the controller. Null implies JSON.
-   */
+  /** The produces media type for the controller. Null implies JSON. */
   private final String produces;
+
   private final boolean hasValid;
   private boolean methodHasValid;
 
-  /**
-   * Flag set when the controller is dependant on a request scope type.
-   */
+  /** Flag set when the controller is dependant on a request scope type. */
   private boolean requestScope;
+
   private boolean docHidden;
 
   public ControllerReader(TypeElement beanType, ProcessingContext ctx) {
@@ -154,8 +149,8 @@ public class ControllerReader {
   }
 
   /**
-   * Return true if the controller has request scoped dependencies.
-   * In that case a BeanFactory will have been generated.
+   * Return true if the controller has request scoped dependencies. In that case a BeanFactory will
+   * have been generated.
    */
   boolean isRequestScoped() {
     return requestScope;
@@ -197,9 +192,7 @@ public class ControllerReader {
     }
   }
 
-  /**
-   * Read methods from superclasses taking into account generics.
-   */
+  /** Read methods from superclasses taking into account generics. */
   private void readSuper(TypeElement beanType) {
     TypeMirror superclass = beanType.getSuperclass();
     if (superclass.getKind() != TypeKind.NONE) {
@@ -276,5 +269,4 @@ public class ControllerReader {
   public Set<String> importTypes() {
     return importTypes;
   }
-
 }
