@@ -1,27 +1,21 @@
 package io.avaje.http.generator.helidon.nima;
 
+import io.avaje.http.generator.core.*;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import io.avaje.http.generator.core.BaseControllerWriter;
-import io.avaje.http.generator.core.Constants;
-import io.avaje.http.generator.core.ControllerReader;
-import io.avaje.http.generator.core.JsonBUtil;
-import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.PrimitiveUtil;
-import io.avaje.http.generator.core.ProcessingContext;
-import io.avaje.http.generator.core.UType;
-
-/** Write Helidon specific web route adapter (a Helidon Service). */
+/**
+ * Write Helidon specific web route adapter (a Helidon Service).
+ */
 class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-helidon-nima-generator\")";
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
 
-  ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB)
-      throws IOException {
+  ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB) throws IOException {
     super(reader, ctx);
     this.useJsonB = jsonB;
     if (useJsonB) {
@@ -50,9 +44,9 @@ class ControllerWriter extends BaseControllerWriter {
 
   private List<ControllerMethodWriter> writerMethods() {
     return reader.getMethods().stream()
-        .filter(MethodReader::isWebMethod)
-        .map(it -> new ControllerMethodWriter(it, writer, ctx, useJsonB))
-        .toList();
+      .filter(MethodReader::isWebMethod)
+      .map(it -> new ControllerMethodWriter(it, writer, ctx, useJsonB))
+      .toList();
   }
 
   private void writeAddRoutes() {
@@ -93,11 +87,7 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append("  private final Validator validator;").eol();
     }
     for (final UType type : jsonTypes.values()) {
-      writer
-          .append(
-              "  private final JsonType<%s> %sJsonType;",
-              PrimitiveUtil.wrap(type.full()), type.shortName())
-          .eol();
+      writer.append("  private final JsonType<%s> %sJsonType;", PrimitiveUtil.wrap(type.full()), type.shortName()).eol();
     }
     writer.eol();
 

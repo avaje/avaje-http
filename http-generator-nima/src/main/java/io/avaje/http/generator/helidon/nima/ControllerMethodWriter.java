@@ -50,9 +50,7 @@ class ControllerMethodWriter {
                 .orElseThrow()
                 .getUType()
                 .shortName();
-        writer
-            .append("    var %s = %sJsonType.fromJson(req.content().inputStream());", method.getBodyName(), fieldName)
-            .eol();
+        writer.append("    var %s = %sJsonType.fromJson(req.content().inputStream());", method.getBodyName(), fieldName).eol();
 
       } else {
         // use default helidon content negotiation

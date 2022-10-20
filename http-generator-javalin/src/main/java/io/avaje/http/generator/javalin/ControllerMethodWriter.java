@@ -1,16 +1,11 @@
 package io.avaje.http.generator.javalin;
 
 import io.avaje.http.api.MediaType;
-import io.avaje.http.generator.core.Append;
-import io.avaje.http.generator.core.MethodParam;
-import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.PathSegments;
-import io.avaje.http.generator.core.ProcessingContext;
-import io.avaje.http.generator.core.UType;
-import io.avaje.http.generator.core.Util;
-import io.avaje.http.generator.core.WebMethod;
+import io.avaje.http.generator.core.*;
 
-/** Write code to register Web route for a given controller method. */
+/**
+ * Write code to register Web route for a given controller method.
+ */
 class ControllerMethodWriter {
 
   private final MethodReader method;
@@ -19,8 +14,7 @@ class ControllerMethodWriter {
   private final ProcessingContext ctx;
   private final boolean useJsonB;
 
-  ControllerMethodWriter(
-      MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
+  ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.getWebMethod();
@@ -33,9 +27,7 @@ class ControllerMethodWriter {
     final var segments = method.getPathSegments();
     final var fullPath = segments.fullPath();
 
-    writer
-        .append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath)
-        .eol();
+    writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
     writer.append("      ctx.status(%s);", method.getStatusCode()).eol();
 
     final var matrixSegments = segments.matrixSegments();
@@ -97,10 +89,7 @@ class ControllerMethodWriter {
     if (produces == null || MediaType.APPLICATION_JSON.equalsIgnoreCase(produces)) {
       if (useJsonB) {
         final var uType = UType.parse(method.getReturnType());
-        writer.append(
-            "      %sJsonType.toJson(result, ctx.contentType(\"application/json\").outputStream());",
-            uType.shortName());
-
+        writer.append("      %sJsonType.toJson(result, ctx.contentType(\"application/json\").outputStream());", uType.shortName());
       } else {
         writer.append("      ctx.json(result);");
       }

@@ -1,12 +1,8 @@
 package io.avaje.http.generator.javalin;
 
-import java.util.List;
+import io.avaje.http.generator.core.*;
 
-import io.avaje.http.generator.core.Append;
-import io.avaje.http.generator.core.ControllerReader;
-import io.avaje.http.generator.core.ParamType;
-import io.avaje.http.generator.core.PlatformAdapter;
-import io.avaje.http.generator.core.UType;
+import java.util.List;
 
 class JavalinAdapter implements PlatformAdapter {
 
@@ -68,8 +64,7 @@ class JavalinAdapter implements PlatformAdapter {
   }
 
   @Override
-  public void writeReadParameter(
-      Append writer, ParamType paramType, String paramName, String paramDefault) {
+  public void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault) {
     writer.append("withDefault(ctx.%s(\"%s\"), \"%s\")", paramType, paramName, paramDefault);
   }
 }

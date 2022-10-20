@@ -1,18 +1,13 @@
 package io.avaje.http.generator.javalin;
 
+import io.avaje.http.generator.core.*;
+
 import java.io.IOException;
 import java.util.Map;
 
-import io.avaje.http.generator.core.BaseControllerWriter;
-import io.avaje.http.generator.core.Constants;
-import io.avaje.http.generator.core.ControllerReader;
-import io.avaje.http.generator.core.JsonBUtil;
-import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.PrimitiveUtil;
-import io.avaje.http.generator.core.ProcessingContext;
-import io.avaje.http.generator.core.UType;
-
-/** Write Javalin specific Controller WebRoute handling adapter. */
+/**
+ * Write Javalin specific Controller WebRoute handling adapter.
+ */
 class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-javalin-generator\")";
@@ -20,8 +15,7 @@ class ControllerWriter extends BaseControllerWriter {
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
 
-  ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB)
-      throws IOException {
+  ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB) throws IOException {
     super(reader, ctx);
     this.useJsonB = jsonB;
     if (useJsonB) {
@@ -64,11 +58,11 @@ class ControllerWriter extends BaseControllerWriter {
     writer.append(AT_GENERATED).eol();
     writer.append("@Component").eol();
     writer
-        .append("public class ")
-        .append(shortName)
-        .append("$Route implements WebRoutes {")
-        .eol()
-        .eol();
+      .append("public class ")
+      .append(shortName)
+      .append("$Route implements WebRoutes {")
+      .eol()
+      .eol();
 
     var controllerName = "controller";
     var controllerType = shortName;
@@ -83,13 +77,8 @@ class ControllerWriter extends BaseControllerWriter {
     }
 
     for (final UType type : jsonTypes.values()) {
-      writer
-          .append(
-              "  private final JsonType<%s> %sJsonType;",
-              PrimitiveUtil.wrap(type.full()), type.shortName())
-          .eol();
+      writer.append("  private final JsonType<%s> %sJsonType;", PrimitiveUtil.wrap(type.full()), type.shortName()).eol();
     }
-
     writer.eol();
 
     writer.append("  public %s$Route(%s %s", shortName, controllerType, controllerName);

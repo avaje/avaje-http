@@ -1,12 +1,8 @@
 package io.avaje.http.generator.helidon.nima;
 
-import java.util.List;
+import io.avaje.http.generator.core.*;
 
-import io.avaje.http.generator.core.Append;
-import io.avaje.http.generator.core.ControllerReader;
-import io.avaje.http.generator.core.ParamType;
-import io.avaje.http.generator.core.PlatformAdapter;
-import io.avaje.http.generator.core.UType;
+import java.util.List;
 
 class NimaPlatformAdapter implements PlatformAdapter {
 
@@ -30,7 +26,7 @@ class NimaPlatformAdapter implements PlatformAdapter {
     if (HELIDON_FORMPARAMS.equals(rawType)) {
       return "formParams";
     }
-    return "unknownVariable for: "+rawType;
+    return "unknownVariable for: " + rawType;
   }
 
   @Override
