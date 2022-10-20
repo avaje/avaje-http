@@ -57,7 +57,6 @@ Javalin.create()
         .start();
 ```
 
-
 ## Usage with Helidon SE
 
 The annotation processor will generate controller classes implementing the Helidon Service interface, which we can use

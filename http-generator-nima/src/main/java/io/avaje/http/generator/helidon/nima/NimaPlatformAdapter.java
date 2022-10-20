@@ -6,6 +6,7 @@ import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
+import io.avaje.http.generator.core.UType;
 
 class NimaPlatformAdapter implements PlatformAdapter {
 
@@ -38,7 +39,7 @@ class NimaPlatformAdapter implements PlatformAdapter {
   }
 
   @Override
-  public String bodyAsClass(String shortType) {
+  public String bodyAsClass(UType uType) {
     return "body";
   }
 

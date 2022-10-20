@@ -21,7 +21,7 @@ public interface PlatformAdapter {
   /**
    * Return platform specific code to return the body content.
    */
-  String bodyAsClass(String shortType);
+  String bodyAsClass(UType type);
 
   /**
    * Return true if body is passed as a method parameter.

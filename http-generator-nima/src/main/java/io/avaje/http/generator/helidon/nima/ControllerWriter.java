@@ -1,26 +1,35 @@
 package io.avaje.http.generator.helidon.nima;
 
-import io.avaje.http.generator.core.*;
-
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.avaje.http.generator.core.BaseControllerWriter;
+import io.avaje.http.generator.core.Constants;
+import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.JsonBUtil;
+import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.PrimitiveUtil;
+import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.UType;
 
 /** Write Helidon specific web route adapter (a Helidon Service). */
 class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-helidon-nima-generator\")";
   private final boolean useJsonB;
-  private final Map<String, UType> jsonTypes = new LinkedHashMap<>();
+  private final Map<String, UType> jsonTypes;
 
-  ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB) throws IOException {
+  ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB)
+      throws IOException {
     super(reader, ctx);
     this.useJsonB = jsonB;
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
-      initJsonTypes(reader);
+      this.jsonTypes = JsonBUtil.getJsonTypes(reader);
+    } else {
+      this.jsonTypes = Map.of();
     }
     reader.addImportType("io.helidon.common.http.HttpMediaType");
     reader.addImportType("io.helidon.common.parameters.Parameters");
@@ -29,31 +38,6 @@ class ControllerWriter extends BaseControllerWriter {
     reader.addImportType("io.helidon.nima.webserver.http.ServerRequest");
     reader.addImportType("io.helidon.nima.webserver.http.ServerResponse");
     reader.addImportType("io.helidon.nima.webserver.http.HttpService");
-  }
-
-  private void initJsonTypes(ControllerReader reader) {
-      reader.getMethods().stream()
-        .filter(MethodReader::isWebMethod)
-        .filter(m -> !"byte[]".equals(m.getReturnType().toString()))
-        .filter(m -> m.getProduces() == null || m.getProduces().toLowerCase().contains("json"))
-        .forEach(methodReader -> {
-          addJsonBodyType(methodReader);
-          if (!methodReader.isVoid()) {
-            addJsonType(UType.parse(methodReader.getReturnType()));
-          }
-        });
-  }
-
-  private void addJsonType(UType type) {
-    jsonTypes.put(type.full(), type);
-  }
-
-  private void addJsonBodyType(MethodReader methodReader) {
-    if (methodReader.getBodyType() != null) {
-      methodReader.getParams().stream()
-        .filter(MethodParam::isBody)
-        .forEach(param -> addJsonType(param.getUType()));
-    }
   }
 
   void write() {
@@ -108,8 +92,12 @@ class ControllerWriter extends BaseControllerWriter {
     if (reader.isIncludeValidator()) {
       writer.append("  private final Validator validator;").eol();
     }
-    for (UType type : jsonTypes.values()) {
-      writer.append("  private final JsonType<%s> %sJsonType;", primitiveWrap(type.full()), type.shortName()).eol();
+    for (final UType type : jsonTypes.values()) {
+      writer
+          .append(
+              "  private final JsonType<%s> %sJsonType;",
+              PrimitiveUtil.wrap(type.full()), type.shortName())
+          .eol();
     }
     writer.eol();
 
@@ -126,30 +114,10 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append("    this.validator = validator;").eol();
     }
     if (useJsonB) {
-      for (UType type : jsonTypes.values()) {
-        writer.append("    this.%sJsonType = jsonB.type(", type.shortName());
-        writeJsonbType(type);
+      for (final UType type : jsonTypes.values()) {
+        JsonBUtil.writeJsonbType(type, writer);
       }
     }
     writer.append("  }").eol().eol();
   }
-
-  private void writeJsonbType(UType type) {
-    if (!type.isGeneric()) {
-      writer.append("%s.class)", type.full());
-    } else {
-      switch (type.mainType()) {
-        case "java.util.List" -> writer.append("%s.class).list()", type.param0());
-        case "java.util.Set" -> writer.append("%s.class).set()", type.param0());
-        case "java.util.Map" -> writer.append("%s.class).map()", type.param1());
-        default -> throw new UnsupportedOperationException("Only java.util Map, Set and List are supported JsonB Controller Collection Types");
-      }
-    }
-    writer.append(";").eol();
-  }
-
-  private String primitiveWrap(String full) {
-    return PrimitiveUtil.wrap(full);
-  }
-
 }

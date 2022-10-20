@@ -206,7 +206,7 @@ public class ElementReader {
       return;
     }
     String shortType = shortType();
-    writer.append("%s  %s %s = ", ctx.platform().indent(), shortType, varName);
+    writer.append("%s  var %s = ", ctx.platform().indent(), varName);
     if (setValue(writer, segments, shortType)) {
       writer.append(";").eol();
     }
@@ -259,7 +259,7 @@ public class ElementReader {
 
     if (typeHandler == null) {
       // this is a body (POST, PATCH)
-      writer.append(ctx.platform().bodyAsClass(shortType));
+      writer.append(ctx.platform().bodyAsClass(type));
 
     } else {
       if (hasParamDefault()) {
