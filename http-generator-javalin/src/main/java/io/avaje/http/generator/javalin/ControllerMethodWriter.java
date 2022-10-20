@@ -17,25 +17,25 @@ class ControllerMethodWriter {
   ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
-    this.webMethod = method.getWebMethod();
+    this.webMethod = method.webMethod();
     this.ctx = ctx;
     this.useJsonB = useJsonB;
   }
 
   void write(boolean requestScoped) {
 
-    final var segments = method.getPathSegments();
+    final var segments = method.pathSegments();
     final var fullPath = segments.fullPath();
 
     writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
-    writer.append("      ctx.status(%s);", method.getStatusCode()).eol();
+    writer.append("      ctx.status(%s);", method.statusCode()).eol();
 
     final var matrixSegments = segments.matrixSegments();
     for (final PathSegments.Segment matrixSegment : matrixSegments) {
       matrixSegment.writeCreateSegment(writer, ctx.platform());
     }
 
-    final var params = method.getParams();
+    final var params = method.params();
     for (final MethodParam param : params) {
       param.writeCtxGet(writer, segments);
     }
@@ -85,10 +85,10 @@ class ControllerMethodWriter {
   }
 
   private void writeContextReturn() {
-    final var produces = method.getProduces();
+    final var produces = method.produces();
     if (produces == null || MediaType.APPLICATION_JSON.equalsIgnoreCase(produces)) {
       if (useJsonB) {
-        final var uType = UType.parse(method.getReturnType());
+        final var uType = UType.parse(method.returnType());
         writer.append("      %sJsonType.toJson(result, ctx.contentType(\"application/json\").outputStream());", uType.shortName());
       } else {
         writer.append("      ctx.json(result);");

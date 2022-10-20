@@ -95,7 +95,7 @@ public class PathSegments {
   /**
    * Return all segments including literal segments.
    */
-  public Set<Segment> getSegments() {
+  public Set<Segment> segments() {
     return segments;
   }
 

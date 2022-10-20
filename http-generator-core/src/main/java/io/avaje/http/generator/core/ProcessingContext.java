@@ -38,10 +38,10 @@ public class ProcessingContext {
   }
 
   private boolean isTypeAvailable(String canonicalName) {
-    return null != getTypeElement(canonicalName);
+    return null != typeElement(canonicalName);
   }
 
-  public TypeElement getTypeElement(String canonicalName) {
+  public TypeElement typeElement(String canonicalName) {
     return elements.getTypeElement(canonicalName);
   }
 

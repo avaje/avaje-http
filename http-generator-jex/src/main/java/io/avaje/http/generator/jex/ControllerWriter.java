@@ -30,7 +30,7 @@ class ControllerWriter extends BaseControllerWriter {
   private void writeAddRoutes() {
     writer.append("  @Override").eol();
     writer.append("  public void add(Routing routing) {").eol().eol();
-    for (MethodReader method : reader.getMethods()) {
+    for (MethodReader method : reader.methods()) {
       if (method.isWebMethod()) {
         writeForMethod(method);
       }

@@ -21,7 +21,7 @@ class ControllerWriter extends BaseControllerWriter {
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
-      this.jsonTypes = JsonBUtil.getJsonTypes(reader);
+      this.jsonTypes = JsonBUtil.jsonTypes(reader);
     } else {
       this.jsonTypes = Map.of();
     }
@@ -43,7 +43,7 @@ class ControllerWriter extends BaseControllerWriter {
   }
 
   private List<ControllerMethodWriter> writerMethods() {
-    return reader.getMethods().stream()
+    return reader.methods().stream()
       .filter(MethodReader::isWebMethod)
       .map(it -> new ControllerMethodWriter(it, writer, ctx, useJsonB))
       .toList();

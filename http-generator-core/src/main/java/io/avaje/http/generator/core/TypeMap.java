@@ -13,7 +13,7 @@ class TypeMap {
   private static final Map<String, TypeHandler> types = new HashMap<>();
 
   private static void add(TypeHandler h) {
-    types.put(h.getImportType(), h);
+    types.put(h.importType(), h);
   }
 
   static {
@@ -188,7 +188,7 @@ class TypeMap {
     }
 
     @Override
-    public String getImportType() {
+    public String importType() {
       return null;
     }
   }
@@ -230,7 +230,7 @@ class TypeMap {
     }
 
     @Override
-    public String getImportType() {
+    public String importType() {
       return null;
     }
   }
@@ -298,7 +298,7 @@ class TypeMap {
     }
 
     @Override
-    public String getImportType() {
+    public String importType() {
       return importType;
     }
 

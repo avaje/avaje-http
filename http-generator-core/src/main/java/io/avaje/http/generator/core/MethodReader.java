@@ -65,7 +65,7 @@ public class MethodReader {
     initWebMethodViaAnnotation();
     if (isWebMethod()) {
       this.hasValid = findAnnotation(Valid.class) != null;
-      this.pathSegments = PathSegments.parse(Util.combinePath(bean.getPath(), webMethodPath));
+      this.pathSegments = PathSegments.parse(Util.combinePath(bean.path(), webMethodPath));
     } else {
       this.hasValid = false;
       this.pathSegments = null;
@@ -113,13 +113,13 @@ public class MethodReader {
     this.webMethodPath = value;
   }
 
-  public Javadoc getJavadoc() {
+  public Javadoc javadoc() {
     return javadoc;
   }
 
   private String produces(ControllerReader bean) {
     final Produces produces = findAnnotation(Produces.class);
-    return (produces != null) ? produces.value() : bean.getProduces();
+    return (produces != null) ? produces.value() : bean.produces();
   }
 
   public <A extends Annotation> A findAnnotation(Class<A> type) {
@@ -145,7 +145,7 @@ public class MethodReader {
     return list;
   }
 
-  public List<String> getTags() {
+  public List<String> tags() {
     List<String> tags = new ArrayList<>();
     tags = addTagsToList(element, tags);
     return addTagsToList(element.getEnclosingElement(), tags);
@@ -189,22 +189,22 @@ public class MethodReader {
   }
 
   public List<String> roles() {
-    return methodRoles.isEmpty() ? bean.getRoles() : methodRoles;
+    return methodRoles.isEmpty() ? bean.roles() : methodRoles;
   }
 
   public boolean isWebMethod() {
     return webMethod != null;
   }
 
-  public WebMethod getWebMethod() {
+  public WebMethod webMethod() {
     return webMethod;
   }
 
-  public String getWebMethodPath() {
+  public String webMethodPath() {
     return webMethodPath;
   }
 
-  public List<MethodParam> getParams() {
+  public List<MethodParam> params() {
     return params;
   }
 
@@ -212,26 +212,26 @@ public class MethodReader {
     return isVoid;
   }
 
-  public String getProduces() {
+  public String produces() {
     return produces;
   }
 
-  public TypeMirror getReturnType() {
+  public TypeMirror returnType() {
     if (actualExecutable != null) {
       return actualExecutable.getReturnType();
     }
     return element.getReturnType();
   }
 
-  public String getStatusCode() {
+  public String statusCode() {
     return Integer.toString(webMethod.statusCode(isVoid));
   }
 
-  public PathSegments getPathSegments() {
+  public PathSegments pathSegments() {
     return pathSegments;
   }
 
-  public String getFullPath() {
+  public String fullPath() {
     return pathSegments.fullPath();
   }
 
@@ -256,19 +256,19 @@ public class MethodReader {
     return false;
   }
 
-  public String getBodyType() {
+  public String bodyType() {
     for (MethodParam param : params) {
       if (param.isBody()) {
-        return param.getShortType();
+        return param.shortType();
       }
     }
     return null;
   }
 
-  public String getBodyName() {
+  public String bodyName() {
     for (MethodParam param : params) {
       if (param.isBody()) {
-        return param.getName();
+        return param.name();
       }
     }
     return "body";

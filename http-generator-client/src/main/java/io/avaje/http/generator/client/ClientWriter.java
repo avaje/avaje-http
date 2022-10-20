@@ -36,7 +36,7 @@ class ClientWriter extends BaseControllerWriter {
   }
 
   private void readMethods() {
-    for (MethodReader method : reader.getMethods()) {
+    for (MethodReader method : reader.methods()) {
       if (method.isWebMethod()) {
         ClientMethodWriter methodWriter = new ClientMethodWriter(method, writer, ctx);
         methodWriter.addImportTypes(reader);

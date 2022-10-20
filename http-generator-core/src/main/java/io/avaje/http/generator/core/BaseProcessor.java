@@ -93,7 +93,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
         writeControllerAdapter(ctx, reader);
       } catch (Throwable e) {
         e.printStackTrace();
-        ctx.logError(reader.getBeanType(), "Failed to write $Route class " + e);
+        ctx.logError(reader.beanType(), "Failed to write $Route class " + e);
       }
     }
   }
