@@ -1,19 +1,14 @@
 package io.avaje.http.generator.core;
 
-import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
-
-import javax.lang.model.element.Element;
-import javax.validation.Valid;
-
-import io.avaje.http.api.BeanParam;
-import io.avaje.http.api.Cookie;
-import io.avaje.http.api.Default;
-import io.avaje.http.api.Form;
-import io.avaje.http.api.FormParam;
-import io.avaje.http.api.Header;
-import io.avaje.http.api.QueryParam;
+import io.avaje.http.api.*;
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 import io.avaje.http.generator.core.openapi.MethodParamDocBuilder;
+
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.validation.Valid;
+
+import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
 
 public class ElementReader {
 
@@ -206,7 +201,8 @@ public class ElementReader {
       // no conversion for this parameter
       return;
     }
-    if (paramType == ParamType.BODY && ctx.platform().isBodyMethodParam()) {      // body passed as method parameter (Helidon)
+    if (paramType == ParamType.BODY && ctx.platform().isBodyMethodParam()) {
+      // body passed as method parameter (Helidon)
       return;
     }
     String shortType = shortType();
@@ -256,7 +252,7 @@ public class ElementReader {
       }
     }
 
-    final var asMethod = (typeHandler == null) ? null : typeHandler.toMethod();
+    String asMethod = (typeHandler == null) ? null : typeHandler.toMethod();
     if (asMethod != null) {
       writer.append(asMethod);
     }
@@ -265,17 +261,19 @@ public class ElementReader {
       // this is a body (POST, PATCH)
       writer.append(ctx.platform().bodyAsClass(type));
 
-    }else if (hasParamDefault()) {
-      ctx.platform().writeReadParameter(writer, paramType, paramName, paramDefault);
     } else {
-      final var checkNull = notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
-      if (checkNull) {
-        writer.append("checkNull(");
-      }
-      ctx.platform().writeReadParameter(writer, paramType, paramName);
-      //writer.append("ctx.%s(\"%s\")", paramType, paramName);
-      if (checkNull) {
-        writer.append(", \"%s\")", paramName);
+      if (hasParamDefault()) {
+        ctx.platform().writeReadParameter(writer, paramType, paramName, paramDefault);
+      } else {
+        boolean checkNull = notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
+        if (checkNull) {
+          writer.append("checkNull(");
+        }
+        ctx.platform().writeReadParameter(writer, paramType, paramName);
+        //writer.append("ctx.%s(\"%s\")", paramType, paramName);
+        if (checkNull) {
+          writer.append(", \"%s\")", paramName);
+        }
       }
     }
 
