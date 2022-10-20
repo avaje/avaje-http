@@ -1,13 +1,10 @@
 package io.avaje.http.generator.javalin;
 
 import io.avaje.http.generator.core.*;
-
 import java.io.IOException;
 import java.util.Map;
 
-/**
- * Write Javalin specific Controller WebRoute handling adapter.
- */
+/** Write Javalin specific Controller WebRoute handling adapter. */
 class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-javalin-generator\")";
@@ -15,7 +12,8 @@ class ControllerWriter extends BaseControllerWriter {
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
 
-  ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB) throws IOException {
+  ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB)
+      throws IOException {
     super(reader, ctx);
     this.useJsonB = jsonB;
     if (useJsonB) {
@@ -58,11 +56,11 @@ class ControllerWriter extends BaseControllerWriter {
     writer.append(AT_GENERATED).eol();
     writer.append("@Component").eol();
     writer
-      .append("public class ")
-      .append(shortName)
-      .append("$Route implements WebRoutes {")
-      .eol()
-      .eol();
+        .append("public class ")
+        .append(shortName)
+        .append("$Route implements WebRoutes {")
+        .eol()
+        .eol();
 
     var controllerName = "controller";
     var controllerType = shortName;
@@ -77,7 +75,11 @@ class ControllerWriter extends BaseControllerWriter {
     }
 
     for (final UType type : jsonTypes.values()) {
-      writer.append("  private final JsonType<%s> %sJsonType;", PrimitiveUtil.wrap(type.full()), type.shortName()).eol();
+      writer
+          .append(
+              "  private final JsonType<%s> %sJsonType;",
+              PrimitiveUtil.wrap(type.full()), type.shortName())
+          .eol();
     }
     writer.eol();
 

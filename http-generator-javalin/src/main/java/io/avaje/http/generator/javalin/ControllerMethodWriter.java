@@ -3,9 +3,7 @@ package io.avaje.http.generator.javalin;
 import io.avaje.http.api.MediaType;
 import io.avaje.http.generator.core.*;
 
-/**
- * Write code to register Web route for a given controller method.
- */
+/** Write code to register Web route for a given controller method. */
 class ControllerMethodWriter {
 
   private final MethodReader method;
@@ -14,7 +12,8 @@ class ControllerMethodWriter {
   private final ProcessingContext ctx;
   private final boolean useJsonB;
 
-  ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
+  ControllerMethodWriter(
+      MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
@@ -27,7 +26,9 @@ class ControllerMethodWriter {
     final var segments = method.pathSegments();
     final var fullPath = segments.fullPath();
 
-    writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
+    writer
+        .append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath)
+        .eol();
     writer.append("      ctx.status(%s);", method.statusCode()).eol();
 
     final var matrixSegments = segments.matrixSegments();
@@ -89,7 +90,9 @@ class ControllerMethodWriter {
     if (produces == null || MediaType.APPLICATION_JSON.equalsIgnoreCase(produces)) {
       if (useJsonB) {
         final var uType = UType.parse(method.returnType());
-        writer.append("      %sJsonType.toJson(result, ctx.contentType(\"application/json\").outputStream());", uType.shortName());
+        writer.append(
+            "      %sJsonType.toJson(result, ctx.contentType(\"application/json\").outputStream());",
+            uType.shortName());
       } else {
         writer.append("      ctx.json(result);");
       }

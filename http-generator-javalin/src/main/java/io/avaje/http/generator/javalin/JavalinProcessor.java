@@ -4,7 +4,6 @@ import io.avaje.http.generator.core.BaseProcessor;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.PlatformAdapter;
 import io.avaje.http.generator.core.ProcessingContext;
-
 import java.io.IOException;
 
 public class JavalinProcessor extends BaseProcessor {
@@ -30,7 +29,8 @@ public class JavalinProcessor extends BaseProcessor {
   }
 
   @Override
-  public void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException {
+  public void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader)
+      throws IOException {
     new ControllerWriter(reader, ctx, useJsonB).write();
   }
 }
