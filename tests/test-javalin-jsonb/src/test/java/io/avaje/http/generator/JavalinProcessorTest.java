@@ -51,7 +51,7 @@ class JavalinProcessorTest {
             new PrintWriter(System.out),
             null,
             null,
-            List.of("--enable-preview", "--release=11"),
+            List.of("--release=11"),
             null,
             files);
     task.setProcessors(List.of(new JavalinProcessor()));
