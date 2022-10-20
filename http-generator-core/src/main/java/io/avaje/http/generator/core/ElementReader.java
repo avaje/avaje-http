@@ -81,10 +81,10 @@ public class ElementReader {
     }
     Form form = element.getAnnotation(Form.class);
     if (form != null) {
-      paramType = ParamType.FORM;
+      this.paramType = ParamType.FORM;
       return;
     }
-   BeanParam beanParam = element.getAnnotation(BeanParam.class);
+    BeanParam beanParam = element.getAnnotation(BeanParam.class);
     if (beanParam != null) {
       this.paramType = ParamType.BEANPARAM;
       return;
@@ -108,7 +108,7 @@ public class ElementReader {
       this.paramDefault = null;
       return;
     }
-    final var headerParam = element.getAnnotation(Header.class);
+    Header headerParam = element.getAnnotation(Header.class);
     if (headerParam != null) {
       this.paramName = nameFrom(headerParam.value(), Util.initcapSnake(snakeName));
       this.paramType = ParamType.HEADER;
@@ -164,7 +164,7 @@ public class ElementReader {
 
   void addImports(ControllerReader bean) {
     if (typeHandler != null) {
-      final var importType = typeHandler.getImportType();
+      String importType = typeHandler.getImportType();
       if (importType != null) {
         bean.addImportType(rawType);
       }
@@ -202,11 +202,14 @@ public class ElementReader {
   }
 
   void writeCtxGet(Append writer, PathSegments segments) {
-    if (isPlatformContext() || (paramType == ParamType.BODY && ctx.platform().isBodyMethodParam())) {
-      // body passed as method parameter (Helidon)
+    if (isPlatformContext()) {
+      // no conversion for this parameter
       return;
     }
-    final var shortType = shortType();
+    if (paramType == ParamType.BODY && ctx.platform().isBodyMethodParam()) {      // body passed as method parameter (Helidon)
+      return;
+    }
+    String shortType = shortType();
     writer.append("%s  var %s = ", ctx.platform().indent(), varName);
     if (setValue(writer, segments, shortType)) {
       writer.append(";").eol();
@@ -236,11 +239,11 @@ public class ElementReader {
       return false;
     }
     if (impliedParamType) {
-      final var segment = segments.segment(varName);
+      PathSegments.Segment segment = segments.segment(varName);
       if (segment != null) {
         // path or matrix parameter
-        final var requiredParam = segment.isRequired(varName);
-        final var asMethod = (typeHandler == null) ? null : (requiredParam) ? typeHandler.asMethod() : typeHandler.toMethod();
+        boolean requiredParam = segment.isRequired(varName);
+        String asMethod = (typeHandler == null) ? null : (requiredParam) ? typeHandler.asMethod() : typeHandler.toMethod();
         if (asMethod != null) {
           writer.append(asMethod);
         }
