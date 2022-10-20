@@ -55,10 +55,10 @@ public class ElementReader {
     this.paramName = varName;
     if (!contextType) {
       readAnnotations(element, defaultType);
-      this.useValidation = useValidation();
+      useValidation = useValidation();
     } else {
-      this.paramType = ParamType.CONTEXT;
-      this.useValidation = false;
+      paramType = ParamType.CONTEXT;
+      useValidation = false;
     }
   }
 
@@ -66,7 +66,7 @@ public class ElementReader {
     if (typeHandler != null) {
       return false;
     }
-    final var elementType = ctx.getTypeElement(rawType);
+    TypeElement elementType = ctx.getTypeElement(rawType);
     return elementType != null && elementType.getAnnotation(Valid.class) != null;
   }
 
@@ -75,33 +75,33 @@ public class ElementReader {
     notNullKotlin = (element.getAnnotation(org.jetbrains.annotations.NotNull.class) != null);
     //notNullJavax = (element.getAnnotation(javax.validation.constraints.NotNull.class) != null);
 
-    final var defaultVal = element.getAnnotation(Default.class);
+    Default defaultVal = element.getAnnotation(Default.class);
     if (defaultVal != null) {
-      paramDefault = defaultVal.value();
+      this.paramDefault = defaultVal.value();
     }
-    final var form = element.getAnnotation(Form.class);
+    Form form = element.getAnnotation(Form.class);
     if (form != null) {
       paramType = ParamType.FORM;
       return;
     }
-    final var beanParam = element.getAnnotation(BeanParam.class);
+   BeanParam beanParam = element.getAnnotation(BeanParam.class);
     if (beanParam != null) {
       this.paramType = ParamType.BEANPARAM;
       return;
     }
-    final var queryParam = element.getAnnotation(QueryParam.class);
+    QueryParam queryParam = element.getAnnotation(QueryParam.class);
     if (queryParam != null) {
       this.paramName = nameFrom(queryParam.value(), varName);
       this.paramType = ParamType.QUERYPARAM;
       return;
     }
-    final var formParam = element.getAnnotation(FormParam.class);
+    FormParam formParam = element.getAnnotation(FormParam.class);
     if (formParam != null) {
       this.paramName = nameFrom(formParam.value(), varName);
       this.paramType = ParamType.FORMPARAM;
       return;
     }
-    final var cookieParam = element.getAnnotation(Cookie.class);
+    Cookie cookieParam = element.getAnnotation(Cookie.class);
     if (cookieParam != null) {
       this.paramName = nameFrom(cookieParam.value(), varName);
       this.paramType = ParamType.COOKIE;
