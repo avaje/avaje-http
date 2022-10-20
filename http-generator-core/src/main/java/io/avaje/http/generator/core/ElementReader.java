@@ -284,8 +284,8 @@ public class ElementReader {
   }
 
   private void writeForm(Append writer, String shortType, String varName, ParamType defaultParamType) {
-    final var formBeanType = ctx.getTypeElement(rawType);
-    final var form = new BeanParamReader(ctx, formBeanType, varName, shortType, defaultParamType);
+    TypeElement formBeanType = ctx.getTypeElement(rawType);
+    BeanParamReader form = new BeanParamReader(ctx, formBeanType, varName, shortType, defaultParamType);
     form.write(writer);
   }
 
