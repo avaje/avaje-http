@@ -2,7 +2,7 @@
 
 Http server and client libraries and code generation.
 
-## http server
+## Http Server
 
 A jax-rs style controllers with annotations (`@Path`, `@Get` ...)
 that is lightweight by using source code generation (annotation processors)
@@ -11,8 +11,39 @@ to generate adapter code for Javalin and Helidon SE/Nima.
 - Lightweight as in 65Kb library + generated source code
 - Full use of Javalin or Helidon SE/Nima as desired
 
+## Add dependencies
 
-## Define a Controller (Note that these APT processors works with both Java and Kotlin.)
+```xml
+<dependency>
+  <groupId>io.avaje</groupId>
+  <artifactId>avaje-http-api</artifactId>
+  <version>${avaje.http.version}</version>
+</dependency>
+```
+Add the generator module for your desired microframework as a annotation processor.
+
+```xml
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>${maven-compiler-plugin.version}</version>
+      <configuration>
+        <annotationProcessorPaths>
+          <path>
+            <groupId>io.avaje</groupId>
+            <artifactId>avaje-http-javalin-generator</artifactId>
+            <version>${avaje.http.version}</version>
+          </path>
+        </annotationProcessorPaths>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+```
+
+## Define a Controller (These APT processors work with both Java and Kotlin.)
 ```java
 package org.example.hello;
 
@@ -41,7 +72,6 @@ public class WidgetController {
 
   record Widget(int id, String name){};
 }
-
 ```
 
 ## Usage with Javalin
@@ -95,59 +125,39 @@ WebServer.builder()
 ### (Javalin) The generated WidgetController$Route.java is:
 
 ```java
-package org.example.hello;
-
-import static io.avaje.http.api.PathTypeConversion.*;
-import io.avaje.http.api.WebRoutes;
-import io.javalin.apibuilder.ApiBuilder;
-import javax.annotation.Generated;
-import javax.inject.Singleton;
-import org.example.hello.WidgetController;
-
-@Generated("io.avaje.javalin-generator")
-@Singleton
+@Generated("avaje-javalin-generator")
+@Component
 public class WidgetController$Route implements WebRoutes {
 
- private final WidgetController controller;
+  private final WidgetController controller;
 
- public WidgetController$route(WidgetController controller) {
-   this.controller = controller;
- }
+  public WidgetController$Route(WidgetController controller) {
+    this.controller = controller;
+  }
 
   @Override
   public void registerRoutes() {
 
     ApiBuilder.get("/widgets/{id}", ctx -> {
-      int id = asInt(ctx.pathParam("id"));
-      ctx.json(controller.getById(id));
       ctx.status(200);
+      var id = asInt(ctx.pathParam("id"));
+      var result = controller.getById(id);
+      ctx.json(result);
     });
 
     ApiBuilder.get("/widgets", ctx -> {
-      ctx.json(controller.getAll());
       ctx.status(200);
+      var result = controller.getAll();
+      ctx.json(result);
     });
 
   }
+
 }
 ```
 
 ### (Helidon SE) The generated WidgetController$Route.java is:
 ```java
-package org.example.hello;
-
-import static io.avaje.http.api.PathTypeConversion.*;
-
-import io.avaje.http.api.*;
-import io.helidon.common.http.FormParams;
-import io.helidon.webserver.Handler;
-import io.helidon.webserver.Routing;
-import io.helidon.webserver.ServerRequest;
-import io.helidon.webserver.ServerResponse;
-import io.helidon.webserver.Service;
-import jakarta.inject.Singleton;
-import org.example.hello.WidgetController;
-
 @Generated("io.dinject.helidon-generator")
 @Singleton
 public class WidgetController$Route implements Service {
@@ -180,19 +190,6 @@ public class WidgetController$Route implements Service {
 ### (Helidon Nima) The generated WidgetController$Route.java is:
 
 ```java
-package org.example.hello;
-
-import static io.avaje.http.api.PathTypeConversion.*;
-
-import io.avaje.http.api.*;
-import io.avaje.inject.Component;
-import io.helidon.nima.webserver.http.HttpRouting;
-import io.helidon.nima.webserver.http.HttpRules;
-import io.helidon.nima.webserver.http.HttpService;
-import io.helidon.nima.webserver.http.ServerRequest;
-import io.helidon.nima.webserver.http.ServerResponse;
-import org.example.hello.WidgetController;
-
 @Generated("avaje-helidon-nima-generator")
 @Component
 public class WidgetController$Route implements HttpService {
@@ -224,22 +221,49 @@ public class WidgetController$Route implements HttpService {
 }
 ```
 
-### (Helidon Nima with Avaje-Jsonb) The generated WidgetController$Route.java is:
+## Generated sources ([Avaje-Jsonb](https://github.com/avaje/avaje-jsonb))
+If [Avaje-Jsonb](https://github.com/avaje/avaje-jsonb) is detected, http generators with support will use it for faster Json message processing.
+
+### (Javalin) The generated WidgetController$Route.java is:
+```java
+@Generated("avaje-javalin-generator")
+@Component
+public class WidgetController$Route implements WebRoutes {
+
+  private final WidgetController controller;
+  private final JsonType<java.util.List<org.example.hello.WidgetController.Widget>> listWidgetJsonType;
+  private final JsonType<org.example.hello.WidgetController.Widget> widgetJsonType;
+
+  public WidgetController$Route(WidgetController controller, Jsonb jsonB) {
+    this.controller = controller;
+    this.listWidgetJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class).list();
+    this.widgetJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class);
+  }
+
+  @Override
+  public void registerRoutes() {
+
+    ApiBuilder.get("/widgets/{id}", ctx -> {
+      ctx.status(200);
+      var id = asInt(ctx.pathParam("id"));
+      var result = controller.getById(id);
+      widgetJsonType.toJson(result, ctx.contentType("application/json").outputStream());
+    });
+
+    ApiBuilder.get("/widgets", ctx -> {
+      ctx.status(200);
+      var result = controller.getAll();
+      listWidgetJsonType.toJson(result, ctx.contentType("application/json").outputStream());
+    });
+
+  }
+
+}
+```
+
+### (Helidon Nima) The generated WidgetController$Route.java is:
 
 ```java
-package org.example.hello;
-
-import static io.avaje.http.api.PathTypeConversion.*;
-
-import io.avaje.http.api.*;
-import io.avaje.inject.Component;
-import io.helidon.nima.webserver.http.HttpRouting;
-import io.helidon.nima.webserver.http.HttpRules;
-import io.helidon.nima.webserver.http.HttpService;
-import io.helidon.nima.webserver.http.ServerRequest;
-import io.helidon.nima.webserver.http.ServerResponse;
-import org.example.hello.WidgetController;
-
 @Generated("avaje-helidon-nima-generator")
 @Component
 public class WidgetController$Route implements HttpService {
