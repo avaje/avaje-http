@@ -91,28 +91,37 @@ public class HttpException extends RuntimeException {
   }
 
   /**
-   * Return the response body content as a bean
+   * Return the response body content as a bean, or else null if body content doesn't exist.
    *
    * @param cls The type of bean to convert the response to
    * @return The response as a bean
    */
   public <T> T bean(Class<T> cls) {
+    if (httpResponse == null) {
+      return null;
+    }
     final BodyContent body = context.readErrorContent(responseAsBytes, httpResponse);
     return context.readBean(cls, body);
   }
 
   /**
-   * Return the response body content as a UTF8 string.
+   * Return the response body content as a UTF8 string, or else null if body content doesn't exist.
    */
   public String bodyAsString() {
+    if (httpResponse == null) {
+      return null;
+    }
     final BodyContent body = context.readErrorContent(responseAsBytes, httpResponse);
     return new String(body.content(), StandardCharsets.UTF_8);
   }
 
-  /**
-   * Return the response body content as raw bytes.
+  /** 
+   * Return the response body content as raw bytes, or else null if body content doesn't exist.
    */
   public byte[] bodyAsBytes() {
+    if (httpResponse == null) {
+      return null;
+    }
     final BodyContent body = context.readErrorContent(responseAsBytes, httpResponse);
     return body.content();
   }
