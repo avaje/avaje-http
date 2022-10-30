@@ -22,14 +22,34 @@ final class DHttpClientRequestWithRetry extends DHttpClientRequest {
   @Override
   protected <T> HttpResponse<T> performSend(HttpResponse.BodyHandler<T> responseHandler) {
     HttpResponse<T> res;
-    res = super.performSend(responseHandler);
-    if (res.statusCode() < 300) {
-      return res;
+    HttpException ex;
+
+    do {
+      try {
+        res = super.performSend(responseHandler);
+        ex = null;
+      } catch (final HttpException e) {
+        ex = e;
+        res = null;
+      }
+      if (res != null && res.statusCode() < 300) {
+        return res;
+      }
+      retryCount++;
+    } while (retry(res, ex));
+
+    if (res == null && ex != null) {
+      throw ex;
     }
-    while (retryHandler.isRetry(retryCount++, res)) {
-      res = super.performSend(responseHandler);
-    }
+
     return res;
   }
 
+  protected boolean retry(HttpResponse<?> res, HttpException ex) {
+
+    if (res != null) {
+      return retryHandler.isRetry(retryCount, res);
+    }
+    return retryHandler.isExceptionRetry(retryCount, ex);
+  }
 }
