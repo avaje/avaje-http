@@ -28,7 +28,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>1.20-SNAPSHOT</version>
+      <version>1.20</version>
       <scope>provided</scope>
     </dependency>
 
