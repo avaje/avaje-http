@@ -24,7 +24,7 @@ A lightweight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/
 <dependency>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client</artifactId>
-  <version>1.17</version>
+  <version>${avaje.client.version}</version>
 </dependency>
 ```
 
@@ -63,7 +63,7 @@ From HttpClientContext:
 
 
 ## Limitations:
-- NO support for POSTing multipart-form currently
+- No support for POSTing multipart-form currently
 - Retry (when specified) does not apply to `async` response processing`
 
 
@@ -299,7 +299,39 @@ HttpResponse<Void> res = clientContext.request()
 assertThat(res.statusCode()).isEqualTo(201);
 ```
 
+## Retry (Sync Requests Only)
+To add Retry funtionality, use `.retryHandler(yourhandler)` on the builder to provide your retry handler. The `RetryHandler` interface provides two methods, one for status exceptions (e.g. you get a 4xx/5xx from the server) and another for exceptions thrown by the underlying client (e.g. server times out or client couldn't send request). Here is example implementation of `RetryHandler`.
 
+```
+public final class ExampleRetry implements RetryHandler {
+  private static final int MAX_RETRIES = 2;
+  @Override
+  public boolean isRetry(int retryCount, HttpResponse<?> response) {
+
+    final var code = response.statusCode();
+
+    if (retryCount >= MAX_RETRIES || code >= 400) {
+
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public boolean isExceptionRetry(int retryCount, HttpException response) {
+    //unwrap the exception
+    final var cause = response.getCause();
+    if (retryCount >= MAX_RETRIES) {
+      return false;
+    }
+    if (cause instanceof ConnectException) {
+      return true;
+    }
+
+    return false;
+  }
+```
 
 ## Async processing
 
