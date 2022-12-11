@@ -5,7 +5,9 @@ import io.avaje.http.generator.core.*;
 import javax.lang.model.element.TypeElement;
 import java.util.Set;
 
-/** Write code to register Web route for a given controller method. */
+/**
+ * Write code to register Web route for a given controller method.
+ */
 class ClientMethodWriter {
 
   private static final KnownResponse KNOWN_RESPONSE = new KnownResponse();
@@ -47,8 +49,7 @@ class ClientMethodWriter {
     }
     writer.append("  // %s %s", webMethod, method.webMethodPath()).eol();
     writer.append("  @Override").eol();
-    writer.append(
-        "  public %s%s %s(", methodGenericParams, returnType.shortType(), method.simpleName());
+    writer.append("  public %s%s %s(", methodGenericParams, returnType.shortType(), method.simpleName());
     int count = 0;
     for (MethodParam param : method.params()) {
       if (count++ > 0) {
@@ -60,7 +61,9 @@ class ClientMethodWriter {
     writer.append(") {").eol();
   }
 
-  /** Assign a method parameter as *the* BodyHandler. */
+  /**
+   * Assign a method parameter as *the* BodyHandler.
+   */
   private void checkBodyHandler(MethodParam param) {
     if (param.rawType().startsWith(BODY_HANDLER)) {
       param.setResponseHandler();
@@ -102,7 +105,7 @@ class ClientMethodWriter {
         if (COMPLETABLE_FUTURE.equals(returnType.mainType())) {
           writeAsyncResponse();
         } else if (HTTP_CALL.equals(returnType.mainType())) {
-          writeCallResponse();
+            writeCallResponse();
         } else {
           writeSyncResponse();
         }
@@ -137,7 +140,7 @@ class ClientMethodWriter {
       writer.append(".list(%s.class);", Util.shortName(type1)).eol();
     } else if (isStream(type0)) {
       writer.append(".stream(%s.class);", Util.shortName(type1)).eol();
-    } else if (isHttpResponse(type0)) {
+    } else if (isHttpResponse(type0)){
       writeWithHandler();
     } else {
       writer.append(".bean(%s.class);", Util.shortName(type0)).eol();
@@ -187,9 +190,7 @@ class ClientMethodWriter {
       PathSegments.Segment segment = segments.segment(varName);
       if (segment == null && paramType == ParamType.BEANPARAM) {
         TypeElement formBeanType = ctx.typeElement(param.rawType());
-        BeanParamReader form =
-            new BeanParamReader(
-                ctx, formBeanType, param.name(), param.shortType(), ParamType.QUERYPARAM);
+        BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.name(), param.shortType(), ParamType.QUERYPARAM);
         form.writeFormParams(writer);
       }
     }
@@ -216,9 +217,7 @@ class ClientMethodWriter {
       }
     } else if (paramType == ParamType.FORM) {
       TypeElement formBeanType = ctx.typeElement(param.rawType());
-      BeanParamReader form =
-          new BeanParamReader(
-              ctx, formBeanType, param.name(), param.shortType(), ParamType.FORMPARAM);
+      BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.name(), param.shortType(), ParamType.FORMPARAM);
       form.writeFormParams(writer);
     }
   }
@@ -241,7 +240,7 @@ class ClientMethodWriter {
         writer.append(".path(\"").append(segment.literalSection()).append("\")");
       } else {
         writer.append(".path(").append(segment.name()).append(")");
-        // TODO: matrix params
+        //TODO: matrix params
       }
     }
     if (!segments.isEmpty()) {
@@ -268,4 +267,5 @@ class ClientMethodWriter {
   private boolean isHttpResponse(String type0) {
     return type0.equals("java.net.http.HttpResponse");
   }
+
 }
