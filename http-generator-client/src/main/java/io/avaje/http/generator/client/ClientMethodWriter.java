@@ -33,8 +33,13 @@ class ClientMethodWriter {
 
   void addImportTypes(ControllerReader reader) {
     reader.addImportTypes(returnType.importTypes());
-    for (MethodParam param : method.params()) {
-      param.addImports(reader);
+    for (final MethodParam param : method.params()) {
+      final var type = param.utype();
+      final var type0 = type.param0();
+      final var type1 = type.param1();
+      reader.addImportType(type.mainType());
+      if (type0 != null) reader.addImportType(type0);
+      if (type1 != null) reader.addImportType(type1);
     }
   }
 
