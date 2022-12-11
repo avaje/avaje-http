@@ -1,13 +1,22 @@
 package io.avaje.http.generator.client;
 
-import io.avaje.http.generator.core.*;
-
-import javax.lang.model.element.TypeElement;
 import java.util.Set;
 
-/**
- * Write code to register Web route for a given controller method.
- */
+import javax.lang.model.element.TypeElement;
+
+import io.avaje.http.generator.core.Append;
+import io.avaje.http.generator.core.BeanParamReader;
+import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.MethodParam;
+import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.ParamType;
+import io.avaje.http.generator.core.PathSegments;
+import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.UType;
+import io.avaje.http.generator.core.Util;
+import io.avaje.http.generator.core.WebMethod;
+
+/** Write code to register Web route for a given controller method. */
 class ClientMethodWriter {
 
   private static final KnownResponse KNOWN_RESPONSE = new KnownResponse();
@@ -37,21 +46,22 @@ class ClientMethodWriter {
       final var type = param.utype();
       final var type0 = type.param0();
       final var type1 = type.param1();
-      reader.addImportType(type.mainType());
-      if (type0 != null) reader.addImportType(type0);
-      if (type1 != null) reader.addImportType(type1);
+      reader.addImportType(type.mainType().replace("[]", ""));
+      if (type0 != null) reader.addImportType(type0.replace("[]", ""));
+      if (type1 != null) reader.addImportType(type1.replace("[]", ""));
     }
   }
 
   private void methodStart(Append writer) {
-    for (MethodParam param : method.params()) {
+    for (final MethodParam param : method.params()) {
       checkBodyHandler(param);
     }
     writer.append("  // %s %s", webMethod, method.webMethodPath()).eol();
     writer.append("  @Override").eol();
-    writer.append("  public %s%s %s(", methodGenericParams, returnType.shortType(), method.simpleName());
-    int count = 0;
-    for (MethodParam param : method.params()) {
+    writer.append(
+        "  public %s%s %s(", methodGenericParams, returnType.shortType(), method.simpleName());
+    var count = 0;
+    for (final MethodParam param : method.params()) {
       if (count++ > 0) {
         writer.append(", ");
       }
@@ -61,9 +71,7 @@ class ClientMethodWriter {
     writer.append(") {").eol();
   }
 
-  /**
-   * Assign a method parameter as *the* BodyHandler.
-   */
+  /** Assign a method parameter as *the* BodyHandler. */
   private void checkBodyHandler(MethodParam param) {
     if (param.rawType().startsWith(BODY_HANDLER)) {
       param.setResponseHandler();
@@ -80,8 +88,8 @@ class ClientMethodWriter {
     }
     writer.append("clientContext.request()").eol();
 
-    PathSegments pathSegments = method.pathSegments();
-    Set<PathSegments.Segment> segments = pathSegments.segments();
+    final var pathSegments = method.pathSegments();
+    final var segments = pathSegments.segments();
 
     writeHeaders();
     writePaths(segments);
@@ -93,45 +101,43 @@ class ClientMethodWriter {
   }
 
   private void writeEnd() {
-    WebMethod webMethod = method.webMethod();
+    final var webMethod = method.webMethod();
     writer.append("      .%s()", webMethod.name()).eol();
     if (returnType == UType.VOID) {
       writer.append("      .asVoid();").eol();
     } else {
-      String known = KNOWN_RESPONSE.get(returnType.full());
+      final var known = KNOWN_RESPONSE.get(returnType.full());
       if (known != null) {
         writer.append("      %s", known).eol();
-      } else {
-        if (COMPLETABLE_FUTURE.equals(returnType.mainType())) {
-          writeAsyncResponse();
-        } else if (HTTP_CALL.equals(returnType.mainType())) {
-            writeCallResponse();
-        } else {
-          writeSyncResponse();
-        }
-      }
+      }else if (COMPLETABLE_FUTURE.equals(returnType.mainType())) {
+    writeAsyncResponse();
+  } else if (HTTP_CALL.equals(returnType.mainType())) {
+    writeCallResponse();
+  } else {
+    writeSyncResponse();
+  }
     }
     writer.append("  }").eol().eol();
   }
 
   private void writeSyncResponse() {
     writer.append("      ");
-    String type0 = returnType.mainType();
-    String type1 = returnType.param0();
+    final var type0 = returnType.mainType();
+    final var type1 = returnType.param0();
     writeResponse(type0, type1);
   }
 
   private void writeAsyncResponse() {
     writer.append("      .async()");
-    String type0 = returnType.param0();
-    String type1 = returnType.param1();
+    final var type0 = returnType.param0();
+    final var type1 = returnType.param1();
     writeResponse(type0, type1);
   }
 
   private void writeCallResponse() {
     writer.append("      .call()");
-    String type0 = returnType.param0();
-    String type1 = returnType.param1();
+    final var type0 = returnType.param0();
+    final var type1 = returnType.param1();
     writeResponse(type0, type1);
   }
 
@@ -140,7 +146,7 @@ class ClientMethodWriter {
       writer.append(".list(%s.class);", Util.shortName(type1)).eol();
     } else if (isStream(type0)) {
       writer.append(".stream(%s.class);", Util.shortName(type1)).eol();
-    } else if (isHttpResponse(type0)){
+    } else if (isHttpResponse(type0)) {
       writeWithHandler();
     } else {
       writer.append(".bean(%s.class);", Util.shortName(type0)).eol();
@@ -156,23 +162,21 @@ class ClientMethodWriter {
   }
 
   private void writeQueryParams(PathSegments pathSegments) {
-    for (MethodParam param : method.params()) {
-      ParamType paramType = param.paramType();
-      if (paramType == ParamType.QUERYPARAM) {
-        if (pathSegments.segment(param.paramName()) == null) {
-          if (isMap(param)) {
-            writer.append("      .queryParam(%s)", param.name()).eol();
-          } else {
-            writer.append("      .queryParam(\"%s\", %s)", param.paramName(), param.name()).eol();
-          }
-        }
-      }
+    for (final MethodParam param : method.params()) {
+      final var paramType = param.paramType();
+      if ((paramType == ParamType.QUERYPARAM) && (pathSegments.segment(param.paramName()) == null)) {
+    if (isMap(param)) {
+      writer.append("      .queryParam(%s)", param.name()).eol();
+    } else {
+      writer.append("      .queryParam(\"%s\", %s)", param.paramName(), param.name()).eol();
+    }
+  }
     }
   }
 
   private void writeHeaders() {
-    for (MethodParam param : method.params()) {
-      ParamType paramType = param.paramType();
+    for (final MethodParam param : method.params()) {
+      final var paramType = param.paramType();
       if (paramType == ParamType.HEADER) {
         if (isMap(param)) {
           writer.append("      .header(%s)", param.name()).eol();
@@ -184,23 +188,25 @@ class ClientMethodWriter {
   }
 
   private void writeBeanParams(PathSegments segments) {
-    for (MethodParam param : method.params()) {
-      final String varName = param.name();
-      ParamType paramType = param.paramType();
-      PathSegments.Segment segment = segments.segment(varName);
+    for (final MethodParam param : method.params()) {
+      final var varName = param.name();
+      final var paramType = param.paramType();
+      final var segment = segments.segment(varName);
       if (segment == null && paramType == ParamType.BEANPARAM) {
-        TypeElement formBeanType = ctx.typeElement(param.rawType());
-        BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.name(), param.shortType(), ParamType.QUERYPARAM);
+        final var formBeanType = ctx.typeElement(param.rawType());
+        final var form =
+            new BeanParamReader(
+                ctx, formBeanType, param.name(), param.shortType(), ParamType.QUERYPARAM);
         form.writeFormParams(writer);
       }
     }
   }
 
   private void writeFormParams(PathSegments segments) {
-    for (MethodParam param : method.params()) {
-      final String varName = param.name();
-      ParamType paramType = param.paramType();
-      PathSegments.Segment segment = segments.segment(varName);
+    for (final MethodParam param : method.params()) {
+      final var varName = param.name();
+      final var paramType = param.paramType();
+      final var segment = segments.segment(varName);
       if (segment == null) {
         // not a path or matrix parameter
         writeFormParam(param, paramType);
@@ -216,15 +222,17 @@ class ClientMethodWriter {
         writer.append("      .formParam(\"%s\", %s)", param.paramName(), param.name()).eol();
       }
     } else if (paramType == ParamType.FORM) {
-      TypeElement formBeanType = ctx.typeElement(param.rawType());
-      BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.name(), param.shortType(), ParamType.FORMPARAM);
+      final var formBeanType = ctx.typeElement(param.rawType());
+      final var form =
+          new BeanParamReader(
+              ctx, formBeanType, param.name(), param.shortType(), ParamType.FORMPARAM);
       form.writeFormParams(writer);
     }
   }
 
   private void writeBody() {
-    for (MethodParam param : method.params()) {
-      ParamType paramType = param.paramType();
+    for (final MethodParam param : method.params()) {
+      final var paramType = param.paramType();
       if (paramType == ParamType.BODY) {
         writer.append("      .body(%s)", param.name()).eol();
       }
@@ -235,12 +243,12 @@ class ClientMethodWriter {
     if (!segments.isEmpty()) {
       writer.append("      ");
     }
-    for (PathSegments.Segment segment : segments) {
+    for (final PathSegments.Segment segment : segments) {
       if (segment.isLiteral()) {
         writer.append(".path(\"").append(segment.literalSection()).append("\")");
       } else {
         writer.append(".path(").append(segment.name()).append(")");
-        //TODO: matrix params
+        // TODO: matrix params
       }
     }
     if (!segments.isEmpty()) {
@@ -253,19 +261,18 @@ class ClientMethodWriter {
   }
 
   private boolean isMap(String type0) {
-    return type0.equals("java.util.Map");
+    return "java.util.Map".equals(type0);
   }
 
   private boolean isList(String type0) {
-    return type0.equals("java.util.List");
+    return "java.util.List".equals(type0);
   }
 
   private boolean isStream(String type0) {
-    return type0.equals("java.util.stream.Stream");
+    return "java.util.stream.Stream".equals(type0);
   }
 
   private boolean isHttpResponse(String type0) {
-    return type0.equals("java.net.http.HttpResponse");
+    return "java.net.http.HttpResponse".equals(type0);
   }
-
 }
