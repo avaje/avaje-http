@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import io.avaje.http.api.Delete;
 import io.avaje.http.api.Form;
 import io.avaje.http.api.Get;
+import io.avaje.http.api.OpenAPIReturns;
 import io.avaje.http.api.Patch;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
@@ -48,7 +49,7 @@ public class MethodReader {
 
   private final String produces;
 
-  private final ApiResponse[] apiResponses;
+  private final OpenAPIReturns[] apiResponses;
 
   private final ExecutableType actualExecutable;
   private final List<? extends TypeMirror> actualParams;
@@ -131,8 +132,8 @@ public class MethodReader {
     return (produces != null) ? produces.value() : bean.produces();
   }
 
-  private ApiResponse[] getApiResponses() {
-    return element.getAnnotationsByType(ApiResponse.class);
+  private OpenAPIReturns[] getApiResponses() {
+    return element.getAnnotationsByType(OpenAPIReturns.class);
   }
 
   public <A extends Annotation> A findAnnotation(Class<A> type) {
@@ -229,7 +230,7 @@ public class MethodReader {
     return produces;
   }
 
-  public ApiResponse[] apiResponses() {
+  public OpenAPIReturns[] apiResponses() {
     return apiResponses;
   }
 
