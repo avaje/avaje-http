@@ -82,7 +82,22 @@ public class MethodDocBuilder {
       String contentMediaType = (produces == null) ? MediaType.APPLICATION_JSON : produces;
       response.setContent(ctx.createContent(methodReader.returnType(), contentMediaType));
     }
-    responses.addApiResponse(methodReader.statusCode(), response);
+    var override2xx = false;
+    for (final var responseAnnotation : methodReader.apiResponses()) {
+      final var newResponse = new ApiResponse();
+
+      if (responseAnnotation.description().isEmpty())
+        newResponse.setDescription(response.getDescription());
+      else newResponse.setDescription(responseAnnotation.description());
+
+      // if user wants to define their own 2xx status code
+      if (responseAnnotation.responseCode().startsWith("2")) {
+        newResponse.setContent(response.getContent());
+        override2xx = true;
+      }
+      responses.addApiResponse(responseAnnotation.responseCode(), newResponse);
+    }
+    if (!override2xx) responses.addApiResponse(methodReader.statusCode(), response);
   }
 
   DocContext getContext() {
