@@ -61,7 +61,7 @@ public class OpenAPIController {
   /**
    * Standard Post. The Deprecated annotation adds "deprecacted:true" to the generated json
    *
-   * @param b the body
+   * @param m the body
    * @return the response body (from javadoc)
    */
   @Deprecated

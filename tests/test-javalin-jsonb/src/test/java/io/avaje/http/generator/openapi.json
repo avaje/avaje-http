@@ -92,6 +92,7 @@
         "summary": "Standard Post",
         "description": "The Deprecated annotation adds \"deprecacted:true\" to the generated json",
         "requestBody": {
+          "description": "the body",
           "content": {
             "application/json": {
               "schema": {
