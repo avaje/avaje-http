@@ -99,7 +99,7 @@ class JavalinProcessorTest {
 
     final var mapper = new ObjectMapper();
     final var expectedOpenApiJson =
-        mapper.readTree(new File("src/test/java/io/avaje/http/generator/openapi.json"));
+        mapper.readTree(new File("src/test/java/io/avaje/http/generator/expectedOpenApi.json"));
     final var generatedOpenApi = mapper.readTree(new File("openapi.json"));
 
     assert expectedOpenApiJson.equals(generatedOpenApi);
