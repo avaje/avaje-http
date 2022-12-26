@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
  */
 @Target(value = METHOD)
 @Retention(value = RUNTIME)
-@Repeatable(OpenAPIReturnsContainer.class)
-public @interface OpenAPIReturns {
+@Repeatable(OpenAPIResponses.class)
+public @interface OpenAPIResponse {
 
   /** the http status code of this response */
   String responseCode();

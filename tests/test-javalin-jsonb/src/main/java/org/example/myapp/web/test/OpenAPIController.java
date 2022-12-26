@@ -5,7 +5,8 @@ import java.util.List;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.MediaType;
-import io.avaje.http.api.OpenAPIReturns;
+import io.avaje.http.api.OpenAPIResponse;
+import io.avaje.http.api.OpenAPIResponses;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
@@ -32,7 +33,7 @@ public class OpenAPIController {
    */
   @Get("/get")
   @Produces(MediaType.TEXT_PLAIN)
-  @OpenAPIReturns(responseCode = "200", type = String.class)
+  @OpenAPIResponse(responseCode = "200", type = String.class)
   void ctxEndpoint(Context ctx) {
     ctx.contentType(MediaType.TEXT_PLAIN).result("healthlmao");
   }
@@ -45,12 +46,12 @@ public class OpenAPIController {
    */
   @Post("/post")
   @Tag(name = "tag1", description = "this is added to openapi tags")
-  @OpenAPIReturns(responseCode = "200", description = "overrides @return javadoc description")
-  @OpenAPIReturns(responseCode = "201")
-  @OpenAPIReturns(
+  @OpenAPIResponse(responseCode = "200", description = "overrides @return javadoc description")
+  @OpenAPIResponse(responseCode = "201")
+  @OpenAPIResponse(
       responseCode = "400",
       description = "User not found (Will not have an associated response schema)")
-  @OpenAPIReturns(
+  @OpenAPIResponse(
       responseCode = "500",
       description = "Some other Error (Will have this error class as the response class)",
       type = ErrorResponse.class)
@@ -66,6 +67,13 @@ public class OpenAPIController {
    */
   @Deprecated
   @Post("/post1")
+  @OpenAPIResponses({
+    @OpenAPIResponse(responseCode = "400", description = "User not found"),
+    @OpenAPIResponse(
+        responseCode = "500",
+        description = "Some other Error",
+        type = ErrorResponse.class)
+  })
   Person testPostl(List<Person> m) {
 
     return new Person(0, "baby");

@@ -106,6 +106,19 @@
           "required": true
         },
         "responses": {
+          "400": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Some other Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "201": {
             "description": "the response body (from javadoc)",
             "content": {

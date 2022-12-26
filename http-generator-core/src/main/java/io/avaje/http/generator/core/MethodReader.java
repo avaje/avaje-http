@@ -2,7 +2,11 @@ package io.avaje.http.generator.core;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -15,7 +19,8 @@ import javax.validation.Valid;
 import io.avaje.http.api.Delete;
 import io.avaje.http.api.Form;
 import io.avaje.http.api.Get;
-import io.avaje.http.api.OpenAPIReturns;
+import io.avaje.http.api.OpenAPIResponse;
+import io.avaje.http.api.OpenAPIResponses;
 import io.avaje.http.api.Patch;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
@@ -49,7 +54,7 @@ public class MethodReader {
 
   private final String produces;
 
-  private final OpenAPIReturns[] apiResponses;
+  private final List<OpenAPIResponse> apiResponses;
 
   private final ExecutableType actualExecutable;
   private final List<? extends TypeMirror> actualParams;
@@ -128,12 +133,20 @@ public class MethodReader {
   }
 
   private String produces(ControllerReader bean) {
-    final Produces produces = findAnnotation(Produces.class);
+    final var produces = findAnnotation(Produces.class);
     return (produces != null) ? produces.value() : bean.produces();
   }
 
-  private OpenAPIReturns[] getApiResponses() {
-    return element.getAnnotationsByType(OpenAPIReturns.class);
+  private List<OpenAPIResponse> getApiResponses() {
+    final var container =
+        Optional.ofNullable(findAnnotation(OpenAPIResponses.class)).stream()
+            .map(OpenAPIResponses::value)
+            .flatMap(Arrays::stream);
+
+    return Stream.concat(container, Arrays.stream(element.getAnnotationsByType(OpenAPIResponse.class)))
+        .collect(Collectors.toList());
+
+
   }
 
   public <A extends Annotation> A findAnnotation(Class<A> type) {
@@ -230,7 +243,7 @@ public class MethodReader {
     return produces;
   }
 
-  public OpenAPIReturns[] apiResponses() {
+  public List<OpenAPIResponse> apiResponses() {
     return apiResponses;
   }
 
@@ -291,5 +304,4 @@ public class MethodReader {
     }
     return "body";
   }
-
 }

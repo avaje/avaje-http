@@ -6,9 +6,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-/** a container for the OpenAPIReturns annotation to make it repeatable */
+/**
+ * Container for repeatable {@link OpenAPIResponse} annotation
+ *
+ * @see OpenAPIResponse
+ */
 @Target(value = METHOD)
 @Retention(value = RUNTIME)
-public @interface OpenAPIReturnsContainer {
-  OpenAPIReturns[] value();
+public @interface OpenAPIResponses {
+  OpenAPIResponse[] value();
 }
