@@ -5,6 +5,7 @@ import io.avaje.http.generator.core.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Write Helidon specific web route adapter (a Helidon Service).
@@ -24,9 +25,8 @@ class ControllerWriter extends BaseControllerWriter {
       reader.addImportType("io.avaje.jsonb.Types");
       this.jsonTypes = JsonBUtil.jsonTypes(reader);
       jsonTypes.values().stream()
-          .map(UType::allTypes)
-          .flatMap(List::stream)
-          .filter(s -> !s.contains("java.lang"))
+          .map(UType::importTypes)
+          .flatMap(Set::stream)
           .forEach(reader::addImportType);
     } else {
       this.jsonTypes = Map.of();

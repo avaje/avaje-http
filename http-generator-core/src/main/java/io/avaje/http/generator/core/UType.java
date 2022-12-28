@@ -40,12 +40,6 @@ public interface UType {
   default String param0() {
     return null;
   }
-  /**
-   * Return all types associated with this Utype.
-   */
-  default List<String> allTypes() {
-    return List.of();
-  }
 
   /**
    * Return the second generic parameter.
@@ -112,7 +106,7 @@ public interface UType {
 
     @Override
     public Set<String> importTypes() {
-      return Collections.singleton(rawType);
+      return rawType.startsWith("java.lang.") ? Set.of() : Collections.singleton(rawType);
     }
 
     @Override
@@ -130,10 +124,6 @@ public interface UType {
       return rawType;
     }
 
-    @Override
-    public List<String> allTypes() {
-      return List.of(rawType);
-    }
   }
 
   /**
@@ -210,11 +200,6 @@ public interface UType {
     @Override
     public String mainType() {
       return allTypes.isEmpty() ? null : allTypes.get(0);
-    }
-
-    @Override
-    public List<String> allTypes() {
-      return allTypes;
     }
 
     @Override

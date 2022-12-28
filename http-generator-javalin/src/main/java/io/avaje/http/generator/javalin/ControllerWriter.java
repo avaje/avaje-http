@@ -1,8 +1,8 @@
 package io.avaje.http.generator.javalin;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
@@ -32,9 +32,8 @@ class ControllerWriter extends BaseControllerWriter {
       reader.addImportType("io.avaje.jsonb.Types");
       this.jsonTypes = JsonBUtil.jsonTypes(reader);
       jsonTypes.values().stream()
-          .map(UType::allTypes)
-          .flatMap(List::stream)
-          .filter(s -> !s.contains("java.lang"))
+          .map(UType::importTypes)
+          .flatMap(Set::stream)
           .forEach(reader::addImportType);
     } else {
       this.jsonTypes = Map.of();
