@@ -1,6 +1,5 @@
 package io.avaje.http.generator.core;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -56,14 +55,10 @@ public class JsonBUtil {
           break;
         default:
           {
-            try {
-              if (Collection.class.isAssignableFrom(Class.forName(type.mainType())))
-                throw new UnsupportedOperationException(
-                    "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
-            } catch (final ClassNotFoundException e) {
+            if (type.mainType().contains("java.util"))
               throw new UnsupportedOperationException(
                   "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
-            }
+
             final var params =
                 type.allTypes().stream().skip(1).collect(Collectors.joining(".class, ")) + ".class";
 

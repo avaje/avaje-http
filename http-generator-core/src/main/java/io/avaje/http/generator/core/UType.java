@@ -44,7 +44,7 @@ public interface UType {
    * Return all types associated with this Utype.
    */
   default List<String> allTypes() {
-    return null;
+    return List.of();
   }
 
   /**
