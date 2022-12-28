@@ -1,8 +1,10 @@
 package io.avaje.http.generator.core;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class JsonBUtil {
   private JsonBUtil() {}
@@ -53,8 +55,20 @@ public class JsonBUtil {
           writer.append("%s.class).map()", type.param1());
           break;
         default:
-          throw new UnsupportedOperationException(
-              "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
+          {
+            try {
+              if (Collection.class.isAssignableFrom(Class.forName(type.mainType())))
+                throw new UnsupportedOperationException(
+                    "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
+            } catch (final ClassNotFoundException e) {
+              throw new UnsupportedOperationException(
+                  "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
+            }
+            final var params =
+                type.allTypes().stream().skip(1).collect(Collectors.joining(".class, ")) + ".class";
+
+            writer.append("Types.newParameterizedType(%s.class, %s))", type.mainType(), params);
+          }
       }
     }
     writer.append(";").eol();
