@@ -60,7 +60,7 @@ public class JsonBUtil {
                   "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
 
             final var params =
-                type.allTypes().stream().skip(1).collect(Collectors.joining(".class, ")) + ".class";
+                type.importTypes().stream().skip(1).collect(Collectors.joining(".class, ")) + ".class";
 
             writer.append("Types.newParameterizedType(%s.class, %s))", type.mainType(), params);
           }

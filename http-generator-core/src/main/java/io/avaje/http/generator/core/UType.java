@@ -106,7 +106,9 @@ public interface UType {
 
     @Override
     public Set<String> importTypes() {
-      return rawType.startsWith("java.lang.") ? Set.of() : Collections.singleton(rawType);
+      return rawType.startsWith("java.lang.") && rawType.indexOf('.') > -1
+          ? Set.of()
+          : Collections.singleton(rawType.replace("[]", ""));
     }
 
     @Override
@@ -164,7 +166,7 @@ public interface UType {
       Set<String> set = new LinkedHashSet<>();
       for (String type : allTypes) {
         if (!type.startsWith("java.lang.") && type.indexOf('.') > -1) {
-          set.add(type);
+          set.add(type.replace("[]", ""));
         }
       }
       return set;

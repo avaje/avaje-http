@@ -26,8 +26,7 @@ class ControllerWriter extends BaseControllerWriter {
       this.jsonTypes = JsonBUtil.jsonTypes(reader);
       jsonTypes.values().stream()
           .map(UType::importTypes)
-          .flatMap(Set::stream)
-          .forEach(reader::addImportType);
+          .forEach(reader::addImportTypes);
     } else {
       this.jsonTypes = Map.of();
     }
