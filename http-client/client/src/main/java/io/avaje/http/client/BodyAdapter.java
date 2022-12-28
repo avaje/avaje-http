@@ -1,5 +1,6 @@
 package io.avaje.http.client;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 /**
@@ -24,10 +25,28 @@ public interface BodyAdapter {
   <T> BodyReader<T> beanReader(Class<T> type);
 
   /**
+   * Return a BodyReader to read response content and convert to a bean.
+   *
+   * @param type The bean type to convert the content to.
+   */
+  default <T> BodyReader<T> beanReader(ParameterizedType type) {
+    throw new UnsupportedOperationException("Parameterized types not supported for this adapter");
+  }
+
+
+  /**
    * Return a BodyReader to read response content and convert to a list of beans.
    *
    * @param type The bean type to convert the content to.
    */
   <T> BodyReader<List<T>> listReader(Class<T> type);
 
+  /**
+   * Return a BodyReader to read response content and convert to a list of beans.
+   *
+   * @param type The bean type to convert the content to.
+   */
+  default <T> BodyReader<List<T>> listReader(ParameterizedType type) {
+    throw new UnsupportedOperationException("Parameterized types not supported for this adapter");
+  }
 }

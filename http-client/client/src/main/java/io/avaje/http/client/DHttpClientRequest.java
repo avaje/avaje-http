@@ -3,6 +3,7 @@ package io.avaje.http.client;
 import javax.net.ssl.SSLSession;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -433,9 +434,34 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     readResponseContent();
     return context.readList(cls, encodedResponseBody);
   }
-
+  
   @Override
   public <T> Stream<T> stream(Class<T> cls) {
+    final HttpResponse<Stream<String>> res = handler(HttpResponse.BodyHandlers.ofLines());
+    this.httpResponse = res;
+    if (res.statusCode() >= 300) {
+      throw new HttpException(res, context);
+    }
+    final BodyReader<T> bodyReader = context.beanReader(cls);
+    return res.body().map(bodyReader::readBody);
+  }
+
+
+  @Override
+  public <T> T bean(ParameterizedType cls) {
+    readResponseContent();
+    return context.readBean(cls, encodedResponseBody);
+  }
+
+  @Override
+  public <T> List<T> list(ParameterizedType cls) {
+    readResponseContent();
+    return context.readList(cls, encodedResponseBody);
+  }
+
+  
+  @Override
+  public <T> Stream<T> stream(ParameterizedType cls) {
     final HttpResponse<Stream<String>> res = handler(HttpResponse.BodyHandlers.ofLines());
     this.httpResponse = res;
     if (res.statusCode() >= 300) {

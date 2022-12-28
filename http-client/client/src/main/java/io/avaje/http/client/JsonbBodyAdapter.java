@@ -1,13 +1,15 @@
 package io.avaje.http.client;
 
-import io.avaje.jsonb.JsonType;
-import io.avaje.jsonb.Jsonb;
-
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.avaje.jsonb.JsonType;
+import io.avaje.jsonb.Jsonb;
+
 /**
- * avaje jsonb BodyAdapter to read and write beans as JSON.
+ * Avaje Jsonb BodyAdapter to read and write beans as JSON.
  *
  * <pre>{@code
  *
@@ -21,9 +23,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class JsonbBodyAdapter implements BodyAdapter {
 
   private final Jsonb jsonb;
-  private final ConcurrentHashMap<Class<?>, BodyWriter<?>> beanWriterCache = new ConcurrentHashMap<>();
-  private final ConcurrentHashMap<Class<?>, BodyReader<?>> beanReaderCache = new ConcurrentHashMap<>();
-  private final ConcurrentHashMap<Class<?>, BodyReader<?>> listReaderCache = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<Type, BodyWriter<?>> beanWriterCache = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<Type, BodyReader<?>> beanReaderCache = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<Type, BodyReader<?>> listReaderCache = new ConcurrentHashMap<>();
 
   /**
    * Create passing the Jsonb to use.
@@ -36,7 +38,7 @@ public final class JsonbBodyAdapter implements BodyAdapter {
    * Create with a default Jsonb that allows unknown properties.
    */
   public JsonbBodyAdapter() {
-    this.jsonb = Jsonb.newBuilder().build();
+    this.jsonb = Jsonb.builder().build();
   }
 
   @SuppressWarnings("unchecked")
@@ -49,6 +51,18 @@ public final class JsonbBodyAdapter implements BodyAdapter {
   @Override
   public <T> BodyReader<T> beanReader(Class<T> cls) {
     return (BodyReader<T>) beanReaderCache.computeIfAbsent(cls, aClass -> new JReader<>(jsonb.type(cls)));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> BodyReader<T> beanReader(ParameterizedType cls) {
+    return (BodyReader<T>) beanReaderCache.computeIfAbsent(cls, aClass -> new JReader<>(jsonb.type(cls)));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> BodyReader<List<T>> listReader(ParameterizedType cls) {
+    return (BodyReader<List<T>>) listReaderCache.computeIfAbsent(cls, aClass -> new JReader<>(jsonb.type(cls).list()));
   }
 
   @SuppressWarnings("unchecked")
