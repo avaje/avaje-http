@@ -2,7 +2,6 @@ package io.avaje.http.generator.javalin;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
