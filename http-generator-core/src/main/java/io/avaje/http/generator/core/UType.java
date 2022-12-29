@@ -11,6 +11,10 @@ public interface UType {
   static UType parse(TypeMirror type) {
     return Util.parseType(type);
   }
+  /** Create the UType from the given String. */
+  static UType parse(String type) {
+    return Util.parse(type);
+  }
 
   UType VOID = new VoidType();
 
@@ -49,7 +53,7 @@ public interface UType {
   }
 
   /** Return the raw generic parameter if this UType is a Collection. */
-  default String paramRaw() {
+  default UType paramRaw() {
     return null;
   }
 
