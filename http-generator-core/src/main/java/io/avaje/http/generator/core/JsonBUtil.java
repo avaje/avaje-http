@@ -41,31 +41,46 @@ public class JsonBUtil {
 
     writer.append("    this.%sJsonType = jsonB.type(", type.shortName());
     if (!type.isGeneric()) {
-      writer.append("%s.class)", PrimitiveUtil.wrap(type.full()));
+      writer.append("%s.class)", Util.shortName(PrimitiveUtil.wrap(type.full())));
     } else {
       switch (type.mainType()) {
         case "java.util.List":
-          writer.append("%s.class).list()", type.param0());
+          writeType(UType.parse(type.paramRaw()), writer);
+          writer.append(".list()");
           break;
         case "java.util.Set":
-          writer.append("%s.class).set()", type.param0());
+          writeType(UType.parse(type.paramRaw()), writer);
+          writer.append(".set()");
           break;
         case "java.util.Map":
-          writer.append("%s.class).map()", type.param1());
+          writeType(UType.parse(type.paramRaw()), writer);
+          writer.append(".map()");
           break;
         default:
           {
             if (type.mainType().contains("java.util"))
               throw new UnsupportedOperationException(
                   "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
-
-            final var params =
-                type.importTypes().stream().skip(1).collect(Collectors.joining(".class, ")) + ".class";
-
-            writer.append("Types.newParameterizedType(%s.class, %s))", type.mainType(), params);
+            writeType(type, writer);
           }
       }
     }
     writer.append(";").eol();
+  }
+
+  static void writeType(UType type, Append writer) {
+    if (type.isGeneric()) {
+      final var params =
+          type.importTypes().stream()
+                  .skip(1)
+                  .map(Util::shortName)
+                  .collect(Collectors.joining(".class, "))
+              + ".class";
+
+      writer.append(
+          "Types.newParameterizedType(%s.class, %s))", Util.shortName(type.mainType()), params);
+    } else {
+      writer.append("%s.class)", Util.shortName(type.mainType()));
+    }
   }
 }

@@ -48,9 +48,12 @@ public interface UType {
     return null;
   }
 
-  /**
-   * Return the raw type.
-   */
+  /** Return the raw generic parameter if this UType is a Collection. */
+  default String paramRaw() {
+    return null;
+  }
+
+  /** Return the raw type. */
   String full();
 
   default boolean isGeneric() {
@@ -125,7 +128,6 @@ public interface UType {
     public String mainType() {
       return rawType;
     }
-
   }
 
   /**
@@ -133,15 +135,35 @@ public interface UType {
    */
   class Generic implements UType {
     final String rawType;
+    final String rawParamType;
     final List<String> allTypes;
     final String shortRawType;
     final String shortName;
 
     Generic(String rawTypeInput) {
-      this.rawType = rawTypeInput.replace(" ",""); // trim whitespace
+      this.rawType = rawTypeInput.replace(" ", ""); // trim whitespace
       this.allTypes = Arrays.asList(rawType.split("[<|>|,]"));
       this.shortRawType = shortRawType(rawType, allTypes);
       this.shortName = Util.name(shortRawType);
+      this.rawParamType = extractCollectionParam();
+    }
+
+    private String extractCollectionParam() {
+
+      switch (mainType()) {
+        case "java.util.Set":
+        case "java.util.Stream":
+        case "java.util.List":
+          var first = rawType.indexOf("<") + 1;
+          var end = rawType.lastIndexOf(">");
+          return rawType.substring(first, end);
+        case "java.util.Map":
+          first = rawType.indexOf(",") + 1;
+          end = rawType.lastIndexOf(">");
+          return rawType.substring(first, end);
+        default:
+          return rawType;
+      }
     }
 
     private String shortRawType(String rawType, List<String> allTypes) {
@@ -212,6 +234,11 @@ public interface UType {
     @Override
     public String param1() {
       return allTypes.size() < 3 ? null : allTypes.get(2);
+    }
+
+    @Override
+    public String paramRaw() {
+      return rawParamType;
     }
   }
 }
