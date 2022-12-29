@@ -135,7 +135,7 @@ public interface UType {
    */
   class Generic implements UType {
     final String rawType;
-    final String rawParamType;
+    final UType rawParamType;
     final List<String> allTypes;
     final String shortRawType;
     final String shortName;
@@ -145,15 +145,18 @@ public interface UType {
       this.allTypes = Arrays.asList(rawType.split("[<|>|,]"));
       this.shortRawType = shortRawType(rawType, allTypes);
       this.shortName = Util.name(shortRawType);
-      this.rawParamType = extractCollectionParam();
+      final var paramTypeString = extractRawParam();
+      this.rawParamType = paramTypeString != null ? UType.parse(paramTypeString) : null;
     }
 
-    private String extractCollectionParam() {
+    private String extractRawParam() {
 
       switch (mainType()) {
         case "java.util.Set":
         case "java.util.Stream":
         case "java.util.List":
+        case "java.util.concurrent.CompletableFuture":
+        case "io.avaje.http.client.HttpCall":
           var first = rawType.indexOf("<") + 1;
           var end = rawType.lastIndexOf(">");
           return rawType.substring(first, end);
@@ -162,7 +165,7 @@ public interface UType {
           end = rawType.lastIndexOf(">");
           return rawType.substring(first, end);
         default:
-          return rawType;
+          return null;
       }
     }
 
@@ -237,7 +240,7 @@ public interface UType {
     }
 
     @Override
-    public String paramRaw() {
+    public UType paramRaw() {
       return rawParamType;
     }
   }

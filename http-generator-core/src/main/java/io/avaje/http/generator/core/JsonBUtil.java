@@ -45,15 +45,15 @@ public class JsonBUtil {
     } else {
       switch (type.mainType()) {
         case "java.util.List":
-          writeType(UType.parse(type.paramRaw()), writer);
+          writeType(type.paramRaw(), writer);
           writer.append(".list()");
           break;
         case "java.util.Set":
-          writeType(UType.parse(type.paramRaw()), writer);
+          writeType(type.paramRaw(), writer);
           writer.append(".set()");
           break;
         case "java.util.Map":
-          writeType(UType.parse(type.paramRaw()), writer);
+          writeType(type.paramRaw(), writer);
           writer.append(".map()");
           break;
         default:
