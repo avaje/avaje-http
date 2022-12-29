@@ -72,13 +72,13 @@ public class JsonBUtil {
     if (type.isGeneric()) {
       final var params =
           type.importTypes().stream()
-                  .skip(1)
-                  .map(Util::shortName)
-                  .collect(Collectors.joining(".class, "))
-              + ".class";
+              .skip(1)
+              .map(Util::shortName)
+              .collect(Collectors.joining(".class, "));
 
       writer.append(
-          "Types.newParameterizedType(%s.class, %s))", Util.shortName(type.mainType()), params);
+          "Types.newParameterizedType(%s.class, %s.class))",
+          Util.shortName(type.mainType()), params);
     } else {
       writer.append("%s.class)", Util.shortName(type.mainType()));
     }

@@ -157,8 +157,8 @@ public interface UType {
 
       switch (mainType()) {
         case "java.util.Set":
-        case "java.util.Stream":
         case "java.util.List":
+        case "java.util.stream.Stream":
         case "java.util.concurrent.CompletableFuture":
         case "io.avaje.http.client.HttpCall":
           var first = rawType.indexOf("<") + 1;
