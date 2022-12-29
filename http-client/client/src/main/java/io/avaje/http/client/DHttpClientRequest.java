@@ -532,6 +532,28 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return response.body().map(bodyReader::readBody);
   }
 
+  protected <E> E asyncBean(ParameterizedType type, HttpResponse<byte[]> response) {
+    afterAsyncEncoded(response);
+    return context.readBean(type, encodedResponseBody);
+  }
+
+  protected <E> List<E> asyncList(ParameterizedType type, HttpResponse<byte[]> response) {
+    afterAsyncEncoded(response);
+    return context.readList(type, encodedResponseBody);
+  }
+
+  protected <E> Stream<E> asyncStream(
+      ParameterizedType type, HttpResponse<Stream<String>> response) {
+    responseTimeNanos = System.nanoTime() - startAsyncNanos;
+    httpResponse = response;
+    context.afterResponse(this);
+    if (response.statusCode() >= 300) {
+      throw new HttpException(response, context);
+    }
+    final BodyReader<E> bodyReader = context.beanReader(type);
+    return response.body().map(bodyReader::readBody);
+  }
+
   private void afterAsyncEncoded(HttpResponse<byte[]> response) {
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
