@@ -47,6 +47,6 @@ public interface BodyAdapter {
    * @param type The bean type to convert the content to.
    */
   default <T> BodyReader<List<T>> listReader(ParameterizedType type) {
-    throw new UnsupportedOperationException("Parameterized types not supported for this Body Adapter");
+    throw new UnsupportedOperationException("Parameterized types not supported for this adapter");
   }
 }
