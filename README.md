@@ -1,6 +1,6 @@
 # avaje-http
 
-Http server and client libraries and code generation.
+HTTP server and client libraries via code generation.
 
 ## Http Server
 
