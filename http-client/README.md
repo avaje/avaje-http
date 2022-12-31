@@ -310,7 +310,7 @@ public final class ExampleRetry implements RetryHandler {
 
     final var code = response.statusCode();
 
-    if (retryCount >= MAX_RETRIES || code >= 400) {
+    if (retryCount >= MAX_RETRIES || code <= 400) {
 
       return false;
     }
