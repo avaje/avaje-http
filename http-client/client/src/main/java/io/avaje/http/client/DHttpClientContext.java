@@ -2,6 +2,7 @@ package io.avaje.http.client;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.ParameterizedType;
 import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
@@ -273,12 +274,25 @@ final class DHttpClientContext implements HttpClientContext {
     return bodyAdapter.beanReader(cls);
   }
 
+  <T> BodyReader<T> beanReader(ParameterizedType cls) {
+    return bodyAdapter.beanReader(cls);
+  }
+
   <T> T readBean(Class<T> cls, BodyContent content) {
     return bodyAdapter.beanReader(cls).read(content);
   }
 
   <T> List<T> readList(Class<T> cls, BodyContent content) {
     return bodyAdapter.listReader(cls).read(content);
+  }
+
+  @SuppressWarnings("unchecked")
+  <T> T readBean(ParameterizedType cls, BodyContent content) {
+    return (T) bodyAdapter.beanReader(cls).read(content);
+  }
+
+  <T> List<T> readList(ParameterizedType cls, BodyContent content) {
+    return (List<T>) bodyAdapter.listReader(cls).read(content);
   }
 
   void afterResponse(DHttpClientRequest request) {

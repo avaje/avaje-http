@@ -3,6 +3,7 @@ package io.avaje.http.client;
 import javax.net.ssl.SSLSession;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -433,9 +434,34 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     readResponseContent();
     return context.readList(cls, encodedResponseBody);
   }
-
+  
   @Override
   public <T> Stream<T> stream(Class<T> cls) {
+    final HttpResponse<Stream<String>> res = handler(HttpResponse.BodyHandlers.ofLines());
+    this.httpResponse = res;
+    if (res.statusCode() >= 300) {
+      throw new HttpException(res, context);
+    }
+    final BodyReader<T> bodyReader = context.beanReader(cls);
+    return res.body().map(bodyReader::readBody);
+  }
+
+
+  @Override
+  public <T> T bean(ParameterizedType cls) {
+    readResponseContent();
+    return context.readBean(cls, encodedResponseBody);
+  }
+
+  @Override
+  public <T> List<T> list(ParameterizedType cls) {
+    readResponseContent();
+    return context.readList(cls, encodedResponseBody);
+  }
+
+  
+  @Override
+  public <T> Stream<T> stream(ParameterizedType cls) {
     final HttpResponse<Stream<String>> res = handler(HttpResponse.BodyHandlers.ofLines());
     this.httpResponse = res;
     if (res.statusCode() >= 300) {
@@ -496,6 +522,28 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   protected <E> Stream<E> asyncStream(Class<E> type, HttpResponse<Stream<String>> response) {
+    responseTimeNanos = System.nanoTime() - startAsyncNanos;
+    httpResponse = response;
+    context.afterResponse(this);
+    if (response.statusCode() >= 300) {
+      throw new HttpException(response, context);
+    }
+    final BodyReader<E> bodyReader = context.beanReader(type);
+    return response.body().map(bodyReader::readBody);
+  }
+
+  protected <E> E asyncBean(ParameterizedType type, HttpResponse<byte[]> response) {
+    afterAsyncEncoded(response);
+    return context.readBean(type, encodedResponseBody);
+  }
+
+  protected <E> List<E> asyncList(ParameterizedType type, HttpResponse<byte[]> response) {
+    afterAsyncEncoded(response);
+    return context.readList(type, encodedResponseBody);
+  }
+
+  protected <E> Stream<E> asyncStream(
+      ParameterizedType type, HttpResponse<Stream<String>> response) {
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     context.afterResponse(this);

@@ -1,6 +1,7 @@
 package io.avaje.http.client;
 
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -61,6 +62,21 @@ final class DHttpCall implements HttpCallResponse {
 
   @Override
   public <E> HttpCall<Stream<E>> stream(Class<E> type) {
+    return new CallStream<>(type);
+  }
+
+  @Override
+  public <E> HttpCall<E> bean(ParameterizedType type) {
+    return new CallBean<>(type);
+  }
+
+  @Override
+  public <E> HttpCall<List<E>> list(ParameterizedType type) {
+    return new CallList<>(type);
+  }
+
+  @Override
+  public <E> HttpCall<Stream<E>> stream(ParameterizedType type) {
     return new CallStream<>(type);
   }
 
@@ -132,46 +148,85 @@ final class DHttpCall implements HttpCallResponse {
 
   private class CallBean<E> implements HttpCall<E> {
     private final Class<E> type;
+    private final ParameterizedType genericType;
+    private final boolean isGeneric;
+
     CallBean(Class<E> type) {
+      this.isGeneric = false;
       this.type = type;
+      this.genericType = null;
     }
+
+    CallBean(ParameterizedType type) {
+      this.isGeneric = true;
+      this.type = null;
+      this.genericType = type;
+    }
+
     @Override
     public E execute() {
-      return request.bean(type);
+      return isGeneric ? request.bean(genericType) : request.bean(type);
     }
+
     @Override
     public CompletableFuture<E> async() {
-      return request.async().bean(type);
+      return isGeneric ? request.async().bean(genericType) : request.async().bean(type);
     }
   }
 
   private class CallList<E> implements HttpCall<List<E>> {
     private final Class<E> type;
+    private final ParameterizedType genericType;
+    private final boolean isGeneric;
+
     CallList(Class<E> type) {
+      this.isGeneric = false;
       this.type = type;
+      this.genericType = null;
     }
+
+    CallList(ParameterizedType type) {
+      this.isGeneric = true;
+      this.type = null;
+      this.genericType = type;
+    }
+
     @Override
     public List<E> execute() {
-      return request.list(type);
+      return isGeneric ? request.list(genericType) : request.list(type);
     }
+
     @Override
     public CompletableFuture<List<E>> async() {
-      return request.async().list(type);
+      return isGeneric ? request.async().list(genericType) : request.async().list(type);
     }
   }
 
   private class CallStream<E> implements HttpCall<Stream<E>> {
     private final Class<E> type;
+    private final ParameterizedType genericType;
+    private final boolean isGeneric;
+
     CallStream(Class<E> type) {
+      this.isGeneric = false;
       this.type = type;
+      this.genericType = null;
     }
+
+    CallStream(ParameterizedType type) {
+      this.isGeneric = true;
+      this.type = null;
+      this.genericType = type;
+    }
+
     @Override
     public Stream<E> execute() {
-      return request.stream(type);
+      return isGeneric ? request.stream(genericType) : request.stream(type);
     }
+
     @Override
     public CompletableFuture<Stream<E>> async() {
-      return request.async().stream(type);
+      return isGeneric ? request.async().stream(genericType) : request.async().stream(type);
     }
   }
 

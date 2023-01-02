@@ -1,6 +1,7 @@
 package io.avaje.http.client;
 
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -334,4 +335,29 @@ public interface HttpAsyncResponse {
    * @return The CompletableFuture of the response
    */
   <E> CompletableFuture<Stream<E>> stream(Class<E> type);
+
+  /**
+   * Process expecting a bean response body (typically from json content).
+   *
+   * @param type The parameterized type to convert the content to
+   * @return The CompletableFuture of the response
+   */
+  <E> CompletableFuture<E> bean(ParameterizedType type);
+
+  /**
+   * Process expecting a list of beans response body (typically from json content).
+   *
+   * @param type The parameterized type to convert the content to
+   * @return The CompletableFuture of the response
+   */
+  <E> CompletableFuture<List<E>> list(ParameterizedType type);
+
+  /**
+   * Process response as a stream of beans (x-json-stream).
+   *
+   * @param type The parameterized type to convert the content to
+   * @return The CompletableFuture of the response
+   */
+  <E> CompletableFuture<Stream<E>> stream(ParameterizedType type);
+
 }

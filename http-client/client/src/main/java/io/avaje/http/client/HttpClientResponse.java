@@ -1,6 +1,7 @@
 package io.avaje.http.client;
 
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.util.List;
@@ -85,6 +86,7 @@ public interface HttpClientResponse {
    */
   <T> List<T> list(Class<T> type);
 
+
   /**
    * Return the response as a stream of beans.
    * <p>
@@ -105,6 +107,51 @@ public interface HttpClientResponse {
    * @throws HttpException when the response has error status codes
    */
   <T> Stream<T> stream(Class<T> type);
+
+  /**
+   * Return the response as a single bean.
+   * <p>
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException.
+   *
+   * @param type The parameterized type of the bean to convert the response content into.
+   * @return The bean the response is converted into.
+   * @throws HttpException when the response has error status codes
+   */
+  <T> T bean(ParameterizedType type);
+
+  /**
+   * Return the response as a list of beans.
+   * <p>
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException.
+   *
+   * @param type The parameterized type of the bean to convert the response content into.
+   * @return The list of beans the response is converted into.
+   * @throws HttpException when the response has error status codes
+   */
+  <T> List<T> list(ParameterizedType type);
+
+  /**
+   * Return the response as a stream of beans.
+   * <p>
+   * Typically the response is expected to be {@literal application/x-json-stream}
+   * newline delimited json payload.
+   * <p>
+   * Note that for this stream request the response content is not deemed
+   * 'loggable' by avaje-http-client. This is because the entire response
+   * may not be available at the time of the callback. As such {@link RequestLogger}
+   * will not include response content when logging stream request/response
+   * <p>
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException.
+   *
+   * @param type The parameterized type of the bean to convert the response content into.
+   * @return The stream of beans from the response
+   * @throws HttpException when the response has error status codes
+   */
+  <T> Stream<T> stream(ParameterizedType type);
+
 
   /**
    * Return the response with check for 200 range status code.

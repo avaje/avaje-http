@@ -1,6 +1,7 @@
 package io.avaje.http.client;
 
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -74,6 +75,27 @@ final class DHttpAsync implements HttpAsyncResponse {
 
   @Override
   public <E> CompletableFuture<Stream<E>> stream(Class<E> type) {
+    return request
+      .performSendAsync(false, HttpResponse.BodyHandlers.ofLines())
+      .thenApply(httpResponse -> request.asyncStream(type, httpResponse));
+  }
+
+  @Override
+  public <E> CompletableFuture<E> bean(ParameterizedType type) {
+    return request
+      .performSendAsync(true, HttpResponse.BodyHandlers.ofByteArray())
+      .thenApply(httpResponse -> request.asyncBean(type, httpResponse));
+  }
+
+  @Override
+  public <E> CompletableFuture<List<E>> list(ParameterizedType type) {
+    return request
+      .performSendAsync(true, HttpResponse.BodyHandlers.ofByteArray())
+      .thenApply(httpResponse -> request.asyncList(type, httpResponse));
+  }
+
+  @Override
+  public <E> CompletableFuture<Stream<E>> stream(ParameterizedType type) {
     return request
       .performSendAsync(false, HttpResponse.BodyHandlers.ofLines())
       .thenApply(httpResponse -> request.asyncStream(type, httpResponse));

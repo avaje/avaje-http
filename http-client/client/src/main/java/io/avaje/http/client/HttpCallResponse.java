@@ -1,6 +1,7 @@
 package io.avaje.http.client;
 
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.stream.Stream;
@@ -185,5 +186,29 @@ public interface HttpCallResponse {
    * @return The HttpCall to execute sync or async
    */
   <E> HttpCall<Stream<E>> stream(Class<E> type);
+
+  /**
+   * A bean response to execute async or sync.
+   *
+   * @param type The parameterized type to convert the content to
+   * @return The HttpCall to allow sync or async execution
+   */
+  <E> HttpCall<E> bean(ParameterizedType type);
+
+  /**
+   * Process expecting a list of beans response body (typically from json content).
+   *
+   * @param type The parameterized type to convert the content to
+   * @return The HttpCall to execute sync or async
+   */
+  <E> HttpCall<List<E>> list(ParameterizedType type);
+
+  /**
+   * Process expecting a stream of beans response body (typically from json content).
+   *
+   * @param type The parameterized type to convert the content to
+   * @return The HttpCall to execute sync or async
+   */
+  <E> HttpCall<Stream<E>> stream(ParameterizedType type);
 
 }

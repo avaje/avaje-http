@@ -394,7 +394,7 @@ class HelloControllerTest extends BaseWebTest {
     final HttpResponse<String> hres = request.GET().asString();
 
     assertThat(hres.statusCode()).isEqualTo(404);
-    assertThat(hres.body()).contains("Not found");
+    assertThat(hres.body()).contains("Not Found");
     HttpClientContext.Metrics metrics = clientContext.metrics(true);
     assertThat(metrics.totalCount()).isEqualTo(1);
     assertThat(metrics.errorCount()).isEqualTo(1);
