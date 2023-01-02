@@ -231,13 +231,13 @@ If [Avaje-Jsonb](https://github.com/avaje/avaje-jsonb) is detected, http generat
 public class WidgetController$Route implements WebRoutes {
 
   private final WidgetController controller;
-  private final JsonType<java.util.List<org.example.hello.WidgetController.Widget>> listWidgetJsonType;
-  private final JsonType<org.example.hello.WidgetController.Widget> widgetJsonType;
+  private final JsonType<List<Widget>> listWidgetJsonType;
+  private final JsonType<Widget> widgetJsonType;
 
   public WidgetController$Route(WidgetController controller, Jsonb jsonB) {
     this.controller = controller;
-    this.listWidgetJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class).list();
-    this.widgetJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class);
+    this.listWidgetJsonType = jsonB.type(Widget.class).list();
+    this.widgetJsonType = jsonB.type(Widget.class);
   }
 
   @Override
