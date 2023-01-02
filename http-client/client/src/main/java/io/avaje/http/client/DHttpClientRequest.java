@@ -434,7 +434,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     readResponseContent();
     return context.readList(cls, encodedResponseBody);
   }
-  
+
   @Override
   public <T> Stream<T> stream(Class<T> cls) {
     final HttpResponse<Stream<String>> res = handler(HttpResponse.BodyHandlers.ofLines());
@@ -459,7 +459,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return context.readList(cls, encodedResponseBody);
   }
 
-  
+
   @Override
   public <T> Stream<T> stream(ParameterizedType cls) {
     final HttpResponse<Stream<String>> res = handler(HttpResponse.BodyHandlers.ofLines());
@@ -542,8 +542,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return context.readList(type, encodedResponseBody);
   }
 
-  protected <E> Stream<E> asyncStream(
-      ParameterizedType type, HttpResponse<Stream<String>> response) {
+  protected <E> Stream<E> asyncStream(ParameterizedType type, HttpResponse<Stream<String>> response) {
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     context.afterResponse(this);
