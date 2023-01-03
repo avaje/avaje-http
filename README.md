@@ -11,9 +11,7 @@ to generate adapter code for Javalin and Helidon SE/Nima.
 - Lightweight as in 65Kb library + generated source code
 - Full use of Javalin or Helidon SE/Nima as desired
 
-## Quick Start
-
-#### 1. Add dependencies
+## Add dependencies
 ```xml
 <dependency>
   <groupId>io.avaje</groupId>
@@ -26,7 +24,7 @@ to generate adapter code for Javalin and Helidon SE/Nima.
   <version>${avaje.http.version}</version>
 </dependency>
 ```
-#### 2. Add the generator module for your desired microframework as a annotation processor.
+#### Add the generator module for your desired microframework as a annotation processor.
 
 ```xml
 <!-- Annotation processors -->
@@ -67,7 +65,7 @@ If there are other annotation processors and they are specified via <i>maven-com
   </configuration>
 </plugin>
 ```
-#### 3. Define a Controller (These APT processors work with both Java and Kotlin.)
+## Define a Controller (These APT processors work with both Java and Kotlin.)
 ```java
 package org.example.hello;
 
