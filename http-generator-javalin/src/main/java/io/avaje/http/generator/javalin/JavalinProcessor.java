@@ -9,15 +9,16 @@ import java.io.IOException;
 
 public class JavalinProcessor extends BaseProcessor {
 
-  private boolean useJsonB;
+  private final boolean useJsonB;
 
   public JavalinProcessor() {
+    var jsonBOnClassPath = false;
     try {
       Class.forName("io.avaje.jsonb.Jsonb");
-      this.useJsonB = true;
+      jsonBOnClassPath = true;
     } catch (final ClassNotFoundException e) {
-      this.useJsonB = false;
     }
+    useJsonB = jsonBOnClassPath;
   }
 
   public JavalinProcessor(boolean useJsonb) {

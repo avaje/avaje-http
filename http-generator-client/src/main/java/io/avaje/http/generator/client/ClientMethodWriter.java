@@ -139,7 +139,7 @@ class ClientMethodWriter {
     } else if (isHttpResponse(mainType)) {
       writeWithHandler();
     } else {
-      writer.append(".bean(").eol();
+      writer.append(".bean(");
       writeGeneric(type);
     }
   }

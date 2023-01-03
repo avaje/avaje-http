@@ -9,15 +9,16 @@ import java.io.IOException;
 
 public class NimaProcessor extends BaseProcessor {
 
-  private boolean jsonB;
+  private final boolean jsonB;
 
   public NimaProcessor() {
+    var jsonBOnClassPath = false;
     try {
       Class.forName("io.avaje.jsonb.Jsonb");
-      this.jsonB = true;
+      jsonBOnClassPath = true;
     } catch (final ClassNotFoundException e) {
-      this.jsonB = false;
     }
+    jsonB = jsonBOnClassPath;
   }
 
   public NimaProcessor(boolean useJsonb) {
