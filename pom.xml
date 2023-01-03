@@ -4,21 +4,21 @@
   <parent>
     <groupId>org.avaje</groupId>
     <artifactId>java11-oss</artifactId>
-    <version>3.8</version>
+    <version>3.9</version>
   </parent>
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-generator-parent</artifactId>
-  <version>1.18-SNAPSHOT</version>
+  <version>1.21-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>avaje-http-generator-parent-1.19</tag>
   </scm>
 
   <properties>
-    <nexus.staging.autoReleaseAfterClose>false</nexus.staging.autoReleaseAfterClose>
+    <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
   </properties>
 
   <dependencies>
@@ -38,6 +38,7 @@
     <module>http-generator-jex</module>
     <module>http-generator-helidon</module>
     <module>http-generator-client</module>
+    <module>http-generator-nima</module>
   </modules>
 
   <profiles>

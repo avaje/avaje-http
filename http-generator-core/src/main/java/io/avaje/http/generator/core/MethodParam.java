@@ -33,35 +33,35 @@ public class MethodParam {
   }
 
   public boolean isBody() {
-    return elementParam.getParamType() == ParamType.BODY;
+    return elementParam.paramType() == ParamType.BODY;
   }
 
   public boolean isForm() {
-    return elementParam.getParamType() == ParamType.FORM;
+    return elementParam.paramType() == ParamType.FORM;
   }
 
-  public String getShortType() {
-    return elementParam.getShortType();
+  public String shortType() {
+    return elementParam.shortType();
   }
 
-  public String getRawType() {
-    return elementParam.getRawType();
+  public String rawType() {
+    return elementParam.rawType();
   }
 
-  public String getName() {
-    return elementParam.getVarName();
+  public String name() {
+    return elementParam.varName();
   }
 
-  public String getParamName() {
-    return elementParam.getParamName();
+  public String paramName() {
+    return elementParam.paramName();
   }
 
-  public ParamType getParamType() {
-    return elementParam.getParamType();
+  public ParamType paramType() {
+    return elementParam.paramType();
   }
 
-  public UType getUType() {
-    return elementParam.getType();
+  public UType utype() {
+    return elementParam.type();
   }
 
   public void setResponseHandler() {

@@ -95,7 +95,7 @@ public class PathSegments {
   /**
    * Return all segments including literal segments.
    */
-  public Set<Segment> getSegments() {
+  public Set<Segment> segments() {
     return segments;
   }
 
@@ -124,6 +124,10 @@ public class PathSegments {
 
   private String fullPath(String prefix, String suffix) {
     return chunks.fullPath(prefix, suffix);
+  }
+
+  public boolean isEmpty() {
+    return segments.isEmpty();
   }
 
   public static class Segment {

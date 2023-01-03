@@ -23,13 +23,13 @@ class ControllerMethodWriter {
   ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx) {
     this.method = method;
     this.writer = writer;
-    this.webMethod = method.getWebMethod();
+    this.webMethod = method.webMethod();
     this.ctx = ctx;
   }
 
   void writeRule() {
-    final String fullPath = method.getFullPath();
-    final String bodyType = method.getBodyType();
+    final String fullPath = method.fullPath();
+    final String bodyType = method.bodyType();
     if (bodyType != null) {
       writer.append("    rules.%s(\"%s\", Handler.create(%s.class, this::_%s));", webMethod.name().toLowerCase(), fullPath, bodyType, method.simpleName()).eol();
     } else if (method.isFormBody()) {
@@ -41,9 +41,9 @@ class ControllerMethodWriter {
 
   void writeHandler(boolean requestScoped) {
     writer.append("  private void _%s(ServerRequest req, ServerResponse res", method.simpleName());
-    final String bodyType = method.getBodyType();
+    final String bodyType = method.bodyType();
     if (bodyType != null) {
-      writer.append(", %s %s", bodyType, method.getBodyName());
+      writer.append(", %s %s", bodyType, method.bodyName());
     } else if (method.isFormBody()) {
       writer.append(", %s %s", "FormParams", "formParams");
     }
@@ -52,13 +52,13 @@ class ControllerMethodWriter {
       writeContextReturn();
     }
 
-    final PathSegments segments = method.getPathSegments();
+    final PathSegments segments = method.pathSegments();
     List<PathSegments.Segment> matrixSegments = segments.matrixSegments();
     for (PathSegments.Segment matrixSegment : matrixSegments) {
       matrixSegment.writeCreateSegment(writer, ctx.platform());
     }
 
-    final List<MethodParam> params = method.getParams();
+    final List<MethodParam> params = method.params();
     for (MethodParam param : params) {
       param.writeCtxGet(writer, segments);
     }
@@ -93,7 +93,7 @@ class ControllerMethodWriter {
   }
 
   private void writeContextReturn() {
-    final String produces = method.getProduces();
+    final String produces = method.produces();
     if (produces == null) {
       // let it be automatically set
     } else if (MediaType.APPLICATION_JSON.equalsIgnoreCase(produces)) {

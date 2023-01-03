@@ -61,7 +61,7 @@ public class ElementReader {
     if (typeHandler != null) {
       return false;
     }
-    TypeElement elementType = ctx.getTypeElement(rawType);
+    TypeElement elementType = ctx.typeElement(rawType);
     return elementType != null && elementType.getAnnotation(Valid.class) != null;
   }
 
@@ -133,7 +133,7 @@ public class ElementReader {
     return defaultName;
   }
 
-  public String getVarName() {
+  public String varName() {
     return varName;
   }
 
@@ -149,7 +149,7 @@ public class ElementReader {
     return ctx.platform().platformVariable(rawType);
   }
 
-  private String shortType() {
+  private String handlerShortType() {
     if (typeHandler != null) {
       return typeHandler.shortName();
     } else {
@@ -159,7 +159,7 @@ public class ElementReader {
 
   void addImports(ControllerReader bean) {
     if (typeHandler != null) {
-      String importType = typeHandler.getImportType();
+      String importType = typeHandler.importType();
       if (importType != null) {
         bean.addImportType(rawType);
       }
@@ -205,15 +205,15 @@ public class ElementReader {
       // body passed as method parameter (Helidon)
       return;
     }
-    String shortType = shortType();
-    writer.append("%s  %s %s = ", ctx.platform().indent(), shortType, varName);
+    String shortType = handlerShortType();
+    writer.append("%s  var %s = ", ctx.platform().indent(), varName);
     if (setValue(writer, segments, shortType)) {
       writer.append(";").eol();
     }
   }
 
   void setValue(Append writer) {
-    setValue(writer, PathSegments.EMPTY, shortType());
+    setValue(writer, PathSegments.EMPTY, handlerShortType());
   }
 
   private boolean setValue(Append writer, PathSegments segments, String shortType) {
@@ -259,7 +259,7 @@ public class ElementReader {
 
     if (typeHandler == null) {
       // this is a body (POST, PATCH)
-      writer.append(ctx.platform().bodyAsClass(shortType));
+      writer.append(ctx.platform().bodyAsClass(type));
 
     } else {
       if (hasParamDefault()) {
@@ -284,32 +284,32 @@ public class ElementReader {
   }
 
   private void writeForm(Append writer, String shortType, String varName, ParamType defaultParamType) {
-    TypeElement formBeanType = ctx.getTypeElement(rawType);
+    TypeElement formBeanType = ctx.typeElement(rawType);
     BeanParamReader form = new BeanParamReader(ctx, formBeanType, varName, shortType, defaultParamType);
     form.write(writer);
   }
 
-  public ParamType getParamType() {
+  public ParamType paramType() {
     return paramType;
   }
 
-  public String getParamName() {
+  public String paramName() {
     return paramName;
   }
 
-  public String getShortType() {
+  public String shortType() {
     return shortType;
   }
 
-  public String getRawType() {
+  public String rawType() {
     return rawType;
   }
 
-  public UType getType() {
+  public UType type() {
     return type;
   }
 
-  public Element getElement() {
+  public Element element() {
     return element;
   }
 

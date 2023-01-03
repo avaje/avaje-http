@@ -1,11 +1,12 @@
 package io.avaje.http.generator.jex;
 
+import java.util.List;
+
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
-
-import java.util.List;
+import io.avaje.http.generator.core.UType;
 
 class JexAdapter implements PlatformAdapter {
 
@@ -27,8 +28,8 @@ class JexAdapter implements PlatformAdapter {
   }
 
   @Override
-  public String bodyAsClass(String shortType) {
-    return "ctx.bodyAsClass(" + shortType + ".class)";
+  public String bodyAsClass(UType uType) {
+    return "ctx.bodyAsClass(" + uType.mainType() + ".class)";
   }
 
   @Override
@@ -47,7 +48,7 @@ class JexAdapter implements PlatformAdapter {
   }
 
   private void addRoleImports(List<String> roles, ControllerReader controller) {
-    for (String role : roles) {
+    for (final String role : roles) {
       controller.addStaticImportType(role);
     }
   }

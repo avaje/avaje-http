@@ -18,7 +18,7 @@ interface TypeHandler {
   /**
    * The type for adding to imports.
    */
-  String getImportType();
+  String importType();
 
   /**
    * The short name.

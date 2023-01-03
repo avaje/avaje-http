@@ -29,11 +29,11 @@ public class MethodParamDocBuilder {
     this.javadoc = methodDoc.getJavadoc();
     this.operation = methodDoc.getOperation();
 
-    this.paramType = param.getParamType();
-    this.paramName = param.getParamName();
-    this.varName = param.getVarName();
-    this.rawType = param.getRawType();
-    this.element = param.getElement();
+    this.paramType = param.paramType();
+    this.paramName = param.paramName();
+    this.varName = param.varName();
+    this.rawType = param.type().full();
+    this.element = param.element();
   }
 
   /**
@@ -55,7 +55,7 @@ public class MethodParamDocBuilder {
 
       } else {
         param.setSchema(schema);
-        param.setIn(paramType.getType());
+        param.setIn(paramType.type());
         operation.addParametersItem(param);
       }
     }

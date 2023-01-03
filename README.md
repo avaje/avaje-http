@@ -78,7 +78,7 @@ public class WidgetController {
   public WidgetController(HelloComponent hello) {
     this.hello = hello;
   }
-  
+
   @Get("/{id}")
   Widget getById(int id) {
     return new Widget(id, "you got it"+ hello.hello());
@@ -104,7 +104,7 @@ The annotation processor will generate controller classes implementing the WebRo
 get all the WebRoutes and register them with Javalin using:
 
 ```java
-var routes = BeanScope.builder().build().list(WebRoutes.class); 
+var routes = BeanScope.builder().build().list(WebRoutes.class);
 
 Javalin.create()
         .routes(() -> routes.forEach(WebRoutes::registerRoutes))
@@ -117,7 +117,7 @@ The annotation processor will generate controller classes implementing the Helid
 get all the Services and register them with Helidon `RoutingBuilder`.
 
 ```java
-var routes = BeanScope.builder().build().list(Service.class); 
+var routes = BeanScope.builder().build().list(Service.class);
 var routingBuilder = Routing.builder().register(routes.stream().toArray(Service[]::new));
 WebServer.builder()
         .addMediaSupport(JacksonSupport.create())
@@ -132,7 +132,7 @@ The annotation processor will generate controller classes implementing the Helid
 get all the services and register them with the Helidon `HttpRouting`.
 
 ```java
-var routes = BeanScope.builder().build().list(HttpService.class); 
+var routes = BeanScope.builder().build().list(HttpService.class);
 final var builder = HttpRouting.builder();
 
 for (final HttpService httpService : routes) {

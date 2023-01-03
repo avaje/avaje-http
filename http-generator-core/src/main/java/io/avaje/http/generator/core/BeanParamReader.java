@@ -42,7 +42,7 @@ public class BeanParamReader {
 
   private void readField(Element enclosedElement) {
     FieldReader field = new FieldReader(ctx, enclosedElement, defaultParamType);
-    fieldMap.put(field.getVarName(), field);
+    fieldMap.put(field.varName(), field);
   }
 
   private void readMethod(ExecutableElement enclosedElement) {
@@ -104,13 +104,13 @@ public class BeanParamReader {
 
   public void writeFormParams(Append writer) {
     for (FieldReader field : fieldMap.values()) {
-      ExecutableElement getter = findGetter(field.getVarName());
-      ParamType paramType = field.element.getParamType();
+      ExecutableElement getter = findGetter(field.varName());
+      ParamType paramType = field.element.paramType();
       String type = propertyParamType(paramType);
       if (type != null) {
-        String accessor = (getter != null) ? getter.toString() : field.isPublic() ? field.getVarName() : null;
+        String accessor = (getter != null) ? getter.toString() : field.isPublic() ? field.varName() : null;
         if (accessor != null) {
-          writer.append("      .%s(\"%s\", %s.%s)", type, field.getParamName(), beanVarName, accessor).eol();
+          writer.append("      .%s(\"%s\", %s.%s)", type, field.paramName(), beanVarName, accessor).eol();
         }
       }
     }
@@ -152,15 +152,15 @@ public class BeanParamReader {
     }
 
     boolean isPublic() {
-      return element.getElement().getModifiers().contains(Modifier.PUBLIC);
+      return element.element().getModifiers().contains(Modifier.PUBLIC);
     }
 
-    String getParamName() {
-      return element.getParamName();
+    String paramName() {
+      return element.paramName();
     }
 
-    String getVarName() {
-      return element.getVarName();
+    String varName() {
+      return element.varName();
     }
 
     @Override
@@ -187,7 +187,7 @@ public class BeanParamReader {
 
       } else {
         // populate via field put
-        writer.append("%s  %s.%s = ", ctx.platform().indent(), beanVarName, getVarName());
+        writer.append("%s  %s.%s = ", ctx.platform().indent(), beanVarName, varName());
         element.setValue(writer);
         writer.append(";").eol();
       }

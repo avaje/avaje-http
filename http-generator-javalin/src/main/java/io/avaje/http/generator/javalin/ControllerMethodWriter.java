@@ -1,15 +1,7 @@
 package io.avaje.http.generator.javalin;
 
 import io.avaje.http.api.MediaType;
-import io.avaje.http.generator.core.Append;
-import io.avaje.http.generator.core.MethodParam;
-import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.PathSegments;
-import io.avaje.http.generator.core.ProcessingContext;
-import io.avaje.http.generator.core.Util;
-import io.avaje.http.generator.core.WebMethod;
-
-import java.util.List;
+import io.avaje.http.generator.core.*;
 
 /**
  * Write code to register Web route for a given controller method.
@@ -20,39 +12,42 @@ class ControllerMethodWriter {
   private final Append writer;
   private final WebMethod webMethod;
   private final ProcessingContext ctx;
+  private final boolean useJsonB;
 
-  ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx) {
+  ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
-    this.webMethod = method.getWebMethod();
+    this.webMethod = method.webMethod();
     this.ctx = ctx;
+    this.useJsonB = useJsonB;
   }
 
   void write(boolean requestScoped) {
 
-    final PathSegments segments = method.getPathSegments();
-    final String fullPath = segments.fullPath();
+    final var segments = method.pathSegments();
+    final var fullPath = segments.fullPath();
 
     writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
-    writer.append("      ctx.status(%s);", method.getStatusCode()).eol();
+    writer.append("      ctx.status(%s);", method.statusCode()).eol();
 
-    List<PathSegments.Segment> matrixSegments = segments.matrixSegments();
-    for (PathSegments.Segment matrixSegment : matrixSegments) {
+    final var matrixSegments = segments.matrixSegments();
+    for (final PathSegments.Segment matrixSegment : matrixSegments) {
       matrixSegment.writeCreateSegment(writer, ctx.platform());
     }
 
-    final List<MethodParam> params = method.getParams();
-    for (MethodParam param : params) {
+    final var params = method.params();
+    for (final MethodParam param : params) {
       param.writeCtxGet(writer, segments);
     }
     writer.append("      ");
     if (method.includeValidate()) {
-      for (MethodParam param : params) {
+      for (final MethodParam param : params) {
         param.writeValidate(writer);
       }
     }
+
     if (!method.isVoid()) {
-      writeContextReturn();
+      writer.append("var result = ");
     }
 
     if (requestScoped) {
@@ -61,23 +56,25 @@ class ControllerMethodWriter {
       writer.append("controller.");
     }
     writer.append(method.simpleName()).append("(");
-    for (int i = 0; i < params.size(); i++) {
+    for (var i = 0; i < params.size(); i++) {
       if (i > 0) {
         writer.append(", ");
       }
       params.get(i).buildParamName(writer);
     }
-    writer.append(")");
+
+    writer.append(");").eol();
     if (!method.isVoid()) {
-      writer.append(")");
+      writeContextReturn();
+      writer.eol();
     }
-    writer.append(";").eol();
+
     writer.append("    }");
 
-    List<String> roles = method.roles();
+    final var roles = method.roles();
     if (!roles.isEmpty()) {
       writer.append(", ");
-      for (int i = 0; i < roles.size(); i++) {
+      for (var i = 0; i < roles.size(); i++) {
         if (i > 0) {
           writer.append(", ");
         }
@@ -88,15 +85,20 @@ class ControllerMethodWriter {
   }
 
   private void writeContextReturn() {
-    final String produces = method.getProduces();
-    if (produces == null || produces.equalsIgnoreCase(MediaType.APPLICATION_JSON)) {
-      writer.append("ctx.json(");
-    } else if (produces.equalsIgnoreCase(MediaType.TEXT_HTML)) {
-      writer.append("ctx.html(");
-    } else if (produces.equalsIgnoreCase(MediaType.TEXT_PLAIN)) {
-      writer.append("ctx.contentType(\"text/plain\").result(");
+    final var produces = method.produces();
+    if (produces == null || MediaType.APPLICATION_JSON.equalsIgnoreCase(produces)) {
+      if (useJsonB) {
+        final var uType = UType.parse(method.returnType());
+        writer.append("      %sJsonType.toJson(result, ctx.contentType(\"application/json\").outputStream());", uType.shortName());
+      } else {
+        writer.append("      ctx.json(result);");
+      }
+    } else if (MediaType.TEXT_HTML.equalsIgnoreCase(produces)) {
+      writer.append("      ctx.html(result);");
+    } else if (MediaType.TEXT_PLAIN.equalsIgnoreCase(produces)) {
+      writer.append("      ctx.contentType(\"text/plain\").result(result);");
     } else {
-      writer.append("ctx.contentType(\"%s\").result(", produces);
+      writer.append("      ctx.contentType(\"%s\").result(result);", produces);
     }
   }
 }

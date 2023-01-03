@@ -32,7 +32,7 @@ class ControllerWriter extends BaseControllerWriter {
   }
 
   private List<ControllerMethodWriter> getWriterMethods() {
-    return reader.getMethods().stream()
+    return reader.methods().stream()
       .filter(MethodReader::isWebMethod)
       .map(it -> new ControllerMethodWriter(it, writer, ctx))
       .collect(Collectors.toList());

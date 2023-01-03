@@ -21,7 +21,7 @@ public enum ParamType {
     this.type = type;
   }
 
-  public String getType() {
+  public String type() {
     return type;
   }
 

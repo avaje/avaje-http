@@ -7,13 +7,13 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-generator-parent</artifactId>
-    <version>1.18-SNAPSHOT</version>
+    <version>1.21-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 
   <properties>
     <swagger.version>2.0.8</swagger.version>
-    <jackson.version>2.13.3</jackson.version>
+    <jackson.version>2.13.4.1</jackson.version>
   </properties>
 
   <dependencies>
@@ -33,7 +33,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>1.18-SNAPSHOT</version>
+      <version>1.21-SNAPSHOT</version>
     </dependency>
 
     <dependency>

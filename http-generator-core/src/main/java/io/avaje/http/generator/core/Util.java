@@ -70,10 +70,15 @@ public class Util {
     }
   }
 
+  /**
+   * Return a field or variable name to match the short type.
+   */
+  public static String name(String name) {
+    return initLower(name.replaceAll("([,<>\\[\\]])", ""));
+  }
+
   public static String snakeCase(String name) {
-
     StringBuilder sb = new StringBuilder(name.length() + 5);
-
     int len = name.length();
     for (int i = 0; i < len; i++) {
       char ch = name.charAt(i);
@@ -89,11 +94,22 @@ public class Util {
     return sb.toString();
   }
 
-  public static String initcap(String input) {
+  public static String initLower(String input) {
     if (input.length() < 2) {
-      return input.toUpperCase();
+      return input.toLowerCase();
     } else {
-      return Character.toUpperCase(input.charAt(0)) + input.substring(1);
+      StringBuilder sb = new StringBuilder(input.length());
+      sb.append(Character.toLowerCase(input.charAt(0)));
+      int i = 1;
+      for (; i < input.length(); i++) {
+        if (Character.isUpperCase(input.charAt(i))) {
+          sb.append(Character.toLowerCase(input.charAt(i)));
+        } else {
+          sb.append(input.substring(i));
+          break;
+        }
+      }
+      return sb.toString();
     }
   }
 
@@ -158,7 +174,7 @@ public class Util {
     if (returnType.getKind() == TypeKind.VOID) {
       return UType.VOID;
     }
-    return parse(returnType.toString());//typeDef(returnType));
+    return parse(returnType.toString());
   }
 
   private static class RoleReader extends SimpleAnnotationValueVisitor8<List<String>, Object> {

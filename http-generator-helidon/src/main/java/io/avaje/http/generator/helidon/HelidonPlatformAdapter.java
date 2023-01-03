@@ -1,11 +1,12 @@
 package io.avaje.http.generator.helidon;
 
+import java.util.List;
+
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
-
-import java.util.List;
+import io.avaje.http.generator.core.UType;
 
 class HelidonPlatformAdapter implements PlatformAdapter {
 
@@ -38,7 +39,7 @@ class HelidonPlatformAdapter implements PlatformAdapter {
   }
 
   @Override
-  public String bodyAsClass(String shortType) {
+  public String bodyAsClass(UType uType) {
     return "body";
   }
 
@@ -83,7 +84,7 @@ class HelidonPlatformAdapter implements PlatformAdapter {
       case BEANPARAM:
       case FORM:
       default:
-        writer.append("null // TODO req.%s().param(\"%s\")", paramType.getType(), paramName);
+        writer.append("null // TODO req.%s().param(\"%s\")", paramType.type(), paramName);
     }
   }
 
@@ -109,7 +110,7 @@ class HelidonPlatformAdapter implements PlatformAdapter {
       case BEANPARAM:
       case FORM:
       default:
-        writer.append("null // TODO req.%s().param(\"%s\")", paramType.getType(), paramName);
+        writer.append("null // TODO req.%s().param(\"%s\")", paramType.type(), paramName);
     }
   }
 }

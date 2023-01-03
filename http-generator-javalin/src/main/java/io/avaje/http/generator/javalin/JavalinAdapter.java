@@ -1,15 +1,18 @@
 package io.avaje.http.generator.javalin;
 
-import io.avaje.http.generator.core.Append;
-import io.avaje.http.generator.core.ControllerReader;
-import io.avaje.http.generator.core.ParamType;
-import io.avaje.http.generator.core.PlatformAdapter;
+import io.avaje.http.generator.core.*;
 
 import java.util.List;
 
 class JavalinAdapter implements PlatformAdapter {
 
   static final String JAVALIN3_CONTEXT = "io.javalin.http.Context";
+
+  private final boolean useJsonB;
+
+  JavalinAdapter(boolean useJsonB) {
+    this.useJsonB = useJsonB;
+  }
 
   @Override
   public boolean isContextType(String rawType) {
@@ -27,8 +30,11 @@ class JavalinAdapter implements PlatformAdapter {
   }
 
   @Override
-  public String bodyAsClass(String shortType) {
-    return "ctx.bodyAsClass(" + shortType + ".class)";
+  public String bodyAsClass(UType type) {
+    if (useJsonB) {
+      return type.shortName() + "JsonType.fromJson(ctx.bodyInputStream())";
+    }
+    return "ctx.bodyAsClass(" + type.mainType() + ".class)";
   }
 
   @Override
@@ -47,7 +53,7 @@ class JavalinAdapter implements PlatformAdapter {
   }
 
   private void addRoleImports(List<String> roles, ControllerReader controller) {
-    for (String role : roles) {
+    for (final String role : roles) {
       controller.addStaticImportType(role);
     }
   }

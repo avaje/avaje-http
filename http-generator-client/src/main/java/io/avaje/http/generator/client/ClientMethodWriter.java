@@ -26,32 +26,37 @@ class ClientMethodWriter {
   ClientMethodWriter(MethodReader method, Append writer, ProcessingContext ctx) {
     this.method = method;
     this.writer = writer;
-    this.webMethod = method.getWebMethod();
+    this.webMethod = method.webMethod();
     this.ctx = ctx;
-    this.returnType = Util.parseType(method.getReturnType());
+    this.returnType = Util.parseType(method.returnType());
   }
 
   void addImportTypes(ControllerReader reader) {
     reader.addImportTypes(returnType.importTypes());
-    for (MethodParam param : method.getParams()) {
-      param.addImports(reader);
+    for (final MethodParam param : method.params()) {
+      final var type = param.utype();
+      final var type0 = type.param0();
+      final var type1 = type.param1();
+      reader.addImportType(type.mainType().replace("[]", ""));
+      if (type0 != null) reader.addImportType(type0.replace("[]", ""));
+      if (type1 != null) reader.addImportType(type1.replace("[]", ""));
     }
   }
 
   private void methodStart(Append writer) {
-    for (MethodParam param : method.getParams()) {
+    for (MethodParam param : method.params()) {
       checkBodyHandler(param);
     }
-    writer.append("  // %s %s", webMethod, method.getWebMethodPath()).eol();
+    writer.append("  // %s %s", webMethod, method.webMethodPath()).eol();
     writer.append("  @Override").eol();
     writer.append("  public %s%s %s(", methodGenericParams, returnType.shortType(), method.simpleName());
     int count = 0;
-    for (MethodParam param : method.getParams()) {
+    for (MethodParam param : method.params()) {
       if (count++ > 0) {
         writer.append(", ");
       }
-      writer.append(param.getUType().shortType()).append(" ");
-      writer.append(param.getName());
+      writer.append(param.utype().shortType()).append(" ");
+      writer.append(param.name());
     }
     writer.append(") {").eol();
   }
@@ -60,10 +65,10 @@ class ClientMethodWriter {
    * Assign a method parameter as *the* BodyHandler.
    */
   private void checkBodyHandler(MethodParam param) {
-    if (param.getRawType().startsWith(BODY_HANDLER)) {
+    if (param.rawType().startsWith(BODY_HANDLER)) {
       param.setResponseHandler();
       bodyHandlerParam = param;
-      methodGenericParams = param.getUType().genericParams();
+      methodGenericParams = param.utype().genericParams();
     }
   }
 
@@ -75,8 +80,8 @@ class ClientMethodWriter {
     }
     writer.append("clientContext.request()").eol();
 
-    PathSegments pathSegments = method.getPathSegments();
-    Set<PathSegments.Segment> segments = pathSegments.getSegments();
+    PathSegments pathSegments = method.pathSegments();
+    Set<PathSegments.Segment> segments = pathSegments.segments();
 
     writeHeaders();
     writePaths(segments);
@@ -88,7 +93,7 @@ class ClientMethodWriter {
   }
 
   private void writeEnd() {
-    WebMethod webMethod = method.getWebMethod();
+    WebMethod webMethod = method.webMethod();
     writer.append("      .%s()", webMethod.name()).eol();
     if (returnType == UType.VOID) {
       writer.append("      .asVoid();").eol();
@@ -144,21 +149,21 @@ class ClientMethodWriter {
 
   private void writeWithHandler() {
     if (bodyHandlerParam != null) {
-      writer.append(".handler(%s);", bodyHandlerParam.getName()).eol();
+      writer.append(".handler(%s);", bodyHandlerParam.name()).eol();
     } else {
       writer.append(".handler(responseHandler);").eol(); // Better to barf here?
     }
   }
 
   private void writeQueryParams(PathSegments pathSegments) {
-    for (MethodParam param : method.getParams()) {
-      ParamType paramType = param.getParamType();
+    for (MethodParam param : method.params()) {
+      ParamType paramType = param.paramType();
       if (paramType == ParamType.QUERYPARAM) {
-        if (pathSegments.segment(param.getParamName()) == null) {
+        if (pathSegments.segment(param.paramName()) == null) {
           if (isMap(param)) {
-            writer.append("      .queryParam(%s)", param.getName()).eol();
+            writer.append("      .queryParam(%s)", param.name()).eol();
           } else {
-            writer.append("      .queryParam(\"%s\", %s)", param.getParamName(), param.getName()).eol();
+            writer.append("      .queryParam(\"%s\", %s)", param.paramName(), param.name()).eol();
           }
         }
       }
@@ -166,35 +171,35 @@ class ClientMethodWriter {
   }
 
   private void writeHeaders() {
-    for (MethodParam param : method.getParams()) {
-      ParamType paramType = param.getParamType();
+    for (MethodParam param : method.params()) {
+      ParamType paramType = param.paramType();
       if (paramType == ParamType.HEADER) {
         if (isMap(param)) {
-          writer.append("      .header(%s)", param.getName()).eol();
+          writer.append("      .header(%s)", param.name()).eol();
         } else {
-          writer.append("      .header(\"%s\", %s)", param.getParamName(), param.getName()).eol();
+          writer.append("      .header(\"%s\", %s)", param.paramName(), param.name()).eol();
         }
       }
     }
   }
 
   private void writeBeanParams(PathSegments segments) {
-    for (MethodParam param : method.getParams()) {
-      final String varName = param.getName();
-      ParamType paramType = param.getParamType();
+    for (MethodParam param : method.params()) {
+      final String varName = param.name();
+      ParamType paramType = param.paramType();
       PathSegments.Segment segment = segments.segment(varName);
       if (segment == null && paramType == ParamType.BEANPARAM) {
-        TypeElement formBeanType = ctx.getTypeElement(param.getRawType());
-        BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.getName(), param.getShortType(), ParamType.QUERYPARAM);
+        TypeElement formBeanType = ctx.typeElement(param.rawType());
+        BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.name(), param.shortType(), ParamType.QUERYPARAM);
         form.writeFormParams(writer);
       }
     }
   }
 
   private void writeFormParams(PathSegments segments) {
-    for (MethodParam param : method.getParams()) {
-      final String varName = param.getName();
-      ParamType paramType = param.getParamType();
+    for (MethodParam param : method.params()) {
+      final String varName = param.name();
+      ParamType paramType = param.paramType();
       PathSegments.Segment segment = segments.segment(varName);
       if (segment == null) {
         // not a path or matrix parameter
@@ -206,22 +211,22 @@ class ClientMethodWriter {
   private void writeFormParam(MethodParam param, ParamType paramType) {
     if (paramType == ParamType.FORMPARAM) {
       if (isMap(param)) {
-        writer.append("      .formParam(%s)", param.getName()).eol();
+        writer.append("      .formParam(%s)", param.name()).eol();
       } else {
-        writer.append("      .formParam(\"%s\", %s)", param.getParamName(), param.getName()).eol();
+        writer.append("      .formParam(\"%s\", %s)", param.paramName(), param.name()).eol();
       }
     } else if (paramType == ParamType.FORM) {
-      TypeElement formBeanType = ctx.getTypeElement(param.getRawType());
-      BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.getName(), param.getShortType(), ParamType.FORMPARAM);
+      TypeElement formBeanType = ctx.typeElement(param.rawType());
+      BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.name(), param.shortType(), ParamType.FORMPARAM);
       form.writeFormParams(writer);
     }
   }
 
   private void writeBody() {
-    for (MethodParam param : method.getParams()) {
-      ParamType paramType = param.getParamType();
+    for (MethodParam param : method.params()) {
+      ParamType paramType = param.paramType();
       if (paramType == ParamType.BODY) {
-        writer.append("      .body(%s)", param.getName()).eol();
+        writer.append("      .body(%s)", param.name()).eol();
       }
     }
   }
@@ -244,7 +249,7 @@ class ClientMethodWriter {
   }
 
   private boolean isMap(MethodParam param) {
-    return isMap(param.getUType().mainType());
+    return isMap(param.utype().mainType());
   }
 
   private boolean isMap(String type0) {

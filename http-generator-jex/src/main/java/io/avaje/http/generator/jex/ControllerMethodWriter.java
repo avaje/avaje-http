@@ -24,24 +24,24 @@ class ControllerMethodWriter {
   ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx) {
     this.method = method;
     this.writer = writer;
-    this.webMethod = method.getWebMethod();
+    this.webMethod = method.webMethod();
     this.ctx = ctx;
   }
 
   void write(boolean requestScoped) {
 
-    final PathSegments segments = method.getPathSegments();
+    final PathSegments segments = method.pathSegments();
     final String fullPath = segments.fullPath();
 
     writer.append("    routing.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
-    writer.append("      ctx.status(%s);", method.getStatusCode()).eol();
+    writer.append("      ctx.status(%s);", method.statusCode()).eol();
 
     List<PathSegments.Segment> matrixSegments = segments.matrixSegments();
     for (PathSegments.Segment matrixSegment : matrixSegments) {
       matrixSegment.writeCreateSegment(writer, ctx.platform());
     }
 
-    final List<MethodParam> params = method.getParams();
+    final List<MethodParam> params = method.params();
     for (MethodParam param : params) {
       param.writeCtxGet(writer, segments);
     }
@@ -88,7 +88,7 @@ class ControllerMethodWriter {
   }
 
   private void writeContextReturn() {
-    final String produces = method.getProduces();
+    final String produces = method.produces();
     if (produces == null || produces.equalsIgnoreCase(MediaType.APPLICATION_JSON)) {
       writer.append("ctx.json(");
     } else if (produces.equalsIgnoreCase(MediaType.TEXT_HTML)) {

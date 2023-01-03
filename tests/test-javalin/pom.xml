@@ -16,11 +16,11 @@
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
     <main.class>org.example.myapp.Main</main.class>
-    <javalin.version>4.6.0</javalin.version>
+    <javalin.version>5.1.1</javalin.version>
     <swagger.version>2.0.8</swagger.version>
     <kotlin.version>1.3.71</kotlin.version>
-    <jackson.version>2.12.6.1</jackson.version>
-    <avaje-http-version>1.18-SNAPSHOT</avaje-http-version>
+    <jackson.version>2.13.4.1</jackson.version>
+    <avaje-http-version>1.21-SNAPSHOT</avaje-http-version>
   </properties>
 
   <dependencies>

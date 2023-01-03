@@ -133,11 +133,11 @@ public class ControllerReader {
     return findAnnotation(Valid.class) != null;
   }
 
-  String getProduces() {
+  String produces() {
     return produces;
   }
 
-  public TypeElement getBeanType() {
+  public TypeElement beanType() {
     return beanType;
   }
 
@@ -237,15 +237,15 @@ public class ControllerReader {
     }
   }
 
-  public List<String> getRoles() {
+  public List<String> roles() {
     return roles;
   }
 
-  public List<MethodReader> getMethods() {
+  public List<MethodReader> methods() {
     return methods;
   }
 
-  public String getPath() {
+  public String path() {
     Path path = findAnnotation(Path.class);
     if (path == null) {
       return null;
@@ -269,11 +269,11 @@ public class ControllerReader {
     staticImportTypes.add(rawType);
   }
 
-  public Set<String> getStaticImportTypes() {
+  public Set<String> staticImportTypes() {
     return staticImportTypes;
   }
 
-  public Set<String> getImportTypes() {
+  public Set<String> importTypes() {
     return importTypes;
   }
 

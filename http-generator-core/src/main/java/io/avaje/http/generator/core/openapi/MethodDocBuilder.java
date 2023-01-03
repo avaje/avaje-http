@@ -1,5 +1,8 @@
 package io.avaje.http.generator.core.openapi;
 
+import javax.lang.model.type.MirroredTypeException;
+import javax.lang.model.type.TypeMirror;
+
 import io.avaje.http.api.MediaType;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
@@ -24,7 +27,7 @@ public class MethodDocBuilder {
   public MethodDocBuilder(MethodReader methodReader, DocContext ctx) {
     this.methodReader = methodReader;
     this.ctx = ctx;
-    this.javadoc = methodReader.getJavadoc();
+    this.javadoc = methodReader.javadoc();
   }
 
   public void build() {
@@ -36,7 +39,7 @@ public class MethodDocBuilder {
     //operation.setOperationId();
     operation.setSummary(javadoc.getSummary());
     operation.setDescription(javadoc.getDescription());
-    operation.setTags(methodReader.getTags());
+    operation.setTags(methodReader.tags());
 
     if (javadoc.isDeprecated()) {
       operation.setDeprecated(true);
@@ -44,8 +47,8 @@ public class MethodDocBuilder {
       operation.setDeprecated(true);
     }
 
-    PathItem pathItem = ctx.pathItem(methodReader.getFullPath());
-    switch (methodReader.getWebMethod()) {
+    PathItem pathItem = ctx.pathItem(methodReader.fullPath());
+    switch (methodReader.webMethod()) {
       case GET:
         pathItem.setGet(operation);
         break;
@@ -63,7 +66,7 @@ public class MethodDocBuilder {
         break;
     }
 
-    for (MethodParam param : methodReader.getParams()) {
+    for (MethodParam param : methodReader.params()) {
       param.buildApiDocumentation(this);
     }
 
@@ -73,16 +76,46 @@ public class MethodDocBuilder {
     ApiResponse response = new ApiResponse();
     response.setDescription(javadoc.getReturnDescription());
 
+    final var produces = methodReader.produces();
+    final var contentMediaType = (produces == null) ? MediaType.APPLICATION_JSON : produces;
+
     if (methodReader.isVoid()) {
       if (isEmpty(response.getDescription())) {
         response.setDescription("No content");
       }
     } else {
-      final String produces = methodReader.getProduces();
-      String contentMediaType = (produces == null) ? MediaType.APPLICATION_JSON : produces;
-      response.setContent(ctx.createContent(methodReader.getReturnType(), contentMediaType));
+    	response.setContent(ctx.createContent(methodReader.returnType(), contentMediaType));
     }
-    responses.addApiResponse(methodReader.getStatusCode(), response);
+    var override2xx = false;
+    for (final var responseAnnotation : methodReader.apiResponses()) {
+      final var newResponse = new ApiResponse();
+
+      if (responseAnnotation.description().isEmpty()) {
+        newResponse.setDescription(response.getDescription());
+      } else {
+        newResponse.setDescription(responseAnnotation.description());
+      }
+
+      // if user wants to define their own 2xx status code
+      if (responseAnnotation.responseCode().startsWith("2")) {
+        newResponse.setContent(response.getContent());
+        override2xx = true;
+      }
+      TypeMirror returnType = null;
+      try {
+        // this will always throw
+        responseAnnotation.type();
+      } catch (final MirroredTypeException mte) {
+        returnType = mte.getTypeMirror();
+      }
+
+      if (!"java.lang.Void".equals(returnType.toString())) {
+        newResponse.setContent(ctx.createContent(returnType, contentMediaType));
+      }
+
+      responses.addApiResponse(responseAnnotation.responseCode(), newResponse);
+    }
+    if (!override2xx) responses.addApiResponse(methodReader.statusCode(), response);
   }
 
   DocContext getContext() {

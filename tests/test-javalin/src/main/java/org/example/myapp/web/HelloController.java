@@ -1,18 +1,29 @@
 package org.example.myapp.web;
 
-import io.avaje.http.api.*;
-import io.javalin.http.Context;
-import io.swagger.v3.oas.annotations.Hidden;
-import org.example.myapp.service.MyService;
+import static java.util.Objects.requireNonNull;
 
-import jakarta.inject.Inject;
-
-import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Objects.requireNonNull;
+import javax.validation.Valid;
+
+import org.example.myapp.service.MyService;
+
+import io.avaje.http.api.BeanParam;
+import io.avaje.http.api.Controller;
+import io.avaje.http.api.Default;
+import io.avaje.http.api.Delete;
+import io.avaje.http.api.Form;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.MediaType;
+import io.avaje.http.api.Path;
+import io.avaje.http.api.Post;
+import io.avaje.http.api.Produces;
+import io.avaje.http.api.QueryParam;
+import io.javalin.http.Context;
+import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.inject.Inject;
 
 /**
  * Hello resource manager.
@@ -47,8 +58,9 @@ class HelloController {
    * @return The Hello DTO given the id and name.
    * @deprecated Please migrate away
    */
-  @Roles({AppRoles.ADMIN, AppRoles.BASIC_USER})
-  @Get("/:id/:date")
+  @Deprecated
+@Roles({AppRoles.ADMIN, AppRoles.BASIC_USER})
+  @Get("/{id}/{date}")
   HelloDto hello(int id, LocalDate date, String otherParam) {
     return new HelloDto(id, date.toString(), otherParam);
   }
@@ -82,7 +94,7 @@ class HelloController {
    * @param dto The hello body as json
    */
 //  @Roles({ADMIN})
-  @Post("/savebean/:foo")
+  @Post("/savebean/{foo}")
   void saveBean(String foo, HelloDto dto, Context context) {
     // save hello data ...
     System.out.println("save " + foo + " dto:" + dto);
@@ -131,7 +143,7 @@ class HelloController {
   }
 
   //  @Hidden
-  @Delete(":id")
+  @Delete("{id}")
   void deleteById(int id) {
     System.out.println("deleting " + id);
   }
