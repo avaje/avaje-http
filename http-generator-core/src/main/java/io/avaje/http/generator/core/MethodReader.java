@@ -1,16 +1,12 @@
 package io.avaje.http.generator.core;
 
-import io.avaje.http.api.Delete;
-import io.avaje.http.api.Form;
-import io.avaje.http.api.Get;
-import io.avaje.http.api.Patch;
-import io.avaje.http.api.Post;
-import io.avaje.http.api.Produces;
-import io.avaje.http.api.Put;
-import io.avaje.http.generator.core.javadoc.Javadoc;
-import io.avaje.http.generator.core.openapi.MethodDocBuilder;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -19,9 +15,21 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.validation.Valid;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
+
+import io.avaje.http.api.Delete;
+import io.avaje.http.api.Form;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.OpenAPIResponse;
+import io.avaje.http.api.OpenAPIResponses;
+import io.avaje.http.api.Patch;
+import io.avaje.http.api.Post;
+import io.avaje.http.api.Produces;
+import io.avaje.http.api.Put;
+import io.avaje.http.generator.core.javadoc.Javadoc;
+import io.avaje.http.generator.core.openapi.MethodDocBuilder;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 
 public class MethodReader {
 
@@ -46,13 +54,19 @@ public class MethodReader {
 
   private final String produces;
 
+  private final List<OpenAPIResponse> apiResponses;
+
   private final ExecutableType actualExecutable;
   private final List<? extends TypeMirror> actualParams;
 
   private final PathSegments pathSegments;
   private final boolean hasValid;
 
-  MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable, ProcessingContext ctx) {
+  MethodReader(
+      ControllerReader bean,
+      ExecutableElement element,
+      ExecutableType actualExecutable,
+      ProcessingContext ctx) {
     this.ctx = ctx;
     this.bean = bean;
     this.element = element;
@@ -62,6 +76,7 @@ public class MethodReader {
     this.methodRoles = Util.findRoles(element);
     this.javadoc = Javadoc.parse(ctx.getDocComment(element));
     this.produces = produces(bean);
+    this.apiResponses = getApiResponses();
     initWebMethodViaAnnotation();
     if (isWebMethod()) {
       this.hasValid = findAnnotation(Valid.class) != null;
@@ -118,8 +133,20 @@ public class MethodReader {
   }
 
   private String produces(ControllerReader bean) {
-    final Produces produces = findAnnotation(Produces.class);
+    final var produces = findAnnotation(Produces.class);
     return (produces != null) ? produces.value() : bean.produces();
+  }
+
+  private List<OpenAPIResponse> getApiResponses() {
+    final var container =
+        Optional.ofNullable(findAnnotation(OpenAPIResponses.class)).stream()
+            .map(OpenAPIResponses::value)
+            .flatMap(Arrays::stream);
+
+    return Stream.concat(container, Arrays.stream(element.getAnnotationsByType(OpenAPIResponse.class)))
+        .collect(Collectors.toList());
+
+
   }
 
   public <A extends Annotation> A findAnnotation(Class<A> type) {
@@ -216,6 +243,10 @@ public class MethodReader {
     return produces;
   }
 
+  public List<OpenAPIResponse> apiResponses() {
+    return apiResponses;
+  }
+
   public TypeMirror returnType() {
     if (actualExecutable != null) {
       return actualExecutable.getReturnType();
@@ -273,5 +304,4 @@ public class MethodReader {
     }
     return "body";
   }
-
 }

@@ -21,6 +21,8 @@ import javax.tools.ToolProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.avaje.http.generator.javalin.JavalinProcessor;
 import io.avaje.jsonb.generator.Processor;
 
@@ -48,12 +50,7 @@ class JavalinProcessorTest {
 
     final var task =
         compiler.getTask(
-            new PrintWriter(System.out),
-            null,
-            null,
-            List.of("--release=11"),
-            null,
-            files);
+            new PrintWriter(System.out), null, null, List.of("--release=11"), null, files);
     task.setProcessors(List.of(new JavalinProcessor()));
 
     assertThat(task.call()).isTrue();
@@ -69,15 +66,43 @@ class JavalinProcessorTest {
 
     final var task =
         compiler.getTask(
+            new PrintWriter(System.out), null, null, List.of("--release=11"), null, files);
+    task.setProcessors(List.of(new JavalinProcessor(false), new Processor()));
+
+    assertThat(task.call()).isTrue();
+  }
+
+  @Test
+  public void testOpenAPIGeneration() throws Exception {
+    final var source = Paths.get("src").toAbsolutePath().toString();
+    // OpenAPIController
+    final var files = getSourceFiles(source);
+
+    Iterable<JavaFileObject> openAPIController = null;
+    for (final var file : files) {
+      if (file.isNameCompatible("OpenAPIController", Kind.SOURCE))
+        openAPIController = List.of(file);
+    }
+    final var compiler = ToolProvider.getSystemJavaCompiler();
+
+    final var task =
+        compiler.getTask(
             new PrintWriter(System.out),
             null,
             null,
             List.of("--release=11"),
             null,
-            files);
+            openAPIController);
     task.setProcessors(List.of(new JavalinProcessor(false), new Processor()));
 
     assertThat(task.call()).isTrue();
+
+    final var mapper = new ObjectMapper();
+    final var expectedOpenApiJson =
+        mapper.readTree(new File("src/test/java/io/avaje/http/generator/expectedOpenApi.json"));
+    final var generatedOpenApi = mapper.readTree(new File("openapi.json"));
+
+    assert expectedOpenApiJson.equals(generatedOpenApi);
   }
 
   private Iterable<JavaFileObject> getSourceFiles(String source) throws Exception {

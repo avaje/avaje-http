@@ -32,7 +32,7 @@ public class MethodParamDocBuilder {
     this.paramType = param.paramType();
     this.paramName = param.paramName();
     this.varName = param.varName();
-    this.rawType = param.rawType();
+    this.rawType = param.type().full();
     this.element = param.element();
   }
 

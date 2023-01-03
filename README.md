@@ -1,7 +1,8 @@
 # avaje-http
 
-Http server and client libraries and code generation.
+HTTP server and client libraries via code generation.
 
+Documentation at [avaje.io/http](https://avaje.io/http/)
 ## Http Server
 
 A jax-rs style controllers with annotations (`@Path`, `@Get` ...)
