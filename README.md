@@ -1,9 +1,11 @@
-# avaje-http
+# [Avaje-HTTP](https://avaje.io/http/)
+[![Build](https://github.com/avaje/avaje-http/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-http/actions/workflows/build.yml)
+<img src="https://img.shields.io/maven-central/v/io.avaje/avaje-http-api.svg?label=Maven%20Central">
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-inject/blob/master/LICENSE)
 
 HTTP server and client libraries via code generation.
 
-Documentation at [avaje.io/http](https://avaje.io/http/)
-## Http Server
+## HTTP Server
 
 A jax-rs style controllers with annotations (`@Path`, `@Get` ...)
 that is lightweight by using source code generation (annotation processors)
@@ -13,37 +15,59 @@ to generate adapter code for Javalin and Helidon SE/Nima.
 - Full use of Javalin or Helidon SE/Nima as desired
 
 ## Add dependencies
-
 ```xml
+<dependency>
+  <groupId>io.avaje</groupId>
+  <artifactId>avaje-inject</artifactId>
+  <version>${avaje-inject.version}</version>
+</dependency>
 <dependency>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-api</artifactId>
   <version>${avaje.http.version}</version>
 </dependency>
 ```
-Add the generator module for your desired microframework as a annotation processor.
+#### Add the generator module for your desired microframework as a annotation processor.
 
 ```xml
-<build>
-  <plugins>
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-compiler-plugin</artifactId>
-      <version>${maven-compiler-plugin.version}</version>
-      <configuration>
-        <annotationProcessorPaths>
-          <path>
-            <groupId>io.avaje</groupId>
-            <artifactId>avaje-http-javalin-generator</artifactId>
-            <version>${avaje.http.version}</version>
-          </path>
-        </annotationProcessorPaths>
-      </configuration>
-    </plugin>
-  </plugins>
-</build>
+<!-- Annotation processors -->
+<dependency>
+  <groupId>io.avaje</groupId>
+  <artifactId>avaje-inject-generator</artifactId>
+  <version>${avaje-inject.version}</version>
+  <scope>provided</scope>
+</dependency>
+<dependency>
+  <groupId>io.avaje</groupId>
+  <artifactId>avaje-http-javalin-generator</artifactId>
+  <version>${avaje-http.version}</version>
+  <scope>provided</scope>
+</dependency>
 ```
-
+If there are other annotation processors and they are specified via <i>maven-compiler-plugin</i> then we add avaje-http-generator there instead.
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <configuration>
+    <annotationProcessorPaths> <!-- All annotation processors specified here -->
+      <path>
+        <groupId>io.avaje</groupId>
+        <artifactId>avaje-inject-generator</artifactId>
+        <version>${avaje-inject.version}</version>
+      </path>
+      <path>
+        <groupId>io.avaje</groupId>
+        <artifactId>avaje-http-javalin-generator</artifactId>
+        <version>${avaje-http.version}</version>
+      </path>
+      <path>
+          ... other annotation processor ...
+      </path>
+    </annotationProcessorPaths>
+  </configuration>
+</plugin>
+```
 ## Define a Controller (These APT processors work with both Java and Kotlin.)
 ```java
 package org.example.hello;
@@ -60,7 +84,7 @@ public class WidgetController {
   public WidgetController(HelloComponent hello) {
     this.hello = hello;
   }
-  
+
   @Get("/{id}")
   Widget getById(int id) {
     return new Widget(id, "you got it"+ hello.hello());
@@ -75,26 +99,31 @@ public class WidgetController {
 }
 ```
 
-## Usage with Javalin
+## Usage
+The annotation processor will generate controller adapters that can register routes to Javalin/Helidon. The natural way to use the generated adapters is to get a DI library to find and wire them. This is what the below examples do and they use [Avaje-Inject](https://avaje.io/inject/) to do this.
+
+Note that there isn't a requirement to use Avaje for dependency injection. Any DI library that can find and wire the generated @Singleton beans can be used. You can even use Dagger2 or Guice to wire the controllers if you so desire.
+
+### Usage with Javalin
 
 The annotation processor will generate controller classes implementing the WebRoutes interface, which means we can
 get all the WebRoutes and register them with Javalin using:
 
 ```java
-var routes = BeanScope.builder().build().list(WebRoutes.class); 
+var routes = BeanScope.builder().build().list(WebRoutes.class);
 
 Javalin.create()
         .routes(() -> routes.forEach(WebRoutes::registerRoutes))
         .start();
 ```
 
-## Usage with Helidon SE
+### Usage with Helidon SE
 
 The annotation processor will generate controller classes implementing the Helidon Service interface, which we can use
 get all the Services and register them with Helidon `RoutingBuilder`.
 
 ```java
-var routes = BeanScope.builder().build().list(Service.class); 
+var routes = BeanScope.builder().build().list(Service.class);
 var routingBuilder = Routing.builder().register(routes.stream().toArray(Service[]::new));
 WebServer.builder()
         .addMediaSupport(JacksonSupport.create())
@@ -103,13 +132,13 @@ WebServer.builder()
         .start();
 ```
 
-## Usage with Helidon Nima
+### Usage with Helidon Nima
 
 The annotation processor will generate controller classes implementing the Helidon HttpService interface, which we can use
 get all the services and register them with the Helidon `HttpRouting`.
 
 ```java
-var routes = BeanScope.builder().build().list(HttpService.class); 
+var routes = BeanScope.builder().build().list(HttpService.class);
 final var builder = HttpRouting.builder();
 
 for (final HttpService httpService : routes) {
@@ -232,13 +261,13 @@ If [Avaje-Jsonb](https://github.com/avaje/avaje-jsonb) is detected, http generat
 public class WidgetController$Route implements WebRoutes {
 
   private final WidgetController controller;
-  private final JsonType<java.util.List<org.example.hello.WidgetController.Widget>> listWidgetJsonType;
-  private final JsonType<org.example.hello.WidgetController.Widget> widgetJsonType;
+  private final JsonType<List<Widget>> listWidgetJsonType;
+  private final JsonType<Widget> widgetJsonType;
 
   public WidgetController$Route(WidgetController controller, Jsonb jsonB) {
     this.controller = controller;
-    this.listWidgetJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class).list();
-    this.widgetJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class);
+    this.listWidgetJsonType = jsonB.type(Widget.class).list();
+    this.widgetJsonType = jsonB.type(Widget.class);
   }
 
   @Override
@@ -271,13 +300,13 @@ public class WidgetController$Route implements HttpService {
 
 
   private final WidgetController controller;
-  private final JsonType<org.example.hello.WidgetController.Widget> widgetJsonType;
-  private final JsonType<java.util.List<org.example.hello.WidgetController.Widget>> listWidgetJsonType;
+  private final JsonType<Widget> widgetJsonType;
+  private final JsonType<List<Widget>> listWidgetJsonType;
 
   public WidgetController$Route(WidgetController controller, Jsonb jsonB) {
     this.controller = controller;
-    this.widgetJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class);
-    this.listWidgetJsonType = jsonB.type(org.example.hello.WidgetController.Widget.class).list();
+    this.widgetJsonType = jsonB.type(Widget.class);
+    this.listWidgetJsonType = jsonB.type(Widget.class).list();
   }
 
   @Override
