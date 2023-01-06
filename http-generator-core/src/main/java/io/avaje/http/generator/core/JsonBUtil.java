@@ -3,9 +3,22 @@ package io.avaje.http.generator.core;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class JsonBUtil {
   private JsonBUtil() {}
+
+  /**
+   * Return true if avaje-jsonb is detected in the classpath.
+   */
+  public static boolean detectJsonb() {
+    try {
+      Class.forName("io.avaje.jsonb.Jsonb");
+      return true;
+    } catch (final ClassNotFoundException e) {
+      return false;
+    }
+  }
 
   public static Map<String, UType> jsonTypes(ControllerReader reader) {
 
@@ -37,26 +50,45 @@ public class JsonBUtil {
   }
 
   public static void writeJsonbType(UType type, Append writer) {
-
     writer.append("    this.%sJsonType = jsonB.type(", type.shortName());
     if (!type.isGeneric()) {
-      writer.append("%s.class)", PrimitiveUtil.wrap(type.full()));
+      writer.append("%s.class)", Util.shortName(PrimitiveUtil.wrap(type.full())));
     } else {
       switch (type.mainType()) {
         case "java.util.List":
-          writer.append("%s.class).list()", type.param0());
+          writeType(type.paramRaw(), writer);
+          writer.append(".list()");
           break;
         case "java.util.Set":
-          writer.append("%s.class).set()", type.param0());
+          writeType(type.paramRaw(), writer);
+          writer.append(".set()");
           break;
         case "java.util.Map":
-          writer.append("%s.class).map()", type.param1());
+          writeType(type.paramRaw(), writer);
+          writer.append(".map()");
           break;
-        default:
-          throw new UnsupportedOperationException(
-              "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
+        default: {
+          if (type.mainType().contains("java.util")) {
+            throw new UnsupportedOperationException("Only java.util Map, Set and List are supported JsonB Controller Collection Types");
+          }
+          writeType(type, writer);
+        }
       }
     }
     writer.append(";").eol();
+  }
+
+  static void writeType(UType type, Append writer) {
+    if (type.isGeneric()) {
+      final var params =
+          type.importTypes().stream()
+              .skip(1)
+              .map(Util::shortName)
+              .collect(Collectors.joining(".class, "));
+
+      writer.append("Types.newParameterizedType(%s.class, %s.class))", Util.shortName(type.mainType()), params);
+    } else {
+      writer.append("%s.class)", Util.shortName(type.mainType()));
+    }
   }
 }

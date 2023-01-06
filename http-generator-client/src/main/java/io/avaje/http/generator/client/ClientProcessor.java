@@ -2,6 +2,7 @@ package io.avaje.http.generator.client;
 
 import io.avaje.http.api.Client;
 import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.JsonBUtil;
 import io.avaje.http.generator.core.ProcessingContext;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -26,6 +27,16 @@ public class ClientProcessor extends AbstractProcessor {
   private final Set<String> generatedClients = new LinkedHashSet<>();
 
   protected ProcessingContext ctx;
+
+  private final boolean useJsonB;
+
+  public ClientProcessor() {
+    useJsonB = JsonBUtil.detectJsonb();
+  }
+
+  public ClientProcessor(boolean useJsonb) {
+    useJsonB = useJsonb;
+  }
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -107,7 +118,7 @@ public class ClientProcessor extends AbstractProcessor {
   }
 
   protected String writeClientAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException {
-    return new ClientWriter(reader, ctx).write();
+    return new ClientWriter(reader, ctx, useJsonB).write();
   }
 
 }

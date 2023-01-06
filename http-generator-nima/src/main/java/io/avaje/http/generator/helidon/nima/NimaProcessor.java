@@ -1,23 +1,15 @@
 package io.avaje.http.generator.helidon.nima;
 
-import io.avaje.http.generator.core.BaseProcessor;
-import io.avaje.http.generator.core.ControllerReader;
-import io.avaje.http.generator.core.PlatformAdapter;
-import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.*;
 
 import java.io.IOException;
 
 public class NimaProcessor extends BaseProcessor {
 
-  private boolean jsonB;
+  private final boolean jsonB;
 
   public NimaProcessor() {
-    try {
-      Class.forName("io.avaje.jsonb.Jsonb");
-      this.jsonB = true;
-    } catch (final ClassNotFoundException e) {
-      this.jsonB = false;
-    }
+    jsonB = JsonBUtil.detectJsonb();
   }
 
   public NimaProcessor(boolean useJsonb) {

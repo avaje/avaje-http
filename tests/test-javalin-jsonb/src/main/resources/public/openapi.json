@@ -5,6 +5,10 @@
     "description" : "Example Javalin controllers with Java and Maven",
     "version" : ""
   },
+  "tags" : [ {
+    "name" : "tag1",
+    "description" : "this is added to openapi tags"
+  } ],
   "paths" : {
     "/bars" : {
       "get" : {
@@ -678,6 +682,125 @@
         "deprecated" : true
       }
     },
+    "/openapi/get" : {
+      "get" : {
+        "tags" : [ ],
+        "summary" : "Example of Open API Get (up to the first period is the summary)",
+        "description" : "When using Javalin Context only This Javadoc description is added to the generated openapi.json",
+        "responses" : {
+          "200" : {
+            "description" : "funny phrase (this part of the javadoc is added to the response desc)",
+            "content" : {
+              "text/plain" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi/post" : {
+      "post" : {
+        "tags" : [ "tag1" ],
+        "summary" : "Standard Post",
+        "description" : "uses tag annotation to add tags to openapi json",
+        "requestBody" : {
+          "description" : "the body (this is used for generated request body desc)",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Person"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "overrides @return javadoc description",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Person"
+                }
+              }
+            }
+          },
+          "201" : {
+            "description" : "the response body (from javadoc)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Person"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "User not found (Will not have an associated response schema)"
+          },
+          "500" : {
+            "description" : "Some other Error (Will have this error class as the response class)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi/post1" : {
+      "post" : {
+        "tags" : [ ],
+        "summary" : "Standard Post",
+        "description" : "The Deprecated annotation adds \"deprecacted:true\" to the generated json",
+        "requestBody" : {
+          "description" : "the body",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Person"
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "400" : {
+            "description" : "User not found"
+          },
+          "500" : {
+            "description" : "Some other Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201" : {
+            "description" : "the response body (from javadoc)",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Person"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : true
+      }
+    },
     "/req-scoped" : {
       "get" : {
         "tags" : [ ],
@@ -946,7 +1069,7 @@
               "schema" : {
                 "type" : "array",
                 "items" : {
-                  "$ref" : "#/components/schemas/E"
+                  "$ref" : "#/components/schemas/Person"
                 }
               }
             }
@@ -1116,8 +1239,16 @@
           }
         }
       },
-      "E" : {
-        "type" : "object"
+      "ErrorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "text" : {
+            "type" : "string"
+          }
+        }
       },
       "GetBeanForm" : {
         "type" : "object",

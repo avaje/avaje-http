@@ -98,7 +98,19 @@ public class WidgetController {
   record Widget(int id, String name){};
 }
 ```
-
+## @Singleton
+By default the generated classes will use jakarta.inject.Singleton for wiring. To use Javax Inject, use the compiler arg `-AuseJavax=true` 
+```
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<compilerArgs>
+						<arg>-AuseJavax=true</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin> 
+```
 ## Usage
 The annotation processor will generate controller adapters that can register routes to Javalin/Helidon. The natural way to use the generated adapters is to get a DI library to find and wire them. This is what the below examples do and they use [Avaje-Inject](https://avaje.io/inject/) to do this.
 
@@ -156,7 +168,7 @@ WebServer.builder()
 
 ```java
 @Generated("avaje-javalin-generator")
-@Component
+@Singleton
 public class WidgetController$Route implements WebRoutes {
 
   private final WidgetController controller;
@@ -188,7 +200,7 @@ public class WidgetController$Route implements WebRoutes {
 
 ### (Helidon SE) The generated WidgetController$Route.java is:
 ```java
-@Generated("io.dinject.helidon-generator")
+@Generated("avaje-helidon-generator")
 @Singleton
 public class WidgetController$Route implements Service {
 
@@ -221,7 +233,7 @@ public class WidgetController$Route implements Service {
 
 ```java
 @Generated("avaje-helidon-nima-generator")
-@Component
+@Singleton
 public class WidgetController$Route implements HttpService {
 
   private final WidgetController controller;

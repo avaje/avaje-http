@@ -12,6 +12,13 @@ public interface UType {
     return Util.parseType(type);
   }
 
+  /**
+   * Create the UType from the given String.
+   */
+  static UType parse(String type) {
+    return Util.parse(type);
+  }
+
   UType VOID = new VoidType();
 
   /**
@@ -45,6 +52,13 @@ public interface UType {
    * Return the second generic parameter.
    */
   default String param1() {
+    return null;
+  }
+
+  /**
+   * Return the raw generic parameter if this UType is a Collection.
+   */
+  default UType paramRaw() {
     return null;
   }
 
@@ -106,7 +120,9 @@ public interface UType {
 
     @Override
     public Set<String> importTypes() {
-      return Collections.singleton(rawType);
+      return rawType.startsWith("java.lang.") && rawType.indexOf('.') > -1
+        ? Set.of()
+        : Collections.singleton(rawType.replace("[]", ""));
     }
 
     @Override
@@ -130,15 +146,37 @@ public interface UType {
    */
   class Generic implements UType {
     final String rawType;
+    final UType rawParamType;
     final List<String> allTypes;
     final String shortRawType;
     final String shortName;
 
     Generic(String rawTypeInput) {
-      this.rawType = rawTypeInput.replace(" ",""); // trim whitespace
+      this.rawType = rawTypeInput.replace(" ", ""); // trim whitespace
       this.allTypes = Arrays.asList(rawType.split("[<|>|,]"));
       this.shortRawType = shortRawType(rawType, allTypes);
       this.shortName = Util.name(shortRawType);
+      final var paramTypeString = extractRawParam();
+      this.rawParamType = paramTypeString != null ? UType.parse(paramTypeString) : null;
+    }
+
+    private String extractRawParam() {
+      switch (mainType()) {
+        case "java.util.Set":
+        case "java.util.List":
+        case "java.util.stream.Stream":
+        case "java.util.concurrent.CompletableFuture":
+        case "io.avaje.http.client.HttpCall":
+          var first = rawType.indexOf("<") + 1;
+          var end = rawType.lastIndexOf(">");
+          return rawType.substring(first, end);
+        case "java.util.Map":
+          first = rawType.indexOf(",") + 1;
+          end = rawType.lastIndexOf(">");
+          return rawType.substring(first, end);
+        default:
+          return null;
+      }
     }
 
     private String shortRawType(String rawType, List<String> allTypes) {
@@ -163,7 +201,7 @@ public interface UType {
       Set<String> set = new LinkedHashSet<>();
       for (String type : allTypes) {
         if (!type.startsWith("java.lang.") && type.indexOf('.') > -1) {
-          set.add(type);
+          set.add(type.replace("[]", ""));
         }
       }
       return set;
@@ -209,6 +247,11 @@ public interface UType {
     @Override
     public String param1() {
       return allTypes.size() < 3 ? null : allTypes.get(2);
+    }
+
+    @Override
+    public UType paramRaw() {
+      return rawParamType;
     }
   }
 }
