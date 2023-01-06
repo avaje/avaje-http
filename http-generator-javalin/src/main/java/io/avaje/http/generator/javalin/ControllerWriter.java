@@ -56,7 +56,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
-    writer.append("@Component").eol();
+    writer.append("@Singleton").eol();
     writer
       .append("public class ")
       .append(shortName)

@@ -26,6 +26,7 @@ public class ProcessingContext {
   private final Types types;
   private final boolean openApiAvailable;
   private final DocContext docContext;
+  private final boolean useJavax;
 
   public ProcessingContext(ProcessingEnvironment env, PlatformAdapter readAdapter) {
     this.readAdapter = readAdapter;
@@ -35,6 +36,7 @@ public class ProcessingContext {
     this.types = env.getTypeUtils();
     this.openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
     this.docContext = new DocContext(env, openApiAvailable);
+    this.useJavax= Boolean.parseBoolean(env.getOptions().get("useJavax"));
   }
 
   private boolean isTypeAvailable(String canonicalName) {
@@ -85,5 +87,9 @@ public class ProcessingContext {
 
   public PlatformAdapter platform() {
     return readAdapter;
+  }
+
+  public boolean useJavax() {
+    return useJavax;
   }
 }

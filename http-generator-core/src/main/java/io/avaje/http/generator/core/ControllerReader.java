@@ -67,7 +67,8 @@ public class ControllerReader {
       importTypes.add(Constants.VALIDATOR);
     }
     if (withSingleton) {
-      importTypes.add(Constants.COMPONENT);
+      importTypes.add(
+          ctx.useJavax() ? Constants.SINGLETON.replace("jakarta", "javax") : Constants.SINGLETON);
     }
   }
 
