@@ -68,6 +68,7 @@ If there are other annotation processors and they are specified via <i>maven-com
   </configuration>
 </plugin>
 ```
+
 ## Define a Controller (These APT processors work with both Java and Kotlin.)
 ```java
 package org.example.hello;
