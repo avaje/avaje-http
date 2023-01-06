@@ -11,7 +11,10 @@ public interface UType {
   static UType parse(TypeMirror type) {
     return Util.parseType(type);
   }
-  /** Create the UType from the given String. */
+
+  /**
+   * Create the UType from the given String.
+   */
   static UType parse(String type) {
     return Util.parse(type);
   }
@@ -52,12 +55,16 @@ public interface UType {
     return null;
   }
 
-  /** Return the raw generic parameter if this UType is a Collection. */
+  /**
+   * Return the raw generic parameter if this UType is a Collection.
+   */
   default UType paramRaw() {
     return null;
   }
 
-  /** Return the raw type. */
+  /**
+   * Return the raw type.
+   */
   String full();
 
   default boolean isGeneric() {
@@ -114,8 +121,8 @@ public interface UType {
     @Override
     public Set<String> importTypes() {
       return rawType.startsWith("java.lang.") && rawType.indexOf('.') > -1
-          ? Set.of()
-          : Collections.singleton(rawType.replace("[]", ""));
+        ? Set.of()
+        : Collections.singleton(rawType.replace("[]", ""));
     }
 
     @Override
@@ -154,7 +161,6 @@ public interface UType {
     }
 
     private String extractRawParam() {
-
       switch (mainType()) {
         case "java.util.Set":
         case "java.util.List":

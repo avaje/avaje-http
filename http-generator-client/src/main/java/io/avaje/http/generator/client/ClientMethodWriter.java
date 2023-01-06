@@ -152,14 +152,11 @@ class ClientMethodWriter {
                   .map(Util::shortName)
                   .collect(Collectors.joining(".class, "));
 
-      writer.append(
-          "Types.newParameterizedType(%s.class, %s.class)", Util.shortName(type.mainType()), params);
+      writer.append("Types.newParameterizedType(%s.class, %s.class)", Util.shortName(type.mainType()), params);
     } else {
       writer.append("%s.class", Util.shortName(type.mainType()));
     }
-    writer.append(");");
-
-    writer.eol();
+    writer.append(");").eol();
   }
 
   private void writeWithHandler() {

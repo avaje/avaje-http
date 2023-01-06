@@ -38,7 +38,6 @@ public class JsonBUtil {
   }
 
   public static void writeJsonbType(UType type, Append writer) {
-
     writer.append("    this.%sJsonType = jsonB.type(", type.shortName());
     if (!type.isGeneric()) {
       writer.append("%s.class)", Util.shortName(PrimitiveUtil.wrap(type.full())));
@@ -56,13 +55,12 @@ public class JsonBUtil {
           writeType(type.paramRaw(), writer);
           writer.append(".map()");
           break;
-        default:
-          {
-            if (type.mainType().contains("java.util"))
-              throw new UnsupportedOperationException(
-                  "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
-            writeType(type, writer);
+        default: {
+          if (type.mainType().contains("java.util")) {
+            throw new UnsupportedOperationException("Only java.util Map, Set and List are supported JsonB Controller Collection Types");
           }
+          writeType(type, writer);
+        }
       }
     }
     writer.append(";").eol();
@@ -76,9 +74,7 @@ public class JsonBUtil {
               .map(Util::shortName)
               .collect(Collectors.joining(".class, "));
 
-      writer.append(
-          "Types.newParameterizedType(%s.class, %s.class))",
-          Util.shortName(type.mainType()), params);
+      writer.append("Types.newParameterizedType(%s.class, %s.class))", Util.shortName(type.mainType()), params);
     } else {
       writer.append("%s.class)", Util.shortName(type.mainType()));
     }

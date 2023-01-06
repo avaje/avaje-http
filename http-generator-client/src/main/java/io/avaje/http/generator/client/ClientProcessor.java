@@ -35,6 +35,7 @@ public class ClientProcessor extends AbstractProcessor {
       Class.forName("io.avaje.jsonb.Jsonb");
       jsonBOnClassPath = true;
     } catch (final ClassNotFoundException e) {
+      // intentionally ignored
     }
     useJsonB = jsonBOnClassPath;
   }

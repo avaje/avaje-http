@@ -89,7 +89,6 @@ class ControllerWriter extends BaseControllerWriter {
 
     for (final UType type : jsonTypes.values()) {
       final var typeString = PrimitiveUtil.wrap(type.shortType()).replace(",", ", ");
-
       writer.append("  private final JsonType<%s> %sJsonType;", typeString, type.shortName()).eol();
     }
     writer.eol();

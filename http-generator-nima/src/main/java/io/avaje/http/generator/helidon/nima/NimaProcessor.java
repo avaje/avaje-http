@@ -17,6 +17,7 @@ public class NimaProcessor extends BaseProcessor {
       Class.forName("io.avaje.jsonb.Jsonb");
       jsonBOnClassPath = true;
     } catch (final ClassNotFoundException e) {
+      // intentionally ignored
     }
     jsonB = jsonBOnClassPath;
   }
