@@ -4,6 +4,7 @@ import io.avaje.http.generator.core.*;
 
 import javax.lang.model.element.TypeElement;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Write code to register Web route for a given controller method.
@@ -22,24 +23,21 @@ class ClientMethodWriter {
   private final UType returnType;
   private MethodParam bodyHandlerParam;
   private String methodGenericParams = "";
+  private final boolean useJsonb;
 
-  ClientMethodWriter(MethodReader method, Append writer, ProcessingContext ctx) {
+  ClientMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonb) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
     this.ctx = ctx;
     this.returnType = Util.parseType(method.returnType());
+    this.useJsonb = useJsonb;
   }
 
   void addImportTypes(ControllerReader reader) {
     reader.addImportTypes(returnType.importTypes());
     for (final MethodParam param : method.params()) {
-      final var type = param.utype();
-      final var type0 = type.param0();
-      final var type1 = type.param1();
-      reader.addImportType(type.mainType().replace("[]", ""));
-      if (type0 != null) reader.addImportType(type0.replace("[]", ""));
-      if (type1 != null) reader.addImportType(type1.replace("[]", ""));
+      reader.addImportTypes(param.utype().importTypes());
     }
   }
 
@@ -116,35 +114,52 @@ class ClientMethodWriter {
 
   private void writeSyncResponse() {
     writer.append("      ");
-    String type0 = returnType.mainType();
-    String type1 = returnType.param0();
-    writeResponse(type0, type1);
+    writeResponse(returnType);
   }
 
   private void writeAsyncResponse() {
     writer.append("      .async()");
-    String type0 = returnType.param0();
-    String type1 = returnType.param1();
-    writeResponse(type0, type1);
+    writeResponse(returnType.paramRaw());
   }
 
   private void writeCallResponse() {
     writer.append("      .call()");
-    String type0 = returnType.param0();
-    String type1 = returnType.param1();
-    writeResponse(type0, type1);
+    writeResponse(returnType.paramRaw());
   }
 
-  private void writeResponse(String type0, String type1) {
-    if (isList(type0)) {
-      writer.append(".list(%s.class);", Util.shortName(type1)).eol();
-    } else if (isStream(type0)) {
-      writer.append(".stream(%s.class);", Util.shortName(type1)).eol();
-    } else if (isHttpResponse(type0)){
+  private void writeResponse(UType type) {
+    final var mainType = type.mainType();
+    final var param1 = type.paramRaw();
+    if (isList(mainType)) {
+      writer.append(".list(");
+      writeGeneric(param1);
+    } else if (isStream(mainType)) {
+      writer.append(".stream(");
+      writeGeneric(param1);
+    } else if (isHttpResponse(mainType)) {
       writeWithHandler();
     } else {
-      writer.append(".bean(%s.class);", Util.shortName(type0)).eol();
+      writer.append(".bean(");
+      writeGeneric(type);
     }
+  }
+
+  void writeGeneric(UType type) {
+    if (useJsonb && type.isGeneric()) {
+      final var params =
+          type.importTypes().stream()
+                  .skip(1)
+                  .map(Util::shortName)
+                  .collect(Collectors.joining(".class, "));
+
+      writer.append(
+          "Types.newParameterizedType(%s.class, %s.class)", Util.shortName(type.mainType()), params);
+    } else {
+      writer.append("%s.class", Util.shortName(type.mainType()));
+    }
+    writer.append(");");
+
+    writer.eol();
   }
 
   private void writeWithHandler() {

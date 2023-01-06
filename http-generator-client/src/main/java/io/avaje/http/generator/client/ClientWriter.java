@@ -21,12 +21,15 @@ class ClientWriter extends BaseControllerWriter {
   private static final String SUFFIX = "HttpClient";
 
   private final List<ClientMethodWriter> methodList = new ArrayList<>();
+  private final boolean useJsonb;
 
-  ClientWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
+  ClientWriter(ControllerReader reader, ProcessingContext ctx, boolean useJsonB) throws IOException {
     super(reader, ctx, SUFFIX);
     reader.addImportType(HTTP_CLIENT_CONTEXT);
     reader.addImportType(HTTP_API_PROVIDER);
+    this.useJsonb = useJsonB;
     readMethods();
+    if (useJsonB) reader.addImportType("io.avaje.jsonb.Types");
   }
 
   @Override
@@ -38,7 +41,7 @@ class ClientWriter extends BaseControllerWriter {
   private void readMethods() {
     for (MethodReader method : reader.methods()) {
       if (method.isWebMethod()) {
-        ClientMethodWriter methodWriter = new ClientMethodWriter(method, writer, ctx);
+        final var methodWriter = new ClientMethodWriter(method, writer, ctx, useJsonb);
         methodWriter.addImportTypes(reader);
         methodList.add(methodWriter);
       }

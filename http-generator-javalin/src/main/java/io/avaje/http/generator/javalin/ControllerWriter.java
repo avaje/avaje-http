@@ -1,9 +1,16 @@
 package io.avaje.http.generator.javalin;
 
-import io.avaje.http.generator.core.*;
-
 import java.io.IOException;
 import java.util.Map;
+
+import io.avaje.http.generator.core.BaseControllerWriter;
+import io.avaje.http.generator.core.Constants;
+import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.JsonBUtil;
+import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.PrimitiveUtil;
+import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.UType;
 
 /**
  * Write Javalin specific Controller WebRoute handling adapter.
@@ -21,7 +28,11 @@ class ControllerWriter extends BaseControllerWriter {
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
+      reader.addImportType("io.avaje.jsonb.Types");
       this.jsonTypes = JsonBUtil.jsonTypes(reader);
+      jsonTypes.values().stream()
+          .map(UType::importTypes)
+          .forEach(reader::addImportTypes);
     } else {
       this.jsonTypes = Map.of();
     }
@@ -77,7 +88,9 @@ class ControllerWriter extends BaseControllerWriter {
     }
 
     for (final UType type : jsonTypes.values()) {
-      writer.append("  private final JsonType<%s> %sJsonType;", PrimitiveUtil.wrap(type.full()), type.shortName()).eol();
+      final var typeString = PrimitiveUtil.wrap(type.shortType()).replace(",", ", ");
+
+      writer.append("  private final JsonType<%s> %sJsonType;", typeString, type.shortName()).eol();
     }
     writer.eol();
 

@@ -27,6 +27,22 @@ public class ClientProcessor extends AbstractProcessor {
 
   protected ProcessingContext ctx;
 
+  private final boolean useJsonB;
+
+  public ClientProcessor() {
+    var jsonBOnClassPath = false;
+    try {
+      Class.forName("io.avaje.jsonb.Jsonb");
+      jsonBOnClassPath = true;
+    } catch (final ClassNotFoundException e) {
+    }
+    useJsonB = jsonBOnClassPath;
+  }
+
+  public ClientProcessor(boolean useJsonb) {
+    useJsonB = useJsonb;
+  }
+
   @Override
   public SourceVersion getSupportedSourceVersion() {
     return SourceVersion.latest();
@@ -107,7 +123,7 @@ public class ClientProcessor extends AbstractProcessor {
   }
 
   protected String writeClientAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException {
-    return new ClientWriter(reader, ctx).write();
+    return new ClientWriter(reader, ctx, useJsonB).write();
   }
 
 }
