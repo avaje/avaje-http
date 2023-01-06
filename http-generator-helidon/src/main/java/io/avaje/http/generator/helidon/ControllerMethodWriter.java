@@ -103,7 +103,7 @@ class ControllerMethodWriter {
     } else if (MediaType.TEXT_PLAIN.equalsIgnoreCase(produces)) {
       writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_PLAIN);").eol();
     } else {
-      writer.append(    "res.writerContext().contentType(io.helidon.common.http.MediaType.parse(\"%s\"));", produces).eol();
+      writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.parse(\"%s\"));", produces).eol();
     }
   }
 
