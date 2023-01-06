@@ -98,8 +98,12 @@ public class WidgetController {
   record Widget(int id, String name){};
 }
 ```
-## @Singleton
-By default the generated classes will use jakarta.inject.Singleton for wiring. To use Javax Inject, use the compiler arg `-AuseJavax=true` 
+## DI Usage
+The annotation processor will generate controller adapters that can register routes to Javalin/Helidon. The natural way to use the generated adapters is to get a DI library to find and wire them. This is what the below examples do and they use [Avaje-Inject](https://avaje.io/inject/) to do this. The AP will automatically detect the presence of avaje-inject and generate the class to use avaje-inject's `@Component` as the DI annotation.
+
+There isn't a hard requirement to use Avaje for dependency injection. In the absence of avaje-inject the generated class will default to use `@jakarta.inject.Singleton`. Any DI library that can find and wire the generated @Singleton beans can be used. You can even use Dagger2 or Guice to wire the controllers if you so desire. 
+
+To have the AP generate using `@javax.inject.Singleton`, use the compiler arg `-AuseJavax=true` 
 ```
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -111,10 +115,6 @@ By default the generated classes will use jakarta.inject.Singleton for wiring. T
 				</configuration>
 			</plugin> 
 ```
-## Usage
-The annotation processor will generate controller adapters that can register routes to Javalin/Helidon. The natural way to use the generated adapters is to get a DI library to find and wire them. This is what the below examples do and they use [Avaje-Inject](https://avaje.io/inject/) to do this.
-
-Note that there isn't a requirement to use Avaje for dependency injection. Any DI library that can find and wire the generated @Singleton beans can be used. You can even use Dagger2 or Guice to wire the controllers if you so desire.
 
 ### Usage with Javalin
 
