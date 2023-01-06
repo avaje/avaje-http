@@ -47,10 +47,10 @@ public class ProcessingContext {
     final var jakarta = isTypeAvailable(Constants.SINGLETON);
     if (javax && jakarta) {
       this.useJavax = Boolean.parseBoolean(env.getOptions().get("useJavax"));
-    } else if (jakarta) {
-      this.useJavax = false;
+    } else if (javax) {
+      this.useJavax = true;
     } else {
-      useJavax = true;
+      useJavax = false;
     }
   }
 
