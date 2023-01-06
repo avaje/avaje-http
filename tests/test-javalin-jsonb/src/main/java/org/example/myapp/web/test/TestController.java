@@ -13,7 +13,9 @@ import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
+import io.avaje.http.api.MatrixParam;
 import io.javalin.http.Context;
+
 @Path("test/")
 @Controller
 public class TestController {
@@ -104,5 +106,16 @@ public class TestController {
   @Post("formBean")
   String testFormBean(MyForm form) {
     return form.name + "|" + form.email + "|" + form.url;
+  }
+  
+  @Get("/withMatrixParam/{type-1;category;vendor-34}/{range;style}")
+  void neo(
+      @MatrixParam("type-1") String type,
+      String category,
+      @MatrixParam("vendor-34") String vendor,
+      String range,
+      String style) {
+
+	System.out.println("Ever have that feeling where you're not sure if you're awake or dreaming?");
   }
 }
