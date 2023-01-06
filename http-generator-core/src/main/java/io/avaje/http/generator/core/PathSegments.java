@@ -133,9 +133,9 @@ public class PathSegments {
 
   public static class Segment {
 
-	private static final Pattern PATTERN = Pattern.compile("[^a-zA-Z0-9_]|\\s");
-	private final String name;
-	private final String sanitizedName;
+    private static final Pattern PATTERN = Pattern.compile("[^a-zA-Z0-9_]|\\s");
+    private final String name;
+    private final String sanitizedName;
     private final String literalSection;
 
     /**
