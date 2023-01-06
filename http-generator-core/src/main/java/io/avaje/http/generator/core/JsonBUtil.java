@@ -8,6 +8,18 @@ import java.util.stream.Collectors;
 public class JsonBUtil {
   private JsonBUtil() {}
 
+  /**
+   * Return true if avaje-jsonb is detected in the classpath.
+   */
+  public static boolean detectJsonb() {
+    try {
+      Class.forName("io.avaje.jsonb.Jsonb");
+      return true;
+    } catch (final ClassNotFoundException e) {
+      return false;
+    }
+  }
+
   public static Map<String, UType> jsonTypes(ControllerReader reader) {
 
     final Map<String, UType> jsonTypes = new LinkedHashMap<>();

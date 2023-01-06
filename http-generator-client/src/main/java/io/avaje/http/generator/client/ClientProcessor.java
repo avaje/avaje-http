@@ -2,6 +2,7 @@ package io.avaje.http.generator.client;
 
 import io.avaje.http.api.Client;
 import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.JsonBUtil;
 import io.avaje.http.generator.core.ProcessingContext;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -30,14 +31,7 @@ public class ClientProcessor extends AbstractProcessor {
   private final boolean useJsonB;
 
   public ClientProcessor() {
-    var jsonBOnClassPath = false;
-    try {
-      Class.forName("io.avaje.jsonb.Jsonb");
-      jsonBOnClassPath = true;
-    } catch (final ClassNotFoundException e) {
-      // intentionally ignored
-    }
-    useJsonB = jsonBOnClassPath;
+    useJsonB = JsonBUtil.detectJsonb();
   }
 
   public ClientProcessor(boolean useJsonb) {
