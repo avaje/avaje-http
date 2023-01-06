@@ -39,9 +39,19 @@ public class ProcessingContext {
     this.types = env.getTypeUtils();
     this.openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
     this.avajeAvailable = isTypeAvailable(Constants.COMPONENT);
-    this.docContext = new DocContext(env, openApiAvailable);
-    this.useJavax = Boolean.parseBoolean(env.getOptions().get("useJavax"));
     this.diAnnotation = avajeAvailable ? "@Component" : "@Singleton";
+
+    this.docContext = new DocContext(env, openApiAvailable);
+
+    final var javax = isTypeAvailable(Constants.SINGLETON.replace("jakarta", "javax"));
+    final var jakarta = isTypeAvailable(Constants.SINGLETON);
+    if (javax && jakarta) {
+      this.useJavax = Boolean.parseBoolean(env.getOptions().get("useJavax"));
+    } else if (jakarta) {
+      this.useJavax = false;
+    } else {
+      useJavax = true;
+    }
   }
 
   private boolean isTypeAvailable(String canonicalName) {
