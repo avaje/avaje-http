@@ -26,7 +26,7 @@ public class ElementReader {
 
   private String paramName;
   private ParamType paramType;
-  private String matrixParam;
+  private String matrixParamName;
   private boolean impliedParamType;
   private String paramDefault;
 
@@ -114,7 +114,7 @@ public class ElementReader {
    
     MatrixParam matrixParam = element.getAnnotation(MatrixParam.class);
     if (matrixParam != null) {
-      this.matrixParam = nameFrom(matrixParam.value(), varName);
+      this.matrixParamName = nameFrom(matrixParam.value(), varName);
       this.paramType = defaultType;
       this.impliedParamType = true;
       return;
@@ -245,7 +245,7 @@ public class ElementReader {
       return false;
     }
     if (impliedParamType) {
-      var name = matrixParam != null ? matrixParam : varName;
+      var name = matrixParamName != null ? matrixParamName : varName;
       PathSegments.Segment segment = segments.segment(name);
       if (segment != null) {
         // path or matrix parameter
