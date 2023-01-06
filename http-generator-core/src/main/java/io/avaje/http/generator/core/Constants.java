@@ -9,6 +9,7 @@ public class Constants {
   public static final String FACTORY_SUFFIX = "$Factory";
 
   static final String OPENAPIDEFINITION = "io.swagger.v3.oas.annotations.OpenAPIDefinition";
+  static final String COMPONENT = "io.avaje.inject.Component";
 
   static final String SINGLETON = "jakarta.inject.Singleton";
 

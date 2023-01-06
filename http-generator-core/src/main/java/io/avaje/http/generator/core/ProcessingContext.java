@@ -1,6 +1,6 @@
 package io.avaje.http.generator.core;
 
-import io.avaje.http.generator.core.openapi.DocContext;
+import java.io.IOException;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -15,7 +15,8 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
-import java.io.IOException;
+
+import io.avaje.http.generator.core.openapi.DocContext;
 
 public class ProcessingContext {
 
@@ -26,7 +27,9 @@ public class ProcessingContext {
   private final Types types;
   private final boolean openApiAvailable;
   private final DocContext docContext;
+  private final boolean avajeAvailable;
   private final boolean useJavax;
+  private final String diAnnotation;
 
   public ProcessingContext(ProcessingEnvironment env, PlatformAdapter readAdapter) {
     this.readAdapter = readAdapter;
@@ -35,8 +38,10 @@ public class ProcessingContext {
     this.elements = env.getElementUtils();
     this.types = env.getTypeUtils();
     this.openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
+    this.avajeAvailable = isTypeAvailable(Constants.COMPONENT);
     this.docContext = new DocContext(env, openApiAvailable);
-    this.useJavax= Boolean.parseBoolean(env.getOptions().get("useJavax"));
+    this.useJavax = Boolean.parseBoolean(env.getOptions().get("useJavax"));
+    this.diAnnotation = avajeAvailable ? "@Component" : "@Singleton";
   }
 
   private boolean isTypeAvailable(String canonicalName) {
@@ -49,6 +54,14 @@ public class ProcessingContext {
 
   public boolean isOpenApiAvailable() {
     return openApiAvailable;
+  }
+
+  public boolean useJavax() {
+    return useJavax;
+  }
+
+  public boolean isAvajeAvailable() {
+    return avajeAvailable;
   }
 
   public void logError(Element e, String msg, Object... args) {
@@ -89,7 +102,7 @@ public class ProcessingContext {
     return readAdapter;
   }
 
-  public boolean useJavax() {
-    return useJavax;
+  public String getDiAnnotation() {
+    return diAnnotation;
   }
 }
