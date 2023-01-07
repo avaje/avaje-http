@@ -29,7 +29,7 @@ public class ProcessingContext {
   private final DocContext docContext;
   private final boolean useComponent;
   private final boolean useJavax;
-  private final String annotationDI;
+  private final String diAnnotation;
 
   public ProcessingContext(ProcessingEnvironment env, PlatformAdapter readAdapter) {
     this.readAdapter = readAdapter;
@@ -40,7 +40,7 @@ public class ProcessingContext {
     this.openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
     this.docContext = new DocContext(env, openApiAvailable);
     this.useComponent = isTypeAvailable(Constants.COMPONENT);
-    this.annotationDI = useComponent ? "@Component" : "@Singleton";
+    this.diAnnotation = useComponent ? "@Component" : "@Singleton";
     
     final var javax = isTypeAvailable(Constants.SINGLETON_JAVAX);
     final var jakarta = isTypeAvailable(Constants.SINGLETON_JAKARTA);
@@ -114,6 +114,6 @@ public class ProcessingContext {
   }
 
   public String getDIAnnotation() {
-    return annotationDI;
+    return diAnnotation;
   }
 }
