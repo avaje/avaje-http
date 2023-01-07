@@ -43,8 +43,8 @@ public class ProcessingContext {
 
     this.docContext = new DocContext(env, openApiAvailable);
 
-    final var javax = isTypeAvailable(Constants.SINGLETON.replace("jakarta", "javax"));
-    final var jakarta = isTypeAvailable(Constants.SINGLETON);
+    final var javax = isTypeAvailable(Constants.SINGLETON_JAVAX);
+    final var jakarta = isTypeAvailable(Constants.SINGLETON_JAKARTA);
     final var override = Boolean.getBoolean(env.getOptions().get("useJavax"));
 
     if (override || (javax && jakarta)) {

@@ -70,8 +70,7 @@ public class ControllerReader {
       if (ctx.isAvajeAvailable()) {
         importTypes.add(Constants.COMPONENT);
       } else {
-        importTypes.add(
-            ctx.useJavax() ? Constants.SINGLETON.replace("jakarta", "javax") : Constants.SINGLETON);
+        importTypes.add(ctx.useJavax() ? Constants.SINGLETON_JAVAX : Constants.SINGLETON_JAKARTA);
       }
     }
   }
