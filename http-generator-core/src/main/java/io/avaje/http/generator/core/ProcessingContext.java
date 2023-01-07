@@ -27,9 +27,9 @@ public class ProcessingContext {
   private final Types types;
   private final boolean openApiAvailable;
   private final DocContext docContext;
-  private final boolean avajeAvailable;
+  private final boolean useComponent;
   private final boolean useJavax;
-  private final String diAnnotation;
+  private final String annotationDI;
 
   public ProcessingContext(ProcessingEnvironment env, PlatformAdapter readAdapter) {
     this.readAdapter = readAdapter;
@@ -38,11 +38,10 @@ public class ProcessingContext {
     this.elements = env.getElementUtils();
     this.types = env.getTypeUtils();
     this.openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
-    this.avajeAvailable = isTypeAvailable(Constants.COMPONENT);
-    this.diAnnotation = avajeAvailable ? "@Component" : "@Singleton";
-
     this.docContext = new DocContext(env, openApiAvailable);
-
+    this.useComponent = isTypeAvailable(Constants.COMPONENT);
+    this.annotationDI = useComponent ? "@Component" : "@Singleton";
+    
     final var javax = isTypeAvailable(Constants.SINGLETON_JAVAX);
     final var jakarta = isTypeAvailable(Constants.SINGLETON_JAKARTA);
     final var override = Boolean.getBoolean(env.getOptions().get("useJavax"));
@@ -72,8 +71,8 @@ public class ProcessingContext {
     return useJavax;
   }
 
-  public boolean isAvajeAvailable() {
-    return avajeAvailable;
+  public boolean useComponent() {
+    return useComponent;
   }
 
   public void logError(Element e, String msg, Object... args) {
@@ -114,7 +113,7 @@ public class ProcessingContext {
     return readAdapter;
   }
 
-  public String getDiAnnotation() {
-    return diAnnotation;
+  public String getDIAnnotation() {
+    return annotationDI;
   }
 }

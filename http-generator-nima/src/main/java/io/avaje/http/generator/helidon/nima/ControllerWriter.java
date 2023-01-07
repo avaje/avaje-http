@@ -77,7 +77,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
-    writer.append(ctx.getDiAnnotation()).eol();
+    writer.append(ctx.getDIAnnotation()).eol();
     writer.append("public class %s$Route implements HttpService {", shortName).eol().eol();
 
     var controllerName = "controller";
