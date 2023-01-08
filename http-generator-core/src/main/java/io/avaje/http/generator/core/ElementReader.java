@@ -26,6 +26,7 @@ public class ElementReader {
 
   private String paramName;
   private ParamType paramType;
+  private String matrixParamName;
   private boolean impliedParamType;
   private String paramDefault;
 
@@ -110,6 +111,15 @@ public class ElementReader {
       this.paramDefault = null;
       return;
     }
+   
+    MatrixParam matrixParam = element.getAnnotation(MatrixParam.class);
+    if (matrixParam != null) {
+      this.matrixParamName = nameFrom(matrixParam.value(), varName);
+      this.paramType = defaultType;
+      this.impliedParamType = true;
+      return;
+    }
+    
     if (paramType == null) {
       this.impliedParamType = true;
       if (typeHandler != null) {
@@ -235,15 +245,19 @@ public class ElementReader {
       return false;
     }
     if (impliedParamType) {
-      PathSegments.Segment segment = segments.segment(varName);
+      var name = matrixParamName != null ? matrixParamName : varName;
+      PathSegments.Segment segment = segments.segment(name);
       if (segment != null) {
         // path or matrix parameter
         boolean requiredParam = segment.isRequired(varName);
-        String asMethod = (typeHandler == null) ? null : (requiredParam) ? typeHandler.asMethod() : typeHandler.toMethod();
+        String asMethod =
+            (typeHandler == null)
+                ? null
+                : (requiredParam) ? typeHandler.asMethod() : typeHandler.toMethod();
         if (asMethod != null) {
           writer.append(asMethod);
         }
-        segment.writeGetVal(writer, varName, ctx.platform());
+        segment.writeGetVal(writer, name, ctx.platform());
         if (asMethod != null) {
           writer.append(")");
         }

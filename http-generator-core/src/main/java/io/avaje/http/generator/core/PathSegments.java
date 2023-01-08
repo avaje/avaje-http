@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class PathSegments {
 
@@ -132,7 +133,9 @@ public class PathSegments {
 
   public static class Segment {
 
+    private static final Pattern PATTERN = Pattern.compile("[^a-zA-Z0-9_]|\\s");
     private final String name;
+    private final String sanitizedName;
     private final String literalSection;
 
     /**
@@ -150,6 +153,7 @@ public class PathSegments {
      */
     Segment(String name) {
       this.name = name;
+      this.sanitizedName = PATTERN.matcher(name).replaceAll("_");
       this.literalSection = null;
       this.matrixKeys = null;
       this.matrixVarNames = null;
@@ -160,6 +164,7 @@ public class PathSegments {
      */
     Segment(String name, Set<String> matrixKeys) {
       this.name = name;
+      this.sanitizedName = PATTERN.matcher(name).replaceAll("_");
       this.literalSection = null;
       this.matrixKeys = matrixKeys;
       this.matrixVarNames = new HashSet<>();
@@ -172,8 +177,10 @@ public class PathSegments {
      * Create a literal path segment.
      */
     public Segment(String section, boolean literalDummy) {
+
       this.literalSection = section;
       this.name = null;
+      this.sanitizedName = null;
       this.matrixKeys = null;
       this.matrixVarNames = null;
     }
@@ -219,7 +226,7 @@ public class PathSegments {
       if (!hasMatrixParams()) {
         platform.writeReadParameter(writer, ParamType.PATHPARAM, name);
       } else {
-        writer.append("%s_segment.", name);
+        writer.append("%s_segment.", sanitizedName);
         if (name.equals(varName)) {
           writer.append("val()");
         } else {
@@ -238,7 +245,7 @@ public class PathSegments {
 
     public void writeCreateSegment(Append writer, PlatformAdapter platform) {
       writer.append(platform.indent());
-      writer.append("  PathSegment %s_segment = PathSegment.of(", name);
+      writer.append("  PathSegment %s_segment = PathSegment.of(", sanitizedName);
       platform.writeReadParameter(writer, ParamType.PATHPARAM, name + "_segment");
       writer.append(");").eol();
     }
