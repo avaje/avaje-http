@@ -1,9 +1,5 @@
 package io.avaje.http.generator.core.openapi;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
@@ -177,26 +173,17 @@ public class DocContext {
   }
 
   public void writeApi() {
-    try (Writer metaWriter = createMetaWriter()) {
 
-      OpenAPI openAPI = getApiForWriting();
-      ObjectMapper mapper = createObjectMapper();
-      mapper.writeValue(metaWriter, openAPI);
+    final var openAPI = getApiForWriting();
+    try (var metaWriter = createMetaWriter()) {
 
-    } catch (IOException e) {
+      final var json = OpenAPISerializer.serialize(openAPI);
+      JsonFormatter.prettyPrintJson(metaWriter, json);
+
+    } catch (final Exception e) {
       logError(null, "Error writing openapi file" + e.getMessage());
       e.printStackTrace();
     }
-  }
-
-  private ObjectMapper createObjectMapper() {
-
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
-      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-      .enable(SerializationFeature.INDENT_OUTPUT);
-
-    return mapper;
   }
 
   private Writer createMetaWriter() throws IOException {

@@ -13,7 +13,6 @@
 
   <properties>
     <swagger.version>2.0.8</swagger.version>
-    <jackson.version>2.13.4.1</jackson.version>
   </properties>
 
   <dependencies>
@@ -34,12 +33,6 @@
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
       <version>1.21-SNAPSHOT</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
     </dependency>
 
     <dependency>
