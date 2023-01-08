@@ -1,6 +1,6 @@
 package io.avaje.http.generator.core;
 
-import io.avaje.http.generator.core.openapi.DocContext;
+import java.io.IOException;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -15,7 +15,8 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
-import java.io.IOException;
+
+import io.avaje.http.generator.core.openapi.DocContext;
 
 public class ProcessingContext {
 
@@ -26,6 +27,9 @@ public class ProcessingContext {
   private final Types types;
   private final boolean openApiAvailable;
   private final DocContext docContext;
+  private final boolean useComponent;
+  private final boolean useJavax;
+  private final String diAnnotation;
 
   public ProcessingContext(ProcessingEnvironment env, PlatformAdapter readAdapter) {
     this.readAdapter = readAdapter;
@@ -35,6 +39,20 @@ public class ProcessingContext {
     this.types = env.getTypeUtils();
     this.openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
     this.docContext = new DocContext(env, openApiAvailable);
+    this.useComponent = isTypeAvailable(Constants.COMPONENT);
+    this.diAnnotation = useComponent ? "@Component" : "@Singleton";
+    
+    final var javax = isTypeAvailable(Constants.SINGLETON_JAVAX);
+    final var jakarta = isTypeAvailable(Constants.SINGLETON_JAKARTA);
+    final var override = Boolean.getBoolean(env.getOptions().get("useJavax"));
+
+    if (override || (javax && jakarta)) {
+      this.useJavax = override;
+    } else if (javax) {
+      this.useJavax = true;
+    } else {
+      useJavax = false;
+    }
   }
 
   private boolean isTypeAvailable(String canonicalName) {
@@ -47,6 +65,14 @@ public class ProcessingContext {
 
   public boolean isOpenApiAvailable() {
     return openApiAvailable;
+  }
+
+  public boolean useJavax() {
+    return useJavax;
+  }
+
+  public boolean useComponent() {
+    return useComponent;
   }
 
   public void logError(Element e, String msg, Object... args) {
@@ -85,5 +111,9 @@ public class ProcessingContext {
 
   public PlatformAdapter platform() {
     return readAdapter;
+  }
+
+  public String getDIAnnotation() {
+    return diAnnotation;
   }
 }
