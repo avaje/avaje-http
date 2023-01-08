@@ -27,7 +27,6 @@ import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
 import io.avaje.http.generator.core.javadoc.Javadoc;
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 
@@ -74,7 +73,7 @@ public class MethodReader {
     this.actualParams = (actualExecutable == null) ? null : actualExecutable.getParameterTypes();
     this.isVoid = element.getReturnType().getKind() == TypeKind.VOID;
     this.methodRoles = Util.findRoles(element);
-    this.javadoc = Javadoc.parse(ctx.getDocComment(element));
+    this.javadoc = Javadoc.parse(ctx.docComment(element));
     this.produces = produces(bean);
     this.apiResponses = getApiResponses();
     initWebMethodViaAnnotation();

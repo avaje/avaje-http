@@ -14,7 +14,6 @@ public class PathSegments {
   static final PathSegments EMPTY = new PathSegments(new Chunks(), Collections.emptySet());
 
   static PathSegments parse(String fullPath) {
-
     Set<Segment> segments = new LinkedHashSet<>();
 
     Chunks chunks = new Chunks();
@@ -67,11 +66,8 @@ public class PathSegments {
   }
 
   private final Chunks chunks;
-
   private final Set<Segment> segments;
-
   private final List<Segment> withMatrixs = new ArrayList<>();
-
   private final Set<String> allNames = new HashSet<>();
 
   private PathSegments(Chunks chunks, Set<Segment> segments) {
@@ -177,7 +173,6 @@ public class PathSegments {
      * Create a literal path segment.
      */
     public Segment(String section, boolean literalDummy) {
-
       this.literalSection = section;
       this.name = null;
       this.sanitizedName = null;

@@ -5,7 +5,6 @@ import io.avaje.http.generator.core.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Write Helidon specific web route adapter (a Helidon Service).
@@ -77,7 +76,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
-    writer.append(ctx.getDIAnnotation()).eol();
+    writer.append(ctx.diAnnotation()).eol();
     writer.append("public class %s$Route implements HttpService {", shortName).eol().eol();
 
     var controllerName = "controller";

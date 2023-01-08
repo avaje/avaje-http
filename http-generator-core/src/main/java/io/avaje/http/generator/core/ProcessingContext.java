@@ -41,7 +41,7 @@ public class ProcessingContext {
     this.docContext = new DocContext(env, openApiAvailable);
     this.useComponent = isTypeAvailable(Constants.COMPONENT);
     this.diAnnotation = useComponent ? "@Component" : "@Singleton";
-    
+
     final var javax = isTypeAvailable(Constants.SINGLETON_JAVAX);
     final var jakarta = isTypeAvailable(Constants.SINGLETON_JAKARTA);
     final var override = Boolean.getBoolean(env.getOptions().get("useJavax"));
@@ -93,7 +93,7 @@ public class ProcessingContext {
     return filer.createResource(StandardLocation.CLASS_OUTPUT, "", target);
   }
 
-  public String getDocComment(Element param) {
+  public String docComment(Element param) {
     return elements.getDocComment(param);
   }
 
@@ -113,7 +113,7 @@ public class ProcessingContext {
     return readAdapter;
   }
 
-  public String getDIAnnotation() {
+  public String diAnnotation() {
     return diAnnotation;
   }
 }
