@@ -50,7 +50,7 @@ final class OpenAPISerializer {
           }
           sb.append("\"");
           sb.append(entry.getKey());
-          sb.append("\": ");
+          sb.append("\" : ");
 
           write(sb, entry.getValue());
           firstElement = false;
@@ -75,7 +75,7 @@ final class OpenAPISerializer {
             }
             sb.append("\"");
             sb.append(field.getName());
-            sb.append("\": ");
+            sb.append("\" : ");
             write(sb, value);
             firstField = false;
           }

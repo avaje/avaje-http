@@ -40,9 +40,6 @@ final class JsonFormatter {
             writer.append(current).append("\n");
             addIndents(writer, indentLevel);
             break;
-          case ':':
-            writer.append(" :");
-            break;
           default:
             writer.append(current);
             break;
