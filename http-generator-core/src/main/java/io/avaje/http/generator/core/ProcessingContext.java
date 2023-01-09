@@ -33,7 +33,7 @@ public class ProcessingContext {
 
   public ProcessingContext(ProcessingEnvironment env, PlatformAdapter readAdapter) {
 
-	this.readAdapter = readAdapter;
+    this.readAdapter = readAdapter;
     this.messager = env.getMessager();
     this.filer = env.getFiler();
     this.elements = env.getElementUtils();
