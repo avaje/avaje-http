@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 
-@SupportedOptions({"useJavax"})
+@SupportedOptions({"useJavax","useSingleton"})
 public abstract class BaseProcessor extends AbstractProcessor {
 
   protected ProcessingContext ctx;

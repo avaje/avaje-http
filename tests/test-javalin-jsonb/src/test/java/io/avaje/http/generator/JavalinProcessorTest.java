@@ -41,7 +41,7 @@ class JavalinProcessorTest {
   }
 
   @Test
-  public void runAnnoationProcessor() throws Exception {
+  public void runAnnotationProcessor() throws Exception {
     final var source = Paths.get("src").toAbsolutePath().toString();
 
     final var files = getSourceFiles(source);
@@ -54,10 +54,13 @@ class JavalinProcessorTest {
     task.setProcessors(List.of(new JavalinProcessor()));
 
     assertThat(task.call()).isTrue();
+    assert Files.readString(
+            Paths.get("org/example/myapp/web/BarController$Route.java").toAbsolutePath())
+        .contains("io.avaje.inject.Component");
   }
 
   @Test
-  public void runAnnoationProcessorJsonB() throws Exception {
+  public void runAnnotationProcessorJsonB() throws Exception {
     final var source = Paths.get("src").toAbsolutePath().toString();
 
     final var files = getSourceFiles(source);
@@ -67,9 +70,62 @@ class JavalinProcessorTest {
     final var task =
         compiler.getTask(
             new PrintWriter(System.out), null, null, List.of("--release=11"), null, files);
+    task.setProcessors(List.of(new JavalinProcessor(true), new Processor()));
+
+    assertThat(task.call()).isTrue();
+    assert Files.readString(
+            Paths.get("org/example/myapp/web/BarController$Route.java").toAbsolutePath())
+        .contains("io.avaje.jsonb.Jsonb");
+  }
+
+  @Test
+  public void runAnnotationProcessorJavax() throws Exception {
+    final var source = Paths.get("src").toAbsolutePath().toString();
+
+    final var files = getSourceFiles(source);
+
+    final var compiler = ToolProvider.getSystemJavaCompiler();
+
+    final var task =
+        compiler.getTask(
+            new PrintWriter(System.out),
+            null,
+            null,
+            List.of("--release=11", "-AuseJavax=true", "-AuseSingleton=true"),
+            null,
+            files);
+    task.setProcessors(List.of(new JavalinProcessor(false), new Processor()));
+    // we don't have javax on the cp
+    assertThat(task.call()).isFalse();
+
+    assert Files.readString(
+            Paths.get("org/example/myapp/web/BarController$Route.java").toAbsolutePath())
+        .contains("javax.inject.Singleton");
+  }
+
+  @Test
+  public void runAnnotationProcessorJakarta() throws Exception {
+    final var source = Paths.get("src").toAbsolutePath().toString();
+
+    final var files = getSourceFiles(source);
+
+    final var compiler = ToolProvider.getSystemJavaCompiler();
+
+    final var task =
+        compiler.getTask(
+            new PrintWriter(System.out),
+            null,
+            null,
+            List.of("--release=11", "-AuseJavax=false", "-AuseSingleton=true"),
+            null,
+            files);
     task.setProcessors(List.of(new JavalinProcessor(false), new Processor()));
 
     assertThat(task.call()).isTrue();
+
+    assert Files.readString(
+            Paths.get("org/example/myapp/web/BarController$Route.java").toAbsolutePath())
+        .contains("jakarta.inject.Singleton");
   }
 
   @Test

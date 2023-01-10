@@ -32,6 +32,7 @@ public class ProcessingContext {
   private final String diAnnotation;
 
   public ProcessingContext(ProcessingEnvironment env, PlatformAdapter readAdapter) {
+
     this.readAdapter = readAdapter;
     this.messager = env.getMessager();
     this.filer = env.getFiler();
@@ -39,17 +40,26 @@ public class ProcessingContext {
     this.types = env.getTypeUtils();
     this.openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
     this.docContext = new DocContext(env, openApiAvailable);
-    this.useComponent = isTypeAvailable(Constants.COMPONENT);
+
+    final var options = env.getOptions();
+    final var singletonOverride = options.get("useSingleton");
+
+    if (singletonOverride != null) {
+      this.useComponent = !Boolean.parseBoolean(singletonOverride);
+    } else {
+      this.useComponent = isTypeAvailable(Constants.COMPONENT);
+    }
+
     this.diAnnotation = useComponent ? "@Component" : "@Singleton";
 
     final var javax = isTypeAvailable(Constants.SINGLETON_JAVAX);
     final var jakarta = isTypeAvailable(Constants.SINGLETON_JAKARTA);
-    final var override = Boolean.getBoolean(env.getOptions().get("useJavax"));
+    final var override = env.getOptions().get("useJavax");
 
-    if (override || (javax && jakarta)) {
-      this.useJavax = override;
-    } else if (javax) {
-      this.useJavax = true;
+    if (override != null || (javax && jakarta)) {
+      this.useJavax = Boolean.parseBoolean(override);
+    } else if (javax && !jakarta) {
+      useJavax = javax;
     } else {
       useJavax = false;
     }
