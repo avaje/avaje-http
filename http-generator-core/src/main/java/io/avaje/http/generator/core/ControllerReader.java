@@ -84,7 +84,8 @@ public class ControllerReader {
     List<Element> interfaces = new ArrayList<>();
     for (TypeMirror anInterface : beanType.getInterfaces()) {
       final Element ifaceElement = ctx.asElement(anInterface);
-      if (!ifaceElement.getAnnotation(Controller.class).value().isBlank()
+      var controller = ifaceElement.getAnnotation(Controller.class);
+      if (controller != null && !controller.value().isBlank()
           || ifaceElement.getAnnotation(Path.class) != null) {
         interfaces.add(ifaceElement);
       }
@@ -257,7 +258,7 @@ public class ControllerReader {
 
   public String path() {
 
-    return Optional.of(findAnnotation(Controller.class))
+    return Optional.ofNullable(findAnnotation(Controller.class))
         .map(Controller::value)
         .filter(not(String::isBlank))
         .or(() -> Optional.ofNullable(findAnnotation(Path.class)).map(Path::value))
