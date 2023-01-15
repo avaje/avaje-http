@@ -75,11 +75,9 @@ package org.example.hello;
 
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Get;
-import io.avaje.http.api.Path;
 import java.util.List;
 
-@Path("/widgets")
-@Controller
+@Controller("/widgets")
 public class WidgetController {
   private final HelloComponent hello;
   public WidgetController(HelloComponent hello) {
