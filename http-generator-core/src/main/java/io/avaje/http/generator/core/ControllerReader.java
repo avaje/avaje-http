@@ -1,8 +1,13 @@
 package io.avaje.http.generator.core;
 
-import io.avaje.http.api.Path;
-import io.avaje.http.api.Produces;
-import io.swagger.v3.oas.annotations.Hidden;
+import static java.util.function.Predicate.not;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -14,11 +19,11 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.validation.Valid;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+
+import io.avaje.http.api.Controller;
+import io.avaje.http.api.Path;
+import io.avaje.http.api.Produces;
+import io.swagger.v3.oas.annotations.Hidden;
 
 /**
  * Reads the type information for the Controller (bean).
@@ -79,7 +84,9 @@ public class ControllerReader {
     List<Element> interfaces = new ArrayList<>();
     for (TypeMirror anInterface : beanType.getInterfaces()) {
       final Element ifaceElement = ctx.asElement(anInterface);
-      if (ifaceElement.getAnnotation(Path.class) != null) {
+      var controller = ifaceElement.getAnnotation(Controller.class);
+      if (controller != null && !controller.value().isBlank()
+          || ifaceElement.getAnnotation(Path.class) != null) {
         interfaces.add(ifaceElement);
       }
     }
@@ -250,11 +257,13 @@ public class ControllerReader {
   }
 
   public String path() {
-    Path path = findAnnotation(Path.class);
-    if (path == null) {
-      return null;
-    }
-    return Util.trimPath(path.value());
+
+    return Optional.ofNullable(findAnnotation(Controller.class))
+        .map(Controller::value)
+        .filter(not(String::isBlank))
+        .or(() -> Optional.ofNullable(findAnnotation(Path.class)).map(Path::value))
+        .map(Util::trimPath)
+        .orElse(null);
   }
 
   public void addImportType(String rawType) {

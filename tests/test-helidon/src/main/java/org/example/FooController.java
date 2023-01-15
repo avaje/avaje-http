@@ -18,8 +18,7 @@ import org.example.api.FooBody;
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
-@Path("/foo")
+@Controller("/foo")
 public class FooController {
 
   //@Produces("text/plain")
