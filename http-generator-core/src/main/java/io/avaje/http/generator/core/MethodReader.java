@@ -61,11 +61,7 @@ public class MethodReader {
   private final PathSegments pathSegments;
   private final boolean hasValid;
 
-  MethodReader(
-      ControllerReader bean,
-      ExecutableElement element,
-      ExecutableType actualExecutable,
-      ProcessingContext ctx) {
+  MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable, ProcessingContext ctx) {
     this.ctx = ctx;
     this.bean = bean;
     this.element = element;
@@ -78,23 +74,23 @@ public class MethodReader {
     this.apiResponses = getApiResponses();
     initWebMethodViaAnnotation();
     if (isWebMethod()) {
-
-      Annotation jakarta = null;
+      Annotation jakartaValidAnnotation = null;
       try {
-        final var anno =
-            (Class<Annotation>)
-                Class.forName(Valid.class.getCanonicalName().replace("javax", "jakarta"));
-        jakarta = findAnnotation(anno);
+        jakartaValidAnnotation = findAnnotation(jakartaValidAnnotation());
       } catch (final ClassNotFoundException e) {
-
+        // ignore
       }
-
-      this.hasValid = findAnnotation(Valid.class) != null || jakarta != null;
+      this.hasValid = findAnnotation(Valid.class) != null || jakartaValidAnnotation != null;
       this.pathSegments = PathSegments.parse(Util.combinePath(bean.path(), webMethodPath));
     } else {
       this.hasValid = false;
       this.pathSegments = null;
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  private static Class<Annotation> jakartaValidAnnotation() throws ClassNotFoundException {
+    return (Class<Annotation>) Class.forName(Valid.class.getCanonicalName().replace("javax", "jakarta"));
   }
 
   @Override

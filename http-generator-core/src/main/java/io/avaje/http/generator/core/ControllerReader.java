@@ -141,17 +141,18 @@ public class ControllerReader {
   }
 
   private boolean initHasValid() {
-    Annotation jakarta = null;
+    Annotation jakartaValidAnnotation = null;
     try {
-      var anno =
-          (Class<Annotation>)
-              Class.forName(Valid.class.getCanonicalName().replace("javax", "jakarta"));
-      jakarta = findAnnotation(anno);
+      jakartaValidAnnotation = findAnnotation(jakarataValidAnnotation());
     } catch (final ClassNotFoundException e) {
-
+      // ignore
     }
+    return findAnnotation(Valid.class) != null || jakartaValidAnnotation != null;
+  }
 
-    return findAnnotation(Valid.class) != null || jakarta != null;
+  @SuppressWarnings("unchecked")
+  private static Class<Annotation> jakarataValidAnnotation() throws ClassNotFoundException {
+    return (Class<Annotation>)Class.forName(Valid.class.getCanonicalName().replace("javax", "jakarta"));
   }
 
   String produces() {
