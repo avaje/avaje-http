@@ -33,6 +33,8 @@ import java.util.concurrent.Executor;
 public interface HttpClientContext extends io.avaje.http.client.HttpClient {
 
   /**
+   * Deprecated - migrate to {@link io.avaje.http.client.HttpClient#builder()}.
+   * <p>
    * Return the builder to config and build the client context.
    *
    * <pre>{@code
@@ -48,6 +50,7 @@ public interface HttpClientContext extends io.avaje.http.client.HttpClient {
    *
    * }</pre>
    */
+  @Deprecated
   static HttpClientContext.Builder builder() {
     return new DHttpClientContextBuilder();
   }
