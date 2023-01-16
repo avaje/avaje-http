@@ -7,24 +7,20 @@ import javax.net.ssl.SSLParameters;
 import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.ProxySelector;
-import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.concurrent.Executor;
 
 /**
- * Deprecated in favor of {@link io.avaje.http.client.HttpClient}.
- * Migrate to using {@link io.avaje.http.client.HttpClient#builder()}.
- * <p>
  * The HTTP client context that we use to build and process requests.
  *
  * <pre>{@code
  *
- *   HttpClientContext ctx = HttpClientContext.builder()
+ *   HttpClient client = HttpClient.builder()
  *       .baseUrl("http://localhost:8080")
  *       .bodyAdapter(new JacksonBodyAdapter())
  *       .build();
  *
- *  HelloDto dto = ctx.request()
+ *  HelloDto dto = client.request()
  *       .path("hello")
  *       .queryParam("name", "Rob")
  *       .queryParam("say", "Whats up")
@@ -33,51 +29,85 @@ import java.util.concurrent.Executor;
  *
  * }</pre>
  */
-@Deprecated
-public interface HttpClientContext extends io.avaje.http.client.HttpClient {
+public interface HttpClient {
 
   /**
-   * Deprecated - migrate to {@link io.avaje.http.client.HttpClient#builder()}.
-   * <p>
    * Return the builder to config and build the client context.
    *
    * <pre>{@code
    *
-   *   HttpClientContext ctx = HttpClientContext.builder()
+   *   HttpClient client = HttpClient.builder()
    *       .baseUrl("http://localhost:8080")
    *       .bodyAdapter(new JacksonBodyAdapter())
    *       .build();
    *
-   *  HttpResponse<String> res = ctx.request()
+   *  HttpResponse<String> res = client.request()
    *       .path("hello")
    *       .GET().asString();
    *
    * }</pre>
    */
-  @Deprecated
-  static HttpClientContext.Builder builder() {
-    return new DHttpClientContextBuilder();
+  static Builder builder() {
+    return new DHttpClientBuilder();
   }
 
   /**
-   * Deprecated - migrate to builder().
+   * Return the http client API implementation.
+   *
+   * @param clientInterface A <code>@Client</code> interface with annotated API methods.
+   * @param <T>             The service type.
+   * @return The http client API implementation.
+   */
+  <T> T create(Class<T> clientInterface);
+
+  /**
+   * Create a new request.
+   */
+  HttpClientRequest request();
+
+  /**
+   * Deprecated - migrate to {@link #bodyAdapter()}.
+   * <p>
+   * Return the body adapter used by the client context.
+   * <p>
+   * This is the body adapter used to convert request and response
+   * bodies to java types. For example using Jackson with JSON payloads.
    */
   @Deprecated
-  static HttpClientContext.Builder newBuilder() {
-    return builder();
+  default BodyAdapter converters() {
+    return bodyAdapter();
   }
 
   /**
-   * Builds the HttpClientContext.
+   * Return the BodyAdapter that this client is using.
+   */
+  BodyAdapter bodyAdapter();
+
+  /**
+   * Return the current aggregate metrics.
+   * <p>
+   * These metrics are collected for all requests sent via this context.
+   */
+  HttpClient.Metrics metrics();
+
+  /**
+   * Return the current metrics with the option of resetting the underlying counters.
+   * <p>
+   * These metrics are collected for all requests sent via this context.
+   */
+  HttpClient.Metrics metrics(boolean reset);
+
+  /**
+   * Builds the HttpClient.
    *
    * <pre>{@code
    *
-   *   HttpClientContext ctx = HttpClientContext.builder()
+   *   HttpClient client = HttpClient.builder()
    *       .baseUrl("http://localhost:8080")
    *       .bodyAdapter(new JacksonBodyAdapter())
    *       .build();
    *
-   *  HelloDto dto = ctx.request()
+   *  HelloDto dto = client.request()
    *       .path("hello")
    *       .queryParam("name", "Rob")
    *       .queryParam("say", "Whats up")
@@ -87,13 +117,6 @@ public interface HttpClientContext extends io.avaje.http.client.HttpClient {
    * }</pre>
    */
   interface Builder {
-
-    /**
-     * Set the underlying HttpClient to use.
-     * <p>
-     * Used when we wish to control all options of the HttpClient.
-     */
-    Builder client(HttpClient client);
 
     /**
      * Set the base URL to use for requests created from the context.
@@ -178,66 +201,73 @@ public interface HttpClientContext extends io.avaje.http.client.HttpClient {
     Builder authTokenProvider(AuthTokenProvider authTokenProvider);
 
     /**
+     * Set the underlying HttpClient to use.
+     * <p>
+     * Used when we wish to control all options of the HttpClient.
+     */
+    Builder client(java.net.http.HttpClient client);
+
+    /**
      * Specify a cookie handler to use on the HttpClient. This would override the default cookie handler.
      *
-     * @see HttpClient.Builder#cookieHandler(CookieHandler)
+     * @see java.net.http.HttpClient.Builder#cookieHandler(CookieHandler)
      */
     Builder cookieHandler(CookieHandler cookieHandler);
 
     /**
      * Specify the redirect policy. Defaults to HttpClient.Redirect.NORMAL.
      *
-     * @see HttpClient.Builder#followRedirects(HttpClient.Redirect)
+     * @see java.net.http.HttpClient.Builder#followRedirects(java.net.http.HttpClient.Redirect)
      */
-    Builder redirect(HttpClient.Redirect redirect);
+    Builder redirect(java.net.http.HttpClient.Redirect redirect);
 
     /**
      * Specify the HTTP version. Defaults to not set.
      *
-     * @see HttpClient.Builder#version(HttpClient.Version)
+     * @see java.net.http.HttpClient.Builder#version(java.net.http.HttpClient.Version)
      */
-    Builder version(HttpClient.Version version);
+    Builder version(java.net.http.HttpClient.Version version);
 
     /**
      * Specify the Executor to use for asynchronous tasks.
      * If not specified a default executor will be used.
      *
-     * @see HttpClient.Builder#executor(Executor)
+     * @see java.net.http.HttpClient.Builder#executor(Executor)
      */
     Builder executor(Executor executor);
 
     /**
-     * Set the proxy to the underlying {@link HttpClient}.
+     * Set the proxy to the underlying {@link java.net.http.HttpClient}.
      *
-     * @see HttpClient.Builder#proxy(ProxySelector)
+     * @see java.net.http.HttpClient.Builder#proxy(ProxySelector)
      */
     Builder proxy(ProxySelector proxySelector);
 
     /**
-     * Set the sslContext to the underlying {@link HttpClient}.
+     * Set the sslContext to the underlying {@link java.net.http.HttpClient}.
      *
-     * @see HttpClient.Builder#sslContext(SSLContext)
+     * @see java.net.http.HttpClient.Builder#sslContext(SSLContext)
      */
     Builder sslContext(SSLContext sslContext);
 
     /**
-     * Set the sslParameters to the underlying {@link HttpClient}.
+     * Set the sslParameters to the underlying {@link java.net.http.HttpClient}.
      *
-     * @see HttpClient.Builder#sslParameters(SSLParameters)
+     * @see java.net.http.HttpClient.Builder#sslParameters(SSLParameters)
      */
     Builder sslParameters(SSLParameters sslParameters);
 
     /**
-     * Set a HttpClient authenticator to the underlying {@link HttpClient}.
+     * Set a HttpClient authenticator to the underlying {@link java.net.http.HttpClient}.
      *
-     * @see HttpClient.Builder#authenticator(Authenticator)
+     * @see java.net.http.HttpClient.Builder#authenticator(Authenticator)
      */
     Builder authenticator(Authenticator authenticator);
 
     /**
-     * Set the priority for HTTP/2 requests to the underlying {@link HttpClient}.
+     * Set the priority for HTTP/2 requests to the underlying {@link java.net.http.HttpClient}.
      *
-     * @see HttpClient.Builder#priority(int)
+     * @see java.net.http.HttpClient.Builder#priority(int)
      */
     Builder priority(int priority);
 
@@ -249,19 +279,19 @@ public interface HttpClientContext extends io.avaje.http.client.HttpClient {
     /**
      * Return the state of the builder.
      */
-    State state();
+    Builder.State state();
 
     /**
      * Build and return the context.
      *
      * <pre>{@code
      *
-     *   HttpClientContext ctx = HttpClientContext.builder()
+     *   HttpClient client = HttpClient.builder()
      *       .baseUrl("http://localhost:8080")
      *       .bodyAdapter(new JacksonBodyAdapter())
      *       .build();
      *
-     *  HelloDto dto = ctx.request()
+     *  HelloDto dto = client.request()
      *       .path("hello")
      *       .queryParam("say", "Whats up")
      *       .GET()
@@ -269,48 +299,49 @@ public interface HttpClientContext extends io.avaje.http.client.HttpClient {
      *
      * }</pre>
      */
-    HttpClientContext build();
+    HttpClient build();
 
     /**
      * The state of the builder with methods to read the set state.
      */
-    interface State extends io.avaje.http.client.HttpClient.Builder.State {
+    interface State {
 
+      /**
+       * Return the base URL.
+       */
+      String baseUrl();
+
+      /**
+       * Return the body adapter.
+       */
+      BodyAdapter bodyAdapter();
+
+      /**
+       * Return the HttpClient.
+       */
+      java.net.http.HttpClient client();
+
+      /**
+       * Return true if requestLogging is on.
+       */
+      boolean requestLogging();
+
+      /**
+       * Return the request timeout.
+       */
+      Duration requestTimeout();
+
+      /**
+       * Return the retry handler.
+       */
+      RetryHandler retryHandler();
     }
   }
 
   /**
    * Statistic metrics collected to provide an overview of activity of this client.
    */
-  interface Metrics {
-    /**
-     * Return the total number of responses.
-     */
-    long totalCount();
+  interface Metrics extends HttpClientContext.Metrics {
 
-    /**
-     * Return the total number of error responses (status code >= 300).
-     */
-    long errorCount();
-
-    /**
-     * Return the total response bytes (excludes streaming responses).
-     */
-    long responseBytes();
-
-    /**
-     * Return the total response time in microseconds.
-     */
-    long totalMicros();
-
-    /**
-     * Return the max response time in microseconds (since the last reset).
-     */
-    long maxMicros();
-
-    /**
-     * Return the average response time in microseconds.
-     */
-    long avgMicros();
   }
 }

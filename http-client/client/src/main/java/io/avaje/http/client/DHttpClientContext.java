@@ -3,7 +3,6 @@ package io.avaje.http.client;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
-import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -16,7 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 
-final class DHttpClientContext implements HttpClientContext {
+final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
 
   /**
    * HTTP Authorization header.
@@ -24,7 +23,7 @@ final class DHttpClientContext implements HttpClientContext {
   static final String AUTHORIZATION = "Authorization";
   private static final String BEARER = "Bearer ";
 
-  private final HttpClient httpClient;
+  private final java.net.http.HttpClient httpClient;
   private final String baseUrl;
   private final Duration requestTimeout;
   private final BodyAdapter bodyAdapter;
@@ -41,7 +40,7 @@ final class DHttpClientContext implements HttpClientContext {
   private final LongAdder metricResMicros = new LongAdder();
   private final LongAccumulator metricResMaxMicros = new LongAccumulator(Math::max, 0);
 
-  DHttpClientContext(HttpClient httpClient, String baseUrl, Duration requestTimeout, BodyAdapter bodyAdapter, RetryHandler retryHandler, RequestListener requestListener, AuthTokenProvider authTokenProvider, RequestIntercept intercept) {
+  DHttpClientContext(java.net.http.HttpClient httpClient, String baseUrl, Duration requestTimeout, BodyAdapter bodyAdapter, RetryHandler retryHandler, RequestListener requestListener, AuthTokenProvider authTokenProvider, RequestIntercept intercept) {
     this.httpClient = httpClient;
     this.baseUrl = baseUrl;
     this.requestTimeout = requestTimeout;
@@ -96,7 +95,7 @@ final class DHttpClientContext implements HttpClientContext {
   }
 
   @Override
-  public BodyAdapter converters() {
+  public BodyAdapter bodyAdapter() {
     return bodyAdapter;
   }
 
@@ -106,17 +105,17 @@ final class DHttpClientContext implements HttpClientContext {
   }
 
   @Override
-  public HttpClient httpClient() {
+  public java.net.http.HttpClient httpClient() {
     return httpClient;
   }
 
   @Override
-  public Metrics metrics() {
+  public HttpClient.Metrics metrics() {
     return metrics(false);
   }
 
   @Override
-  public Metrics metrics(boolean reset) {
+  public HttpClient.Metrics metrics(boolean reset) {
     if (reset) {
       return new DMetrics(metricResTotal.sumThenReset(), metricResError.sumThenReset(), metricResBytes.sumThenReset(), metricResMicros.sumThenReset(), metricResMaxMicros.getThenReset());
     } else {
@@ -128,7 +127,7 @@ final class DHttpClientContext implements HttpClientContext {
     metricResBytes.add(stringBody);
   }
 
-  static final class DMetrics implements Metrics {
+  static final class DMetrics implements HttpClient.Metrics {
 
     private final long totalCount;
     private final long errorCount;

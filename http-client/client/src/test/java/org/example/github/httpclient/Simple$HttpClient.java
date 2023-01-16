@@ -58,7 +58,7 @@ public class Simple$HttpClient implements Simple {
         .body(() -> is)
         .GET().handler(HttpResponse.BodyHandlers.ofInputStream());
 
-    context.checkResponse(response);
+    //context.checkResponse(response);
     return response.body();
   }
 
