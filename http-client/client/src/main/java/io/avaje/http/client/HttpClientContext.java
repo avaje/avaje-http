@@ -12,6 +12,9 @@ import java.time.Duration;
 import java.util.concurrent.Executor;
 
 /**
+ * Deprecated in favor of {@link io.avaje.http.client.HttpClient}.
+ * Migrate to using {@link io.avaje.http.client.HttpClient#builder()}.
+ * <p>
  * The HTTP client context that we use to build and process requests.
  *
  * <pre>{@code
@@ -30,6 +33,7 @@ import java.util.concurrent.Executor;
  *
  * }</pre>
  */
+@Deprecated
 public interface HttpClientContext extends io.avaje.http.client.HttpClient {
 
   /**
