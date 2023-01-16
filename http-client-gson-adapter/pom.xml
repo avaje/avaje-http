@@ -12,11 +12,6 @@
   <artifactId>avaje-http-client-gson</artifactId>
   <version>1.23-SNAPSHOT</version>
 
-  <scm>
-    <developerConnection>scm:git:git@github.com:avaje/avaje-http-client.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
-
   <dependencies>
 
     <dependency>

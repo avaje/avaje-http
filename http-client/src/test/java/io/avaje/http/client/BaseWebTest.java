@@ -16,8 +16,8 @@ public class BaseWebTest {
 
   @BeforeAll
   public static void init() {
-    webServer = App.start(8887);
-    baseUrl = "http://localhost:8887";
+    webServer = App.start(8889);
+    baseUrl = "http://localhost:8889";
   }
 
   @AfterAll
