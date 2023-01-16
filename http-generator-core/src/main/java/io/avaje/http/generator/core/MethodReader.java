@@ -78,7 +78,18 @@ public class MethodReader {
     this.apiResponses = getApiResponses();
     initWebMethodViaAnnotation();
     if (isWebMethod()) {
-      this.hasValid = findAnnotation(Valid.class) != null;
+
+      Annotation jakarta = null;
+      try {
+        final var anno =
+            (Class<Annotation>)
+                Class.forName(Valid.class.getCanonicalName().replace("javax", "jakarta"));
+        jakarta = findAnnotation(anno);
+      } catch (final ClassNotFoundException e) {
+
+      }
+
+      this.hasValid = findAnnotation(Valid.class) != null || jakarta != null;
       this.pathSegments = PathSegments.parse(Util.combinePath(bean.path(), webMethodPath));
     } else {
       this.hasValid = false;
