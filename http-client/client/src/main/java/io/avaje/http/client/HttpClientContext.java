@@ -346,73 +346,15 @@ public interface HttpClientContext {
     /**
      * The state of the builder with methods to read the set state.
      */
-    interface State extends Builder {
+    interface State extends io.avaje.http.client.HttpClient.Builder.State {
 
-      /**
-       * Return the base URL.
-       */
-      String baseUrl();
-
-      /**
-       * Return the body adapter.
-       */
-      BodyAdapter bodyAdapter();
-
-      /**
-       * Return the HttpClient.
-       */
-      HttpClient client();
-
-      /**
-       * Return true if requestLogging is on.
-       */
-      boolean requestLogging();
-
-      /**
-       * Return the request timeout.
-       */
-      Duration requestTimeout();
-
-      /**
-       * Return the retry handler.
-       */
-      RetryHandler retryHandler();
     }
   }
 
   /**
    * Statistic metrics collected to provide an overview of activity of this client.
    */
-  interface Metrics {
+  interface Metrics extends io.avaje.http.client.HttpClient.Metrics {
 
-    /**
-     * Return the total number of responses.
-     */
-    long totalCount();
-
-    /**
-     * Return the total number of error responses (status code >= 300).
-     */
-    long errorCount();
-
-    /**
-     * Return the total response bytes (excludes streaming responses).
-     */
-    long responseBytes();
-
-    /**
-     * Return the total response time in microseconds.
-     */
-    long totalMicros();
-
-    /**
-     * Return the max response time in microseconds (since the last reset).
-     */
-    long maxMicros();
-
-    /**
-     * Return the average response time in microseconds.
-     */
-    long avgMicros();
   }
 }

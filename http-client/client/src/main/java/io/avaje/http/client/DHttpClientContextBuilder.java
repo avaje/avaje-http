@@ -19,7 +19,7 @@ import java.util.concurrent.Executor;
 
 import static java.util.Objects.requireNonNull;
 
-final class DHttpClientContextBuilder implements HttpClientContext.Builder.State {
+final class DHttpClientContextBuilder implements HttpClientContext.Builder, HttpClientContext.Builder.State {
 
   private HttpClient client;
   private String baseUrl;
