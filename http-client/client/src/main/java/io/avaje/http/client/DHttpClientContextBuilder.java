@@ -29,6 +29,12 @@ final class DHttpClientContextBuilder extends DBaseBuilder implements HttpClient
   }
 
   @Override
+  public HttpClientContext.Builder connectionTimeout(Duration connectionTimeout) {
+    this.connectionTimeout = connectionTimeout;
+    return this;
+  }
+
+  @Override
   public HttpClientContext.Builder requestTimeout(Duration requestTimeout) {
     this.requestTimeout = requestTimeout;
     return this;

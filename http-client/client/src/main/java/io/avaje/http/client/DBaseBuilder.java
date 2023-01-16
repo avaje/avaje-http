@@ -23,6 +23,7 @@ abstract class DBaseBuilder {
   java.net.http.HttpClient client;
   String baseUrl;
   boolean requestLogging = true;
+  Duration connectionTimeout = Duration.ofSeconds(20);
   Duration requestTimeout = Duration.ofSeconds(20);
   BodyAdapter bodyAdapter;
   RetryHandler retryHandler;
@@ -92,9 +93,9 @@ abstract class DBaseBuilder {
   }
 
   private java.net.http.HttpClient defaultClient() {
-    final java.net.http.HttpClient.Builder builder = java.net.http.HttpClient.newBuilder()
+    final var builder = java.net.http.HttpClient.newBuilder()
       .followRedirects(redirect)
-      .connectTimeout(Duration.ofSeconds(20));
+      .connectTimeout(connectionTimeout);
     if (cookieHandler != null) {
       builder.cookieHandler(cookieHandler);
     }

@@ -36,6 +36,7 @@ class HelloControllerTest extends BaseWebTest {
   void newClientTest() {
     HttpClient client = HttpClient.builder()
       .baseUrl("http://localhost:8887")
+      .connectionTimeout(Duration.ofSeconds(1))
       .bodyAdapter(new JacksonBodyAdapter())
       .build();
 

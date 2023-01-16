@@ -103,6 +103,13 @@ public interface HttpClientContext extends io.avaje.http.client.HttpClient {
     Builder baseUrl(String baseUrl);
 
     /**
+     * Set the connection timeout to use.
+     *
+     * @see java.net.http.HttpClient.Builder#connectTimeout(Duration)
+     */
+    Builder connectionTimeout(Duration connectionTimeout);
+
+    /**
      * Set the default request timeout.
      *
      * @see java.net.http.HttpRequest.Builder#timeout(Duration)

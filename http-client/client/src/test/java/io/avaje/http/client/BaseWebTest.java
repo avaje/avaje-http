@@ -6,6 +6,8 @@ import io.javalin.Javalin;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
+import java.time.Duration;
+
 public class BaseWebTest {
 
   static Javalin webServer;
@@ -26,6 +28,8 @@ public class BaseWebTest {
   public static HttpClientContext client() {
     return HttpClientContext.builder()
       .baseUrl(baseUrl)
+      .connectionTimeout(Duration.ofSeconds(1))
+      .requestTimeout(Duration.ofSeconds(1))
       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
       .build();
   }
