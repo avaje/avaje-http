@@ -3,7 +3,7 @@ package org.example;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.avaje.http.client.HttpApiProvider;
-import io.avaje.http.client.HttpClientContext;
+import io.avaje.http.client.HttpClient;
 import io.avaje.http.client.JacksonBodyAdapter;
 
 import org.example.httpclient.GitHubUsersHttpClient;
@@ -23,8 +23,8 @@ public class SimpleTest {
     final ObjectMapper objectMapper = new ObjectMapper()
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    final HttpClientContext clientContext =
-      HttpClientContext.builder()
+    final HttpClient clientContext =
+      HttpClient.builder()
         .baseUrl("https://api.github.com")
         .bodyAdapter(new JacksonBodyAdapter(objectMapper))
         .build();
@@ -45,7 +45,7 @@ public class SimpleTest {
     }
 
     @Override
-    public GitHubUsers provide(HttpClientContext client) {
+    public GitHubUsers provide(HttpClient client) {
       return new GitHubUsersHttpClient(client);
     }
   }

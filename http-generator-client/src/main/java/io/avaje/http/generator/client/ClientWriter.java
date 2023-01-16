@@ -14,7 +14,7 @@ import java.util.List;
  */
 class ClientWriter extends BaseControllerWriter {
 
-  private static final String HTTP_CLIENT_CONTEXT = "io.avaje.http.client.HttpClientContext";
+  private static final String HTTP_CLIENT_CONTEXT = "io.avaje.http.client.HttpClient";
   private static final String HTTP_API_PROVIDER = "io.avaje.http.client.HttpApiProvider";
 
   private static final String AT_GENERATED = "@Generated(\"avaje-http-client-generator\")";
@@ -25,6 +25,7 @@ class ClientWriter extends BaseControllerWriter {
 
   ClientWriter(ControllerReader reader, ProcessingContext ctx, boolean useJsonB) throws IOException {
     super(reader, ctx, SUFFIX);
+
     reader.addImportType(HTTP_CLIENT_CONTEXT);
     reader.addImportType(HTTP_API_PROVIDER);
     this.useJsonb = useJsonB;
@@ -65,7 +66,7 @@ class ClientWriter extends BaseControllerWriter {
     writer.append("      return %s.class;", shortName).eol();
     writer.append("    }").eol();
     writer.append("    @Override").eol();
-    writer.append("    public %s provide(HttpClientContext client) {", shortName).eol();
+    writer.append("    public %s provide(HttpClient client) {", shortName).eol();
     writer.append("      return new %s%s(client);", shortName, SUFFIX).eol();
     writer.append("    }").eol();
     writer.append("  }").eol();
@@ -81,9 +82,9 @@ class ClientWriter extends BaseControllerWriter {
     writer.append(AT_GENERATED).eol();
     writer.append("public class %s%s implements %s {", shortName, SUFFIX, shortName).eol().eol();
 
-    writer.append("  private final HttpClientContext clientContext;").eol().eol();
+    writer.append("  private final HttpClient clientContext;").eol().eol();
 
-    writer.append("  public %s%s(HttpClientContext ctx) {", shortName, SUFFIX).eol();
+    writer.append("  public %s%s(HttpClient ctx) {", shortName, SUFFIX).eol();
     writer.append("    this.clientContext = ctx;").eol();
     writer.append("  }").eol().eol();
   }
