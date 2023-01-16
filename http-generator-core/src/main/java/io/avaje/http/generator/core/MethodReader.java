@@ -215,7 +215,8 @@ public class MethodReader {
   }
 
   public List<String> roles() {
-    return methodRoles.isEmpty() ? bean.roles() : methodRoles;
+    methodRoles.addAll(bean.roles());
+    return methodRoles;
   }
 
   public boolean isWebMethod() {
