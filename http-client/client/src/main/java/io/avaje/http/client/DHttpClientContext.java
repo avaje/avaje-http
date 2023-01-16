@@ -95,7 +95,7 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
   }
 
   @Override
-  public BodyAdapter converters() {
+  public BodyAdapter bodyAdapter() {
     return bodyAdapter;
   }
 

@@ -66,12 +66,22 @@ public interface HttpClient {
   HttpClientRequest request();
 
   /**
+   * Deprecated - migrate to {@link #bodyAdapter()}.
+   * <p>
    * Return the body adapter used by the client context.
    * <p>
    * This is the body adapter used to convert request and response
    * bodies to java types. For example using Jackson with JSON payloads.
    */
-  BodyAdapter converters();
+  @Deprecated
+  default BodyAdapter converters() {
+    return bodyAdapter();
+  }
+
+  /**
+   * Return the BodyAdapter that this client is using.
+   */
+  BodyAdapter bodyAdapter();
 
   /**
    * Return the current aggregate metrics.
