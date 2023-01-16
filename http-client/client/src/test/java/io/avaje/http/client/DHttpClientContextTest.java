@@ -45,15 +45,16 @@ class DHttpClientContextTest {
       .baseUrl("http://localhost")
       .build();
 
+    SpiHttpClient spi = (SpiHttpClient)context;
     // has default client created
-    assertThat(context.httpClient()).isNotNull();
-    assertThat(context.httpClient().version()).isEqualTo(HttpClient.Version.HTTP_2);
-    assertThat(context.httpClient().cookieHandler()).isPresent();
+    assertThat(spi.httpClient()).isNotNull();
+    assertThat(spi.httpClient().version()).isEqualTo(HttpClient.Version.HTTP_2);
+    assertThat(spi.httpClient().cookieHandler()).isPresent();
 
     // has expected url building
-    assertThat(context.url().build()).isEqualTo("http://localhost");
-    assertThat(context.url().path("hello").build()).isEqualTo("http://localhost/hello");
-    assertThat(context.url().queryParam("hello","there").build()).isEqualTo("http://localhost?hello=there");
+    assertThat(spi.url().build()).isEqualTo("http://localhost");
+    assertThat(spi.url().path("hello").build()).isEqualTo("http://localhost/hello");
+    assertThat(spi.url().queryParam("hello","there").build()).isEqualTo("http://localhost?hello=there");
   }
 
   @Test
@@ -66,15 +67,16 @@ class DHttpClientContextTest {
         .redirect(HttpClient.Redirect.ALWAYS)
         .build();
 
+    SpiHttpClient spi = (SpiHttpClient)context;
     // has default client created
-    assertThat(context.httpClient()).isNotNull();
-    assertThat(context.httpClient().version()).isEqualTo(HttpClient.Version.HTTP_2);
-    assertThat(context.httpClient().cookieHandler()).isEmpty();
+    assertThat(spi.httpClient()).isNotNull();
+    assertThat(spi.httpClient().version()).isEqualTo(HttpClient.Version.HTTP_2);
+    assertThat(spi.httpClient().cookieHandler()).isEmpty();
 
     // has expected url building
-    assertThat(context.url().build()).isEqualTo("http://localhost");
-    assertThat(context.url().path("hello").build()).isEqualTo("http://localhost/hello");
-    assertThat(context.url().queryParam("hello","there").build()).isEqualTo("http://localhost?hello=there");
+    assertThat(spi.url().build()).isEqualTo("http://localhost");
+    assertThat(spi.url().path("hello").build()).isEqualTo("http://localhost/hello");
+    assertThat(spi.url().queryParam("hello","there").build()).isEqualTo("http://localhost?hello=there");
   }
 
   @Test

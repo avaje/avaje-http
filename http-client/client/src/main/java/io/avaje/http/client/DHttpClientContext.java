@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 
-final class DHttpClientContext implements HttpClientContext {
+final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
 
   /**
    * HTTP Authorization header.

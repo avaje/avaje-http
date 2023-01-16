@@ -8,7 +8,6 @@ import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.ProxySelector;
 import java.net.http.HttpClient;
-import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.concurrent.Executor;
 
@@ -31,7 +30,7 @@ import java.util.concurrent.Executor;
  *
  * }</pre>
  */
-public interface HttpClientContext {
+public interface HttpClientContext extends io.avaje.http.client.HttpClient {
 
   /**
    * Return the builder to config and build the client context.
@@ -60,84 +59,6 @@ public interface HttpClientContext {
   static HttpClientContext.Builder newBuilder() {
     return builder();
   }
-
-  /**
-   * Return the http client API implementation.
-   *
-   * @param clientInterface A <code>@Client</code> interface with annotated API methods.
-   * @param <T>             The service type.
-   * @return The http client API implementation.
-   */
-  <T> T create(Class<T> clientInterface);
-
-  /**
-   * Create a new request.
-   */
-  HttpClientRequest request();
-
-  /**
-   * Return a UrlBuilder to use to build an URL taking into
-   * account the base URL.
-   */
-  UrlBuilder url();
-
-  /**
-   * Return the body adapter used by the client context.
-   * <p>
-   * This is the body adapter used to convert request and response
-   * bodies to java types. For example using Jackson with JSON payloads.
-   */
-  BodyAdapter converters();
-
-  /**
-   * Return the underlying http client.
-   */
-  HttpClient httpClient();
-
-  /**
-   * Return the current aggregate metrics.
-   * <p>
-   * These metrics are collected for all requests sent via this context.
-   */
-  Metrics metrics();
-
-  /**
-   * Return the current metrics with the option of resetting the underlying counters.
-   * <p>
-   * These metrics are collected for all requests sent via this context.
-   */
-  Metrics metrics(boolean reset);
-
-  /**
-   * Check the response status code and throw HttpException if the status
-   * code is in the error range.
-   */
-  void checkResponse(HttpResponse<?> response);
-
-  /**
-   * Return the response content taking into account content encoding.
-   *
-   * @param httpResponse The HTTP response to decode the content from
-   * @return The decoded content
-   */
-  BodyContent readContent(HttpResponse<byte[]> httpResponse);
-
-  /**
-   * Decode the response content given the <code>Content-Encoding</code> http header.
-   *
-   * @param httpResponse The HTTP response
-   * @return The decoded content
-   */
-  byte[] decodeContent(HttpResponse<byte[]> httpResponse);
-
-  /**
-   * Decode the body using the given encoding.
-   *
-   * @param encoding The encoding used to decode the content
-   * @param content  The raw content being decoded
-   * @return The decoded content
-   */
-  byte[] decodeContent(String encoding, byte[] content);
 
   /**
    * Builds the HttpClientContext.

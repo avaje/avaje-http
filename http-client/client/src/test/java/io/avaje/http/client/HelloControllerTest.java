@@ -1,11 +1,12 @@
 package io.avaje.http.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.webserver.ErrorResponse;
 import org.example.webserver.HelloDto;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
-import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -22,12 +23,44 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.net.http.HttpClient.Version.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HelloControllerTest extends BaseWebTest {
 
+  private static final ObjectMapper objectMapper = new ObjectMapper();
+
   final HttpClientContext clientContext = client();
+
+  @Test
+  void newClientTest() {
+    HttpClient client = HttpClient.builder()
+      .baseUrl("http://localhost:8887")
+      .bodyAdapter(new JacksonBodyAdapter())
+      .build();
+
+    client.metrics(true);
+    Map<String, String> params = new LinkedHashMap<>();
+    params.put("A", "a");
+    params.put("B", "b");
+
+    final HttpResponse<String> hres = client.request()
+      .path("hello").path("message")
+      .queryParam(params)
+      .GET().asString();
+
+    assertThat(hres.statusCode()).isEqualTo(200);
+    assertThat(hres.uri().toString()).isEqualTo("http://localhost:8887/hello/message?A=a&B=b");
+
+    HttpClient.Metrics metrics = client.metrics();
+    assertThat(metrics.totalCount()).isEqualTo(1);
+    assertThat(metrics.errorCount()).isEqualTo(0);
+    assertThat(metrics.responseBytes()).isGreaterThan(0);
+    assertThat(metrics.totalMicros()).isGreaterThan(0);
+    assertThat(metrics.maxMicros()).isEqualTo(metrics.totalMicros());
+    assertThat(metrics.avgMicros()).isEqualTo(metrics.totalMicros());
+  }
 
   @Test
   void queryParamMap() {
@@ -945,7 +978,7 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(res.request()).isNotNull();
     assertThat(res.previousResponse()).isEmpty();
     assertThat(res.sslSession()).isEmpty();
-    assertThat(res.version()).isEqualTo(HttpClient.Version.HTTP_1_1);
+    assertThat(res.version()).isEqualTo(HTTP_1_1);
     assertThat(res.uri().toString()).isEqualTo("http://localhost:8887/hello/saveform");
   }
 
