@@ -16,11 +16,12 @@ public class Util {
    * Parse the raw type potentially handling generic parameters.
    */
   public static UType parse(String rawType) {
-    int pos = rawType.indexOf('<');
+    var type = trimAnnotations(rawType);
+    int pos = type.indexOf('<');
     if (pos == -1) {
-      return new UType.Basic(rawType);
+      return new UType.Basic(type);
     } else {
-      return new UType.Generic(rawType);
+      return new UType.Generic(type);
     }
   }
 
@@ -30,10 +31,19 @@ public class Util {
   public static String typeDef(TypeMirror typeMirror) {
     if (typeMirror.getKind() == TypeKind.DECLARED) {
       DeclaredType declaredType = (DeclaredType) typeMirror;
+
       return declaredType.asElement().toString();
     } else {
-      return typeMirror.toString();
+      return trimAnnotations(typeMirror.toString());
     }
+  }
+
+  static String trimAnnotations(String type) {
+    int pos = type.indexOf("@");
+    if (pos == -1) {
+      return type;
+    }
+    return type.substring(0, pos) + type.substring(type.lastIndexOf(' ') + 1);
   }
 
   static String trimPath(String value) {
