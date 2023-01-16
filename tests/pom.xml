@@ -16,8 +16,8 @@
     <module>test-javalin</module>
     <module>test-javalin-jsonb</module>
     <module>test-jex</module>
+    <module>test-client</module>
     <module>test-client-generation</module>
-    <module>test-client-direct-use</module>
   </modules>
 
   <profiles>

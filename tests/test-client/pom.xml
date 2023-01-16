@@ -10,7 +10,7 @@
     <relativePath/>
   </parent>
 
-  <artifactId>test-client-direct-use</artifactId>
+  <artifactId>test-client</artifactId>
   <version>1</version>
 
   <properties>
