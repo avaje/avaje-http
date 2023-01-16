@@ -19,11 +19,11 @@ class RequestListenerTest extends BaseWebTest {
     public void response(Event event) {
       if (hasBody) {
         assertThat(event.responseBody()).isEqualTo("post");
-        assertThat(event.uri().toString()).isEqualTo("http://localhost:8887/post");
+        assertThat(event.uri().toString()).isEqualTo("http://localhost:8889/post");
         assertThat(event.requestBody()).isEqualTo("post-request-body");
       } else {
         assertThat(event.responseBody()).isEqualTo("hello world");
-        assertThat(event.uri().toString()).isEqualTo("http://localhost:8887/hello/message");
+        assertThat(event.uri().toString()).isEqualTo("http://localhost:8889/hello/message");
         assertThat(event.requestBody()).isNull();
       }
       assertThat(event.responseTimeMicros()).isGreaterThan(1L);

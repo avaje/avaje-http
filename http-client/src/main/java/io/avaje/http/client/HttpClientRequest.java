@@ -145,7 +145,7 @@ public interface HttpClientRequest {
    * <pre>{code
    *
    *  HttpResponse<String> res = clientContext.request()
-   *       .url("http://127.0.0.1:8887")
+   *       .url("http://127.0.0.1:8889")
    *       .path("hello")
    *       .GET()
    *       .asString();

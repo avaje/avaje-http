@@ -35,7 +35,7 @@ class HelloControllerTest extends BaseWebTest {
   @Test
   void newClientTest() {
     HttpClient client = HttpClient.builder()
-      .baseUrl("http://localhost:8887")
+      .baseUrl("http://localhost:8889")
       .connectionTimeout(Duration.ofSeconds(1))
       .bodyAdapter(new JacksonBodyAdapter())
       .build();
@@ -51,7 +51,7 @@ class HelloControllerTest extends BaseWebTest {
       .GET().asString();
 
     assertThat(hres.statusCode()).isEqualTo(200);
-    assertThat(hres.uri().toString()).isEqualTo("http://localhost:8887/hello/message?A=a&B=b");
+    assertThat(hres.uri().toString()).isEqualTo("http://localhost:8889/hello/message?A=a&B=b");
 
     HttpClient.Metrics metrics = client.metrics();
     assertThat(metrics.totalCount()).isEqualTo(1);
@@ -75,7 +75,7 @@ class HelloControllerTest extends BaseWebTest {
       .GET().asString();
 
     assertThat(hres.statusCode()).isEqualTo(200);
-    assertThat(hres.uri().toString()).isEqualTo("http://localhost:8887/hello/message?A=a&B=b");
+    assertThat(hres.uri().toString()).isEqualTo("http://localhost:8889/hello/message?A=a&B=b");
 
     HttpClientContext.Metrics metrics = clientContext.metrics();
     assertThat(metrics.totalCount()).isEqualTo(1);
@@ -664,7 +664,7 @@ class HelloControllerTest extends BaseWebTest {
   void get_helloMessage_via_url() {
 
     final HttpResponse<String> hres = clientContext.request()
-      .url("http://127.0.0.1:8887")
+      .url("http://127.0.0.1:8889")
       .path("hello").path("message")
       .GET().asString();
 
@@ -979,7 +979,7 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(res.previousResponse()).isEmpty();
     assertThat(res.sslSession()).isEmpty();
     assertThat(res.version()).isEqualTo(HTTP_1_1);
-    assertThat(res.uri().toString()).isEqualTo("http://localhost:8887/hello/saveform");
+    assertThat(res.uri().toString()).isEqualTo("http://localhost:8889/hello/saveform");
   }
 
   @Test

@@ -11,7 +11,7 @@ class RetryTest extends BaseWebTest {
 
   HttpClientContext initClientWithRetry(MyIntercept myIntercept, RetryHandler retryHandler) {
     return HttpClientContext.builder()
-      .baseUrl("http://localhost:8887")
+      .baseUrl("http://localhost:8889")
       .bodyAdapter(new JacksonBodyAdapter())
       .retryHandler(retryHandler)
       .requestIntercept(myIntercept)

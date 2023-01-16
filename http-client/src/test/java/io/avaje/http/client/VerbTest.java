@@ -124,7 +124,7 @@ public class VerbTest extends BaseWebTest {
   @Test
   void delete_with_body_Path() throws URISyntaxException {
 
-    final URL resource = getClass().getResource("/dummy.txt");
+    final URL resource = getClass().getClassLoader().getResource("dummy.txt");
     HttpResponse<String> res = clientContext.request()
       .path("delete")
       .body(Path.of(resource.toURI()))

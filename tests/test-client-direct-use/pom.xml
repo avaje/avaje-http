@@ -4,12 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>avaje-http-client-parent</artifactId>
-    <groupId>io.avaje</groupId>
-    <version>1</version>
+    <artifactId>java11-oss</artifactId>
+    <groupId>org.avaje</groupId>
+    <version>3.8</version>
+    <relativePath/>
   </parent>
 
-  <artifactId>test</artifactId>
+  <artifactId>test-client-direct-use</artifactId>
+  <version>1</version>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
   <dependencies>
 

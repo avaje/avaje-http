@@ -33,6 +33,8 @@
 
   <modules>
     <module>http-api</module>
+    <module>http-client</module>
+    <module>http-client-gson-adapter</module>
     <module>http-generator-core</module>
     <module>http-generator-javalin</module>
     <module>http-generator-jex</module>
