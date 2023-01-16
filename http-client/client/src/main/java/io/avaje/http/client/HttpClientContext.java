@@ -275,7 +275,35 @@ public interface HttpClientContext extends io.avaje.http.client.HttpClient {
   /**
    * Statistic metrics collected to provide an overview of activity of this client.
    */
-  interface Metrics extends io.avaje.http.client.HttpClient.Metrics {
+  interface Metrics {
+    /**
+     * Return the total number of responses.
+     */
+    long totalCount();
 
+    /**
+     * Return the total number of error responses (status code >= 300).
+     */
+    long errorCount();
+
+    /**
+     * Return the total response bytes (excludes streaming responses).
+     */
+    long responseBytes();
+
+    /**
+     * Return the total response time in microseconds.
+     */
+    long totalMicros();
+
+    /**
+     * Return the max response time in microseconds (since the last reset).
+     */
+    long maxMicros();
+
+    /**
+     * Return the average response time in microseconds.
+     */
+    long avgMicros();
   }
 }

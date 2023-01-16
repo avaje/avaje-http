@@ -1,6 +1,5 @@
 package io.avaje.http.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.webserver.ErrorResponse;
 import org.example.webserver.HelloDto;
@@ -23,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.net.http.HttpClient.Version.*;
+import static java.net.http.HttpClient.Version.HTTP_1_1;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 

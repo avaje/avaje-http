@@ -78,14 +78,14 @@ public interface HttpClient {
    * <p>
    * These metrics are collected for all requests sent via this context.
    */
-  HttpClientContext.Metrics metrics();
+  HttpClient.Metrics metrics();
 
   /**
    * Return the current metrics with the option of resetting the underlying counters.
    * <p>
    * These metrics are collected for all requests sent via this context.
    */
-  HttpClientContext.Metrics metrics(boolean reset);
+  HttpClient.Metrics metrics(boolean reset);
 
   /**
    * Builds the HttpClient.
@@ -331,36 +331,7 @@ public interface HttpClient {
   /**
    * Statistic metrics collected to provide an overview of activity of this client.
    */
-  interface Metrics {
+  interface Metrics extends HttpClientContext.Metrics {
 
-    /**
-     * Return the total number of responses.
-     */
-    long totalCount();
-
-    /**
-     * Return the total number of error responses (status code >= 300).
-     */
-    long errorCount();
-
-    /**
-     * Return the total response bytes (excludes streaming responses).
-     */
-    long responseBytes();
-
-    /**
-     * Return the total response time in microseconds.
-     */
-    long totalMicros();
-
-    /**
-     * Return the max response time in microseconds (since the last reset).
-     */
-    long maxMicros();
-
-    /**
-     * Return the average response time in microseconds.
-     */
-    long avgMicros();
   }
 }
