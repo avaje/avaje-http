@@ -63,7 +63,10 @@ public class ElementReader {
       return false;
     }
     TypeElement elementType = ctx.typeElement(rawType);
-    return elementType != null && elementType.getAnnotation(Valid.class) != null;
+    var elementRawType = element.asType().toString();
+    return elementType != null
+        && (elementType.getAnnotation(Valid.class) != null
+            || (elementRawType.contains("@") && elementRawType.contains("validation")));
   }
 
   private void readAnnotations(Element element, ParamType defaultType) {
