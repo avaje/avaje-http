@@ -6,7 +6,7 @@
   <parent>
     <artifactId>java11-oss</artifactId>
     <groupId>org.avaje</groupId>
-    <version>3.8</version>
+    <version>3.9</version>
     <relativePath/>
   </parent>
 
