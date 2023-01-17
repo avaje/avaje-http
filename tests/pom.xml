@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>java11-oss</artifactId>
+    <groupId>org.avaje</groupId>
+    <version>3.9</version>
+    <relativePath/>
+  </parent>
 
-  <groupId>io.dinject</groupId>
+  <groupId>io.avaje.http</groupId>
   <artifactId>tests-reactor</artifactId>
   <version>1</version>
   <packaging>pom</packaging>
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
+    <junit.version>5.9.2</junit.version>
+    <assertj.version>3.24.1</assertj.version>
+    <jackson.version>2.14.1</jackson.version>
+    <jex.version>2.5</jex.version>
+    <avaje-inject.version>8.12-RC1</avaje-inject.version>
   </properties>
 
   <modules>

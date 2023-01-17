@@ -4,10 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>java11-oss</artifactId>
-    <groupId>org.avaje</groupId>
-    <version>3.9</version>
-    <relativePath/>
+    <groupId>io.avaje.http</groupId>
+    <artifactId>tests-reactor</artifactId>
+    <version>1</version>
   </parent>
 
   <artifactId>test-client</artifactId>
@@ -40,7 +39,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.14.1</version>
+      <version>${jackson.version}</version>
     </dependency>
 
     <dependency>

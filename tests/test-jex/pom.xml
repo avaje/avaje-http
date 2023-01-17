@@ -1,26 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <groupId>org.example</groupId>
-  <artifactId>test-jex</artifactId>
-  <version>1</version>
-
   <parent>
-    <groupId>org.avaje</groupId>
-    <artifactId>java11-oss</artifactId>
-    <version>3.9</version>
-    <relativePath/>
+    <groupId>io.avaje.http</groupId>
+    <artifactId>tests-reactor</artifactId>
+    <version>1</version>
   </parent>
+
+  <artifactId>test-jex</artifactId>
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
     <main.class>org.example.myapp.Main</main.class>
-    <jex.version>2.2</jex.version>
+    <jex.version>2.5</jex.version>
     <swagger.version>2.0.8</swagger.version>
-    <jackson.version>2.14.1</jackson.version>
-    <avaje-inject.version>8.9</avaje-inject.version>
-    <avaje-http.version>1.23-SNAPSHOT</avaje-http.version>
   </properties>
 
   <dependencies>
@@ -58,7 +51,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>${avaje-http.version}</version>
+      <version>1.23-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -85,7 +78,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-jex-generator</artifactId>
-      <version>${avaje-http.version}</version>
+      <version>1.23-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
 

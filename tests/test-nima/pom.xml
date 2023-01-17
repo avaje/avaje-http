@@ -4,14 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>avaje-http-parent</artifactId>
-    <groupId>io.avaje</groupId>
-    <version>1.23-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
+    <groupId>io.avaje.http</groupId>
+    <artifactId>tests-reactor</artifactId>
+    <version>1</version>
   </parent>
 
   <artifactId>test-nima</artifactId>
-  <version>1</version>
 
   <properties>
     <maven.compiler.source>19</maven.compiler.source>
@@ -24,7 +22,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject</artifactId>
-      <version>8.12-RC1</version>
+      <version>${avaje-inject.version}</version>
     </dependency>
 
     <dependency>
@@ -72,7 +70,7 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-inject-generator</artifactId>
-              <version>8.12-RC1</version>
+              <version>${avaje-inject.version}</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
