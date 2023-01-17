@@ -15,6 +15,6 @@ public interface HttpApiProvider<T> {
   /**
    * Return the provided implementation of the API.
    */
-  T provide(HttpClientContext client);
+  T provide(HttpClient client);
 
 }

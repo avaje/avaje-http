@@ -76,7 +76,7 @@ class ClientMethodWriter {
     if (!method.isVoid()) {
       writer.append("return ");
     }
-    writer.append("clientContext.request()").eol();
+    writer.append("client.request()").eol();
 
     PathSegments pathSegments = method.pathSegments();
     Set<PathSegments.Segment> segments = pathSegments.segments();

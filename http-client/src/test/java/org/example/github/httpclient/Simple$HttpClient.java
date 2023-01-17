@@ -13,16 +13,14 @@ import java.util.List;
 
 public class Simple$HttpClient implements Simple {
 
-  private final HttpClientContext context;
+  private final HttpClient context;
   private final BodyReader<Repo> readRepo;
   private final BodyWriter writeRepo;
-//  private final BodyConverter<List<Repo>, String> toListOfRepo;
 
-  public Simple$HttpClient(HttpClientContext context) {
+  public Simple$HttpClient(HttpClient context) {
     this.context = context;
-    this.readRepo = context.converters().beanReader(Repo.class);
-    this.writeRepo = context.converters().beanWriter(Repo.class);
-//    this.toListOfRepo = context.converters().toListOf(Repo.class);
+    this.readRepo = context.bodyAdapter().beanReader(Repo.class);
+    this.writeRepo = context.bodyAdapter().beanWriter(Repo.class);
   }
 
   @Get("users/{user}/repos")
@@ -75,7 +73,7 @@ public class Simple$HttpClient implements Simple {
     }
 
     @Override
-    public Simple provide(HttpClientContext client) {
+    public Simple provide(HttpClient client) {
       return new Simple$HttpClient(client);
     }
   }
