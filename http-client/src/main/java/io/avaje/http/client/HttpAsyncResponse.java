@@ -233,6 +233,46 @@ public interface HttpAsyncResponse {
   }
 
   /**
+   * Process converting the response body to the given type.
+   * <p>
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException.
+   *
+   * <pre>{@code
+   *
+   *    clientContext.request()
+   *       ...
+   *       .POST().async()
+   *       .as(HelloDto.class)
+   *       .whenComplete((helloResponse, throwable) -> {
+   *
+   *         if (throwable != null) {
+   *           HttpException httpException = (HttpException) throwable.getCause();
+   *           int statusCode = httpException.statusCode();
+   *
+   *           // maybe convert json error response body to a bean (using Jackson/Gson)
+   *           MyErrorBean errorResponse = httpException.bean(MyErrorBean.class);
+   *           ..
+   *
+   *         } else {
+   *           int statusCode = helloResponse.statusCode();
+   *           HelloDto helloDto = helloResponse.body();
+   *           ...
+   *         }
+   *       });
+   * }</pre>
+   *
+   * @param type The bean type to convert the content to
+   * @return The CompletableFuture of the response
+   */
+  <E> CompletableFuture<HttpResponse<E>> as(Class<E> type);
+
+  /**
+   * The same as {@link #as(Class)} but using a generic type.
+   */
+  <E> CompletableFuture<HttpResponse<E>> as(ParameterizedType type);
+
+  /**
    * Process expecting a bean response body (typically from json content).
    * <p>
    * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
@@ -267,6 +307,48 @@ public interface HttpAsyncResponse {
   <E> CompletableFuture<E> bean(Class<E> type);
 
   /**
+   * Process converting the response body to a list of the given type.
+   * <p>
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException.
+   *
+   * <pre>{@code
+   *
+   *    clientContext.request()
+   *       ...
+   *       .POST().async()
+   *       .asList(HelloDto.class)
+   *       .whenComplete((helloResponse, throwable) -> {
+   *
+   *         if (throwable != null) {
+   *           // error response
+   *           HttpException httpException = (HttpException) throwable.getCause();
+   *           int statusCode = httpException.statusCode();
+   *
+   *           // maybe convert json error response body to a bean (using Jackson/Gson)
+   *           MyErrorBean errorResponse = httpException.bean(MyErrorBean.class);
+   *           ..
+   *
+   *         } else {
+   *           // success response
+   *           int statusCode = helloResponse.statusCode();
+   *           List<HelloDto> body = helloResponse.body();
+   *           ...
+   *         }
+   *       });
+   * }</pre>
+   *
+   * @param type The type to convert the content to
+   * @return The CompletableFuture of the response
+   */
+  <E> CompletableFuture<HttpResponse<List<E>>> asList(Class<E> type);
+
+  /**
+   * The same as {@link #asList(Class)} but using a generic type.
+   */
+  <E> CompletableFuture<HttpResponse<List<E>>> asList(ParameterizedType type);
+
+  /**
    * Process expecting a list of beans response body (typically from json content).
    * <p>
    * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
@@ -296,6 +378,48 @@ public interface HttpAsyncResponse {
    * @return The CompletableFuture of the response
    */
   <E> CompletableFuture<List<E>> list(Class<E> type);
+
+  /**
+   * Process converting the response body to a stream of the given type.
+   * <p>
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException.
+   *
+   * <pre>{@code
+   *
+   *    clientContext.request()
+   *       ...
+   *       .POST().async()
+   *       .asStream(HelloDto.class)
+   *       .whenComplete((helloResponse, throwable) -> {
+   *
+   *         if (throwable != null) {
+   *           // error response
+   *           HttpException httpException = (HttpException) throwable.getCause();
+   *           int statusCode = httpException.statusCode();
+   *
+   *           // maybe convert json error response body to a bean (using Jackson/Gson)
+   *           MyErrorBean errorResponse = httpException.bean(MyErrorBean.class);
+   *           ..
+   *
+   *         } else {
+   *           // success response
+   *           int statusCode = helloResponse.statusCode();
+   *           Stream<HelloDto> body = helloResponse.body();
+   *           ...
+   *         }
+   *       });
+   * }</pre>
+   *
+   * @param type The type to convert the content to
+   * @return The CompletableFuture of the response
+   */
+  <E> CompletableFuture<HttpResponse<Stream<E>>> asStream(Class<E> type);
+
+  /**
+   * The same as {@link #asStream(Class)} but using a generic type.
+   */
+  <E> CompletableFuture<HttpResponse<Stream<E>>> asStream(ParameterizedType type);
 
   /**
    * Process response as a stream of beans (x-json-stream).

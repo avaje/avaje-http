@@ -253,6 +253,24 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void get_stream_as() {
+    final HttpResponse<Stream<SimpleData>> res = clientContext.request()
+      .path("hello").path("stream")
+      .GET()
+      .asStream(SimpleData.class);
+
+    assertThat(res.statusCode()).isEqualTo(200);
+
+    Stream<SimpleData> stream = res.body();
+    final List<SimpleData> data = stream.collect(Collectors.toList());
+
+    assertThat(data).hasSize(4);
+    final SimpleData first = data.get(0);
+    assertThat(first.id).isEqualTo(1);
+    assertThat(first.name).isEqualTo("one");
+  }
+
+  @Test
   void get_stream_NotFoundException() {
     clientContext.metrics(true);
     final HttpException httpException = assertThrows(HttpException.class, () ->
@@ -281,6 +299,35 @@ class HelloControllerTest extends BaseWebTest {
     future.whenComplete((stream, throwable) -> {
       assertThat(throwable).isNull();
 
+      final List<SimpleData> data = stream.collect(Collectors.toList());
+      assertThat(data).hasSize(4);
+      final SimpleData first = data.get(0);
+      assertThat(first.id).isEqualTo(1);
+      assertThat(first.name).isEqualTo("one");
+
+      try (stream) {
+        // more typically process with forEach ...
+        stream.forEach(simpleData -> {
+          System.out.println("process " + simpleData.id + " " + simpleData.name);
+        });
+      }
+    });
+
+    // wait ...
+    future.get();
+  }
+
+  @Test
+  void async_get_asStream() throws ExecutionException, InterruptedException {
+    final CompletableFuture<HttpResponse<Stream<SimpleData>>> future = clientContext.request()
+      .path("hello").path("stream")
+      .GET().async()
+      .asStream(SimpleData.class);
+
+    future.whenComplete((res, throwable) -> {
+      assertThat(throwable).isNull();
+      assertThat(res.statusCode()).isEqualTo(200);
+      Stream<SimpleData> stream = res.body();
       final List<SimpleData> data = stream.collect(Collectors.toList());
       assertThat(data).hasSize(4);
       final SimpleData first = data.get(0);
@@ -674,12 +721,19 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void get_hello_returningListOfBeans() {
-
     final List<HelloDto> helloDtos = clientContext.request()
       .path("hello")
       .GET().list(HelloDto.class);
 
     assertThat(helloDtos).hasSize(2);
+
+    final HttpResponse<List<HelloDto>> res = clientContext.request()
+      .path("hello")
+      .GET().asList(HelloDto.class);
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    List<HelloDto> body = res.body();
+    assertThat(body).hasSize(2);
   }
 
   @Test
@@ -702,7 +756,6 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void async_list() throws ExecutionException, InterruptedException {
-
     AtomicReference<List<HelloDto>> ref = new AtomicReference<>();
 
     final CompletableFuture<List<HelloDto>> future = clientContext.request()
@@ -719,6 +772,29 @@ class HelloControllerTest extends BaseWebTest {
     final List<HelloDto> helloDtos = future.get();
     assertThat(helloDtos).hasSize(2);
     assertThat(helloDtos).isSameAs(ref.get());
+  }
+
+  @Test
+  void async_list_as() throws ExecutionException, InterruptedException {
+    AtomicReference<HttpResponse<List<HelloDto>>> ref = new AtomicReference<>();
+
+    final CompletableFuture<HttpResponse<List<HelloDto>>> responseFuture = clientContext.request()
+      .path("hello")
+      .GET().async()
+      .asList(HelloDto.class);
+
+    responseFuture.whenComplete((res, throwable) -> {
+      assertThat(throwable).isNull();
+      assertThat(res.statusCode()).isEqualTo(200);
+      List<HelloDto> helloDtos = res.body();
+      assertThat(helloDtos).hasSize(2);
+      ref.set(res);
+    });
+
+    final HttpResponse<List<HelloDto>> helloRes = responseFuture.get();
+    assertThat(helloRes.statusCode()).isEqualTo(200);
+    assertThat(helloRes.body()).hasSize(2);
+    assertThat(helloRes).isSameAs(ref.get());
   }
 
   @Test
@@ -785,6 +861,40 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(counter.incrementAndGet()).isEqualTo(2);
     assertThat(dto).isSameAs(ref.get());
 
+    assertThat(dto.id).isEqualTo(43L);
+    assertThat(dto.name).isEqualTo("2020-03-05");
+    assertThat(dto.otherParam).isEqualTo("other");
+  }
+
+  @Test
+  void async_whenComplete_returningBeanWithHeaders() throws ExecutionException, InterruptedException {
+    final AtomicInteger counter = new AtomicInteger();
+    final AtomicReference<HttpResponse<HelloDto>> ref = new AtomicReference<>();
+
+    final CompletableFuture<HttpResponse<HelloDto>> future = clientContext.request()
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
+      .GET()
+      .async().as(HelloDto.class);
+
+    future.whenComplete((res, throwable) -> {
+      counter.incrementAndGet();
+      ref.set(res);
+
+      assertThat(throwable).isNull();
+
+      assertThat(res.statusCode()).isEqualTo(200);
+      HelloDto dto = res.body();
+      assertThat(dto.id).isEqualTo(43L);
+      assertThat(dto.name).isEqualTo("2020-03-05");
+      assertThat(dto.otherParam).isEqualTo("other");
+    });
+
+    // wait ...
+    final HttpResponse<HelloDto> res = future.get();
+    assertThat(counter.incrementAndGet()).isEqualTo(2);
+    assertThat(res.statusCode()).isEqualTo(200);
+    HelloDto dto = res.body();
+    assertThat(dto).isSameAs(ref.get().body());
     assertThat(dto.id).isEqualTo(43L);
     assertThat(dto.name).isEqualTo("2020-03-05");
     assertThat(dto.otherParam).isEqualTo("other");
@@ -960,6 +1070,23 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(bean.name).isEqualTo("Bax");
     assertThat(bean.otherParam).isEqualTo("Bax@foo.com");
     assertThat(bean.id).isEqualTo(52);
+
+    final HttpResponse<HelloDto> res3 = clientContext.request()
+      .path("hello/saveform3")
+      .formParam("name", "Bax")
+      .formParam("email", "Bax@foo.com")
+      .formParam("url", "http://foo.com")
+      .formParam("startDate", "2030-12-03")
+      .POST()
+      .as(HelloDto.class);
+
+    assertThat(res.statusCode()).isEqualTo(201);
+    assertThat(res.headers().map()).isNotEmpty();
+
+    HelloDto body3 = res3.body();
+    assertThat(body3.name).isEqualTo("Bax");
+    assertThat(body3.otherParam).isEqualTo("Bax@foo.com");
+    assertThat(body3.id).isEqualTo(52);
   }
 
   @Test

@@ -414,7 +414,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   @Override
   public HttpResponse<Void> asVoid() {
     readResponseContent();
-    return new HttpVoidResponse(httpResponse);
+    return new HttpWrapperResponse<>(httpResponse);
   }
 
   @Override
@@ -424,50 +424,75 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public <T> T bean(Class<T> cls) {
-    readResponseContent();
-    return context.readBean(cls, encodedResponseBody);
+  public <T> HttpResponse<T> as(Class<T> type) {
+    return new HttpWrapperResponse<>(bean(type), httpResponse);
   }
 
   @Override
-  public <T> List<T> list(Class<T> cls) {
-    readResponseContent();
-    return context.readList(cls, encodedResponseBody);
+  public <T> HttpResponse<T> as(ParameterizedType type) {
+    return new HttpWrapperResponse<>(bean(type), httpResponse);
   }
 
   @Override
-  public <T> Stream<T> stream(Class<T> cls) {
+  public <T> T bean(Class<T> type) {
+    readResponseContent();
+    return context.readBean(type, encodedResponseBody);
+  }
+
+  @Override
+  public <T> T bean(ParameterizedType type) {
+    readResponseContent();
+    return context.readBean(type, encodedResponseBody);
+  }
+
+  @Override
+  public <T> HttpResponse<List<T>> asList(Class<T> type) {
+    return new HttpWrapperResponse<>(list(type), httpResponse);
+  }
+
+  @Override
+  public <T> HttpResponse<List<T>> asList(ParameterizedType type) {
+    return new HttpWrapperResponse<>(list(type), httpResponse);
+  }
+
+  @Override
+  public <T> List<T> list(Class<T> type) {
+    readResponseContent();
+    return context.readList(type, encodedResponseBody);
+  }
+
+  @Override
+  public <T> List<T> list(ParameterizedType type) {
+    readResponseContent();
+    return context.readList(type, encodedResponseBody);
+  }
+
+  @Override
+  public <T> HttpResponse<Stream<T>> asStream(Class<T> type) {
+    return new HttpWrapperResponse<>(stream(type), httpResponse);
+  }
+
+  @Override
+  public <T> HttpResponse<Stream<T>> asStream(ParameterizedType type) {
+    return new HttpWrapperResponse<>(stream(type), httpResponse);
+  }
+
+  @Override
+  public <T> Stream<T> stream(Class<T> type) {
+    return stream(context.beanReader(type));
+  }
+
+  @Override
+  public <T> Stream<T> stream(ParameterizedType type) {
+    return stream(context.beanReader(type));
+  }
+
+  private <T> Stream<T> stream(BodyReader<T> bodyReader) {
     final HttpResponse<Stream<String>> res = handler(HttpResponse.BodyHandlers.ofLines());
     this.httpResponse = res;
     if (res.statusCode() >= 300) {
       throw new HttpException(res, context);
     }
-    final BodyReader<T> bodyReader = context.beanReader(cls);
-    return res.body().map(bodyReader::readBody);
-  }
-
-
-  @Override
-  public <T> T bean(ParameterizedType cls) {
-    readResponseContent();
-    return context.readBean(cls, encodedResponseBody);
-  }
-
-  @Override
-  public <T> List<T> list(ParameterizedType cls) {
-    readResponseContent();
-    return context.readList(cls, encodedResponseBody);
-  }
-
-
-  @Override
-  public <T> Stream<T> stream(ParameterizedType cls) {
-    final HttpResponse<Stream<String>> res = handler(HttpResponse.BodyHandlers.ofLines());
-    this.httpResponse = res;
-    if (res.statusCode() >= 300) {
-      throw new HttpException(res, context);
-    }
-    final BodyReader<T> bodyReader = context.beanReader(cls);
     return res.body().map(bodyReader::readBody);
   }
 
@@ -484,7 +509,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private <T> HttpResponse<T> sendWith(HttpResponse.BodyHandler<T> responseHandler) {
     context.beforeRequest(this);
     addHeaders();
-    HttpResponse<T> response = performSend(responseHandler);
+    final HttpResponse<T> response = performSend(responseHandler);
     httpResponse = response;
     return response;
   }
@@ -508,28 +533,12 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   protected HttpResponse<Void> asyncVoid(HttpResponse<byte[]> response) {
     afterAsyncEncoded(response);
-    return new HttpVoidResponse(response);
+    return new HttpWrapperResponse<>(response);
   }
 
-  protected <E> E asyncBean(Class<E> type, HttpResponse<byte[]> response) {
+  protected <E> HttpResponse<E> asyncBean(Class<E> type, HttpResponse<byte[]> response) {
     afterAsyncEncoded(response);
-    return context.readBean(type, encodedResponseBody);
-  }
-
-  protected <E> List<E> asyncList(Class<E> type, HttpResponse<byte[]> response) {
-    afterAsyncEncoded(response);
-    return context.readList(type, encodedResponseBody);
-  }
-
-  protected <E> Stream<E> asyncStream(Class<E> type, HttpResponse<Stream<String>> response) {
-    responseTimeNanos = System.nanoTime() - startAsyncNanos;
-    httpResponse = response;
-    context.afterResponse(this);
-    if (response.statusCode() >= 300) {
-      throw new HttpException(response, context);
-    }
-    final BodyReader<E> bodyReader = context.beanReader(type);
-    return response.body().map(bodyReader::readBody);
+    return new HttpWrapperResponse<>(context.readBean(type, encodedResponseBody), httpResponse);
   }
 
   protected <E> E asyncBean(ParameterizedType type, HttpResponse<byte[]> response) {
@@ -537,12 +546,17 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return context.readBean(type, encodedResponseBody);
   }
 
-  protected <E> List<E> asyncList(ParameterizedType type, HttpResponse<byte[]> response) {
+  protected <E> HttpResponse<List<E>> asyncList(Class<E> type, HttpResponse<byte[]> response) {
     afterAsyncEncoded(response);
-    return context.readList(type, encodedResponseBody);
+    return new HttpWrapperResponse<>(context.readList(type, encodedResponseBody), httpResponse);
   }
 
-  protected <E> Stream<E> asyncStream(ParameterizedType type, HttpResponse<Stream<String>> response) {
+  protected <E> HttpResponse<List<E>> asyncList(ParameterizedType type, HttpResponse<byte[]> response) {
+    afterAsyncEncoded(response);
+    return new HttpWrapperResponse<>(context.readList(type, encodedResponseBody), httpResponse);
+  }
+
+  protected <E> HttpResponse<Stream<E>> asyncStream(Class<E> type, HttpResponse<Stream<String>> response) {
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     context.afterResponse(this);
@@ -550,7 +564,18 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
       throw new HttpException(response, context);
     }
     final BodyReader<E> bodyReader = context.beanReader(type);
-    return response.body().map(bodyReader::readBody);
+    return new HttpWrapperResponse<>(response.body().map(bodyReader::readBody), httpResponse);
+  }
+
+  protected <E> HttpResponse<Stream<E>> asyncStream(ParameterizedType type, HttpResponse<Stream<String>> response) {
+    responseTimeNanos = System.nanoTime() - startAsyncNanos;
+    httpResponse = response;
+    context.afterResponse(this);
+    if (response.statusCode() >= 300) {
+      throw new HttpException(response, context);
+    }
+    final BodyReader<E> bodyReader = context.beanReader(type);
+    return new HttpWrapperResponse<>(response.body().map(bodyReader::readBody), httpResponse);
   }
 
   private void afterAsyncEncoded(HttpResponse<byte[]> response) {
@@ -728,13 +753,20 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     }
   }
 
-  static class HttpVoidResponse implements HttpResponse<Void> {
+  static final class HttpWrapperResponse<B> implements HttpResponse<B> {
 
     private final HttpResponse<?> orig;
+    private final B body;
+
+    HttpWrapperResponse(HttpResponse<?> orig) {
+      this.orig = orig;
+      this.body = null;
+    }
 
     @SuppressWarnings({"raw"})
-    HttpVoidResponse(HttpResponse<?> orig) {
+    HttpWrapperResponse(B body, HttpResponse<?> orig) {
       this.orig = orig;
+      this.body = body;
     }
 
     @Override
@@ -747,9 +779,11 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
       return orig.request();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Optional<HttpResponse<Void>> previousResponse() {
-      return Optional.empty();
+    public Optional<HttpResponse<B>> previousResponse() {
+      final Optional<? extends HttpResponse<?>> previous = orig.previousResponse();
+      return (Optional<HttpResponse<B>>)previous;
     }
 
     @Override
@@ -758,8 +792,8 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     }
 
     @Override
-    public Void body() {
-      return null;
+    public B body() {
+      return body;
     }
 
     @Override
