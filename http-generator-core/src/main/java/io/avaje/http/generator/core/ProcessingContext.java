@@ -1,9 +1,6 @@
 package io.avaje.http.generator.core;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import io.avaje.http.generator.core.openapi.DocContext;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -20,8 +17,10 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
-
-import io.avaje.http.generator.core.openapi.DocContext;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ProcessingContext {
 
@@ -120,23 +119,21 @@ public class ProcessingContext {
     return types.asMemberOf(declaredType, element);
   }
 
-  public List<ExecutableElement> getSuperMethods(Element element, String methodName) {
-
+  public List<ExecutableElement> superMethods(Element element, String methodName) {
     return types.directSupertypes(element.asType()).stream()
-        .filter(t -> !t.toString().contains("java.lang.Object"))
-        .map(
-            superType -> {
-              final var superClass = (TypeElement) types.asElement(superType);
-              for (final ExecutableElement method :
-                  ElementFilter.methodsIn(elements.getAllMembers(superClass))) {
-                if (method.getSimpleName().contentEquals(methodName)) {
-                  return method;
-                }
-              }
-              return null;
-            })
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+      .filter(type -> !type.toString().contains("java.lang.Object"))
+      .map(
+        superType -> {
+          final var superClass = (TypeElement) types.asElement(superType);
+          for (final ExecutableElement method : ElementFilter.methodsIn(elements.getAllMembers(superClass))) {
+            if (method.getSimpleName().contentEquals(methodName)) {
+              return method;
+            }
+          }
+          return null;
+        })
+      .filter(Objects::nonNull)
+      .collect(Collectors.toList());
   }
 
   public PlatformAdapter platform() {

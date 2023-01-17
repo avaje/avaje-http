@@ -1,5 +1,18 @@
 package io.avaje.http.generator.core;
 
+import io.avaje.http.api.*;
+import io.avaje.http.generator.core.javadoc.Javadoc;
+import io.avaje.http.generator.core.openapi.MethodDocBuilder;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
+
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.validation.Valid;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,59 +22,29 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.validation.Valid;
-
-import io.avaje.http.api.Delete;
-import io.avaje.http.api.Form;
-import io.avaje.http.api.Get;
-import io.avaje.http.api.OpenAPIResponse;
-import io.avaje.http.api.OpenAPIResponses;
-import io.avaje.http.api.Patch;
-import io.avaje.http.api.Post;
-import io.avaje.http.api.Produces;
-import io.avaje.http.api.Put;
-import io.avaje.http.generator.core.javadoc.Javadoc;
-import io.avaje.http.generator.core.openapi.MethodDocBuilder;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
-
 public class MethodReader {
 
   private final ProcessingContext ctx;
   private final ControllerReader bean;
   private final ExecutableElement element;
-
   private final boolean isVoid;
   private final List<MethodParam> params = new ArrayList<>();
-
   private final Javadoc javadoc;
-
-  private WebMethod webMethod;
-  private String webMethodPath;
-
-  private boolean formMarker;
-
   /**
    * Holds enum Roles that are required for the method.
    */
   private final List<String> methodRoles;
-
   private final String produces;
-
   private final List<OpenAPIResponse> apiResponses;
-
   private final ExecutableType actualExecutable;
   private final List<? extends TypeMirror> actualParams;
-
   private final PathSegments pathSegments;
   private final boolean hasValid;
   private final List<ExecutableElement> superMethods;
+
+  private WebMethod webMethod;
+  private String webMethodPath;
+  private boolean formMarker;
 
   MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable, ProcessingContext ctx) {
     this.ctx = ctx;
@@ -74,50 +57,48 @@ public class MethodReader {
     this.produces = produces(bean);
     initWebMethodViaAnnotation();
 
-    this.superMethods =
-        ctx.getSuperMethods(element.getEnclosingElement(), element.getSimpleName().toString());
+    this.superMethods = ctx.superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
+    superMethods.forEach(m -> methodRoles.addAll(Util.findRoles(m)));
 
-    superMethods.stream().forEach(m -> methodRoles.addAll(Util.findRoles(m)));
-    
-    this.apiResponses = getApiResponses();
-    this.javadoc =
-        Optional.of(Javadoc.parse(ctx.docComment(element)))
-            .filter(Predicate.not(Javadoc::isEmpty))
-            .orElseGet(
-                () ->
-                    superMethods.stream()
-                        .map(e -> Javadoc.parse(ctx.docComment(e)))
-                        .filter(Predicate.not(Javadoc::isEmpty))
-                        .findFirst()
-                        .orElse(Javadoc.parse("")));
+    this.apiResponses = buildApiResponses();
+    this.javadoc = buildJavadoc(element, ctx);
 
     if (isWebMethod()) {
-
-    Class<Annotation> jakartaValidAnnotation;
+      Class<Annotation> jakartaValidAnnotation;
       try {
         jakartaValidAnnotation = jakartaValidAnnotation();
       } catch (final ClassNotFoundException e) {
         jakartaValidAnnotation = null;
       }
-
-      final var jakartaAnnotation = jakartaValidAnnotation;
-
-      this.hasValid =
-          findAnnotation(Valid.class) != null
-              || (jakartaValidAnnotation != null && findAnnotation(jakartaValidAnnotation) != null)
-              || superMethods.stream()
-                  .map(
-                      e ->
-                          findAnnotation(Valid.class, e) != null
-                              || (jakartaAnnotation != null
-                                  && findAnnotation(jakartaAnnotation, e) != null))
-                  .anyMatch(b -> b);
-
+      this.hasValid = hasValid(jakartaValidAnnotation);
       this.pathSegments = PathSegments.parse(Util.combinePath(bean.path(), webMethodPath));
     } else {
       this.hasValid = false;
       this.pathSegments = null;
     }
+  }
+
+  private Javadoc buildJavadoc(ExecutableElement element, ProcessingContext ctx) {
+    return Optional.of(Javadoc.parse(ctx.docComment(element)))
+      .filter(Predicate.not(Javadoc::isEmpty))
+      .orElseGet(() -> superMethods.stream()
+        .map(e -> Javadoc.parse(ctx.docComment(e)))
+        .filter(Predicate.not(Javadoc::isEmpty))
+        .findFirst()
+        .orElse(Javadoc.parse("")));
+  }
+
+  private boolean hasValid(Class<Annotation> jakartaValidAnnotation) {
+    return findAnnotation(Valid.class) != null
+      || (jakartaValidAnnotation != null && findAnnotation(jakartaValidAnnotation) != null)
+      || superMethodHasValid(jakartaValidAnnotation);
+  }
+
+  private boolean superMethodHasValid(Class<Annotation> jakartaAnnotation) {
+    return superMethods.stream()
+      .anyMatch(e ->
+        findAnnotation(Valid.class, e) != null
+          || (jakartaAnnotation != null && findAnnotation(jakartaAnnotation, e) != null));
   }
 
   @SuppressWarnings("unchecked")
@@ -175,31 +156,30 @@ public class MethodReader {
     return (produces != null) ? produces.value() : bean.produces();
   }
 
-  private List<OpenAPIResponse> getApiResponses() {
+  private List<OpenAPIResponse> buildApiResponses() {
     final var container =
-        Optional.ofNullable(findAnnotation(OpenAPIResponses.class)).stream()
-            .map(OpenAPIResponses::value)
-            .flatMap(Arrays::stream);
+      Optional.ofNullable(findAnnotation(OpenAPIResponses.class)).stream()
+        .map(OpenAPIResponses::value)
+        .flatMap(Arrays::stream);
 
     final var methodResponses =
-        Stream.concat(
-            container, Arrays.stream(element.getAnnotationsByType(OpenAPIResponse.class)));
+      Stream.concat(
+        container, Arrays.stream(element.getAnnotationsByType(OpenAPIResponse.class)));
 
     final var superMethodResponses =
-        superMethods.stream()
-            .flatMap(
-                m ->
-                    Stream.concat(
-                        Optional.ofNullable(findAnnotation(OpenAPIResponses.class, m)).stream()
-                            .map(OpenAPIResponses::value)
-                            .flatMap(Arrays::stream),
-                        Arrays.stream(m.getAnnotationsByType(OpenAPIResponse.class))));
+      superMethods.stream()
+        .flatMap(
+          method ->
+            Stream.concat(
+              Optional.ofNullable(findAnnotation(OpenAPIResponses.class, method)).stream()
+                .map(OpenAPIResponses::value)
+                .flatMap(Arrays::stream),
+              Arrays.stream(method.getAnnotationsByType(OpenAPIResponse.class))));
 
     return Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
   }
 
   public <A extends Annotation> A findAnnotation(Class<A> type) {
-
     return findAnnotation(type, element);
   }
 
@@ -208,28 +188,27 @@ public class MethodReader {
     if (annotation != null) {
       return annotation;
     }
-
     return bean.findMethodAnnotation(type, elem);
   }
 
   private List<String> addTagsToList(Element element, List<String> list) {
-    if (element == null)
+    if (element == null) {
       return list;
-
+    }
     if (element.getAnnotation(Tag.class) != null) {
       list.add(element.getAnnotation(Tag.class).name());
     }
     if (element.getAnnotation(Tags.class) != null) {
-      for (Tag tag : element.getAnnotation(Tags.class).value())
+      for (Tag tag : element.getAnnotation(Tags.class).value()) {
         list.add(tag.name());
+      }
     }
     return list;
   }
 
   public List<String> tags() {
     final var tags = addTagsToList(element, new ArrayList<>());
-    superMethods.forEach(e -> addTagsToList(e, tags));
-
+    superMethods.forEach(method -> addTagsToList(method, tags));
     return addTagsToList(element.getEnclosingElement(), tags);
   }
 
