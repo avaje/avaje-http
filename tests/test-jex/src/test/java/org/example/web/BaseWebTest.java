@@ -1,9 +1,7 @@
 package org.example.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.avaje.http.client.HttpClientContext;
+import io.avaje.http.client.HttpClient;
 import io.avaje.http.client.JacksonBodyAdapter;
-import io.avaje.http.client.RequestLogger;
 import io.avaje.jex.Jex;
 import org.example.Main;
 import org.junit.jupiter.api.AfterAll;
@@ -28,8 +26,8 @@ public class BaseWebTest {
     webServer.shutdown();
   }
 
-  public static HttpClientContext client() {
-    return HttpClientContext.builder()
+  public static HttpClient client() {
+    return HttpClient.builder()
       .baseUrl(baseUrl)
       .requestTimeout(Duration.ofMinutes(2))
       .bodyAdapter(new JacksonBodyAdapter())

@@ -1,6 +1,6 @@
 package org.example.myapp;
 
-import io.avaje.http.client.HttpClientContext;
+import io.avaje.http.client.HttpClient;
 import io.avaje.http.client.JacksonBodyAdapter;
 import io.javalin.Javalin;
 import org.junit.jupiter.api.AfterAll;
@@ -23,8 +23,8 @@ public class BaseWebTest {
     webServer.stop();
   }
 
-  public static HttpClientContext client() {
-    return HttpClientContext.builder()
+  public static HttpClient client() {
+    return HttpClient.builder()
       .baseUrl(baseUrl)
       .bodyAdapter(new JacksonBodyAdapter())
       .build();

@@ -1,6 +1,6 @@
 package org.example;
 
-import io.avaje.http.client.HttpClientContext;
+import io.avaje.http.client.HttpClient;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpResponse;
@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ReqScopedControllerTest extends BaseWebTest {
 
-  private final HttpClientContext client = client();
+  private final HttpClient client = client();
 
   @Test
   void testGet() {

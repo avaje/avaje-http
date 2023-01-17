@@ -7,7 +7,6 @@ import io.restassured.response.Response;
 import org.example.myapp.web.HelloDto;
 import org.junit.jupiter.api.Test;
 
-import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
@@ -21,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class HelloControllerTest extends BaseWebTest {
 
-  final HttpClientContext clientContext;
+  final HttpClient client;
 
   HelloControllerTest() {
-    this.clientContext = HttpClientContext.builder()
+    this.client = HttpClient.builder()
       .baseUrl(baseUrl)
       .bodyAdapter(new JacksonBodyAdapter())
       .build();
@@ -36,7 +35,7 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(response.body().asString()).contains("hello world");
     assertThat(response.statusCode()).isEqualTo(200);
 
-    final HttpResponse<String> hres = clientContext.request().path("hello").path("message")
+    final HttpResponse<String> hres = client.request().path("hello").path("message")
       .GET().asString();
 
     assertThat(hres.body()).contains("hello world");
@@ -56,7 +55,7 @@ class HelloControllerTest extends BaseWebTest {
 
     assertThat(beans).hasSize(2);
 
-    final List<HelloDto> helloDtos = clientContext.request()
+    final List<HelloDto> helloDtos = client.request()
       .path("hello")
       .GET().list(HelloDto.class);
 
@@ -77,7 +76,7 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(bean.name).isEqualTo("2020-03-05");
     assertThat(bean.otherParam).isEqualTo("other");
 
-    final HelloDto dto = clientContext.request()
+    final HelloDto dto = client.request()
       .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
       .GET().bean(HelloDto.class);
 
@@ -96,10 +95,10 @@ class HelloControllerTest extends BaseWebTest {
       .body("name", equalTo("posted"))
       .body("otherParam", equalTo("other"));
 
-    final BodyWriter from = clientContext.converters().beanWriter(HelloDto.class);
-    final BodyReader<HelloDto> toDto = clientContext.converters().beanReader(HelloDto.class);
+    final BodyWriter<HelloDto> from = client.bodyAdapter().beanWriter(HelloDto.class);
+    final BodyReader<HelloDto> toDto = client.bodyAdapter().beanReader(HelloDto.class);
 
-    final HelloDto bean = clientContext.request()
+    final HelloDto bean = client.request()
       .path("hello")
       .body(from.write(dto))
       .POST()
@@ -149,7 +148,7 @@ class HelloControllerTest extends BaseWebTest {
   @Test
   void postForm3_controllerFormBean_responseJsonDto() {
 
-    final HelloDto bean = clientContext.request()
+    final HelloDto bean = client.request()
       .path("hello/saveform3")
       .formParam("name", "Bax")
       .formParam("email", "Bax@foo.com")
@@ -195,7 +194,7 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(errors.get("name")).isEqualTo("must not be null");
 
     try {
-      clientContext.request()
+      client.request()
         .path("hello/saveform")
         .formParam("email", "user@foo.com")
         .formParam("url", "notAValidUrl")
@@ -220,7 +219,7 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void get_validate_bean_expect422() {
-    final HttpResponse<String> hres = clientContext.request()
+    final HttpResponse<String> hres = client.request()
       .path("hello/withValidBean")
       .queryParam("email", "user@foo.com")
       .GET()
@@ -231,7 +230,7 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void get_validate_bean_expect200() {
-    final HttpResponse<String> hres = clientContext.request()
+    final HttpResponse<String> hres = client.request()
       .path("hello/withValidBean")
       .queryParam("name", "hello")
       .queryParam("email", "user@foo.com")
@@ -281,7 +280,7 @@ class HelloControllerTest extends BaseWebTest {
       .body(equalTo("yr:2011 au:null co:null other:foo3 extra:null"));
 
 
-    final HttpResponse<String> httpRes = clientContext.request()
+    final HttpResponse<String> httpRes = client.request()
       .path("hello/withMatrix/2011")
       .matrixParam("author", "rob")
       .matrixParam("country", "nz")
@@ -297,7 +296,7 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void get_slashAcceptingPath_expect200() {
-    final HttpResponse<String> hres = clientContext.request()
+    final HttpResponse<String> hres = client.request()
       .path("hello/slash/one/a/b/other/x/y/z")
       .GET()
       .asString();

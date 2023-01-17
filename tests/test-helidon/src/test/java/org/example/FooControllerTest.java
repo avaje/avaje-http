@@ -1,7 +1,7 @@
 package org.example;
 
-import io.avaje.http.client.HttpClientContext;
 import io.avaje.http.api.Get;
+import io.avaje.http.client.HttpClient;
 import io.restassured.response.Response;
 import org.example.api.FooBody;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.startsWith;
 
 class FooControllerTest extends BaseWebTest {
 
-  private final HttpClientContext client = client();
+  private final HttpClient client = client();
 
   @Test
   void hello() {

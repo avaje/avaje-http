@@ -1,6 +1,6 @@
 package org.example.web;
 
-import io.avaje.http.client.HttpClientContext;
+import io.avaje.http.client.HttpClient;
 import io.avaje.http.client.HttpException;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HelloControllerTest extends BaseWebTest {
 
-  final static HttpClientContext client = client();
+  final static HttpClient client = client();
 
   @Test
   void getHello() {
@@ -27,7 +27,7 @@ class HelloControllerTest extends BaseWebTest {
     final HttpResponse<String> res = client.request().path("plain").GET().asString();
 
     assertEquals("something", res.body());
-    assertThat(res.headers().firstValue("content-type").get()).startsWith("text/plain;");
+    assertThat(res.headers().firstValue("content-type").orElseThrow()).startsWith("text/plain;");
   }
 
   @Test
