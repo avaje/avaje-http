@@ -58,10 +58,8 @@ public class ProcessingContext {
     final var override = env.getOptions().get("useJavax");
     if (override != null || (javax && jakarta)) {
       this.useJavax = Boolean.parseBoolean(override);
-    } else if (javax && !jakarta) {
-      useJavax = javax;
     } else {
-      useJavax = false;
+      this.useJavax = javax;
     }
   }
 
