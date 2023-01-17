@@ -75,7 +75,7 @@ public class MethodReader {
     initWebMethodViaAnnotation();
 
     this.superMethods =
-        ctx.getSuperMethods(element.getEnclosingElement(), element.toString().replace("()", ""));
+        ctx.getSuperMethods(element.getEnclosingElement(), element.getSimpleName().toString());
 
     this.apiResponses = getApiResponses();
     this.javadoc =
