@@ -186,11 +186,12 @@ public class MethodReader {
     final var superMethodResponses =
         superMethods.stream()
             .flatMap(
-                m -> Stream.concat(
-              Optional.ofNullable(findAnnotation(OpenAPIResponses.class,m)).stream()
-                  .map(OpenAPIResponses::value)
-                  .flatMap(Arrays::stream),
-              Arrays.stream(m.getAnnotationsByType(OpenAPIResponse.class))));
+                m ->
+                    Stream.concat(
+                        Optional.ofNullable(findAnnotation(OpenAPIResponses.class, m)).stream()
+                            .map(OpenAPIResponses::value)
+                            .flatMap(Arrays::stream),
+                        Arrays.stream(m.getAnnotationsByType(OpenAPIResponse.class))));
 
     return Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
   }
