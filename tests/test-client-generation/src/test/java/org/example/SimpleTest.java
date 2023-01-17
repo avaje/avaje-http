@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.avaje.http.client.HttpApiProvider;
 import io.avaje.http.client.HttpClient;
-import io.avaje.http.client.HttpClientContext;
 import io.avaje.http.client.JacksonBodyAdapter;
 import org.example.httpclient.GitHubUsersHttpClient;
 import org.junit.jupiter.api.Disabled;
@@ -14,22 +13,21 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SimpleTest {
+class SimpleTest {
 
   @Disabled
   @Test
   void listRepos() {
-
     final ObjectMapper objectMapper = new ObjectMapper()
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-    final HttpClientContext clientContext =
-      HttpClientContext.builder()
+    final HttpClient client =
+      HttpClient.builder()
         .baseUrl("https://api.github.com")
         .bodyAdapter(new JacksonBodyAdapter(objectMapper))
         .build();
 
-    GitHubUsers simple = clientContext.create(GitHubUsers.class);
+    GitHubUsers simple = client.create(GitHubUsers.class);
 
     final List<Repo> repos = simple.listRepos("rbygrave");
     System.out.println("got repos - " + repos.size());

@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DHttpApiTest {
+class DHttpApiTest {
 
   @Disabled
   @Test
@@ -31,22 +31,22 @@ public class DHttpApiTest {
     assertThat(repos).isNotEmpty();
   }
 
+  @Disabled
   @Test
   void jsonb_github_listRepos() {
 
-    Jsonb jsonb = Jsonb.newBuilder()
+    Jsonb jsonb = Jsonb.builder()
       .add(Repo.class, RepoJsonAdapter::new)
-      //.adapter(new JacksonAdapter())
       .build();
 
-    final HttpClientContext clientContext = HttpClientContext.builder()
+    final HttpClient client = HttpClient.builder()
       .baseUrl("https://api.github.com")
       .bodyAdapter(new JsonbBodyAdapter(jsonb))
       .build();
 
     DHttpApi httpApi = new DHttpApi();
     httpApi.addProvider(new Simple$HttpClient.Provider());
-    final Simple simple = httpApi.provideFor(Simple.class, clientContext);
+    final Simple simple = httpApi.provideFor(Simple.class, client);
 
     final List<Repo> repos = simple.listRepos("rbygrave", "junk");
     assertThat(repos).isNotEmpty();
