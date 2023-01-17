@@ -33,7 +33,6 @@ public interface BodyAdapter {
     throw new UnsupportedOperationException("Parameterized types not supported for this adapter");
   }
 
-
   /**
    * Return a BodyReader to read response content and convert to a list of beans.
    *

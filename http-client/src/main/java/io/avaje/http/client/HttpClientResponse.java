@@ -61,10 +61,103 @@ public interface HttpClientResponse {
   <T> T read(BodyReader<T> reader);
 
   /**
+   * Return the response with the body containing a single instance of the given type.
+   * <p>
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException when using an async request.
+   *
+   * @param type The type of the bean to convert the response content into.
+   * @param <T>  The type that the content is converted to.
+   * @return The response containing the converted body.
+   * @throws HttpException when the response has error status codes
+   */
+  <T> HttpResponse<T> as(Class<T> type);
+
+  /**
+   * Return the response with the body containing a single instance of the given parameterized type.
+   * <p>
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException when using an async request.
+   *
+   * @param type The parameterized type of the bean to convert the response content into.
+   * @return The response containing the converted body.
+   * @throws HttpException when the response has error status codes
+   */
+  <T> HttpResponse<T> as(ParameterizedType type);
+
+  /**
+   * Return the response with the body containing a list of the given type.
+   * <p>
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException when using an async request.
+   *
+   * @param type The type of the bean to convert the response content into.
+   * @param <T>  The type that the content is converted to.
+   * @return The response containing the converted body.
+   * @throws HttpException when the response has error status codes
+   */
+  <T> HttpResponse<List<T>> asList(Class<T> type);
+
+  /**
+   * Return the response with the body containing a list of the given parameterized type.
+   * <p>
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException when using an async request.
+   *
+   * @param type The type of the bean to convert the response content into.
+   * @param <T>  The type that the content is converted to.
+   * @return The response containing the converted body.
+   * @throws HttpException when the response has error status codes
+   */
+  <T> HttpResponse<List<T>> asList(ParameterizedType type);
+
+  /**
+   * Return the response with the body containing a stream of beans of the given type.
+   * <p>
+   * Typically the response is expected to be {@literal application/x-json-stream}
+   * newline delimited json payload.
+   * <p>
+   * Note that for this stream request the response content is not deemed
+   * 'loggable' by avaje-http-client. This is because the entire response
+   * may not be available at the time of the callback. As such {@link RequestLogger}
+   * will not include response content when logging stream request/response
+   * <p>
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException when using an async request.
+   *
+   * @param type The type of the bean to convert the response content into.
+   * @param <T>  The type that the content is converted to.
+   * @return The response containing the converted body.
+   * @throws HttpException when the response has error status codes
+   */
+  <T> HttpResponse<Stream<T>> asStream(Class<T> type);
+
+  /**
+   * Return the response with the body containing a stream of beans of the given parameterized type.
+   * <p>
+   * Typically the response is expected to be {@literal application/x-json-stream}
+   * newline delimited json payload.
+   * <p>
+   * Note that for this stream request the response content is not deemed
+   * 'loggable' by avaje-http-client. This is because the entire response
+   * may not be available at the time of the callback. As such {@link RequestLogger}
+   * will not include response content when logging stream request/response
+   * <p>
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException when using an async request.
+   *
+   * @param type The type of the bean to convert the response content into.
+   * @param <T>  The type that the content is converted to.
+   * @return The response containing the converted body.
+   * @throws HttpException when the response has error status codes
+   */
+  <T> HttpResponse<Stream<T>> asStream(ParameterizedType type);
+
+  /**
    * Return the response as a single bean.
    * <p>
    * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
-   * the HttpResponse. This is the cause in the CompletionException.
+   * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
    * @param <T>  The type that the content is converted to.
@@ -77,7 +170,7 @@ public interface HttpClientResponse {
    * Return the response as a list of beans.
    * <p>
    * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
-   * the HttpResponse. This is the cause in the CompletionException.
+   * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
    * @param <T>  The type that the content is converted to.
@@ -85,7 +178,6 @@ public interface HttpClientResponse {
    * @throws HttpException when the response has error status codes
    */
   <T> List<T> list(Class<T> type);
-
 
   /**
    * Return the response as a stream of beans.
@@ -99,7 +191,7 @@ public interface HttpClientResponse {
    * will not include response content when logging stream request/response
    * <p>
    * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
-   * the HttpResponse. This is the cause in the CompletionException.
+   * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
    * @param <T>  The type that the content is converted to.
@@ -112,7 +204,7 @@ public interface HttpClientResponse {
    * Return the response as a single bean.
    * <p>
    * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
-   * the HttpResponse. This is the cause in the CompletionException.
+   * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The parameterized type of the bean to convert the response content into.
    * @return The bean the response is converted into.
@@ -124,7 +216,7 @@ public interface HttpClientResponse {
    * Return the response as a list of beans.
    * <p>
    * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
-   * the HttpResponse. This is the cause in the CompletionException.
+   * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The parameterized type of the bean to convert the response content into.
    * @return The list of beans the response is converted into.
@@ -144,14 +236,13 @@ public interface HttpClientResponse {
    * will not include response content when logging stream request/response
    * <p>
    * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
-   * the HttpResponse. This is the cause in the CompletionException.
+   * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The parameterized type of the bean to convert the response content into.
    * @return The stream of beans from the response
    * @throws HttpException when the response has error status codes
    */
   <T> Stream<T> stream(ParameterizedType type);
-
 
   /**
    * Return the response with check for 200 range status code.

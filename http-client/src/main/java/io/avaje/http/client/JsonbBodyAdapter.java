@@ -55,14 +55,14 @@ public final class JsonbBodyAdapter implements BodyAdapter {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> BodyReader<T> beanReader(ParameterizedType cls) {
-    return (BodyReader<T>) beanReaderCache.computeIfAbsent(cls, aClass -> new JReader<>(jsonb.type(cls)));
+  public <T> BodyReader<T> beanReader(ParameterizedType type) {
+    return (BodyReader<T>) beanReaderCache.computeIfAbsent(type, aClass -> new JReader<>(jsonb.type(type)));
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> BodyReader<List<T>> listReader(ParameterizedType cls) {
-    return (BodyReader<List<T>>) listReaderCache.computeIfAbsent(cls, aClass -> new JReader<>(jsonb.type(cls).list()));
+  public <T> BodyReader<List<T>> listReader(ParameterizedType type) {
+    return (BodyReader<List<T>>) listReaderCache.computeIfAbsent(type, aClass -> new JReader<>(jsonb.type(type).list()));
   }
 
   @SuppressWarnings("unchecked")

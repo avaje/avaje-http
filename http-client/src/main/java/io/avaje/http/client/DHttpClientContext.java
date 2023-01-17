@@ -269,29 +269,30 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
     return bodyAdapter.beanWriter(bean.getClass()).write(bean, contentType);
   }
 
-  <T> BodyReader<T> beanReader(Class<T> cls) {
-    return bodyAdapter.beanReader(cls);
+  <T> BodyReader<T> beanReader(Class<T> type) {
+    return bodyAdapter.beanReader(type);
   }
 
-  <T> BodyReader<T> beanReader(ParameterizedType cls) {
-    return bodyAdapter.beanReader(cls);
+  <T> BodyReader<T> beanReader(ParameterizedType type) {
+    return bodyAdapter.beanReader(type);
   }
 
-  <T> T readBean(Class<T> cls, BodyContent content) {
-    return bodyAdapter.beanReader(cls).read(content);
+  <T> T readBean(Class<T> type, BodyContent content) {
+    return bodyAdapter.beanReader(type).read(content);
   }
 
-  <T> List<T> readList(Class<T> cls, BodyContent content) {
-    return bodyAdapter.listReader(cls).read(content);
+  <T> List<T> readList(Class<T> type, BodyContent content) {
+    return bodyAdapter.listReader(type).read(content);
   }
 
   @SuppressWarnings("unchecked")
-  <T> T readBean(ParameterizedType cls, BodyContent content) {
-    return (T) bodyAdapter.beanReader(cls).read(content);
+  <T> T readBean(ParameterizedType type, BodyContent content) {
+    return (T) bodyAdapter.beanReader(type).read(content);
   }
 
-  <T> List<T> readList(ParameterizedType cls, BodyContent content) {
-    return (List<T>) bodyAdapter.listReader(cls).read(content);
+  @SuppressWarnings("unchecked")
+  <T> List<T> readList(ParameterizedType type, BodyContent content) {
+    return (List<T>) bodyAdapter.listReader(type).read(content);
   }
 
   void afterResponse(DHttpClientRequest request) {

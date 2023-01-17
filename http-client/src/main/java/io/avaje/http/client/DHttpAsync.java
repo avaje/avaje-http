@@ -61,43 +61,72 @@ final class DHttpAsync implements HttpAsyncResponse {
 
   @Override
   public <E> CompletableFuture<E> bean(Class<E> type) {
-    return request
-      .performSendAsync(true, HttpResponse.BodyHandlers.ofByteArray())
-      .thenApply(httpResponse -> request.asyncBean(type, httpResponse));
-  }
-
-  @Override
-  public <E> CompletableFuture<List<E>> list(Class<E> type) {
-    return request
-      .performSendAsync(true, HttpResponse.BodyHandlers.ofByteArray())
-      .thenApply(httpResponse -> request.asyncList(type, httpResponse));
-  }
-
-  @Override
-  public <E> CompletableFuture<Stream<E>> stream(Class<E> type) {
-    return request
-      .performSendAsync(false, HttpResponse.BodyHandlers.ofLines())
-      .thenApply(httpResponse -> request.asyncStream(type, httpResponse));
+    return as(type).thenApply(HttpResponse::body);
   }
 
   @Override
   public <E> CompletableFuture<E> bean(ParameterizedType type) {
-    return request
-      .performSendAsync(true, HttpResponse.BodyHandlers.ofByteArray())
-      .thenApply(httpResponse -> request.asyncBean(type, httpResponse));
+    final CompletableFuture<HttpResponse<E>> future = as(type);
+    return future.thenApply(HttpResponse::body);
+  }
+
+  @Override
+  public <E> CompletableFuture<HttpResponse<E>> as(Class<E> type) {
+    return asyncAsBytes().thenApply(httpResponse -> request.asyncBean(type, httpResponse));
+  }
+
+  @Override
+  public <E> CompletableFuture<HttpResponse<E>> as(ParameterizedType type) {
+    return asyncAsBytes().thenApply(httpResponse -> request.asyncBean(type, httpResponse));
+  }
+
+  @Override
+  public <E> CompletableFuture<List<E>> list(Class<E> type) {
+    return asList(type).thenApply(HttpResponse::body);
   }
 
   @Override
   public <E> CompletableFuture<List<E>> list(ParameterizedType type) {
-    return request
-      .performSendAsync(true, HttpResponse.BodyHandlers.ofByteArray())
-      .thenApply(httpResponse -> request.asyncList(type, httpResponse));
+    final CompletableFuture<HttpResponse<List<E>>> future = asList(type);
+    return future.thenApply(HttpResponse::body);
+  }
+
+  @Override
+  public <E> CompletableFuture<HttpResponse<List<E>>> asList(Class<E> type) {
+    return asyncAsBytes().thenApply(httpResponse -> request.asyncList(type, httpResponse));
+  }
+
+  @Override
+  public <E> CompletableFuture<HttpResponse<List<E>>> asList(ParameterizedType type) {
+    return asyncAsBytes().thenApply(httpResponse -> request.asyncList(type, httpResponse));
+  }
+
+  @Override
+  public <E> CompletableFuture<Stream<E>> stream(Class<E> type) {
+    return asStream(type).thenApply(HttpResponse::body);
   }
 
   @Override
   public <E> CompletableFuture<Stream<E>> stream(ParameterizedType type) {
-    return request
-      .performSendAsync(false, HttpResponse.BodyHandlers.ofLines())
-      .thenApply(httpResponse -> request.asyncStream(type, httpResponse));
+    final CompletableFuture<HttpResponse<Stream<E>>> future = asStream(type);
+    return future.thenApply(HttpResponse::body);
+  }
+
+  @Override
+  public <E> CompletableFuture<HttpResponse<Stream<E>>> asStream(Class<E> type) {
+    return asyncAsLines().thenApply(httpResponse -> request.asyncStream(type, httpResponse));
+  }
+
+  @Override
+  public <E> CompletableFuture<HttpResponse<Stream<E>>> asStream(ParameterizedType type) {
+    return asyncAsLines().thenApply(httpResponse -> request.asyncStream(type, httpResponse));
+  }
+
+  private CompletableFuture<HttpResponse<byte[]>> asyncAsBytes() {
+    return request.performSendAsync(true, HttpResponse.BodyHandlers.ofByteArray());
+  }
+
+  private CompletableFuture<HttpResponse<Stream<String>>> asyncAsLines() {
+    return request.performSendAsync(false, HttpResponse.BodyHandlers.ofLines());
   }
 }
