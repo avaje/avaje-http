@@ -77,6 +77,8 @@ public class MethodReader {
     this.superMethods =
         ctx.getSuperMethods(element.getEnclosingElement(), element.getSimpleName().toString());
 
+    superMethods.stream().forEach(m -> methodRoles.addAll(Util.findRoles(m)));
+    
     this.apiResponses = getApiResponses();
     this.javadoc =
         Optional.of(Javadoc.parse(ctx.docComment(element)))
