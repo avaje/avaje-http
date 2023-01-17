@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,6 +61,7 @@ public class MethodReader {
 
   private final PathSegments pathSegments;
   private final boolean hasValid;
+  private final List<ExecutableElement> superMethods;
 
   MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable, ProcessingContext ctx) {
     this.ctx = ctx;
@@ -69,18 +71,46 @@ public class MethodReader {
     this.actualParams = (actualExecutable == null) ? null : actualExecutable.getParameterTypes();
     this.isVoid = element.getReturnType().getKind() == TypeKind.VOID;
     this.methodRoles = Util.findRoles(element);
-    this.javadoc = Javadoc.parse(ctx.docComment(element));
     this.produces = produces(bean);
-    this.apiResponses = getApiResponses();
     initWebMethodViaAnnotation();
+
+    this.superMethods =
+        ctx.getSuperMethods(element.getEnclosingElement(), element.toString().replace("()", ""));
+
+    this.apiResponses = getApiResponses();
+    this.javadoc =
+        Optional.of(Javadoc.parse(ctx.docComment(element)))
+            .filter(Predicate.not(Javadoc::isEmpty))
+            .orElseGet(
+                () ->
+                    superMethods.stream()
+                        .map(e -> Javadoc.parse(ctx.docComment(e)))
+                        .filter(Predicate.not(Javadoc::isEmpty))
+                        .findFirst()
+                        .orElse(Javadoc.parse("")));
+
     if (isWebMethod()) {
-      Annotation jakartaValidAnnotation = null;
+
+    Class<Annotation> jakartaValidAnnotation;
       try {
-        jakartaValidAnnotation = findAnnotation(jakartaValidAnnotation());
+        jakartaValidAnnotation = jakartaValidAnnotation();
       } catch (final ClassNotFoundException e) {
-        // ignore
+        jakartaValidAnnotation = null;
       }
-      this.hasValid = findAnnotation(Valid.class) != null || jakartaValidAnnotation != null;
+
+      final var jakartaAnnotation = jakartaValidAnnotation;
+
+      this.hasValid =
+          findAnnotation(Valid.class) != null
+              || (jakartaValidAnnotation != null && findAnnotation(jakartaValidAnnotation) != null)
+              || superMethods.stream()
+                  .map(
+                      e ->
+                          findAnnotation(Valid.class, e) != null
+                              || (jakartaAnnotation != null
+                                  && findAnnotation(jakartaAnnotation, e) != null))
+                  .anyMatch(b -> b);
+
       this.pathSegments = PathSegments.parse(Util.combinePath(bean.path(), webMethodPath));
     } else {
       this.hasValid = false;
@@ -99,31 +129,31 @@ public class MethodReader {
   }
 
   private void initWebMethodViaAnnotation() {
-    Form form = findAnnotation(Form.class);
+    final var form = findAnnotation(Form.class);
     if (form != null) {
       this.formMarker = true;
     }
-    Get get = findAnnotation(Get.class);
+    final var get = findAnnotation(Get.class);
     if (get != null) {
       initSetWebMethod(WebMethod.GET, get.value());
       return;
     }
-    Put put = findAnnotation(Put.class);
+    final var put = findAnnotation(Put.class);
     if (put != null) {
       initSetWebMethod(WebMethod.PUT, put.value());
       return;
     }
-    Post post = findAnnotation(Post.class);
+    final var post = findAnnotation(Post.class);
     if (post != null) {
       initSetWebMethod(WebMethod.POST, post.value());
       return;
     }
-    Patch patch = findAnnotation(Patch.class);
+    final var patch = findAnnotation(Patch.class);
     if (patch != null) {
       initSetWebMethod(WebMethod.PATCH, patch.value());
       return;
     }
-    Delete delete = findAnnotation(Delete.class);
+    final var delete = findAnnotation(Delete.class);
     if (delete != null) {
       initSetWebMethod(WebMethod.DELETE, delete.value());
     }
@@ -149,19 +179,34 @@ public class MethodReader {
             .map(OpenAPIResponses::value)
             .flatMap(Arrays::stream);
 
-    return Stream.concat(container, Arrays.stream(element.getAnnotationsByType(OpenAPIResponse.class)))
-        .collect(Collectors.toList());
+    final var methodResponses =
+        Stream.concat(
+            container, Arrays.stream(element.getAnnotationsByType(OpenAPIResponse.class)));
 
+    final var superMethodResponses =
+        superMethods.stream()
+            .flatMap(
+                m -> Stream.concat(
+              Optional.ofNullable(findAnnotation(OpenAPIResponses.class,m)).stream()
+                  .map(OpenAPIResponses::value)
+                  .flatMap(Arrays::stream),
+              Arrays.stream(m.getAnnotationsByType(OpenAPIResponse.class))));
 
+    return Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
   }
 
   public <A extends Annotation> A findAnnotation(Class<A> type) {
-    A annotation = element.getAnnotation(type);
+
+    return findAnnotation(type, element);
+  }
+
+  public <A extends Annotation> A findAnnotation(Class<A> type, ExecutableElement elem) {
+    final var annotation = elem.getAnnotation(type);
     if (annotation != null) {
       return annotation;
     }
 
-    return bean.findMethodAnnotation(type, element);
+    return bean.findMethodAnnotation(type, elem);
   }
 
   private List<String> addTagsToList(Element element, List<String> list) {
@@ -172,15 +217,17 @@ public class MethodReader {
       list.add(element.getAnnotation(Tag.class).name());
     }
     if (element.getAnnotation(Tags.class) != null) {
-      for (Tag tag : element.getAnnotation(Tags.class).value())
+      for (final Tag tag : element.getAnnotation(Tags.class).value())
         list.add(tag.name());
     }
     return list;
   }
 
   public List<String> tags() {
-    List<String> tags = new ArrayList<>();
-    tags = addTagsToList(element, tags);
+    final List<String> tags = new ArrayList<>();
+    addTagsToList(element, tags);
+    superMethods.forEach(e -> addTagsToList(e, tags));
+
     return addTagsToList(element.getEnclosingElement(), tags);
   }
 
@@ -191,20 +238,20 @@ public class MethodReader {
 
     // non-path parameters default to form or query parameters based on the
     // existence of @Form annotation on the method
-    ParamType defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
+    final var defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
 
     final List<? extends VariableElement> parameters = element.getParameters();
-    for (int i = 0; i < parameters.size(); i++) {
-      VariableElement p = parameters.get(i);
+    for (var i = 0; i < parameters.size(); i++) {
+      final VariableElement p = parameters.get(i);
       TypeMirror typeMirror;
       if (actualParams != null) {
         typeMirror = actualParams.get(i);
       } else {
         typeMirror = p.asType();
       }
-      String rawType = Util.typeDef(typeMirror);
-      UType type = Util.parse(typeMirror.toString());
-      MethodParam param = new MethodParam(p, type, rawType, ctx, defaultParamType, formMarker);
+      final var rawType = Util.typeDef(typeMirror);
+      final var type = Util.parse(typeMirror.toString());
+      final var param = new MethodParam(p, type, rawType, ctx, defaultParamType, formMarker);
       params.add(param);
       param.addImports(bean);
     }
@@ -286,7 +333,7 @@ public class MethodReader {
   }
 
   public boolean isFormBody() {
-    for (MethodParam param : params) {
+    for (final MethodParam param : params) {
       if (param.isForm()) {
         return true;
       }
@@ -295,7 +342,7 @@ public class MethodReader {
   }
 
   public String bodyType() {
-    for (MethodParam param : params) {
+    for (final MethodParam param : params) {
       if (param.isBody()) {
         return param.shortType();
       }
@@ -304,7 +351,7 @@ public class MethodReader {
   }
 
   public String bodyName() {
-    for (MethodParam param : params) {
+    for (final MethodParam param : params) {
       if (param.isBody()) {
         return param.name();
       }

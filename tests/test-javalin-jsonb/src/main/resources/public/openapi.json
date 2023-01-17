@@ -8,6 +8,10 @@
 	"tags" : [
 		{
 			"name" : "tag1",
+			"description" : "it's somethin"
+		},
+		{
+			"name" : "tag1",
 			"description" : "this is added to openapi tags"
 		}
 	],
@@ -762,6 +766,37 @@
 					}
 				},
 				"deprecated" : true
+			}
+		},
+		"/javalin/health" : {
+			"get" : {
+				"tags" : [
+					"tag1"
+				],
+				"summary" : "Standard Get",
+				"description" : "",
+				"responses" : {
+					"500" : {
+						"description" : "a health check",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"200" : {
+						"description" : "a health check",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
 			}
 		},
 		"/openapi/get" : {

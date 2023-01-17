@@ -1,14 +1,19 @@
 package io.avaje.http.generator.core;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
@@ -113,6 +118,25 @@ public class ProcessingContext {
 
   public TypeMirror asMemberOf(DeclaredType declaredType, Element element) {
     return types.asMemberOf(declaredType, element);
+  }
+
+  public List<ExecutableElement> getSuperMethods(Element element, String methodName) {
+
+    return types.directSupertypes(element.asType()).stream()
+        .filter(t -> !t.toString().contains("java.lang.Object"))
+        .map(
+            superType -> {
+              final var superClass = (TypeElement) types.asElement(superType);
+              for (final ExecutableElement method :
+                  ElementFilter.methodsIn(elements.getAllMembers(superClass))) {
+                if (method.getSimpleName().contentEquals(methodName)) {
+                  return method;
+                }
+              }
+              return null;
+            })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 
   public PlatformAdapter platform() {

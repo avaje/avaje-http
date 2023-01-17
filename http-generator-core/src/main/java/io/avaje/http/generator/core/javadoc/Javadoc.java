@@ -63,4 +63,12 @@ public class Javadoc {
   public boolean isDeprecated() {
     return deprecated;
   }
+
+  public boolean isEmpty() {
+    return summary.isBlank()
+        && description.isBlank()
+        && params.isEmpty()
+        && returnDescription.isEmpty()
+        && !deprecated;
+  }
 }

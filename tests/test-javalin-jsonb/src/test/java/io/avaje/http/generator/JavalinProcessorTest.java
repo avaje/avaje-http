@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -155,11 +156,46 @@ class JavalinProcessorTest {
 
     final var mapper = new ObjectMapper();
     final var expectedOpenApiJson =
-        mapper.readTree(new File("src/test/java/io/avaje/http/generator/expectedOpenApi.json"));
+        mapper.readTree(new File("src/test/resources/expectedOpenApi.json"));
     final var generatedOpenApi = mapper.readTree(new File("openapi.json"));
 
     assert expectedOpenApiJson.equals(generatedOpenApi);
   }
+
+  @Test
+  public void testInheritableOpenAPIGeneration() throws Exception {
+    final var source = Paths.get("src").toAbsolutePath().toString();
+    // OpenAPIController
+    final var files = getSourceFiles(source);
+
+    final List<JavaFileObject> openAPIController = new ArrayList<>(2);
+    for (final var file : files) {
+      if (file.isNameCompatible("HealthController", Kind.SOURCE)
+          || file.isNameCompatible("HealthControllerImpl", Kind.SOURCE))
+        openAPIController.add(file);
+    }
+    final var compiler = ToolProvider.getSystemJavaCompiler();
+
+    final var task =
+        compiler.getTask(
+            new PrintWriter(System.out),
+            null,
+            null,
+            List.of("--release=11"),
+            null,
+            openAPIController);
+    task.setProcessors(List.of(new JavalinProcessor(false), new Processor()));
+
+    assertThat(task.call()).isTrue();
+
+    final var mapper = new ObjectMapper();
+    final var expectedOpenApiJson =
+        mapper.readTree(new File("src/test/resources/expectedInheritedOpenApi.json"));
+    final var generatedOpenApi = mapper.readTree(new File("openapi.json"));
+
+    assert expectedOpenApiJson.equals(generatedOpenApi);
+  }
+
 
   private Iterable<JavaFileObject> getSourceFiles(String source) throws Exception {
     final var compiler = ToolProvider.getSystemJavaCompiler();
