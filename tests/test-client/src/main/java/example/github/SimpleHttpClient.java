@@ -1,9 +1,7 @@
 package example.github;
 
-//import io.avaje.http.api.Get;
-
 import io.avaje.http.client.HttpApiProvider;
-import io.avaje.http.client.HttpClientContext;
+import io.avaje.http.client.HttpClient;
 import io.avaje.http.client.HttpException;
 
 import java.util.List;
@@ -19,15 +17,15 @@ public class SimpleHttpClient implements HttpApiProvider<Simple> {
   }
 
   @Override
-  public Simple provide(HttpClientContext client) {
+  public Simple provide(HttpClient client) {
     return new SimpleClient(client);
   }
 
   private static class SimpleClient implements Simple {
 
-    private final HttpClientContext context;
+    private final HttpClient context;
 
-    SimpleClient(HttpClientContext context) {
+    SimpleClient(HttpClient context) {
       this.context = context;
     }
 
