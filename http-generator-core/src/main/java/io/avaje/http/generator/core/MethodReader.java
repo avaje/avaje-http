@@ -224,8 +224,7 @@ public class MethodReader {
   }
 
   public List<String> tags() {
-    final List<String> tags = new ArrayList<>();
-    addTagsToList(element, tags);
+    final var tags = addTagsToList(element, new ArrayList<>());
     superMethods.forEach(e -> addTagsToList(e, tags));
 
     return addTagsToList(element.getEnclosingElement(), tags);
