@@ -52,7 +52,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject</artifactId>
-      <version>8.3</version>
+      <version>8.12-RC1</version>
     </dependency>
 
     <dependency>
@@ -78,7 +78,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject-generator</artifactId>
-      <version>8.3</version>
+      <version>8.12-RC1</version>
       <scope>provided</scope>
     </dependency>
 
@@ -108,7 +108,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>1.16</version>
+      <version>1.23-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
 

@@ -24,7 +24,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject</artifactId>
-      <version>8.9</version>
+      <version>8.12-RC1</version>
     </dependency>
 
     <dependency>
@@ -72,7 +72,7 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-inject-generator</artifactId>
-              <version>8.9</version>
+              <version>8.12-RC1</version>
             </path>
           </annotationProcessorPaths>
         </configuration>

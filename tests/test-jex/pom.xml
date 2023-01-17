@@ -18,7 +18,7 @@
     <main.class>org.example.myapp.Main</main.class>
     <jex.version>2.2</jex.version>
     <swagger.version>2.0.8</swagger.version>
-    <jackson.version>2.13.4.1</jackson.version>
+    <jackson.version>2.14.1</jackson.version>
     <avaje-inject.version>8.9</avaje-inject.version>
     <avaje-http.version>1.23-SNAPSHOT</avaje-http.version>
   </properties>
@@ -101,7 +101,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>1.16</version>
+      <version>1.23-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
 
