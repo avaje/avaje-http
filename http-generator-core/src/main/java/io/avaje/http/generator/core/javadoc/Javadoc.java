@@ -68,7 +68,7 @@ public class Javadoc {
     return summary.isBlank()
         && description.isBlank()
         && params.isEmpty()
-        && returnDescription.isEmpty()
+        && returnDescription.isBlank()
         && !deprecated;
   }
 }
