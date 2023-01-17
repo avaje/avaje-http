@@ -129,31 +129,31 @@ public class MethodReader {
   }
 
   private void initWebMethodViaAnnotation() {
-    final var form = findAnnotation(Form.class);
+    Form form = findAnnotation(Form.class);
     if (form != null) {
       this.formMarker = true;
     }
-    final var get = findAnnotation(Get.class);
+    Get get = findAnnotation(Get.class);
     if (get != null) {
       initSetWebMethod(WebMethod.GET, get.value());
       return;
     }
-    final var put = findAnnotation(Put.class);
+    Put put = findAnnotation(Put.class);
     if (put != null) {
       initSetWebMethod(WebMethod.PUT, put.value());
       return;
     }
-    final var post = findAnnotation(Post.class);
+    Post post = findAnnotation(Post.class);
     if (post != null) {
       initSetWebMethod(WebMethod.POST, post.value());
       return;
     }
-    final var patch = findAnnotation(Patch.class);
+    Patch patch = findAnnotation(Patch.class);
     if (patch != null) {
       initSetWebMethod(WebMethod.PATCH, patch.value());
       return;
     }
-    final var delete = findAnnotation(Delete.class);
+    Delete delete = findAnnotation(Delete.class);
     if (delete != null) {
       initSetWebMethod(WebMethod.DELETE, delete.value());
     }
@@ -217,7 +217,7 @@ public class MethodReader {
       list.add(element.getAnnotation(Tag.class).name());
     }
     if (element.getAnnotation(Tags.class) != null) {
-      for (final Tag tag : element.getAnnotation(Tags.class).value())
+      for (Tag tag : element.getAnnotation(Tags.class).value())
         list.add(tag.name());
     }
     return list;
@@ -238,20 +238,20 @@ public class MethodReader {
 
     // non-path parameters default to form or query parameters based on the
     // existence of @Form annotation on the method
-    final var defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
+    ParamType defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
 
     final List<? extends VariableElement> parameters = element.getParameters();
-    for (var i = 0; i < parameters.size(); i++) {
-      final VariableElement p = parameters.get(i);
+    for (int i = 0; i < parameters.size(); i++) {
+      VariableElement p = parameters.get(i);
       TypeMirror typeMirror;
       if (actualParams != null) {
         typeMirror = actualParams.get(i);
       } else {
         typeMirror = p.asType();
       }
-      final var rawType = Util.typeDef(typeMirror);
-      final var type = Util.parse(typeMirror.toString());
-      final var param = new MethodParam(p, type, rawType, ctx, defaultParamType, formMarker);
+      String rawType = Util.typeDef(typeMirror);
+      UType type = Util.parse(typeMirror.toString());
+      MethodParam param = new MethodParam(p, type, rawType, ctx, defaultParamType, formMarker);
       params.add(param);
       param.addImports(bean);
     }
@@ -333,7 +333,7 @@ public class MethodReader {
   }
 
   public boolean isFormBody() {
-    for (final MethodParam param : params) {
+    for (MethodParam param : params) {
       if (param.isForm()) {
         return true;
       }
@@ -342,7 +342,7 @@ public class MethodReader {
   }
 
   public String bodyType() {
-    for (final MethodParam param : params) {
+    for (MethodParam param : params) {
       if (param.isBody()) {
         return param.shortType();
       }
@@ -351,7 +351,7 @@ public class MethodReader {
   }
 
   public String bodyName() {
-    for (final MethodParam param : params) {
+    for (MethodParam param : params) {
       if (param.isBody()) {
         return param.name();
       }
