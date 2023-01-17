@@ -12,7 +12,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 import java.io.IOException;
 import java.util.List;
 
-public class GitHubServiceTest {
+class GitHubServiceTest {
 
   @Disabled
   @Test
@@ -37,9 +37,6 @@ public class GitHubServiceTest {
         System.out.println("onFailure: " + throwable);
       }
     });
-//    final Response<List<Repo>> res = call.execute();
-//    final List<Repo> body = res.body();
-//    System.out.println("done count: "+body.size());
 
     final Call<String> call2 = service.list2("octocat");
     final Response<String> res2 = call2.execute();
