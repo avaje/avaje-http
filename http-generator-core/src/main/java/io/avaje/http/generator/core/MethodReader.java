@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,6 +61,7 @@ public class MethodReader {
 
   private final PathSegments pathSegments;
   private final boolean hasValid;
+  private final List<ExecutableElement> superMethods;
 
   MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable, ProcessingContext ctx) {
     this.ctx = ctx;
@@ -69,18 +71,48 @@ public class MethodReader {
     this.actualParams = (actualExecutable == null) ? null : actualExecutable.getParameterTypes();
     this.isVoid = element.getReturnType().getKind() == TypeKind.VOID;
     this.methodRoles = Util.findRoles(element);
-    this.javadoc = Javadoc.parse(ctx.docComment(element));
     this.produces = produces(bean);
-    this.apiResponses = getApiResponses();
     initWebMethodViaAnnotation();
+
+    this.superMethods =
+        ctx.getSuperMethods(element.getEnclosingElement(), element.getSimpleName().toString());
+
+    superMethods.stream().forEach(m -> methodRoles.addAll(Util.findRoles(m)));
+    
+    this.apiResponses = getApiResponses();
+    this.javadoc =
+        Optional.of(Javadoc.parse(ctx.docComment(element)))
+            .filter(Predicate.not(Javadoc::isEmpty))
+            .orElseGet(
+                () ->
+                    superMethods.stream()
+                        .map(e -> Javadoc.parse(ctx.docComment(e)))
+                        .filter(Predicate.not(Javadoc::isEmpty))
+                        .findFirst()
+                        .orElse(Javadoc.parse("")));
+
     if (isWebMethod()) {
-      Annotation jakartaValidAnnotation = null;
+
+    Class<Annotation> jakartaValidAnnotation;
       try {
-        jakartaValidAnnotation = findAnnotation(jakartaValidAnnotation());
+        jakartaValidAnnotation = jakartaValidAnnotation();
       } catch (final ClassNotFoundException e) {
-        // ignore
+        jakartaValidAnnotation = null;
       }
-      this.hasValid = findAnnotation(Valid.class) != null || jakartaValidAnnotation != null;
+
+      final var jakartaAnnotation = jakartaValidAnnotation;
+
+      this.hasValid =
+          findAnnotation(Valid.class) != null
+              || (jakartaValidAnnotation != null && findAnnotation(jakartaValidAnnotation) != null)
+              || superMethods.stream()
+                  .map(
+                      e ->
+                          findAnnotation(Valid.class, e) != null
+                              || (jakartaAnnotation != null
+                                  && findAnnotation(jakartaAnnotation, e) != null))
+                  .anyMatch(b -> b);
+
       this.pathSegments = PathSegments.parse(Util.combinePath(bean.path(), webMethodPath));
     } else {
       this.hasValid = false;
@@ -149,19 +181,35 @@ public class MethodReader {
             .map(OpenAPIResponses::value)
             .flatMap(Arrays::stream);
 
-    return Stream.concat(container, Arrays.stream(element.getAnnotationsByType(OpenAPIResponse.class)))
-        .collect(Collectors.toList());
+    final var methodResponses =
+        Stream.concat(
+            container, Arrays.stream(element.getAnnotationsByType(OpenAPIResponse.class)));
 
+    final var superMethodResponses =
+        superMethods.stream()
+            .flatMap(
+                m ->
+                    Stream.concat(
+                        Optional.ofNullable(findAnnotation(OpenAPIResponses.class, m)).stream()
+                            .map(OpenAPIResponses::value)
+                            .flatMap(Arrays::stream),
+                        Arrays.stream(m.getAnnotationsByType(OpenAPIResponse.class))));
 
+    return Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
   }
 
   public <A extends Annotation> A findAnnotation(Class<A> type) {
-    A annotation = element.getAnnotation(type);
+
+    return findAnnotation(type, element);
+  }
+
+  public <A extends Annotation> A findAnnotation(Class<A> type, ExecutableElement elem) {
+    final var annotation = elem.getAnnotation(type);
     if (annotation != null) {
       return annotation;
     }
 
-    return bean.findMethodAnnotation(type, element);
+    return bean.findMethodAnnotation(type, elem);
   }
 
   private List<String> addTagsToList(Element element, List<String> list) {
@@ -179,8 +227,9 @@ public class MethodReader {
   }
 
   public List<String> tags() {
-    List<String> tags = new ArrayList<>();
-    tags = addTagsToList(element, tags);
+    final var tags = addTagsToList(element, new ArrayList<>());
+    superMethods.forEach(e -> addTagsToList(e, tags));
+
     return addTagsToList(element.getEnclosingElement(), tags);
   }
 
