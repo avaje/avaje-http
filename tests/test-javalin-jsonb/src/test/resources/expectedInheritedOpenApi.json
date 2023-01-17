@@ -1,8 +1,7 @@
 {
 	"openapi" : "3.0.1",
 	"info" : {
-		"title" : "Example service",
-		"description" : "Example Javalin controllers with Java and Maven",
+		"title" : "Example service showing off the Path extension method of controller",
 		"version" : ""
 	},
 	"tags" : [
@@ -20,7 +19,7 @@
 				"summary" : "Standard Get",
 				"description" : "",
 				"responses" : {
-					"400" : {
+					"500" : {
 						"description" : "a health check",
 						"content" : {
 							"text/plain" : {
