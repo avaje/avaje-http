@@ -38,7 +38,7 @@ public class Util {
     }
   }
 
-  static String trimAnnotations(String type) {
+ public static String trimAnnotations(String type) {
     int pos = type.indexOf("@");
     if (pos == -1) {
       return type;
