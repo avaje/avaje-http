@@ -1,17 +1,17 @@
 package io.avaje.http.hibernate.validator;
 
 
-import io.avaje.http.api.ValidationException;
-import io.avaje.http.api.Validator;
-import io.avaje.inject.Component;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+
+import io.avaje.http.api.ValidationException;
+import io.avaje.http.api.Validator;
+import io.avaje.inject.Component;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 
 @Component
 public class BeanValidator implements Validator {
