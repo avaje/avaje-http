@@ -134,8 +134,54 @@ public interface HttpCallResponse {
    *
    * <pre>{@code
    *
+   *  HttpCall<HttpResponse<HelloDto>> call =
+   *    client.request()
+   *       ...
+   *       .POST()
+   *       .call().as(HelloDto.class);
+   *
+   * }</pre>
+   *
+   * @param type The bean type to convert the content to
+   * @return The HttpCall to allow sync or async execution
+   */
+  <E> HttpCall<HttpResponse<E>> as(Class<E> type);
+
+  /**
+   * Same as {@link #as(Class)} but takes a generic parameterized type.
+   */
+  <E> HttpCall<HttpResponse<E>> as(ParameterizedType type);
+
+  /**
+   * Same as {@link #as(Class)} but returns {@code HttpResponse<List<E>>}.
+   */
+  <E> HttpCall<HttpResponse<List<E>>> asList(Class<E> type);
+
+  /**
+   * Same as {@link #as(Class)} but returns {@code HttpResponse<List<E>>}.
+   */
+  <E> HttpCall<HttpResponse<List<E>>> asList(ParameterizedType type);
+
+  /**
+   * Same as {@link #as(Class)} but returns {@code HttpResponse<Stream<E>>}.
+   */
+  <E> HttpCall<HttpResponse<Stream<E>>> asStream(Class<E> type);
+
+  /**
+   * Same as {@link #as(Class)} but returns {@code HttpResponse<Stream<E>>}.
+   */
+  <E> HttpCall<HttpResponse<Stream<E>>> asStream(ParameterizedType type);
+
+  /**
+   * A bean response to execute async or sync.
+   * <p>
+   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * the HttpResponse. This is the cause in the CompletionException.
+   *
+   * <pre>{@code
+   *
    *  HttpCall<HelloDto> call =
-   *    clientContext.request()
+   *    client.request()
    *       ...
    *       .POST()
    *       .call().bean(HelloDto.class);
@@ -156,7 +202,7 @@ public interface HttpCallResponse {
    * <pre>{@code
    *
    *  HttpCall<List<HelloDto>> call =
-   *    clientContext.request()
+   *    client.request()
    *       ...
    *       .GET()
    *       .call().list(HelloDto.class);
@@ -176,7 +222,7 @@ public interface HttpCallResponse {
    * <pre>{@code
    *
    *  HttpCall<Stream<HelloDto>> call =
-   *    clientContext.request()
+   *    client.request()
    *       ...
    *       .GET()
    *       .call().stream(HelloDto.class);
