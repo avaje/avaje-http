@@ -8,7 +8,7 @@
 
   <parent>
     <groupId>org.avaje</groupId>
-    <artifactId>java8-oss</artifactId>
+    <artifactId>java11-oss</artifactId>
     <version>3.9</version>
     <relativePath/>
   </parent>
@@ -26,11 +26,11 @@
       <version>8.0.0.Final</version>
     </dependency>
 
-  	<dependency>
-	  	<groupId>org.glassfish.expressly</groupId>
-	  	<artifactId>expressly</artifactId>
-		  <version>5.0.0</version>
-	  </dependency>
+    <dependency>
+      <groupId>org.glassfish.expressly</groupId>
+      <artifactId>expressly</artifactId>
+      <version>5.0.0</version>
+    </dependency>
 
     <dependency>
       <groupId>io.avaje</groupId>
