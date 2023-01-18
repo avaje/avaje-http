@@ -1,4 +1,4 @@
-package io.dinject.maven.openapi;
+package io.avaje.http.maven.openapi;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
