@@ -32,15 +32,17 @@ Create a HttpClient with a baseUrl, Jackson or Gson based JSON
  body adapter, logger.
 
 ```java
-  public HttpClient client() {
-    return HttpClient.builder()
-      .baseUrl(baseUrl)
-      .bodyAdapter(new JsonbBodyAdapter())
-      //.bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
-      //.bodyAdapter(new GsonBodyAdapter(new Gson()))
-      .build();
-  }
+HttpClient client = HttpClient.builder()
+  .baseUrl(baseUrl)
+  .bodyAdapter(new JsonbBodyAdapter())
+  //.bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+  //.bodyAdapter(new GsonBodyAdapter(new Gson()))
+  .build();
 
+HttpResponse<String> hres = client.request()
+  .path("hello")
+  .GET()
+  .asString();
 ```
 
 ## Requests
@@ -76,6 +78,10 @@ From HttpClient:
 
 #### Example GET as String
 ```java
+HttpClient client = HttpClient.builder()
+  .baseUrl(baseUrl)
+  .build();
+
 HttpResponse<String> hres = client.request()
   .path("hello")
   .GET()
@@ -84,10 +90,31 @@ HttpResponse<String> hres = client.request()
 
 #### Example GET as JSON marshalling into a java class/dto
 ```java
+HttpResponse<CustomerDto> customer = client.request()
+  .path("customers").path(42)
+  .GET()
+  .as(CustomerDto.class);
+
+// just get the bean without HttpResponse
 CustomerDto customer = client.request()
   .path("customers").path(42)
   .GET()
   .bean(CustomerDto.class);
+
+// get a List
+HttpResponse<List<CustomerDto>> customers = client.request()
+  .path("customers")
+  .queryParam("active", "true")
+  .GET()
+  .asList(CustomerDto.class);
+
+
+// get a Stream - `application/x-json-stream`
+HttpResponse<List<CustomerDto>> customers = client.request()
+  .path("customers/stream")
+  .GET()
+  .asStream(CustomerDto.class);
+
 ```
 
 #### Example Async GET as String
