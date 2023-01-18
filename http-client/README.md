@@ -149,6 +149,9 @@ Overview of response types for sync calls.
 <tr><td><b>sync processing</b></td><td>&nbsp;</td></tr>
 <tr><td>asVoid</td><td>HttpResponse&lt;Void&gt;</td></tr>
 <tr><td>asString</td><td>HttpResponse&lt;String&gt;</td></tr>
+<tr><td>as&lt;E&gt</td><td>HttpResponse&lt;E&gt;</td></tr>
+<tr><td>asList&lt;E&gt</td><td>HttpResponse&lt;List&lt;E&gt;&gt;</td></tr>
+<tr><td>asStream&lt;E&gt</td><td>HttpResponse&lt;Stream&lt;E&gt;&gt;</td></tr>
 <tr><td>bean&lt;E&gt</td><td>E</td></tr>
 <tr><td>list&lt;E&gt</td><td>List&lt;E&gt;</td></tr>
 <tr><td>stream&lt;E&gt</td><td>Stream&lt;E&gt;</td></tr>
@@ -157,6 +160,9 @@ Overview of response types for sync calls.
 <tr><td><b>async processing</b></td><td>&nbsp;</td></tr>
 <tr><td>asVoid</td><td>CompletableFuture&lt;HttpResponse&lt;Void&gt;&gt;</td></tr>
 <tr><td>asString</td><td>CompletableFuture&lt;HttpResponse&lt;String&gt;&gt;</td></tr>
+<tr><td>as&lt;E&gt</td><td>CompletableFuture&lt;HttpResponse&lt;E&gt;&gt;</td></tr>
+<tr><td>asList&lt;E&gt</td><td>CompletableFuture&lt;HttpResponse&lt;List&lt;E&gt;&gt;&gt;</td></tr>
+<tr><td>asStream&lt;E&gt</td><td>CompletableFuture&lt;HttpResponse&lt;Stream&lt;E&gt;&gt;&gt;</td></tr>
 <tr><td>bean&lt;E&gt</td><td>CompletableFuture&lt;E&gt;</td></tr>
 <tr><td>list&lt;E&gt</td><td>CompletableFuture&lt;List&lt;E&gt;&gt;</td></tr>
 <tr><td>stream&lt;E&gt</td><td>CompletableFuture&lt;Stream&lt;E&gt;&gt;</td></tr>
@@ -230,6 +236,11 @@ client.request()
 
 #### GET as json to single bean
 ```java
+HttpResponse<Customer> customer = client.request()
+  .path("customers").path(42)
+  .GET()
+  .as(Customer.class);
+
 Customer customer = client.request()
   .path("customers").path(42)
   .GET()
@@ -238,6 +249,11 @@ Customer customer = client.request()
 
 #### GET as json to a list of beans
 ```java
+HttpResponse<List<Customer>> list = client.request()
+  .path("customers")
+  .GET()
+  .asList(Customer.class);
+
 List<Customer> list = client.request()
   .path("customers")
   .GET()
@@ -246,6 +262,11 @@ List<Customer> list = client.request()
 
 #### GET as `application/x-json-stream` as a stream of beans
 ```java
+HttpResponse<Stream<Customer>> stream = client.request()
+  .path("customers/all")
+  .GET()
+  .asStream(Customer.class);
+
 Stream<Customer> stream = client.request()
   .path("customers/all")
   .GET()
