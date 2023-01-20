@@ -114,9 +114,9 @@
     <plugins>
 
       <plugin>
-        <groupId>io.dinject</groupId>
+        <groupId>io.avaje</groupId>
         <artifactId>openapi-maven-plugin</artifactId>
-        <version>1.2</version>
+        <version>1.0</version>
         <executions>
           <execution>
             <id>main</id>
