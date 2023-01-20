@@ -2,9 +2,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.avaje/avaje-http-client.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/io.avaje/avaje-http-client)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-http-client/blob/master/LICENSE)
 
-# avaje-http-client
-
-Documentation at [avaje.io/http-client](https://avaje.io/http-client/)
+# [Avaje-HTTP-Client](https://avaje.io/http-client/)
 
 A lightweight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/groups/net/httpclient/intro.html)
 
@@ -28,26 +26,28 @@ A lightweight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/
 </dependency>
 ```
 
-### Create HttpClientContext
+### Create HttpClient
 
-Create a HttpClientContext with a baseUrl, Jackson or Gson based JSON
+Create a HttpClient with a baseUrl, Jackson or Gson based JSON
  body adapter, logger.
 
 ```java
-  public HttpClientContext client() {
-    return HttpClientContext.builder()
-      .baseUrl(baseUrl)
-      .bodyAdapter(new JsonbBodyAdapter())
-      //.bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
-      //.bodyAdapter(new GsonBodyAdapter(new Gson()))
-      .build();
-  }
+HttpClient client = HttpClient.builder()
+  .baseUrl(baseUrl)
+  .bodyAdapter(new JsonbBodyAdapter())
+  //.bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+  //.bodyAdapter(new GsonBodyAdapter(new Gson()))
+  .build();
 
+HttpResponse<String> hres = client.request()
+  .path("hello")
+  .GET()
+  .asString();
 ```
 
 ## Requests
 
-From HttpClientContext:
+From HttpClient:
  - Create a request
  - Build the url via path(), matrixParam(), queryParam()
  - Optionally set headers(), cookies() etc
@@ -78,7 +78,11 @@ From HttpClientContext:
 
 #### Example GET as String
 ```java
-HttpResponse<String> hres = clientContext.request()
+HttpClient client = HttpClient.builder()
+  .baseUrl(baseUrl)
+  .build();
+
+HttpResponse<String> hres = client.request()
   .path("hello")
   .GET()
   .asString();
@@ -86,10 +90,31 @@ HttpResponse<String> hres = clientContext.request()
 
 #### Example GET as JSON marshalling into a java class/dto
 ```java
-CustomerDto customer = clientContext.request()
+HttpResponse<CustomerDto> customer = client.request()
+  .path("customers").path(42)
+  .GET()
+  .as(CustomerDto.class);
+
+// just get the bean without HttpResponse
+CustomerDto customer = client.request()
   .path("customers").path(42)
   .GET()
   .bean(CustomerDto.class);
+
+// get a List
+HttpResponse<List<CustomerDto>> customers = client.request()
+  .path("customers")
+  .queryParam("active", "true")
+  .GET()
+  .asList(CustomerDto.class);
+
+
+// get a Stream - `application/x-json-stream`
+HttpResponse<List<CustomerDto>> customers = client.request()
+  .path("customers/stream")
+  .GET()
+  .asStream(CustomerDto.class);
+
 ```
 
 #### Example Async GET as String
@@ -98,7 +123,7 @@ CustomerDto customer = clientContext.request()
 - In the example below hres is of type HttpResponse&lt;String&gt;
 
 ```java
-clientContext.request()
+client.request()
    .path("hello")
    .GET()
    .async().asString()  // CompletableFuture<HttpResponse<String>>
@@ -124,6 +149,9 @@ Overview of response types for sync calls.
 <tr><td><b>sync processing</b></td><td>&nbsp;</td></tr>
 <tr><td>asVoid</td><td>HttpResponse&lt;Void&gt;</td></tr>
 <tr><td>asString</td><td>HttpResponse&lt;String&gt;</td></tr>
+<tr><td>as&lt;E&gt</td><td>HttpResponse&lt;E&gt;</td></tr>
+<tr><td>asList&lt;E&gt</td><td>HttpResponse&lt;List&lt;E&gt;&gt;</td></tr>
+<tr><td>asStream&lt;E&gt</td><td>HttpResponse&lt;Stream&lt;E&gt;&gt;</td></tr>
 <tr><td>bean&lt;E&gt</td><td>E</td></tr>
 <tr><td>list&lt;E&gt</td><td>List&lt;E&gt;</td></tr>
 <tr><td>stream&lt;E&gt</td><td>Stream&lt;E&gt;</td></tr>
@@ -132,6 +160,9 @@ Overview of response types for sync calls.
 <tr><td><b>async processing</b></td><td>&nbsp;</td></tr>
 <tr><td>asVoid</td><td>CompletableFuture&lt;HttpResponse&lt;Void&gt;&gt;</td></tr>
 <tr><td>asString</td><td>CompletableFuture&lt;HttpResponse&lt;String&gt;&gt;</td></tr>
+<tr><td>as&lt;E&gt</td><td>CompletableFuture&lt;HttpResponse&lt;E&gt;&gt;</td></tr>
+<tr><td>asList&lt;E&gt</td><td>CompletableFuture&lt;HttpResponse&lt;List&lt;E&gt;&gt;&gt;</td></tr>
+<tr><td>asStream&lt;E&gt</td><td>CompletableFuture&lt;HttpResponse&lt;Stream&lt;E&gt;&gt;&gt;</td></tr>
 <tr><td>bean&lt;E&gt</td><td>CompletableFuture&lt;E&gt;</td></tr>
 <tr><td>list&lt;E&gt</td><td>CompletableFuture&lt;List&lt;E&gt;&gt;</td></tr>
 <tr><td>stream&lt;E&gt</td><td>CompletableFuture&lt;Stream&lt;E&gt;&gt;</td></tr>
@@ -173,7 +204,7 @@ When sending body content we can use:
 
 #### GET as String
 ```java
-HttpResponse<String> hres = clientContext.request()
+HttpResponse<String> hres = client.request()
   .path("hello")
   .GET()
   .asString();
@@ -185,7 +216,7 @@ HttpResponse<String> hres = clientContext.request()
  - In the example below hres is of type HttpResponse&lt;String&gt;
 
 ```java
-clientContext.request()
+client.request()
    .path("hello")
    .GET()
    .async().asString()
@@ -205,7 +236,12 @@ clientContext.request()
 
 #### GET as json to single bean
 ```java
-Customer customer = clientContext.request()
+HttpResponse<Customer> customer = client.request()
+  .path("customers").path(42)
+  .GET()
+  .as(Customer.class);
+
+Customer customer = client.request()
   .path("customers").path(42)
   .GET()
   .bean(Customer.class);
@@ -213,7 +249,12 @@ Customer customer = clientContext.request()
 
 #### GET as json to a list of beans
 ```java
-List<Customer> list = clientContext.request()
+HttpResponse<List<Customer>> list = client.request()
+  .path("customers")
+  .GET()
+  .asList(Customer.class);
+
+List<Customer> list = client.request()
   .path("customers")
   .GET()
   .list(Customer.class);
@@ -221,7 +262,12 @@ List<Customer> list = clientContext.request()
 
 #### GET as `application/x-json-stream` as a stream of beans
 ```java
-Stream<Customer> stream = clientContext.request()
+HttpResponse<Stream<Customer>> stream = client.request()
+  .path("customers/all")
+  .GET()
+  .asStream(Customer.class);
+
+Stream<Customer> stream = client.request()
   .path("customers/all")
   .GET()
   .stream(Customer.class);
@@ -232,7 +278,7 @@ Stream<Customer> stream = clientContext.request()
 ```java
 Hello bean = new Hello(42, "rob", "other");
 
-HttpResponse<Void> res = clientContext.request()
+HttpResponse<Void> res = client.request()
   .path("hello")
   .body(bean)
   .POST()
@@ -248,7 +294,7 @@ Multiple calls to `path()` append with a `/`. This is make it easier to build a 
 programmatically and also build paths that include `matrixParam()`
 
 ```java
-HttpResponse<String> res = clientContext.request()
+HttpResponse<String> res = client.request()
   .path("customers")
   .path("42")
   .path("contacts")
@@ -257,7 +303,7 @@ HttpResponse<String> res = clientContext.request()
 
 // is the same as ...
 
-HttpResponse<String> res = clientContext.request()
+HttpResponse<String> res = client.request()
   .path("customers/42/contacts")
   .GET()
   .asString();
@@ -265,7 +311,7 @@ HttpResponse<String> res = clientContext.request()
 
 #### MatrixParam
 ```java
-HttpResponse<String> httpRes = clientContext.request()
+HttpResponse<String> httpRes = client.request()
   .path("books")
   .matrixParam("author", "rob")
   .matrixParam("country", "nz")
@@ -277,7 +323,7 @@ HttpResponse<String> httpRes = clientContext.request()
 
 #### QueryParam
 ```java
-List<Product> beans = clientContext.request()
+List<Product> beans = client.request()
   .path("products")
   .queryParam("sortBy", "name")
   .queryParam("maxCount", "100")
@@ -287,7 +333,7 @@ List<Product> beans = clientContext.request()
 
 #### FormParam
 ```java
-HttpResponse<Void> res = clientContext.request()
+HttpResponse<Void> res = client.request()
   .path("register/user")
   .formParam("name", "Bazz")
   .formParam("email", "user@foo.com")
@@ -355,7 +401,7 @@ The `bean()`, `list()` and `stream()` responses throw a `HttpException` if the s
 
 ```java
 
-clientContext.request()
+client.request()
    .path("hello/world")
    .GET()
    .async().asDiscarding()
@@ -374,7 +420,7 @@ clientContext.request()
 ###  .async().asString() - HttpResponse&lt;String&gt;
 
 ```java
-clientContext.request()
+client.request()
    .path("hello/world")
    .GET()
    .async().asString()
@@ -393,7 +439,7 @@ clientContext.request()
 ### .async().bean(HelloDto.class)
 
 ```java
-clientContext.request()
+client.request()
    ...
    .POST().async()
    .bean(HelloDto.class)
@@ -420,7 +466,7 @@ clientContext.request()
 The example below is a line subscriber processing response content line by line.
 
 ```java
-CompletableFuture<HttpResponse<Void>> future = clientContext.request()
+CompletableFuture<HttpResponse<Void>> future = client.request()
    .path("hello/lineStream")
    .GET().async()
    .handler(HttpResponse.BodyHandlers.fromLineSubscriber(new Flow.Subscriber<>() {
@@ -460,7 +506,7 @@ choose `async()` to execute the request asynchronously.
 
 ```java
 HttpCall<List<Customer>> call =
-  clientContext.request()
+  client.request()
     .path("customers")
     .GET()
     .call().list(Customer.class);
@@ -484,8 +530,8 @@ header ("Basic Auth").
 ##### Example
 
 ```java
-HttpClientContext clientContext =
-   HttpClientContext.builder()
+HttpClient client =
+   HttpClient.builder()
      .baseUrl(baseUrl)
      ...
      .requestIntercept(new BasicAuthIntercept("myUsername", "myPassword"))  <!-- HERE
@@ -496,7 +542,7 @@ HttpClientContext clientContext =
 ## AuthTokenProvider - Authorization Bearer token
 
 For Authorization using `Bearer` tokens that are obtained and expire, implement `AuthTokenProvider`
-and register that when building the HttpClientContext.
+and register that when building the HttpClient.
 
 ### 1. Implement AuthTokenProvider
 
@@ -520,10 +566,10 @@ and register that when building the HttpClientContext.
   }
 ```
 
-### 2. Register with HttpClientContext
+### 2. Register with HttpClient
 
 ```java
-    HttpClientContext ctx = HttpClientContext.builder()
+    HttpClient client = HttpClient.builder()
       .baseUrl("https://foo")
       ...
       .authTokenProvider(new MyAuthTokenProvider()) <!-- HERE
@@ -532,7 +578,7 @@ and register that when building the HttpClientContext.
 
 ### 3. Token obtained and set automatically
 
-All requests using the HttpClientContext will automatically get
+All requests using the HttpClient will automatically get
 an `Authorization` header with `Bearer` token added. The token will be
 obtained for initial request and then renewed when the token has expired.
 

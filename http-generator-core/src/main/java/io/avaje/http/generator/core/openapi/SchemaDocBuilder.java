@@ -1,5 +1,6 @@
 package io.avaje.http.generator.core.openapi;
 
+import io.avaje.http.generator.core.Util;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ArraySchema;
@@ -203,8 +204,9 @@ class SchemaDocBuilder {
   }
 
   private String getObjectSchemaName(TypeMirror type) {
-    String canonicalName = type.toString();
-    int pos = canonicalName.lastIndexOf('.');
+
+    var canonicalName = Util.trimAnnotations(type.toString());
+    final var pos = canonicalName.lastIndexOf('.');
     if (pos > -1) {
       canonicalName = canonicalName.substring(pos + 1);
     }

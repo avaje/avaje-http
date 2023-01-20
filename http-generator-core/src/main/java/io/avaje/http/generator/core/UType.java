@@ -165,6 +165,7 @@ public interface UType {
         case "java.util.Set":
         case "java.util.List":
         case "java.util.stream.Stream":
+        case "java.net.http.HttpResponse":
         case "java.util.concurrent.CompletableFuture":
         case "io.avaje.http.client.HttpCall":
           var first = rawType.indexOf("<") + 1;

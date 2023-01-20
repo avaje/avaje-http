@@ -56,6 +56,36 @@ final class DHttpCall implements HttpCallResponse {
   }
 
   @Override
+  public <E> HttpCall<HttpResponse<E>> as(Class<E> type) {
+    return new CallAs<>(type);
+  }
+
+  @Override
+  public <E> HttpCall<HttpResponse<E>> as(ParameterizedType type) {
+    return new CallAs<>(type);
+  }
+
+  @Override
+  public <E> HttpCall<HttpResponse<List<E>>> asList(Class<E> type) {
+    return new CallAsList<>(type);
+  }
+
+  @Override
+  public <E> HttpCall<HttpResponse<List<E>>> asList(ParameterizedType type) {
+    return new CallAsList<>(type);
+  }
+
+  @Override
+  public <E> HttpCall<HttpResponse<Stream<E>>> asStream(Class<E> type) {
+    return new CallAsStream<>(type);
+  }
+
+  @Override
+  public <E> HttpCall<HttpResponse<Stream<E>>> asStream(ParameterizedType type) {
+    return new CallAsStream<>(type);
+  }
+
+  @Override
   public <E> HttpCall<List<E>> list(Class<E> type) {
     return new CallList<>(type);
   }
@@ -85,6 +115,7 @@ final class DHttpCall implements HttpCallResponse {
     public HttpResponse<Void> execute() {
       return request.asVoid();
     }
+
     @Override
     public CompletableFuture<HttpResponse<Void>> async() {
       return request.async().asVoid();
@@ -96,6 +127,7 @@ final class DHttpCall implements HttpCallResponse {
     public HttpResponse<Void> execute() {
       return request.asDiscarding();
     }
+
     @Override
     public CompletableFuture<HttpResponse<Void>> async() {
       return request.async().asDiscarding();
@@ -107,6 +139,7 @@ final class DHttpCall implements HttpCallResponse {
     public HttpResponse<String> execute() {
       return request.asString();
     }
+
     @Override
     public CompletableFuture<HttpResponse<String>> async() {
       return request.async().asString();
@@ -118,6 +151,7 @@ final class DHttpCall implements HttpCallResponse {
     public HttpResponse<byte[]> execute() {
       return request.asByteArray();
     }
+
     @Override
     public CompletableFuture<HttpResponse<byte[]>> async() {
       return request.async().asByteArray();
@@ -129,6 +163,7 @@ final class DHttpCall implements HttpCallResponse {
     public HttpResponse<Stream<String>> execute() {
       return request.asLines();
     }
+
     @Override
     public CompletableFuture<HttpResponse<Stream<String>>> async() {
       return request.async().asLines();
@@ -140,9 +175,94 @@ final class DHttpCall implements HttpCallResponse {
     public HttpResponse<InputStream> execute() {
       return request.asInputStream();
     }
+
     @Override
     public CompletableFuture<HttpResponse<InputStream>> async() {
       return request.async().asInputStream();
+    }
+  }
+
+  private class CallAs<E> implements HttpCall<HttpResponse<E>> {
+    private final Class<E> type;
+    private final ParameterizedType genericType;
+    private final boolean isGeneric;
+
+    CallAs(Class<E> type) {
+      this.isGeneric = false;
+      this.type = type;
+      this.genericType = null;
+    }
+
+    CallAs(ParameterizedType type) {
+      this.isGeneric = true;
+      this.type = null;
+      this.genericType = type;
+    }
+
+    @Override
+    public HttpResponse<E> execute() {
+      return isGeneric ? request.as(genericType) : request.as(type);
+    }
+
+    @Override
+    public CompletableFuture<HttpResponse<E>> async() {
+      return isGeneric ? request.async().as(genericType) : request.async().as(type);
+    }
+  }
+
+  private class CallAsList<E> implements HttpCall<HttpResponse<List<E>>> {
+    private final Class<E> type;
+    private final ParameterizedType genericType;
+    private final boolean isGeneric;
+
+    CallAsList(Class<E> type) {
+      this.isGeneric = false;
+      this.type = type;
+      this.genericType = null;
+    }
+
+    CallAsList(ParameterizedType type) {
+      this.isGeneric = true;
+      this.type = null;
+      this.genericType = type;
+    }
+
+    @Override
+    public HttpResponse<List<E>> execute() {
+      return isGeneric ? request.asList(genericType) : request.asList(type);
+    }
+
+    @Override
+    public CompletableFuture<HttpResponse<List<E>>> async() {
+      return isGeneric ? request.async().asList(genericType) : request.async().asList(type);
+    }
+  }
+
+  private class CallAsStream<E> implements HttpCall<HttpResponse<Stream<E>>> {
+    private final Class<E> type;
+    private final ParameterizedType genericType;
+    private final boolean isGeneric;
+
+    CallAsStream(Class<E> type) {
+      this.isGeneric = false;
+      this.type = type;
+      this.genericType = null;
+    }
+
+    CallAsStream(ParameterizedType type) {
+      this.isGeneric = true;
+      this.type = null;
+      this.genericType = type;
+    }
+
+    @Override
+    public HttpResponse<Stream<E>> execute() {
+      return isGeneric ? request.asStream(genericType) : request.asStream(type);
+    }
+
+    @Override
+    public CompletableFuture<HttpResponse<Stream<E>>> async() {
+      return isGeneric ? request.async().asStream(genericType) : request.async().asStream(type);
     }
   }
 
@@ -232,13 +352,16 @@ final class DHttpCall implements HttpCallResponse {
 
   private class CallHandler<E> implements HttpCall<HttpResponse<E>> {
     private final HttpResponse.BodyHandler<E> handler;
+
     CallHandler(HttpResponse.BodyHandler<E> handler) {
       this.handler = handler;
     }
+
     @Override
     public HttpResponse<E> execute() {
       return request.handler(handler);
     }
+
     @Override
     public CompletableFuture<HttpResponse<E>> async() {
       return request.async().handler(handler);

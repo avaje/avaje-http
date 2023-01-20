@@ -137,7 +137,20 @@ class ClientMethodWriter {
       writer.append(".stream(");
       writeGeneric(param1);
     } else if (isHttpResponse(mainType)) {
-      writeWithHandler();
+      if (bodyHandlerParam == null) {
+        UType paramType = type.paramRaw();
+        if (paramType.mainType().equals("java.util.List")) {
+          writer.append(".asList(");
+          writeGeneric(paramType.paramRaw());
+        } else if (paramType.mainType().equals("java.util.stream.Stream")) {
+          writer.append(".asStream(");
+          writeGeneric(paramType.paramRaw());
+        } else {
+          writer.append(".as(");
+          writeGeneric(paramType);
+        }
+      } else {
+        writer.append(".handler(%s);", bodyHandlerParam.name()).eol();      }
     } else {
       writer.append(".bean(");
       writeGeneric(type);
@@ -157,14 +170,6 @@ class ClientMethodWriter {
       writer.append("%s.class", Util.shortName(type.mainType()));
     }
     writer.append(");").eol();
-  }
-
-  private void writeWithHandler() {
-    if (bodyHandlerParam != null) {
-      writer.append(".handler(%s);", bodyHandlerParam.name()).eol();
-    } else {
-      writer.append(".handler(responseHandler);").eol(); // Better to barf here?
-    }
   }
 
   private void writeQueryParams(PathSegments pathSegments) {
