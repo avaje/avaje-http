@@ -1,4 +1,4 @@
-@InjectModule(name = "bean-validator", provides = io.avaje.http.api.Validator.class)
+/**
+ * Provides a Hibernate Validator to use with avaje-http.
+ */
 package io.avaje.http.hibernate.validator;
-
-import io.avaje.inject.InjectModule;
