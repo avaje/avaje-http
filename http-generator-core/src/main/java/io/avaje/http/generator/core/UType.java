@@ -202,10 +202,33 @@ public interface UType {
       Set<String> set = new LinkedHashSet<>();
       for (String type : allTypes) {
         if (!type.startsWith("java.lang.") && type.indexOf('.') > -1) {
-          set.add(type.replace("[]", ""));
+          set.add(innerTypesImport(type).replace("[]", ""));
         }
       }
       return set;
+    }
+
+    public String innerTypesImport(String type) {
+
+      final var parts = type.split("\\.");
+      var result = "";
+      var foundUpper = false;
+
+      for (var i = 0; i < parts.length; i++) {
+        if (!Character.isUpperCase(parts[i].charAt(0))) {
+          result += parts[i] + ".";
+        } else if (!foundUpper) {
+          foundUpper = true;
+          result += parts[i] + (i == parts.length - 1 ? "" : ".");
+        } else {
+          break;
+        }
+      }
+
+      if (result.endsWith(".")) {
+        result = result.substring(0, result.length() - 1);
+      }
+      return result;
     }
 
     @Override

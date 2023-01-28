@@ -76,7 +76,15 @@ public class Util {
     if (p == -1) {
       return fullType;
     } else {
-      return fullType.substring(p + 1);
+      var result = "";
+      var foundClass = false;
+      for (final String part : fullType.split("\\.")) {
+        if (foundClass || Character.isUpperCase(part.charAt(0))) {
+          foundClass = true;
+          result += (result.isEmpty() ? "" : ".") + part;
+        }
+      }
+      return result;
     }
   }
 
