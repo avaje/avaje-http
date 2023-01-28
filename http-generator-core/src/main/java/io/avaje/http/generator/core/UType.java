@@ -132,7 +132,7 @@ public interface UType {
 
     @Override
     public String shortName() {
-      return Util.initLower(shortType());
+      return Util.initLower(shortType()).replace(".", "$");
     }
 
     @Override
@@ -256,7 +256,7 @@ public interface UType {
 
     @Override
     public String shortName() {
-      return shortName;
+      return shortName.replace(".", "$");
     }
 
     @Override
