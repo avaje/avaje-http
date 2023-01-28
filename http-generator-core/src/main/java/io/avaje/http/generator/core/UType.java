@@ -202,7 +202,8 @@ public interface UType {
       Set<String> set = new LinkedHashSet<>();
       for (String type : allTypes) {
         if (!type.startsWith("java.lang.") && type.indexOf('.') > -1) {
-          set.add(innerTypesImport(type).replace("[]", ""));
+          if (type.startsWith("java")) set.add(type.replace("[]", ""));
+          else set.add(innerTypesImport(type).replace("[]", ""));
         }
       }
       return set;

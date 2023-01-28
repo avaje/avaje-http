@@ -75,6 +75,8 @@ public class Util {
     int p = fullType.lastIndexOf('.');
     if (p == -1) {
       return fullType;
+    } else if (fullType.startsWith("java")) {
+      return fullType.substring(p + 1);
     } else {
       var result = "";
       var foundClass = false;
