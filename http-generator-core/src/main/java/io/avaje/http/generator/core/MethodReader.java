@@ -34,7 +34,7 @@ public class MethodReader {
    * Holds enum Roles that are required for the method.
    */
   private final List<String> methodRoles;
-  private final String produces;
+  private final Optional<Produces> producesAnnotation;
   private final List<OpenAPIResponse> apiResponses;
   private final ExecutableType actualExecutable;
   private final List<? extends TypeMirror> actualParams;
@@ -54,7 +54,7 @@ public class MethodReader {
     this.actualParams = (actualExecutable == null) ? null : actualExecutable.getParameterTypes();
     this.isVoid = element.getReturnType().getKind() == TypeKind.VOID;
     this.methodRoles = Util.findRoles(element);
-    this.produces = produces(bean);
+    this.producesAnnotation = Optional.ofNullable(findAnnotation(Produces.class));
     initWebMethodViaAnnotation();
 
     this.superMethods = ctx.superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
@@ -149,11 +149,6 @@ public class MethodReader {
 
   public Javadoc javadoc() {
     return javadoc;
-  }
-
-  private String produces(ControllerReader bean) {
-    final var produces = findAnnotation(Produces.class);
-    return (produces != null) ? produces.value() : bean.produces();
   }
 
   private List<OpenAPIResponse> buildApiResponses() {
@@ -274,8 +269,12 @@ public class MethodReader {
     return isVoid;
   }
 
+  public boolean hasProducesStatus() {
+    return producesAnnotation.map(Produces::defaultStatus).filter(s -> s > 0).isPresent();
+  }
+
   public String produces() {
-    return produces;
+    return producesAnnotation.map(Produces::value).orElseGet(bean::produces);
   }
 
   public List<OpenAPIResponse> apiResponses() {
@@ -290,7 +289,11 @@ public class MethodReader {
   }
 
   public String statusCode() {
-    return Integer.toString(webMethod.statusCode(isVoid));
+
+    return producesAnnotation
+        .map(Produces::defaultStatus)
+        .filter(s -> s > 0)
+        .orElseGet(() -> webMethod.statusCode(isVoid)).toString();
   }
 
   public PathSegments pathSegments() {

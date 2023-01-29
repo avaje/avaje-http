@@ -10,6 +10,7 @@ import io.avaje.http.api.OpenAPIResponses;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
+import io.avaje.http.api.Put;
 import io.javalin.http.Context;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -77,5 +78,18 @@ public class OpenAPIController {
   Person testPostl(List<Person> m) {
 
     return new Person(0, "baby");
+  }
+
+  @Put("/put")
+  @Produces(value = MediaType.TEXT_PLAIN, defaultStatus = 203)
+  @OpenAPIResponse(responseCode = "204", type = String.class)
+  String testDefaultStatus(Context ctx) {
+
+    if (ctx.contentType().equals(MediaType.APPLICATION_PDF)) {
+      ctx.status(204);
+      return "";
+    }
+
+    return "only partial info";
   }
 }

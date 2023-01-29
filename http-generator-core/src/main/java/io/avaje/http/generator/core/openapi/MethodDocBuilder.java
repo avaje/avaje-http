@@ -77,6 +77,7 @@ public class MethodDocBuilder {
     response.setDescription(javadoc.getReturnDescription());
 
     final var produces = methodReader.produces();
+    final var hasProducesStatus = methodReader.hasProducesStatus();
     final var contentMediaType = (produces == null) ? MediaType.APPLICATION_JSON : produces;
 
     if (methodReader.isVoid()) {
@@ -99,7 +100,7 @@ public class MethodDocBuilder {
       // if user wants to define their own 2xx status code
       if (responseAnnotation.responseCode().startsWith("2")) {
         newResponse.setContent(response.getContent());
-        override2xx = true;
+        override2xx = !hasProducesStatus;
       }
       TypeMirror returnType = null;
       try {
