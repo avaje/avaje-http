@@ -211,7 +211,6 @@ public class MethodReader {
     if (!methodRoles.isEmpty()) {
       ctx.platform().methodRoles(methodRoles, bean);
     }
-
     // non-path parameters default to form or query parameters based on the
     // existence of @Form annotation on the method
     ParamType defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
@@ -290,7 +289,6 @@ public class MethodReader {
   }
 
   public String statusCode() {
-
     return producesAnnotation
         .map(Produces::defaultStatus)
         .filter(s -> s > 0)
