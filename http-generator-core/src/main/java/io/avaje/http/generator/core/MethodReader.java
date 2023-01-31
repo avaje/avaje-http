@@ -250,8 +250,9 @@ public class MethodReader {
   }
 
   public List<String> roles() {
-    methodRoles.addAll(bean.roles());
-    return methodRoles;
+    var roles = new ArrayList<>(methodRoles);
+    roles.addAll(bean.roles());
+    return roles;
   }
 
   public boolean isWebMethod() {
