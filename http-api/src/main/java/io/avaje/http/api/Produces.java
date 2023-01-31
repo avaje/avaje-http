@@ -24,9 +24,26 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * }</pre>
  */
-@Target(value={TYPE, METHOD})
-@Retention(value=RUNTIME)
+@Target(value = {TYPE, METHOD})
+@Retention(value = RUNTIME)
 public @interface Produces {
 
-  String value();
+  /**
+   * Specify response media type.
+   *
+   * <p>When not specified the default MediaType is APPLICATION_JSON
+   */
+  String value() default MediaType.APPLICATION_JSON;
+
+  /**
+   * The default status code of the generated route.
+   *
+   * <p>When not specified, the default status are as follows: <br>
+   * GET(200) <br>
+   * POST(201) <br>
+   * PUT(200, void methods 204) <br>
+   * PATCH(200, void methods 204) <br>
+   * DELETE(200, void methods 204)
+   */
+  int defaultStatus() default 0;
 }
