@@ -60,7 +60,7 @@ public class HelloController {
     return new Person(42, name + " hello");
   }
 
-  @Get("person/{long}")
+  @Get("person/{id}")
   Person testLong(long id) {
     return new Person(id, "Giorno hello");
   }
