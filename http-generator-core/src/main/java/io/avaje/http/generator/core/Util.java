@@ -75,7 +75,9 @@ public class Util {
     int p = fullType.lastIndexOf('.');
     if (p == -1) {
       return fullType;
-    } else if (fullType.startsWith("java")) {
+    } else if (fullType.startsWith("java")
+        || fullType.contains("io.javalin.security.RouteRole")
+        || fullType.contains("io.avaje.jex.Role")) {
       return fullType.substring(p + 1);
     } else {
       var result = "";

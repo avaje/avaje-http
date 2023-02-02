@@ -4,20 +4,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.example.myapp.web.AppRoles;
+import org.example.myapp.web.Roles;
+
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Form;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Header;
+import io.avaje.http.api.MatrixParam;
 import io.avaje.http.api.MediaType;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
-import io.avaje.http.api.MatrixParam;
 import io.javalin.http.Context;
 
 @Path("test/")
 @Controller
+@Roles(AppRoles.ANYONE)
 public class TestController {
 
   @Get
@@ -107,7 +111,8 @@ public class TestController {
   String testFormBean(MyForm form) {
     return form.name + "|" + form.email + "|" + form.url;
   }
-  
+
+  @Roles(AppRoles.ADMIN)
   @Get("/withMatrixParam/{type-1;category;vendor-34}/{range;style}")
   void neo(
       @MatrixParam("type-1") String type,
@@ -116,6 +121,6 @@ public class TestController {
       String range,
       String style) {
 
-	System.out.println("Ever have that feeling where you're not sure if you're awake or dreaming?");
+    System.out.println("Ever have that feeling where you're not sure if you're awake or dreaming?");
   }
 }
