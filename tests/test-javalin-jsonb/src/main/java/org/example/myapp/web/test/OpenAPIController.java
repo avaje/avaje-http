@@ -75,8 +75,7 @@ public class OpenAPIController {
         description = "Some other Error",
         type = ErrorResponse.class)
   })
-  Person testPostl(List<Person> m) {
-
+  Person testPostList(List<Person> m) {
     return new Person(0, "baby");
   }
 
@@ -84,12 +83,10 @@ public class OpenAPIController {
   @Produces(value = MediaType.TEXT_PLAIN, defaultStatus = 203)
   @OpenAPIResponse(responseCode = "204", type = String.class)
   String testDefaultStatus(Context ctx) {
-
     if (ctx.contentType().equals(MediaType.APPLICATION_PDF)) {
       ctx.status(204);
       return "";
     }
-
     return "only partial info";
   }
 }

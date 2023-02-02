@@ -8,7 +8,9 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleAnnotationValueVisitor8;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Util {
 
@@ -38,7 +40,7 @@ public class Util {
     }
   }
 
- public static String trimAnnotations(String type) {
+  public static String trimAnnotations(String type) {
     int pos = type.indexOf("@");
     if (pos == -1) {
       return type;
@@ -79,7 +81,7 @@ public class Util {
     int p = fullType.lastIndexOf('.');
     if (p == -1) {
       return fullType;
-    } else if (fullType.startsWith("java")||role) {
+    } else if (fullType.startsWith("java") || role) {
       return fullType.substring(p + 1);
     } else {
       var result = "";

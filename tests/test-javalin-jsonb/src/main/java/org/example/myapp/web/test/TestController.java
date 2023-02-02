@@ -44,7 +44,6 @@ public class TestController {
 
   @Get("/ctx")
   void testVoid(Context ctx) {
-
     ctx.result("success path:" + ctx.path());
   }
 
