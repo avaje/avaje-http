@@ -78,7 +78,7 @@ class ControllerMethodWriter {
         if (i > 0) {
           writer.append(", ");
         }
-        writer.append(Util.shortName(roles.get(i)));
+        writer.append(Util.shortName(roles.get(i), true));
       }
     }
     writer.append(");").eol().eol();

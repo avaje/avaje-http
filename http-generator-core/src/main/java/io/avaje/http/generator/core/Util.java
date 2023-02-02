@@ -72,12 +72,14 @@ public class Util {
   }
 
   public static String shortName(String fullType) {
+    return shortName(fullType, false);
+  }
+
+  public static String shortName(String fullType, boolean role) {
     int p = fullType.lastIndexOf('.');
     if (p == -1) {
       return fullType;
-    } else if (fullType.startsWith("java")
-        || fullType.contains("io.javalin.security.RouteRole")
-        || fullType.contains("io.avaje.jex.Role")) {
+    } else if (fullType.startsWith("java")||role) {
       return fullType.substring(p + 1);
     } else {
       var result = "";
