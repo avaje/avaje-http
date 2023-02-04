@@ -12,7 +12,9 @@ import java.lang.annotation.Target;
  * Specify endpoint response status code/description/type.
  *
  * <p>When not specified the default 2xx openAPI generation is based on the javadoc of the method.
- * <p> Will not override the default 2xx generated openapi unless status code is 2xx
+ *
+ * <p>Will not override the default 2xx generated openapi unless status code is 2xx
+ *
  * <pre>{@code
  * @Post("/post")
  * @OpenAPIReturns(responseCode = "200", description = "from annotaion")
@@ -20,6 +22,18 @@ import java.lang.annotation.Target;
  * @OpenAPIReturns(responseCode = "500", description = "Some other Error", type=ErrorResponse.class)
  * ResponseModel endpoint() {}
  *
+ * }</pre>
+ *
+ * <p>Can also be placed on a class to add to every method in the controller.
+ *
+ * <pre>{@code
+ * @OpenAPIResponse(
+ * responseCode = "403",
+ * description = "Insufficient rights to this resource."
+ * )
+ * public class MyController {
+ * ...
+ * }
  * }</pre>
  */
 @Target({TYPE, METHOD})
