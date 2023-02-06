@@ -29,6 +29,9 @@
 							}
 						}
 					},
+					"403" : {
+						"description" : "Not Authorized"
+					},
 					"200" : {
 						"description" : "a health check",
 						"content" : {

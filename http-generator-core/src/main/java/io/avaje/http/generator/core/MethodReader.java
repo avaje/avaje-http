@@ -170,8 +170,12 @@ public class MethodReader {
                 .map(OpenAPIResponses::value)
                 .flatMap(Arrays::stream),
               Arrays.stream(method.getAnnotationsByType(OpenAPIResponse.class))));
-
-    return Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
+    
+    var responses =
+        Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
+    
+    responses.addAll(bean.openApiResponses());
+    return responses;
   }
 
   public <A extends Annotation> A findAnnotation(Class<A> type) {
