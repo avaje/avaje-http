@@ -31,7 +31,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 /**
  * Reads the type information for the Controller (bean).
  */
-public class ControllerReader {
+public final class ControllerReader {
 
   private final ProcessingContext ctx;
   private final TypeElement beanType;
@@ -51,7 +51,7 @@ public class ControllerReader {
   private boolean methodHasValid;
 
   /**
-   * Flag set when the controller is dependant on a request scope type.
+   * Flag set when the controller is dependent on a request scope type.
    */
   private boolean requestScope;
   private boolean docHidden;
@@ -72,38 +72,31 @@ public class ControllerReader {
 
   private List<OpenAPIResponse> buildApiResponses() {
     final var responses = new ArrayList<OpenAPIResponse>();
-
-    Optional.ofNullable(beanType.getAnnotation(OpenAPIResponses.class)).stream()
-        .map(OpenAPIResponses::value)
-        .flatMap(Arrays::stream)
-        .forEach(responses::add);
-
-    Arrays.stream(beanType.getAnnotationsByType(OpenAPIResponse.class)).forEach(responses::add);
-
+    buildApiResponsesFor(beanType, responses);
     for (final Element anInterface : interfaces) {
-
-      Optional.ofNullable(anInterface.getAnnotation(OpenAPIResponses.class)).stream()
-          .map(OpenAPIResponses::value)
-          .flatMap(Arrays::stream)
-          .forEach(responses::add);
-
-      Arrays.stream(anInterface.getAnnotationsByType(OpenAPIResponse.class))
-          .forEach(responses::add);
+      buildApiResponsesFor(anInterface, responses);
     }
-
     return responses;
+  }
+
+  private void buildApiResponsesFor(Element element, ArrayList<OpenAPIResponse> responses) {
+    Optional.ofNullable(element.getAnnotation(OpenAPIResponses.class)).stream()
+      .map(OpenAPIResponses::value)
+      .flatMap(Arrays::stream)
+      .forEach(responses::add);
+
+    Arrays.stream(element.getAnnotationsByType(OpenAPIResponse.class)).forEach(responses::add);
   }
 
   private ArrayList<String> buildRoles() {
     final var roleList = new ArrayList<>(Util.findRoles(beanType));
-
     for (final Element anInterface : interfaces) {
       roleList.addAll(Util.findRoles(anInterface));
     }
     return roleList;
   }
 
-  protected void addImports(boolean withSingleton) {
+  void addImports(boolean withSingleton) {
     importTypes.add(Constants.IMPORT_HTTP_API);
     importTypes.add(beanType.getQualifiedName().toString());
     if (hasValid || methodHasValid) {
