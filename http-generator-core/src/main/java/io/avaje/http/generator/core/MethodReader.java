@@ -34,7 +34,7 @@ public class MethodReader {
    * Holds enum Roles that are required for the method.
    */
   private final List<String> methodRoles;
-  private final String produces;
+  private final Optional<Produces> producesAnnotation;
   private final List<OpenAPIResponse> apiResponses;
   private final ExecutableType actualExecutable;
   private final List<? extends TypeMirror> actualParams;
@@ -54,7 +54,7 @@ public class MethodReader {
     this.actualParams = (actualExecutable == null) ? null : actualExecutable.getParameterTypes();
     this.isVoid = element.getReturnType().getKind() == TypeKind.VOID;
     this.methodRoles = Util.findRoles(element);
-    this.produces = produces(bean);
+    this.producesAnnotation = Optional.ofNullable(findAnnotation(Produces.class));
     initWebMethodViaAnnotation();
 
     this.superMethods = ctx.superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
@@ -151,11 +151,6 @@ public class MethodReader {
     return javadoc;
   }
 
-  private String produces(ControllerReader bean) {
-    final var produces = findAnnotation(Produces.class);
-    return (produces != null) ? produces.value() : bean.produces();
-  }
-
   private List<OpenAPIResponse> buildApiResponses() {
     final var container =
       Optional.ofNullable(findAnnotation(OpenAPIResponses.class)).stream()
@@ -175,8 +170,12 @@ public class MethodReader {
                 .map(OpenAPIResponses::value)
                 .flatMap(Arrays::stream),
               Arrays.stream(method.getAnnotationsByType(OpenAPIResponse.class))));
-
-    return Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
+    
+    var responses =
+        Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
+    
+    responses.addAll(bean.openApiResponses());
+    return responses;
   }
 
   public <A extends Annotation> A findAnnotation(Class<A> type) {
@@ -216,7 +215,6 @@ public class MethodReader {
     if (!methodRoles.isEmpty()) {
       ctx.platform().methodRoles(methodRoles, bean);
     }
-
     // non-path parameters default to form or query parameters based on the
     // existence of @Form annotation on the method
     ParamType defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
@@ -275,8 +273,12 @@ public class MethodReader {
     return isVoid;
   }
 
+  public boolean hasProducesStatus() {
+    return producesAnnotation.map(Produces::defaultStatus).filter(s -> s > 0).isPresent();
+  }
+
   public String produces() {
-    return produces;
+    return producesAnnotation.map(Produces::value).orElseGet(bean::produces);
   }
 
   public List<OpenAPIResponse> apiResponses() {
@@ -291,7 +293,10 @@ public class MethodReader {
   }
 
   public String statusCode() {
-    return Integer.toString(webMethod.statusCode(isVoid));
+    return producesAnnotation
+        .map(Produces::defaultStatus)
+        .filter(s -> s > 0)
+        .orElseGet(() -> webMethod.statusCode(isVoid)).toString();
   }
 
   public PathSegments pathSegments() {

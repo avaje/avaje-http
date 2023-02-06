@@ -4,6 +4,7 @@ import static java.util.function.Predicate.not;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -21,6 +22,8 @@ import javax.lang.model.util.ElementFilter;
 import javax.validation.Valid;
 
 import io.avaje.http.api.Controller;
+import io.avaje.http.api.OpenAPIResponse;
+import io.avaje.http.api.OpenAPIResponses;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Produces;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -28,7 +31,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 /**
  * Reads the type information for the Controller (bean).
  */
-public class ControllerReader {
+public final class ControllerReader {
 
   private final ProcessingContext ctx;
   private final TypeElement beanType;
@@ -38,6 +41,7 @@ public class ControllerReader {
   private final List<MethodReader> methods = new ArrayList<>();
   private final Set<String> staticImportTypes = new TreeSet<>();
   private final Set<String> importTypes = new TreeSet<>();
+  private final List<OpenAPIResponse> apiResponses;
 
   /**
    * The produces media type for the controller. Null implies JSON.
@@ -47,7 +51,7 @@ public class ControllerReader {
   private boolean methodHasValid;
 
   /**
-   * Flag set when the controller is dependant on a request scope type.
+   * Flag set when the controller is dependent on a request scope type.
    */
   private boolean requestScope;
   private boolean docHidden;
@@ -57,15 +61,42 @@ public class ControllerReader {
     this.ctx = ctx;
     this.interfaces = initInterfaces();
     this.interfaceMethods = initInterfaceMethods();
-    this.roles = Util.findRoles(beanType);
+    this.roles = buildRoles();
     if (ctx.isOpenApiAvailable()) {
       docHidden = initDocHidden();
     }
     this.hasValid = initHasValid();
     this.produces = initProduces();
+    this.apiResponses = buildApiResponses();
   }
 
-  protected void addImports(boolean withSingleton) {
+  private List<OpenAPIResponse> buildApiResponses() {
+    final var responses = new ArrayList<OpenAPIResponse>();
+    buildApiResponsesFor(beanType, responses);
+    for (final Element anInterface : interfaces) {
+      buildApiResponsesFor(anInterface, responses);
+    }
+    return responses;
+  }
+
+  private void buildApiResponsesFor(Element element, ArrayList<OpenAPIResponse> responses) {
+    Optional.ofNullable(element.getAnnotation(OpenAPIResponses.class)).stream()
+      .map(OpenAPIResponses::value)
+      .flatMap(Arrays::stream)
+      .forEach(responses::add);
+
+    Arrays.stream(element.getAnnotationsByType(OpenAPIResponse.class)).forEach(responses::add);
+  }
+
+  private ArrayList<String> buildRoles() {
+    final var roleList = new ArrayList<>(Util.findRoles(beanType));
+    for (final Element anInterface : interfaces) {
+      roleList.addAll(Util.findRoles(anInterface));
+    }
+    return roleList;
+  }
+
+  void addImports(boolean withSingleton) {
     importTypes.add(Constants.IMPORT_HTTP_API);
     importTypes.add(beanType.getQualifiedName().toString());
     if (hasValid || methodHasValid) {
@@ -265,6 +296,10 @@ public class ControllerReader {
 
   public List<MethodReader> methods() {
     return methods;
+  }
+
+  public List<OpenAPIResponse> openApiResponses() {
+    return apiResponses;
   }
 
   public String path() {

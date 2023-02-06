@@ -132,8 +132,39 @@
         },
         "deprecated": true
       }
-    }
-  },
+    },
+		"/openapi/put" : {
+			"put" : {
+				"tags" : [
+
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"204" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					},
+					"203" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
   "components": {
     "schemas": {
       "ErrorResponse": {

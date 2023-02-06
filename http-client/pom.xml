@@ -4,13 +4,13 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>1.23-SNAPSHOT</version>
+    <version>1.26-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client</artifactId>
-  <version>1.23-SNAPSHOT</version>
+  <version>1.26-SNAPSHOT</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http-client.git</developerConnection>

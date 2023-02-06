@@ -13,7 +13,7 @@
     <maven.deploy.skip>true</maven.deploy.skip>
     <mainClass>org.example.Main</mainClass>
     <helidon-version>2.3.0</helidon-version>
-    <avaje-http-version>1.23-SNAPSHOT</avaje-http-version>
+    <avaje-http-version>1.26-SNAPSHOT</avaje-http-version>
   </properties>
 
   <dependencies>
@@ -33,7 +33,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>1.23-SNAPSHOT</version>
+      <version>1.26-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>io.avaje</groupId>
@@ -50,7 +50,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-helidon-generator</artifactId>
-      <version>1.23-SNAPSHOT</version>
+      <version>1.26-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
 
@@ -112,7 +112,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>1.23-SNAPSHOT</version>
+      <version>1.26-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
 

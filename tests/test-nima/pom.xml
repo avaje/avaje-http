@@ -17,7 +17,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-
   <dependencies>
     <dependency>
       <groupId>io.avaje</groupId>
@@ -28,17 +27,17 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>1.23-SNAPSHOT</version>
+      <version>1.26-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>io.helidon.nima.webserver</groupId>
       <artifactId>helidon-nima-webserver</artifactId>
-      <version>4.0.0-ALPHA2</version>
+      <version>4.0.0-ALPHA4</version>
     </dependency>
     <dependency>
       <groupId>io.helidon.nima.http.media</groupId>
       <artifactId>helidon-nima-http-media-jsonb</artifactId>
-      <version>4.0.0-ALPHA2</version>
+      <version>4.0.0-ALPHA4</version>
     </dependency>
 
     <!--    <dependency>-->
@@ -65,7 +64,7 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-http-nima-generator</artifactId>
-              <version>1.23-SNAPSHOT</version>
+              <version>1.26-SNAPSHOT</version>
             </path>
             <path>
               <groupId>io.avaje</groupId>
