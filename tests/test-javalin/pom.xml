@@ -52,7 +52,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>1.23-SNAPSHOT</version>
+      <version>${avaje-http-version}</version>
     </dependency>
 
     <dependency>
@@ -79,7 +79,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-javalin-generator</artifactId>
-      <version>1.23-SNAPSHOT</version>
+      <version>${avaje-http-version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -102,7 +102,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>1.23-SNAPSHOT</version>
+      <version>${avaje-http-version}</version>
       <scope>test</scope>
     </dependency>
 
