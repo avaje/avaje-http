@@ -2,13 +2,12 @@ package io.avaje.http.generator.core;
 
 import static java.util.function.Predicate.not;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -19,18 +18,8 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-import javax.validation.Valid;
 
-import io.avaje.http.api.Controller;
-import io.avaje.http.api.OpenAPIResponse;
-import io.avaje.http.api.OpenAPIResponses;
-import io.avaje.http.api.Path;
-import io.avaje.http.api.Produces;
-import io.swagger.v3.oas.annotations.Hidden;
-
-/**
- * Reads the type information for the Controller (bean).
- */
+/** Reads the type information for the Controller (bean). */
 public final class ControllerReader {
 
   private final ProcessingContext ctx;
@@ -41,19 +30,17 @@ public final class ControllerReader {
   private final List<MethodReader> methods = new ArrayList<>();
   private final Set<String> staticImportTypes = new TreeSet<>();
   private final Set<String> importTypes = new TreeSet<>();
-  private final List<OpenAPIResponse> apiResponses;
+  private final List<OpenAPIResponsePrism> apiResponses;
 
-  /**
-   * The produces media type for the controller. Null implies JSON.
-   */
-  private final String produces;
+  /** The producesPrism media type for the controller. Null implies JSON. */
+  private final String producesPrism;
+
   private final boolean hasValid;
   private boolean methodHasValid;
 
-  /**
-   * Flag set when the controller is dependent on a request scope type.
-   */
+  /** Flag set when the controller is dependent on a request scope type. */
   private boolean requestScope;
+
   private boolean docHidden;
 
   public ControllerReader(TypeElement beanType, ProcessingContext ctx) {
@@ -66,12 +53,12 @@ public final class ControllerReader {
       docHidden = initDocHidden();
     }
     this.hasValid = initHasValid();
-    this.produces = initProduces();
+    this.producesPrism = initProduces();
     this.apiResponses = buildApiResponses();
   }
 
-  private List<OpenAPIResponse> buildApiResponses() {
-    final var responses = new ArrayList<OpenAPIResponse>();
+  private List<OpenAPIResponsePrism> buildApiResponses() {
+    final var responses = new ArrayList<OpenAPIResponsePrism>();
     buildApiResponsesFor(beanType, responses);
     for (final Element anInterface : interfaces) {
       buildApiResponsesFor(anInterface, responses);
@@ -79,13 +66,13 @@ public final class ControllerReader {
     return responses;
   }
 
-  private void buildApiResponsesFor(Element element, ArrayList<OpenAPIResponse> responses) {
-    Optional.ofNullable(element.getAnnotation(OpenAPIResponses.class)).stream()
-      .map(OpenAPIResponses::value)
-      .flatMap(Arrays::stream)
-      .forEach(responses::add);
+  private void buildApiResponsesFor(Element element, ArrayList<OpenAPIResponsePrism> responses) {
+    Optional.ofNullable(OpenAPIResponsesPrism.getInstanceOn(element)).stream()
+        .map(OpenAPIResponsesPrism::value)
+        .flatMap(List::stream)
+        .forEach(responses::add);
 
-    Arrays.stream(element.getAnnotationsByType(OpenAPIResponse.class)).forEach(responses::add);
+    responses.addAll(OpenAPIResponsePrism.getAllInstancesOn(element));
   }
 
   private ArrayList<String> buildRoles() {
@@ -112,12 +99,12 @@ public final class ControllerReader {
   }
 
   private List<Element> initInterfaces() {
-    List<Element> interfaces = new ArrayList<>();
-    for (TypeMirror anInterface : beanType.getInterfaces()) {
-      final Element ifaceElement = ctx.asElement(anInterface);
-      var controller = ifaceElement.getAnnotation(Controller.class);
+    final List<Element> interfaces = new ArrayList<>();
+    for (final TypeMirror anInterface : beanType.getInterfaces()) {
+      final var ifaceElement = ctx.asElement(anInterface);
+      final var controller = ControllerPrism.getInstanceOn(ifaceElement);
       if (controller != null && !controller.value().isBlank()
-          || ifaceElement.getAnnotation(Path.class) != null) {
+          || PathPrism.getInstanceOn(ifaceElement) != null) {
         interfaces.add(ifaceElement);
       }
     }
@@ -125,20 +112,20 @@ public final class ControllerReader {
   }
 
   private List<ExecutableElement> initInterfaceMethods() {
-    List<ExecutableElement> ifaceMethods = new ArrayList<>();
-    for (Element anInterface : interfaces) {
+    final List<ExecutableElement> ifaceMethods = new ArrayList<>();
+    for (final Element anInterface : interfaces) {
       ifaceMethods.addAll(ElementFilter.methodsIn(anInterface.getEnclosedElements()));
     }
     return ifaceMethods;
   }
 
-  private <A extends Annotation> A findAnnotation(Class<A> type) {
-    A annotation = beanType.getAnnotation(type);
+  private <A> A findAnnotation(Function<Element, A> func) {
+    var annotation = func.apply(beanType);
     if (annotation != null) {
       return annotation;
     }
-    for (Element anInterface : interfaces) {
-      annotation = anInterface.getAnnotation(type);
+    for (final Element anInterface : interfaces) {
+      annotation = func.apply(anInterface);
       if (annotation != null) {
         return annotation;
       }
@@ -146,10 +133,10 @@ public final class ControllerReader {
     return null;
   }
 
-  <A extends Annotation> A findMethodAnnotation(Class<A> type, ExecutableElement element) {
-    for (ExecutableElement interfaceMethod : interfaceMethods) {
+  <A> A findMethodAnnotation(Function<Element, A> func, ExecutableElement element) {
+    for (final ExecutableElement interfaceMethod : interfaceMethods) {
       if (matchMethod(interfaceMethod, element)) {
-        final A annotation = interfaceMethod.getAnnotation(type);
+        final var annotation = func.apply(interfaceMethod);
         if (annotation != null) {
           return annotation;
         }
@@ -163,31 +150,22 @@ public final class ControllerReader {
   }
 
   private String initProduces() {
-    final Produces produces = findAnnotation(Produces.class);
+    final var produces = findAnnotation(ProducesPrism::getInstanceOn);
     return (produces == null) ? null : produces.value();
   }
 
   private boolean initDocHidden() {
-    return findAnnotation(Hidden.class) != null;
+    return findAnnotation(HiddenPrism::getInstanceOn) != null;
   }
 
   private boolean initHasValid() {
-    Annotation jakartaValidAnnotation = null;
-    try {
-      jakartaValidAnnotation = findAnnotation(jakarataValidAnnotation());
-    } catch (final ClassNotFoundException e) {
-      // ignore
-    }
-    return findAnnotation(Valid.class) != null || jakartaValidAnnotation != null;
-  }
 
-  @SuppressWarnings("unchecked")
-  private static Class<Annotation> jakarataValidAnnotation() throws ClassNotFoundException {
-    return (Class<Annotation>)Class.forName(Valid.class.getCanonicalName().replace("javax", "jakarta"));
+    return findAnnotation(JavaxValidPrism::getInstanceOn) != null
+        || findAnnotation(ValidPrism::getInstanceOn) != null;
   }
 
   String produces() {
-    return produces;
+    return producesPrism;
   }
 
   public TypeElement beanType() {
@@ -207,8 +185,8 @@ public final class ControllerReader {
   }
 
   /**
-   * Return true if the controller has request scoped dependencies.
-   * In that case a BeanFactory will have been generated.
+   * Return true if the controller has request scoped dependencies. In that case a BeanFactory will
+   * have been generated.
    */
   boolean isRequestScoped() {
     return requestScope;
@@ -218,7 +196,7 @@ public final class ControllerReader {
     if (!roles.isEmpty()) {
       ctx.platform().controllerRoles(roles, this);
     }
-    for (Element element : beanType.getEnclosedElements()) {
+    for (final Element element : beanType.getEnclosedElements()) {
       if (element.getKind() == ElementKind.METHOD) {
         readMethod((ExecutableElement) element);
       } else if (element.getKind() == ElementKind.FIELD) {
@@ -235,7 +213,7 @@ public final class ControllerReader {
   }
 
   private boolean methodHasValid() {
-    for (MethodReader method : methods) {
+    for (final MethodReader method : methods) {
       if (method.hasValid()) {
         return true;
       }
@@ -245,21 +223,19 @@ public final class ControllerReader {
 
   private void readField(Element element) {
     if (!requestScope) {
-      final String rawType = element.asType().toString();
+      final var rawType = element.asType().toString();
       requestScope = RequestScopeTypes.isRequestType(rawType);
     }
   }
 
-  /**
-   * Read methods from superclasses taking into account generics.
-   */
+  /** Read methods from superclasses taking into account generics. */
   private void readSuper(TypeElement beanType) {
-    TypeMirror superclass = beanType.getSuperclass();
+    final var superclass = beanType.getSuperclass();
     if (superclass.getKind() != TypeKind.NONE) {
-      DeclaredType declaredType = (DeclaredType) superclass;
-      final Element superElement = ctx.asElement(superclass);
+      final var declaredType = (DeclaredType) superclass;
+      final var superElement = ctx.asElement(superclass);
       if (!"java.lang.Object".equals(superElement.toString())) {
-        for (Element element : superElement.getEnclosedElements()) {
+        for (final Element element : superElement.getEnclosedElements()) {
           if (element.getKind() == ElementKind.METHOD) {
             readMethod((ExecutableElement) element, declaredType);
           } else if (element.getKind() == ElementKind.FIELD) {
@@ -283,7 +259,7 @@ public final class ControllerReader {
       // actual taking into account generics
       actualExecutable = (ExecutableType) ctx.asMemberOf(declaredType, method);
     }
-    MethodReader methodReader = new MethodReader(this, method, actualExecutable, ctx);
+    final var methodReader = new MethodReader(this, method, actualExecutable, ctx);
     if (methodReader.isWebMethod()) {
       methodReader.read();
       methods.add(methodReader);
@@ -298,16 +274,18 @@ public final class ControllerReader {
     return methods;
   }
 
-  public List<OpenAPIResponse> openApiResponses() {
+  public List<OpenAPIResponsePrism> openApiResponses() {
     return apiResponses;
   }
 
   public String path() {
 
-    return Optional.ofNullable(findAnnotation(Controller.class))
-        .map(Controller::value)
+    return Optional.ofNullable(findAnnotation(ControllerPrism::getInstanceOn))
+        .map(ControllerPrism::value)
         .filter(not(String::isBlank))
-        .or(() -> Optional.ofNullable(findAnnotation(Path.class)).map(Path::value))
+        .or(
+            () ->
+                Optional.ofNullable(findAnnotation(PathPrism::getInstanceOn)).map(PathPrism::value))
         .map(Util::trimPath)
         .orElse(null);
   }
@@ -319,7 +297,7 @@ public final class ControllerReader {
   }
 
   public void addImportTypes(Set<String> types) {
-    for (String type : types) {
+    for (final String type : types) {
       addImportType(type);
     }
   }
@@ -335,5 +313,4 @@ public final class ControllerReader {
   public Set<String> importTypes() {
     return importTypes;
   }
-
 }

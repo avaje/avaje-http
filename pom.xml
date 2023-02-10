@@ -19,9 +19,11 @@
 
   <properties>
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
+    <avaje-prisms.version>1.1-SNAPSHOT</avaje-prisms.version>
   </properties>
 
   <dependencies>
+	  
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>junit</artifactId>

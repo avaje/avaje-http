@@ -20,7 +20,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-generator-core</artifactId>
-      <version>${project.version}</version>
+      <version>1.26-SNAPSHOT</version>
     </dependency>
 
   </dependencies>

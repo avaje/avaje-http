@@ -6,9 +6,12 @@ module io.avaje.http.generator.core {
 
   requires java.sql;
   requires java.compiler;
-  requires transitive io.avaje.http.api;
-  requires transitive io.swagger.v3.oas.models;
-  requires transitive io.swagger.v3.oas.annotations;
-  requires transitive com.fasterxml.jackson.annotation;
-  requires transitive java.validation;
+  requires static transitive io.avaje.prism;
+  requires static transitive io.avaje.http.api;
+  requires static transitive io.swagger.v3.oas.models;
+  requires static transitive io.swagger.v3.oas.annotations;
+  requires static transitive com.fasterxml.jackson.annotation;
+  requires static transitive java.validation;
+  requires static transitive jakarta.inject;
+  requires static transitive jakarta.validation;
 }

@@ -1,8 +1,22 @@
 package io.avaje.http.generator.core.openapi;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.Element;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
+import javax.tools.Diagnostic;
+import javax.tools.StandardLocation;
+
+import io.avaje.http.generator.core.OpenAPIDefinitionPrism;
+import io.avaje.http.generator.core.TagPrism;
+import io.avaje.http.generator.core.TagsPrism;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -11,25 +25,9 @@ import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.tags.Tag;
 
-import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
-import javax.tools.Diagnostic;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Map;
-import java.util.TreeMap;
-
-/**
- * Context for building the OpenAPI documentation.
- */
+/** Context for building the OpenAPI documentation. */
 public class DocContext {
 
   private final boolean openApiAvailable;
@@ -61,10 +59,10 @@ public class DocContext {
 
   private OpenAPI initOpenAPI() {
 
-    OpenAPI openAPI = new OpenAPI();
+    final var openAPI = new OpenAPI();
     openAPI.setPaths(new Paths());
 
-    Info info = new Info();
+    final var info = new Info();
     info.setTitle("");
     info.setVersion("");
     openAPI.setInfo(info);
@@ -73,7 +71,7 @@ public class DocContext {
   }
 
   Schema toSchema(String rawType, Element element) {
-    TypeElement typeElement = elements.getTypeElement(rawType);
+    final var typeElement = elements.getTypeElement(rawType);
     if (typeElement == null) {
       // primitive types etc
       return schemaBuilder.toSchema(element.asType());
@@ -98,18 +96,16 @@ public class DocContext {
     schemaBuilder.addRequestBody(operation, schema, asForm, description);
   }
 
-  /**
-   * Return the OpenAPI adding the paths and schemas.
-   */
+  /** Return the OpenAPI adding the paths and schemas. */
   private OpenAPI getApiForWriting() {
 
-    Paths paths = openAPI.getPaths();
+    var paths = openAPI.getPaths();
     if (paths == null) {
       paths = new Paths();
       openAPI.setPaths(paths);
     }
     // add paths by natural order
-    for (Map.Entry<String, PathItem> entry : pathMap.entrySet()) {
+    for (final Map.Entry<String, PathItem> entry : pathMap.entrySet()) {
       paths.addPathItem(entry.getKey(), entry.getValue());
     }
 
@@ -117,11 +113,9 @@ public class DocContext {
     return openAPI;
   }
 
-  /**
-   * Return the components creating if needed.
-   */
+  /** Return the components creating if needed. */
   private Components components() {
-    Components components = openAPI.getComponents();
+    var components = openAPI.getComponents();
     if (components == null) {
       components = new Components();
       openAPI.setComponents(components);
@@ -129,8 +123,8 @@ public class DocContext {
     return components;
   }
 
-  private io.swagger.v3.oas.models.tags.Tag createTagItem(Tag tag){
-    io.swagger.v3.oas.models.tags.Tag tagsItem = new io.swagger.v3.oas.models.tags.Tag();
+  private Tag createTagItem(TagPrism tag) {
+    final var tagsItem = new Tag();
     tagsItem.setName(tag.name());
     tagsItem.setDescription(tag.description());
     // tagsItem.setExtensions(tag.extensions());  # Not sure about the extensions
@@ -139,27 +133,25 @@ public class DocContext {
   }
 
   public void addTagsDefinition(Element element) {
-    Tags tags = element.getAnnotation(Tags.class);
-    if(tags == null)
-      return;
+    final var tags = TagsPrism.getInstanceOn(element);
+    if (tags == null) return;
 
-    for(Tag tag: tags.value()){
+    for (final var tag : tags.value()) {
       openAPI.addTagsItem(createTagItem(tag));
     }
   }
 
-  public void addTagDefinition(Element element){
-    Tag tag = element.getAnnotation(Tag.class);
-    if(tag == null)
-      return;
+  public void addTagDefinition(Element element) {
+    final var tag = TagPrism.getInstanceOn(element);
+    if (tag == null) return;
 
     openAPI.addTagsItem(createTagItem(tag));
   }
 
   public void readApiDefinition(Element element) {
 
-    OpenAPIDefinition openApi = element.getAnnotation(OpenAPIDefinition.class);
-    io.swagger.v3.oas.annotations.info.Info info = openApi.info();
+    final var openApi = OpenAPIDefinitionPrism.getInstanceOn(element);
+    final var info = openApi.info();
     if (!info.title().isEmpty()) {
       openAPI.getInfo().setTitle(info.title());
     }
@@ -169,7 +161,6 @@ public class DocContext {
     if (!info.version().isEmpty()) {
       openAPI.getInfo().setVersion(info.version());
     }
-
   }
 
   public void writeApi() {
@@ -187,12 +178,11 @@ public class DocContext {
   }
 
   private Writer createMetaWriter() throws IOException {
-    FileObject writer = filer.createResource(StandardLocation.CLASS_OUTPUT, "meta", "openapi.json");
+    final var writer = filer.createResource(StandardLocation.CLASS_OUTPUT, "meta", "openapi.json");
     return writer.openWriter();
   }
 
   private void logError(Element e, String msg, Object... args) {
     messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
-
 }

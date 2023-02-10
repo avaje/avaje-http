@@ -1,6 +1,7 @@
 package io.avaje.http.generator.jex;
 
-import io.avaje.http.api.MediaType;
+import java.util.List;
+
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
@@ -8,8 +9,7 @@ import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.Util;
 import io.avaje.http.generator.core.WebMethod;
-
-import java.util.List;
+import io.avaje.http.generator.core.openapi.MediaType;
 
 /**
  * Write code to register Web route for a given controller method.
@@ -30,24 +30,24 @@ class ControllerMethodWriter {
 
   void write(boolean requestScoped) {
 
-    final PathSegments segments = method.pathSegments();
-    final String fullPath = segments.fullPath();
+    final var segments = method.pathSegments();
+    final var fullPath = segments.fullPath();
 
     writer.append("    routing.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
     writer.append("      ctx.status(%s);", method.statusCode()).eol();
 
-    List<PathSegments.Segment> matrixSegments = segments.matrixSegments();
-    for (PathSegments.Segment matrixSegment : matrixSegments) {
+    final var matrixSegments = segments.matrixSegments();
+    for (final PathSegments.Segment matrixSegment : matrixSegments) {
       matrixSegment.writeCreateSegment(writer, ctx.platform());
     }
 
-    final List<MethodParam> params = method.params();
-    for (MethodParam param : params) {
+    final var params = method.params();
+    for (final MethodParam param : params) {
       param.writeCtxGet(writer, segments);
     }
     writer.append("      ");
     if (method.includeValidate()) {
-      for (MethodParam param : params) {
+      for (final MethodParam param : params) {
         param.writeValidate(writer);
       }
     }
@@ -61,7 +61,7 @@ class ControllerMethodWriter {
       writer.append("controller.");
     }
     writer.append(method.simpleName()).append("(");
-    for (int i = 0; i < params.size(); i++) {
+    for (var i = 0; i < params.size(); i++) {
       if (i > 0) {
         writer.append(", ");
       }
@@ -74,10 +74,10 @@ class ControllerMethodWriter {
     writer.append(";").eol();
     writer.append("    }");
 
-    List<String> roles = method.roles();
+    final var roles = method.roles();
     if (!roles.isEmpty()) {
       writer.append(").withRoles(");
-      for (int i = 0; i < roles.size(); i++) {
+      for (var i = 0; i < roles.size(); i++) {
         if (i > 0) {
           writer.append(", ");
         }
@@ -88,12 +88,12 @@ class ControllerMethodWriter {
   }
 
   private void writeContextReturn() {
-    final String produces = method.produces();
-    if (produces == null || produces.equalsIgnoreCase(MediaType.APPLICATION_JSON)) {
+    final var produces = method.produces();
+    if (produces == null || produces.equalsIgnoreCase(MediaType.APPLICATION_JSON.getValue())) {
       writer.append("ctx.json(");
-    } else if (produces.equalsIgnoreCase(MediaType.TEXT_HTML)) {
+    } else if (produces.equalsIgnoreCase(MediaType.TEXT_HTML.getValue())) {
       writer.append("ctx.html(");
-    } else if (produces.equalsIgnoreCase(MediaType.TEXT_PLAIN)) {
+    } else if (produces.equalsIgnoreCase(MediaType.TEXT_PLAIN.getValue())) {
       writer.append("ctx.text(");
     } else {
       writer.append("ctx.contentType(\"%s\").write(", produces);

@@ -3,19 +3,17 @@ package io.avaje.http.generator.core.openapi;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 
-import io.avaje.http.api.MediaType;
+import io.avaje.http.generator.core.HiddenPrism;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.javadoc.Javadoc;
-import io.swagger.v3.oas.annotations.Hidden;
+import io.avaje.prism.GeneratePrism;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 
-/**
- * Build the OpenAPI documentation for a method.
- */
+/** Build the OpenAPI documentation for a method. */
+@GeneratePrism(Deprecated.class)
 public class MethodDocBuilder {
 
   private final Javadoc javadoc;
@@ -32,22 +30,22 @@ public class MethodDocBuilder {
 
   public void build() {
 
-    if (ctx.isOpenApiAvailable() && methodReader.findAnnotation(Hidden.class) != null) {
+    if (ctx.isOpenApiAvailable()
+        && methodReader.findAnnotation(HiddenPrism::getInstanceOn) != null) {
       return;
     }
 
-    //operation.setOperationId();
+    // operation.setOperationId();
     operation.setSummary(javadoc.getSummary());
     operation.setDescription(javadoc.getDescription());
     operation.setTags(methodReader.tags());
 
-    if (javadoc.isDeprecated()) {
-      operation.setDeprecated(true);
-    } else if (methodReader.findAnnotation(Deprecated.class) != null) {
+    if (javadoc.isDeprecated()
+        || (methodReader.findAnnotation(DeprecatedPrism::getInstanceOn) != null)) {
       operation.setDeprecated(true);
     }
 
-    PathItem pathItem = ctx.pathItem(methodReader.fullPath());
+    final var pathItem = ctx.pathItem(methodReader.fullPath());
     switch (methodReader.webMethod()) {
       case GET:
         pathItem.setGet(operation);
@@ -66,26 +64,26 @@ public class MethodDocBuilder {
         break;
     }
 
-    for (MethodParam param : methodReader.params()) {
+    for (final MethodParam param : methodReader.params()) {
       param.buildApiDocumentation(this);
     }
 
-    ApiResponses responses = new ApiResponses();
+    final var responses = new ApiResponses();
     operation.setResponses(responses);
 
-    ApiResponse response = new ApiResponse();
+    final var response = new ApiResponse();
     response.setDescription(javadoc.getReturnDescription());
 
     final var produces = methodReader.produces();
     final var hasProducesStatus = methodReader.hasProducesStatus();
-    final var contentMediaType = (produces == null) ? MediaType.APPLICATION_JSON : produces;
+    final var contentMediaType = (produces == null) ? "application/json" : produces;
 
     if (methodReader.isVoid()) {
       if (isEmpty(response.getDescription())) {
         response.setDescription("No content");
       }
     } else {
-    	response.setContent(ctx.createContent(methodReader.returnType(), contentMediaType));
+      response.setContent(ctx.createContent(methodReader.returnType(), contentMediaType));
     }
     var override2xx = false;
     for (final var responseAnnotation : methodReader.apiResponses()) {
