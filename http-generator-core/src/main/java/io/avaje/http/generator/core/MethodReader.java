@@ -53,7 +53,7 @@ public class MethodReader {
     this.actualParams = (actualExecutable == null) ? null : actualExecutable.getParameterTypes();
     this.isVoid = element.getReturnType().getKind() == TypeKind.VOID;
     this.methodRoles = Util.findRoles(element);
-    this.producesAnnotation = Optional.ofNullable(findAnnotation(ProducesPrism::getInstanceOn));
+    this.producesAnnotation = findAnnotation(ProducesPrism::getOptionalOn);
     initWebMethodViaAnnotation();
 
     this.superMethods =
@@ -85,8 +85,8 @@ public class MethodReader {
   }
 
   private boolean initValid() {
-    return findAnnotation(ValidPrism::getInstanceOn) != null
-        || findAnnotation(JavaxValidPrism::getInstanceOn) != null
+    return findAnnotation(ValidPrism::getOptionalOn).isPresent()
+        || findAnnotation(JavaxValidPrism::getOptionalOn).isPresent()
         || superMethodHasValid();
   }
 
@@ -94,8 +94,8 @@ public class MethodReader {
     return superMethods.stream()
         .anyMatch(
             e ->
-                findAnnotation(ValidPrism::getInstanceOn) != null
-                    || findAnnotation(JavaxValidPrism::getInstanceOn) != null);
+                findAnnotation(ValidPrism::getOptionalOn).isPresent()
+                    || findAnnotation(JavaxValidPrism::getOptionalOn).isPresent());
   }
 
   @Override
@@ -104,34 +104,24 @@ public class MethodReader {
   }
 
   private void initWebMethodViaAnnotation() {
-    final var form = findAnnotation(FormPrism::getInstanceOn);
-    if (form != null) {
+
+    if (findAnnotation(FormPrism::getOptionalOn).isPresent()) {
       this.formMarker = true;
     }
-    final var get = findAnnotation(GetPrism::getInstanceOn);
-    if (get != null) {
-      initSetWebMethod(WebMethod.GET, get.value());
-      return;
-    }
-    final var put = findAnnotation(PutPrism::getInstanceOn);
-    if (put != null) {
-      initSetWebMethod(WebMethod.PUT, put.value());
-      return;
-    }
-    final var post = findAnnotation(PostPrism::getInstanceOn);
-    if (post != null) {
-      initSetWebMethod(WebMethod.POST, post.value());
-      return;
-    }
-    final var patch = findAnnotation(PatchPrism::getInstanceOn);
-    if (patch != null) {
-      initSetWebMethod(WebMethod.PATCH, patch.value());
-      return;
-    }
-    final var delete = findAnnotation(DeletePrism::getInstanceOn);
-    if (delete != null) {
-      initSetWebMethod(WebMethod.DELETE, delete.value());
-    }
+
+    findAnnotation(GetPrism::getOptionalOn)
+        .ifPresent(get -> initSetWebMethod(WebMethod.GET, get.value()));
+
+    findAnnotation(PutPrism::getOptionalOn)
+        .ifPresent(put -> initSetWebMethod(WebMethod.PUT, put.value()));
+
+    findAnnotation(PostPrism::getOptionalOn)
+        .ifPresent(post -> initSetWebMethod(WebMethod.POST, post.value()));
+
+    findAnnotation(PatchPrism::getOptionalOn)
+        .ifPresent(patch -> initSetWebMethod(WebMethod.PATCH, patch.value()));
+    findAnnotation(DeletePrism::getOptionalOn)
+        .ifPresent(delete -> initSetWebMethod(WebMethod.DELETE, delete.value()));
   }
 
   private void initSetWebMethod(WebMethod webMethod, String value) {
@@ -144,8 +134,9 @@ public class MethodReader {
   }
 
   private List<OpenAPIResponsePrism> buildApiResponses() {
+
     final var container =
-        Optional.ofNullable(findAnnotation(OpenAPIResponsesPrism::getInstanceOn)).stream()
+        findAnnotation(OpenAPIResponsesPrism::getOptionalOn).stream()
             .map(OpenAPIResponsesPrism::value)
             .flatMap(List::stream);
 
@@ -157,9 +148,7 @@ public class MethodReader {
             .flatMap(
                 method ->
                     Stream.concat(
-                        Optional.ofNullable(
-                                findAnnotation(OpenAPIResponsesPrism::getInstanceOn, method))
-                            .stream()
+                        findAnnotation(OpenAPIResponsesPrism::getOptionalOn, method).stream()
                             .map(OpenAPIResponsesPrism::value)
                             .flatMap(List::stream),
                         OpenAPIResponsePrism.getAllInstancesOn(method).stream()));
@@ -168,16 +157,18 @@ public class MethodReader {
         Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
 
     responses.addAll(bean.openApiResponses());
+
     return responses;
   }
 
-  public <A> A findAnnotation(Function<Element, A> prismFunc) {
+  public <A> Optional<A> findAnnotation(Function<Element, Optional<A>> prismFunc) {
     return findAnnotation(prismFunc, element);
   }
 
-  public <A> A findAnnotation(Function<Element, A> prismFunc, ExecutableElement elem) {
+  public <A> Optional<A> findAnnotation(
+      Function<Element, Optional<A>> prismFunc, ExecutableElement elem) {
     final var annotation = prismFunc.apply(elem);
-    if (annotation != null) {
+    if (annotation.isPresent()) {
       return annotation;
     }
     return bean.findMethodAnnotation(prismFunc, elem);

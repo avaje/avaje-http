@@ -28,7 +28,7 @@ public class MethodDocBuilder {
   public void build() {
 
     if (ctx.isOpenApiAvailable()
-        && methodReader.findAnnotation(HiddenPrism::getInstanceOn) != null) {
+        && methodReader.findAnnotation(HiddenPrism::getOptionalOn).isPresent()) {
       return;
     }
 
@@ -38,7 +38,7 @@ public class MethodDocBuilder {
     operation.setTags(methodReader.tags());
 
     if (javadoc.isDeprecated()
-        || (methodReader.findAnnotation(DeprecatedPrism::getInstanceOn) != null)) {
+        || methodReader.findAnnotation(DeprecatedPrism::getOptionalOn).isPresent()) {
       operation.setDeprecated(true);
     }
 

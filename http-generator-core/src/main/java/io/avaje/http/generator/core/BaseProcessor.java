@@ -13,7 +13,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 @SupportedOptions({"useJavax", "useSingleton"})
-@SupportedAnnotationTypes({ControllerPrism.PRISM_TYPE, OpenAPIDefinitionPrism.PRISM_TYPE})
 public abstract class BaseProcessor extends AbstractProcessor {
 
   protected ProcessingContext ctx;

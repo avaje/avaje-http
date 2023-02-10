@@ -120,30 +120,30 @@ public final class ControllerReader {
     return ifaceMethods;
   }
 
-  private <A> A findAnnotation(Function<Element, A> func) {
+  private <A> Optional<A> findAnnotation(Function<Element, Optional<A>> func) {
     var annotation = func.apply(beanType);
-    if (annotation != null) {
+    if (annotation.isPresent()) {
       return annotation;
     }
     for (final Element anInterface : interfaces) {
       annotation = func.apply(anInterface);
-      if (annotation != null) {
+      if (annotation.isPresent()) {
         return annotation;
       }
     }
-    return null;
+    return Optional.empty();
   }
 
-  <A> A findMethodAnnotation(Function<Element, A> func, ExecutableElement element) {
+  <A> Optional<A> findMethodAnnotation(Function<Element, Optional<A>> func, ExecutableElement element) {
     for (final ExecutableElement interfaceMethod : interfaceMethods) {
       if (matchMethod(interfaceMethod, element)) {
         final var annotation = func.apply(interfaceMethod);
-        if (annotation != null) {
+        if (annotation.isPresent()) {
           return annotation;
         }
       }
     }
-    return null;
+    return Optional.empty();
   }
 
   private boolean matchMethod(ExecutableElement interfaceMethod, ExecutableElement element) {
@@ -151,18 +151,17 @@ public final class ControllerReader {
   }
 
   private String initProduces() {
-    final var produces = findAnnotation(ProducesPrism::getInstanceOn);
-    return (produces == null) ? null : produces.value();
+    return findAnnotation(ProducesPrism::getOptionalOn).map(ProducesPrism::value).orElse(null);
   }
 
   private boolean initDocHidden() {
-    return findAnnotation(HiddenPrism::getInstanceOn) != null;
+    return findAnnotation(HiddenPrism::getOptionalOn).isPresent();
   }
 
   private boolean initHasValid() {
 
-    return findAnnotation(JavaxValidPrism::getInstanceOn) != null
-        || findAnnotation(ValidPrism::getInstanceOn) != null;
+    return findAnnotation(JavaxValidPrism::getOptionalOn).isPresent()
+        || findAnnotation(ValidPrism::getOptionalOn).isPresent();
   }
 
   String produces() {
@@ -281,12 +280,12 @@ public final class ControllerReader {
 
   public String path() {
 
-    return Optional.ofNullable(findAnnotation(ControllerPrism::getInstanceOn))
+    return findAnnotation(ControllerPrism::getOptionalOn)
         .map(ControllerPrism::value)
         .filter(not(String::isBlank))
         .or(
             () ->
-                Optional.ofNullable(findAnnotation(PathPrism::getInstanceOn)).map(PathPrism::value))
+                findAnnotation(PathPrism::getOptionalOn).map(PathPrism::value))
         .map(Util::trimPath)
         .orElse(null);
   }
