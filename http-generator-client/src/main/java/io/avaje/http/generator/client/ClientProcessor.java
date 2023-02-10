@@ -8,22 +8,24 @@ import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-import io.avaje.http.api.Client;
+import io.avaje.http.generator.core.ClientPrism;
 import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.ImportPrism;
 import io.avaje.http.generator.core.JsonBUtil;
 import io.avaje.http.generator.core.ProcessingContext;
-import io.avaje.prism.GeneratePrism;
 
-@GeneratePrism(Client.class)
+@SupportedAnnotationTypes({ClientPrism.PRISM_TYPE, ImportPrism.PRISM_TYPE})
 public class ClientProcessor extends AbstractProcessor {
 
-  private static final String METAINF_SERVICES_PROVIDER = "META-INF/services/io.avaje.http.client.HttpApiProvider";
+  private static final String METAINF_SERVICES_PROVIDER =
+      "META-INF/services/io.avaje.http.client.HttpApiProvider";
 
   private final Set<String> generatedClients = new LinkedHashSet<>();
 
@@ -45,14 +47,6 @@ public class ClientProcessor extends AbstractProcessor {
   }
 
   @Override
-  public Set<String> getSupportedAnnotationTypes() {
-    final Set<String> annotations = new LinkedHashSet<>();
-    annotations.add(Client.class.getCanonicalName());
-    annotations.add(Client.Import.class.getCanonicalName());
-    return annotations;
-  }
-
-  @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     this.processingEnv = processingEnv;
@@ -61,10 +55,12 @@ public class ClientProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
-    for (final Element controller : round.getElementsAnnotatedWith(Client.class)) {
+    for (final Element controller :
+        round.getElementsAnnotatedWith(ctx.typeElement(ClientPrism.PRISM_TYPE))) {
       writeClient(controller);
     }
-    for (final Element importedElement : round.getElementsAnnotatedWith(Client.Import.class)) {
+    for (final Element importedElement :
+        round.getElementsAnnotatedWith(ctx.typeElement(ImportPrism.PRISM_TYPE))) {
       writeForImported(importedElement);
     }
     if (round.processingOver()) {
@@ -118,8 +114,8 @@ public class ClientProcessor extends AbstractProcessor {
     }
   }
 
-  protected String writeClientAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException {
+  protected String writeClientAdapter(ProcessingContext ctx, ControllerReader reader)
+      throws IOException {
     return new ClientWriter(reader, ctx, useJsonB).write();
   }
-
 }

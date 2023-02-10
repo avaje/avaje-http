@@ -26,7 +26,8 @@
 @GeneratePrism(value = javax.validation.Valid.class, name = "JavaxValidPrism", publicAccess = true)
 @GeneratePrism(value = jakarta.validation.Valid.class, publicAccess = true)
 @GeneratePrism(value = org.jetbrains.annotations.NotNull.class, publicAccess = true)
-
+@GeneratePrism(value = io.avaje.http.api.Client.class, publicAccess = true)
+@GeneratePrism(value = io.avaje.http.api.Client.Import.class, publicAccess = true)
 package io.avaje.http.generator.core;
 
 import io.avaje.prism.GeneratePrism;

@@ -24,6 +24,11 @@ public abstract class BaseProcessor extends AbstractProcessor {
   }
 
   @Override
+  public Set<String> getSupportedAnnotationTypes() {
+    return Set.of(ControllerPrism.PRISM_TYPE, OpenAPIDefinitionPrism.PRISM_TYPE);
+  }
+
+  @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     this.ctx = new ProcessingContext(processingEnv, providePlatformAdapter());

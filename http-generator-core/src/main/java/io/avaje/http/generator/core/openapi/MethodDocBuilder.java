@@ -1,8 +1,5 @@
 package io.avaje.http.generator.core.openapi;
 
-import javax.lang.model.type.MirroredTypeException;
-import javax.lang.model.type.TypeMirror;
-
 import io.avaje.http.generator.core.HiddenPrism;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
@@ -100,13 +97,7 @@ public class MethodDocBuilder {
         newResponse.setContent(response.getContent());
         override2xx = !hasProducesStatus;
       }
-      TypeMirror returnType = null;
-      try {
-        // this will always throw
-        responseAnnotation.type();
-      } catch (final MirroredTypeException mte) {
-        returnType = mte.getTypeMirror();
-      }
+      final var returnType = responseAnnotation.type();
 
       if (!"java.lang.Void".equals(returnType.toString())) {
         newResponse.setContent(ctx.createContent(returnType, contentMediaType));

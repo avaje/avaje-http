@@ -67,7 +67,8 @@ public final class ControllerReader {
   }
 
   private void buildApiResponsesFor(Element element, ArrayList<OpenAPIResponsePrism> responses) {
-    Optional.ofNullable(OpenAPIResponsesPrism.getInstanceOn(element)).stream()
+
+    OpenAPIResponsesPrism.getOptionalOn(element).stream()
         .map(OpenAPIResponsesPrism::value)
         .flatMap(List::stream)
         .forEach(responses::add);

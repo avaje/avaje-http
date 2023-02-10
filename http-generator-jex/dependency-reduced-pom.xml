@@ -6,13 +6,15 @@
     <version>1.26-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>avaje-http-javalin-generator</artifactId>
+  <artifactId>avaje-http-jex-generator</artifactId>
   <build>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.10.1</version>
         <configuration>
+          <source>11</source>
+          <target>11</target>
           <compilerArgument>-proc:none</compilerArgument>
         </configuration>
       </plugin>
