@@ -50,6 +50,12 @@ public class JsonBUtil {
   }
 
   public static void writeJsonbType(UType type, Append writer) {
+    // Support for CompletableFuture's.
+    if (type.isGeneric() && type.mainType().equals("java.util.concurrent.CompletableFuture")) {
+      writeJsonbType(type.paramRaw(), writer);
+      return;
+    }
+
     writer.append("    this.%sJsonType = jsonB.type(", type.shortName());
     if (!type.isGeneric()) {
       writer.append("%s.class)", Util.shortName(PrimitiveUtil.wrap(type.full())));
