@@ -63,6 +63,25 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void helloAsyncRequestHandling() {
+    TypeRef<List<HelloDto>> listDto = new TypeRef<List<HelloDto>>() { };
+    final List<HelloDto> beans = given()
+      .get(baseUrl + "/hello/async")
+      .then()
+      .statusCode(200)
+      .extract()
+      .as(listDto);
+
+    assertThat(beans).hasSize(2);
+
+    final List<HelloDto> helloDtos = client.request()
+      .path("hello/async")
+      .GET().list(HelloDto.class);
+
+    assertThat(helloDtos).hasSize(2);
+  }
+
+  @Test
   void getWithPathParamAndQueryParam() {
 
     final HelloDto bean = given()
