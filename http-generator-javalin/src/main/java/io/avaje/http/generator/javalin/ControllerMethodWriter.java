@@ -88,12 +88,12 @@ class ControllerMethodWriter {
     // Support for CompletableFuture's.
     final UType type = UType.parse(method.returnType());
     if (type.isGeneric() && type.mainType().equals("java.util.concurrent.CompletableFuture")) {
-      final String returnVariableName = "futureResult";
+      final String futureResultVariableName = "futureResult";
 
       writer.append("      ctx.future(() -> {").eol();
-      writer.append("        return result.thenAccept(%s -> {", returnVariableName).eol();
+      writer.append("        return result.thenAccept(%s -> {", futureResultVariableName).eol();
       writer.append("    ");
-      this.writeContextReturn(returnVariableName);
+      this.writeContextReturn(futureResultVariableName);
       writer.eol().append("        });").eol();
       writer.append("      });").eol();
       return;
@@ -103,7 +103,7 @@ class ControllerMethodWriter {
     this.writeContextReturn("result");
   }
 
-  private void writeContextReturn(final String returnVariableName) {
+  private void writeContextReturn(final String resultVariableName) {
     final var produces = method.produces();
     if (produces == null || MediaType.APPLICATION_JSON.equalsIgnoreCase(produces)) {
       if (useJsonB) {
@@ -112,16 +112,16 @@ class ControllerMethodWriter {
           uType = uType.paramRaw();
         }
 
-        writer.append("      %sJsonType.toJson(%s, ctx.contentType(\"application/json\").outputStream());", uType.shortName(), returnVariableName);
+        writer.append("      %sJsonType.toJson(%s, ctx.contentType(\"application/json\").outputStream());", uType.shortName(), resultVariableName);
       } else {
-        writer.append("      ctx.json(%s);", returnVariableName);
+        writer.append("      ctx.json(%s);", resultVariableName);
       }
     } else if (MediaType.TEXT_HTML.equalsIgnoreCase(produces)) {
-      writer.append("      ctx.html(%s);", returnVariableName);
+      writer.append("      ctx.html(%s);", resultVariableName);
     } else if (MediaType.TEXT_PLAIN.equalsIgnoreCase(produces)) {
-      writer.append("      ctx.contentType(\"text/plain\").result(%s);", returnVariableName);
+      writer.append("      ctx.contentType(\"text/plain\").result(%s);", resultVariableName);
     } else {
-      writer.append("      ctx.contentType(\"%s\").result(%s);", produces, returnVariableName);
+      writer.append("      ctx.contentType(\"%s\").result(%s);", produces, resultVariableName);
     }
   }
 }
