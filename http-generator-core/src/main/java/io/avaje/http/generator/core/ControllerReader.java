@@ -287,9 +287,7 @@ public final class ControllerReader {
     return findAnnotation(ControllerPrism::getOptionalOn)
         .map(ControllerPrism::value)
         .filter(not(String::isBlank))
-        .or(
-            () ->
-                findAnnotation(PathPrism::getOptionalOn).map(PathPrism::value))
+        .or(() -> findAnnotation(PathPrism::getOptionalOn).map(PathPrism::value))
         .map(Util::trimPath)
         .orElse(null);
   }
