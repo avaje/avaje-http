@@ -9,9 +9,11 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
+import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import io.avaje.http.generator.core.OpenAPIDefinitionPrism;
@@ -59,10 +61,10 @@ public class DocContext {
 
   private OpenAPI initOpenAPI() {
 
-    final var openAPI = new OpenAPI();
+    OpenAPI openAPI = new OpenAPI();
     openAPI.setPaths(new Paths());
 
-    final var info = new Info();
+    Info info = new Info();
     info.setTitle("");
     info.setVersion("");
     openAPI.setInfo(info);
@@ -71,7 +73,7 @@ public class DocContext {
   }
 
   Schema toSchema(String rawType, Element element) {
-    final var typeElement = elements.getTypeElement(rawType);
+    TypeElement typeElement = elements.getTypeElement(rawType);
     if (typeElement == null) {
       // primitive types etc
       return schemaBuilder.toSchema(element.asType());
@@ -96,16 +98,18 @@ public class DocContext {
     schemaBuilder.addRequestBody(operation, schema, asForm, description);
   }
 
-  /** Return the OpenAPI adding the paths and schemas. */
+  /**
+   * Return the OpenAPI adding the paths and schemas.
+   */
   private OpenAPI getApiForWriting() {
 
-    var paths = openAPI.getPaths();
+    Paths paths = openAPI.getPaths();
     if (paths == null) {
       paths = new Paths();
       openAPI.setPaths(paths);
     }
     // add paths by natural order
-    for (final Map.Entry<String, PathItem> entry : pathMap.entrySet()) {
+    for (Map.Entry<String, PathItem> entry : pathMap.entrySet()) {
       paths.addPathItem(entry.getKey(), entry.getValue());
     }
 
@@ -113,9 +117,11 @@ public class DocContext {
     return openAPI;
   }
 
-  /** Return the components creating if needed. */
+  /**
+   * Return the components creating if needed.
+   */
   private Components components() {
-    var components = openAPI.getComponents();
+    Components components = openAPI.getComponents();
     if (components == null) {
       components = new Components();
       openAPI.setComponents(components);
@@ -136,7 +142,7 @@ public class DocContext {
     final var tags = TagsPrism.getInstanceOn(element);
     if (tags == null) return;
 
-    for (final var tag : tags.value()) {
+    for(var tag : tags.value()){
       openAPI.addTagsItem(createTagItem(tag));
     }
   }
@@ -161,6 +167,7 @@ public class DocContext {
     if (!info.version().isEmpty()) {
       openAPI.getInfo().setVersion(info.version());
     }
+
   }
 
   public void writeApi() {
@@ -178,7 +185,7 @@ public class DocContext {
   }
 
   private Writer createMetaWriter() throws IOException {
-    final var writer = filer.createResource(StandardLocation.CLASS_OUTPUT, "meta", "openapi.json");
+    FileObject writer = filer.createResource(StandardLocation.CLASS_OUTPUT, "meta", "openapi.json");
     return writer.openWriter();
   }
 

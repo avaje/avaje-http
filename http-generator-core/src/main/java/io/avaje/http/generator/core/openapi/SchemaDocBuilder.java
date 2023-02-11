@@ -5,6 +5,7 @@ import static io.avaje.http.generator.core.Util.typeDef;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -33,8 +34,8 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
 /** Help build OpenAPI Schema objects. */
-@GeneratePrism(value = jakarta.validation.constraints.Size.class)
-@GeneratePrism(value = jakarta.validation.constraints.Email.class)
+@GeneratePrism(jakarta.validation.constraints.Size.class)
+@GeneratePrism(jakarta.validation.constraints.Email.class)
 @GeneratePrism(value = javax.validation.constraints.Size.class, name = "JavaxSizePrism")
 @GeneratePrism(value = javax.validation.constraints.Email.class, name = "JavaxEmailPrism")
 class SchemaDocBuilder {
@@ -61,24 +62,26 @@ class SchemaDocBuilder {
   }
 
   Content createContent(TypeMirror returnType, String mediaType) {
-    final var mt = new MediaType();
+    MediaType mt = new MediaType();
     mt.setSchema(toSchema(returnType));
-    final var content = new Content();
+    Content content = new Content();
     content.addMediaType(mediaType, mt);
     return content;
   }
 
-  /** Add parameter as a form parameter. */
+  /**
+   * Add parameter as a form parameter.
+   */
   void addFormParam(Operation operation, String varName, Schema schema) {
-    final var body = requestBody(operation);
-    final var formSchema = requestFormParamSchema(body);
+    RequestBody body = requestBody(operation);
+    Schema formSchema = requestFormParamSchema(body);
     formSchema.addProperties(varName, schema);
   }
 
   private Schema requestFormParamSchema(RequestBody body) {
 
-    final var content = body.getContent();
-    var mediaType = content.get(APP_FORM);
+    final Content content = body.getContent();
+    MediaType mediaType = content.get(APP_FORM);
 
     Schema schema;
     if (mediaType != null) {
@@ -93,26 +96,28 @@ class SchemaDocBuilder {
     return schema;
   }
 
-  /** Add as request body. */
+  /**
+   * Add as request body.
+   */
   void addRequestBody(Operation operation, Schema schema, boolean asForm, String description) {
 
-    final var body = requestBody(operation);
+    RequestBody body = requestBody(operation);
     body.setDescription(description);
 
-    final var mt = new MediaType();
+    MediaType mt = new MediaType();
     mt.schema(schema);
 
-    final var mime = asForm ? APP_FORM : APP_JSON;
+    String mime = asForm ? APP_FORM : APP_JSON;
     body.getContent().addMediaType(mime, mt);
   }
 
   private RequestBody requestBody(Operation operation) {
 
-    var body = operation.getRequestBody();
+    RequestBody body = operation.getRequestBody();
     if (body == null) {
       body = new RequestBody();
       body.setRequired(true);
-      final var content = new Content();
+      Content content = new Content();
       body.setContent(content);
       operation.setRequestBody(body);
     }
@@ -121,7 +126,7 @@ class SchemaDocBuilder {
 
   Schema<?> toSchema(TypeMirror type) {
 
-    final Schema<?> schema = knownTypes.createSchema(typeDef(type));
+    Schema<?> schema = knownTypes.createSchema(typeDef(type));
     if (schema != null) {
       return schema;
     }
@@ -142,9 +147,9 @@ class SchemaDocBuilder {
 
   private Schema<?> buildObjectSchema(TypeMirror type) {
 
-    final var objectSchemaKey = getObjectSchemaName(type);
+    String objectSchemaKey = getObjectSchemaName(type);
 
-    var objectSchema = schemas.get(objectSchemaKey);
+    Schema objectSchema = schemas.get(objectSchemaKey);
     if (objectSchema == null) {
       // Put first to resolve recursive stack overflow
       objectSchema = new ObjectSchema();
@@ -152,7 +157,7 @@ class SchemaDocBuilder {
       populateObjectSchema(type, objectSchema);
     }
 
-    final var ref = new Schema();
+    Schema ref = new Schema();
     ref.$ref("#/components/schemas/" + objectSchemaKey);
     return ref;
   }
@@ -162,23 +167,23 @@ class SchemaDocBuilder {
     Schema<?> itemSchema = new ObjectSchema().format("unknownIterableType");
 
     if (type.getKind() == TypeKind.DECLARED) {
-      final List<? extends TypeMirror> typeArguments = ((DeclaredType) type).getTypeArguments();
+      List<? extends TypeMirror> typeArguments = ((DeclaredType) type).getTypeArguments();
       if (typeArguments.size() == 1) {
         itemSchema = toSchema(typeArguments.get(0));
       }
     }
 
-    final var arraySchema = new ArraySchema();
+    ArraySchema arraySchema = new ArraySchema();
     arraySchema.setItems(itemSchema);
     return arraySchema;
   }
 
   private Schema<?> buildArraySchema(TypeMirror type) {
 
-    final var arrayType = (ArrayType) type;
-    final Schema<?> itemSchema = toSchema(arrayType.getComponentType());
+    ArrayType arrayType = (ArrayType) type;
+    Schema<?> itemSchema = toSchema(arrayType.getComponentType());
 
-    final var arraySchema = new ArraySchema();
+    ArraySchema arraySchema = new ArraySchema();
     arraySchema.setItems(itemSchema);
     return arraySchema;
   }
@@ -188,14 +193,14 @@ class SchemaDocBuilder {
     Schema<?> valueSchema = new ObjectSchema().format("unknownMapValueType");
 
     if (type.getKind() == TypeKind.DECLARED) {
-      final var declaredType = (DeclaredType) type;
-      final List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
+      DeclaredType declaredType = (DeclaredType) type;
+      List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
       if (typeArguments.size() == 2) {
         valueSchema = toSchema(typeArguments.get(1));
       }
     }
 
-    final var mapSchema = new MapSchema();
+    MapSchema mapSchema = new MapSchema();
     mapSchema.setAdditionalProperties(valueSchema);
     return mapSchema;
   }
@@ -211,9 +216,9 @@ class SchemaDocBuilder {
   }
 
   private <T> void populateObjectSchema(TypeMirror objectType, Schema<T> objectSchema) {
-    final var element = types.asElement(objectType);
-    for (final VariableElement field : allFields(element)) {
-      final Schema<?> propSchema = toSchema(field.asType());
+    Element element = types.asElement(objectType);
+    for (VariableElement field : allFields(element)) {
+      Schema<?> propSchema = toSchema(field.asType());
       if (isNotNullable(field)) {
         propSchema.setNullable(Boolean.FALSE);
       }
@@ -260,26 +265,30 @@ class SchemaDocBuilder {
         .anyMatch(m -> m.toString().contains("@") && m.toString().contains("NotNull"));
   }
 
-  /** Gather all the fields (properties) for the given bean element. */
+  /**
+   * Gather all the fields (properties) for the given bean element.
+   */
   private List<VariableElement> allFields(Element element) {
 
-    final List<VariableElement> list = new ArrayList<>();
+    List<VariableElement> list = new ArrayList<>();
     gatherProperties(list, element);
     return list;
   }
 
-  /** Recursively gather all the fields (properties) for the given bean element. */
+  /**
+   * Recursively gather all the fields (properties) for the given bean element.
+   */
   private void gatherProperties(List<VariableElement> fields, Element element) {
 
     if (element == null) {
       return;
     }
     if (element instanceof TypeElement) {
-      final var mappedSuper = types.asElement(((TypeElement) element).getSuperclass());
+      Element mappedSuper = types.asElement(((TypeElement) element).getSuperclass());
       if (mappedSuper != null && !"java.lang.Object".equals(mappedSuper.toString())) {
         gatherProperties(fields, mappedSuper);
       }
-      for (final VariableElement field : ElementFilter.fieldsIn(element.getEnclosedElements())) {
+      for (VariableElement field : ElementFilter.fieldsIn(element.getEnclosedElements())) {
         if (!ignoreField(field)) {
           fields.add(field);
         }
@@ -287,7 +296,9 @@ class SchemaDocBuilder {
     }
   }
 
-  /** Ignore static or transient fields. */
+  /**
+   * Ignore static or transient fields.
+   */
   private boolean ignoreField(VariableElement field) {
     return isStaticOrTransient(field) || isHiddenField(field);
   }
@@ -297,10 +308,8 @@ class SchemaDocBuilder {
     if (HiddenPrism.getOptionalOn(field).isPresent()) {
       return true;
     }
-
-    for (final AnnotationMirror annotationMirror : field.getAnnotationMirrors()) {
-      final var simpleName =
-          annotationMirror.getAnnotationType().asElement().getSimpleName().toString();
+    for (AnnotationMirror annotationMirror : field.getAnnotationMirrors()) {
+      String simpleName = annotationMirror.getAnnotationType().asElement().getSimpleName().toString();
       if ("JsonIgnore".equals(simpleName)) {
         return true;
       }
@@ -309,7 +318,8 @@ class SchemaDocBuilder {
   }
 
   private boolean isStaticOrTransient(VariableElement field) {
-    final var modifiers = field.getModifiers();
+    Set<Modifier> modifiers = field.getModifiers();
     return (modifiers.contains(Modifier.STATIC) || modifiers.contains(Modifier.TRANSIENT));
   }
+
 }

@@ -26,9 +26,10 @@ public class MethodReader {
   private final boolean isVoid;
   private final List<MethodParam> params = new ArrayList<>();
   private final Javadoc javadoc;
-  /** Holds enum Roles that are required for the method. */
+  /**
+   * Holds enum Roles that are required for the method.
+   */
   private final List<String> methodRoles;
-
   private final Optional<ProducesPrism> producesAnnotation;
   private final List<OpenAPIResponsePrism> apiResponses;
   private final ExecutableType actualExecutable;
@@ -41,11 +42,7 @@ public class MethodReader {
   private String webMethodPath;
   private boolean formMarker;
 
-  MethodReader(
-      ControllerReader bean,
-      ExecutableElement element,
-      ExecutableType actualExecutable,
-      ProcessingContext ctx) {
+  MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable, ProcessingContext ctx) {
     this.ctx = ctx;
     this.bean = bean;
     this.element = element;
@@ -165,13 +162,9 @@ public class MethodReader {
     return findAnnotation(prismFunc, element);
   }
 
-  public <A> Optional<A> findAnnotation(
-      Function<Element, Optional<A>> prismFunc, ExecutableElement elem) {
-    final var annotation = prismFunc.apply(elem);
-    if (annotation.isPresent()) {
-      return annotation;
-    }
-    return bean.findMethodAnnotation(prismFunc, elem);
+  public <A> Optional<A> findAnnotation(Function<Element, Optional<A>> prismFunc, ExecutableElement elem) {
+
+    return prismFunc.apply(elem).or(() -> bean.findMethodAnnotation(prismFunc, elem));
   }
 
   private List<String> addTagsToList(Element element, List<String> list) {
@@ -203,20 +196,20 @@ public class MethodReader {
     }
     // non-path parameters default to form or query parameters based on the
     // existence of @Form annotation on the method
-    final var defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
+    ParamType defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
 
     final List<? extends VariableElement> parameters = element.getParameters();
-    for (var i = 0; i < parameters.size(); i++) {
-      final VariableElement p = parameters.get(i);
+    for (int i = 0; i < parameters.size(); i++) {
+      VariableElement p = parameters.get(i);
       TypeMirror typeMirror;
       if (actualParams != null) {
         typeMirror = actualParams.get(i);
       } else {
         typeMirror = p.asType();
       }
-      final var rawType = Util.typeDef(typeMirror);
-      final var type = Util.parse(typeMirror.toString());
-      final var param = new MethodParam(p, type, rawType, ctx, defaultParamType, formMarker);
+      String rawType = Util.typeDef(typeMirror);
+      UType type = Util.parse(typeMirror.toString());
+      MethodParam param = new MethodParam(p, type, rawType, ctx, defaultParamType, formMarker);
       params.add(param);
       param.addImports(bean);
     }
@@ -226,13 +219,15 @@ public class MethodReader {
     buildApiDocumentation(ctx);
   }
 
-  /** Build the OpenAPI documentation for the method / operation. */
+  /**
+   * Build the OpenAPI documentation for the method / operation.
+   */
   public void buildApiDocumentation(ProcessingContext ctx) {
     new MethodDocBuilder(this, ctx.doc()).build();
   }
 
   public List<String> roles() {
-    final var roles = new ArrayList<>(methodRoles);
+    var roles = new ArrayList<>(methodRoles);
     roles.addAll(bean.roles());
     return roles;
   }
@@ -305,7 +300,7 @@ public class MethodReader {
   }
 
   public boolean isFormBody() {
-    for (final MethodParam param : params) {
+    for (MethodParam param : params) {
       if (param.isForm()) {
         return true;
       }
@@ -314,7 +309,7 @@ public class MethodReader {
   }
 
   public String bodyType() {
-    for (final MethodParam param : params) {
+    for (MethodParam param : params) {
       if (param.isBody()) {
         return param.shortType();
       }
@@ -323,7 +318,7 @@ public class MethodReader {
   }
 
   public String bodyName() {
-    for (final MethodParam param : params) {
+    for (MethodParam param : params) {
       if (param.isBody()) {
         return param.name();
       }

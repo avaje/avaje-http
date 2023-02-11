@@ -6,6 +6,7 @@ import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.javadoc.Javadoc;
 import io.avaje.prism.GeneratePrism;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 
@@ -32,7 +33,7 @@ public class MethodDocBuilder {
       return;
     }
 
-    // operation.setOperationId();
+    //operation.setOperationId();
     operation.setSummary(javadoc.getSummary());
     operation.setDescription(javadoc.getDescription());
     operation.setTags(methodReader.tags());
@@ -42,7 +43,7 @@ public class MethodDocBuilder {
       operation.setDeprecated(true);
     }
 
-    final var pathItem = ctx.pathItem(methodReader.fullPath());
+    PathItem pathItem = ctx.pathItem(methodReader.fullPath());
     switch (methodReader.webMethod()) {
       case GET:
         pathItem.setGet(operation);
@@ -61,14 +62,14 @@ public class MethodDocBuilder {
         break;
     }
 
-    for (final MethodParam param : methodReader.params()) {
+    for (MethodParam param : methodReader.params()) {
       param.buildApiDocumentation(this);
     }
 
-    final var responses = new ApiResponses();
+    ApiResponses responses = new ApiResponses();
     operation.setResponses(responses);
 
-    final var response = new ApiResponse();
+    ApiResponse response = new ApiResponse();
     response.setDescription(javadoc.getReturnDescription());
 
     final var produces = methodReader.produces();
@@ -80,7 +81,7 @@ public class MethodDocBuilder {
         response.setDescription("No content");
       }
     } else {
-      response.setContent(ctx.createContent(methodReader.returnType(), contentMediaType));
+    	response.setContent(ctx.createContent(methodReader.returnType(), contentMediaType));
     }
     var override2xx = false;
     for (final var responseAnnotation : methodReader.apiResponses()) {

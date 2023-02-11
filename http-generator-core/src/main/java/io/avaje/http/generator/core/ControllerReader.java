@@ -18,8 +18,9 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-
-/** Reads the type information for the Controller (bean). */
+/**
+ * Reads the type information for the Controller (bean).
+ */
 public final class ControllerReader {
 
   private final ProcessingContext ctx;
@@ -38,9 +39,10 @@ public final class ControllerReader {
   private final boolean hasValid;
   private boolean methodHasValid;
 
-  /** Flag set when the controller is dependent on a request scope type. */
+  /**
+   * Flag set when the controller is dependent on a request scope type.
+   */
   private boolean requestScope;
-
   private boolean docHidden;
 
   public ControllerReader(TypeElement beanType, ProcessingContext ctx) {
@@ -100,9 +102,9 @@ public final class ControllerReader {
   }
 
   private List<Element> initInterfaces() {
-    final List<Element> interfaces = new ArrayList<>();
-    for (final TypeMirror anInterface : beanType.getInterfaces()) {
-      final var ifaceElement = ctx.asElement(anInterface);
+    List<Element> interfaces = new ArrayList<>();
+    for (TypeMirror anInterface : beanType.getInterfaces()) {
+      final Element ifaceElement = ctx.asElement(anInterface);
       final var controller = ControllerPrism.getInstanceOn(ifaceElement);
       if (controller != null && !controller.value().isBlank()
           || PathPrism.getInstanceOn(ifaceElement) != null) {
@@ -113,8 +115,8 @@ public final class ControllerReader {
   }
 
   private List<ExecutableElement> initInterfaceMethods() {
-    final List<ExecutableElement> ifaceMethods = new ArrayList<>();
-    for (final Element anInterface : interfaces) {
+    List<ExecutableElement> ifaceMethods = new ArrayList<>();
+    for (Element anInterface : interfaces) {
       ifaceMethods.addAll(ElementFilter.methodsIn(anInterface.getEnclosedElements()));
     }
     return ifaceMethods;
@@ -185,8 +187,8 @@ public final class ControllerReader {
   }
 
   /**
-   * Return true if the controller has request scoped dependencies. In that case a BeanFactory will
-   * have been generated.
+   * Return true if the controller has request scoped dependencies.
+   * In that case a BeanFactory will have been generated.
    */
   boolean isRequestScoped() {
     return requestScope;
@@ -196,7 +198,7 @@ public final class ControllerReader {
     if (!roles.isEmpty()) {
       ctx.platform().controllerRoles(roles, this);
     }
-    for (final Element element : beanType.getEnclosedElements()) {
+    for (Element element : beanType.getEnclosedElements()) {
       if (element.getKind() == ElementKind.METHOD) {
         readMethod((ExecutableElement) element);
       } else if (element.getKind() == ElementKind.FIELD) {
@@ -213,7 +215,7 @@ public final class ControllerReader {
   }
 
   private boolean methodHasValid() {
-    for (final MethodReader method : methods) {
+    for (MethodReader method : methods) {
       if (method.hasValid()) {
         return true;
       }
@@ -223,19 +225,21 @@ public final class ControllerReader {
 
   private void readField(Element element) {
     if (!requestScope) {
-      final var rawType = element.asType().toString();
+      final String rawType = element.asType().toString();
       requestScope = RequestScopeTypes.isRequestType(rawType);
     }
   }
 
-  /** Read methods from superclasses taking into account generics. */
+  /**
+   * Read methods from superclasses taking into account generics.
+   */
   private void readSuper(TypeElement beanType) {
-    final var superclass = beanType.getSuperclass();
+    TypeMirror superclass = beanType.getSuperclass();
     if (superclass.getKind() != TypeKind.NONE) {
-      final var declaredType = (DeclaredType) superclass;
-      final var superElement = ctx.asElement(superclass);
+      DeclaredType declaredType = (DeclaredType) superclass;
+      final Element superElement = ctx.asElement(superclass);
       if (!"java.lang.Object".equals(superElement.toString())) {
-        for (final Element element : superElement.getEnclosedElements()) {
+        for (Element element : superElement.getEnclosedElements()) {
           if (element.getKind() == ElementKind.METHOD) {
             readMethod((ExecutableElement) element, declaredType);
           } else if (element.getKind() == ElementKind.FIELD) {
@@ -259,7 +263,7 @@ public final class ControllerReader {
       // actual taking into account generics
       actualExecutable = (ExecutableType) ctx.asMemberOf(declaredType, method);
     }
-    final var methodReader = new MethodReader(this, method, actualExecutable, ctx);
+    MethodReader methodReader = new MethodReader(this, method, actualExecutable, ctx);
     if (methodReader.isWebMethod()) {
       methodReader.read();
       methods.add(methodReader);
@@ -297,7 +301,7 @@ public final class ControllerReader {
   }
 
   public void addImportTypes(Set<String> types) {
-    for (final String type : types) {
+    for (String type : types) {
       addImportType(type);
     }
   }

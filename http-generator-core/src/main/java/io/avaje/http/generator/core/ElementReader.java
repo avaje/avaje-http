@@ -3,6 +3,7 @@ package io.avaje.http.generator.core;
 import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 import io.avaje.http.generator.core.openapi.MethodParamDocBuilder;
@@ -28,19 +29,13 @@ public class ElementReader {
   private String paramDefault;
 
   private boolean notNullKotlin;
-  // private boolean notNullJavax;
+  //private boolean notNullJavax;
 
   ElementReader(Element element, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
     this(element, null, Util.typeDef(element.asType()), ctx, defaultType, formMarker);
   }
 
-  ElementReader(
-      Element element,
-      UType type,
-      String rawType,
-      ProcessingContext ctx,
-      ParamType defaultType,
-      boolean formMarker) {
+  ElementReader(Element element, UType type, String rawType, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
     this.ctx = ctx;
     this.element = element;
     this.type = type;
@@ -173,7 +168,7 @@ public class ElementReader {
 
   void addImports(ControllerReader bean) {
     if (typeHandler != null) {
-      final var importType = typeHandler.importType();
+      String importType = typeHandler.importType();
       if (importType != null) {
         bean.addImportType(rawType);
       }
@@ -190,7 +185,9 @@ public class ElementReader {
     }
   }
 
-  /** Build the OpenAPI documentation for this parameter. */
+  /**
+   * Build the OpenAPI documentation for this parameter.
+   */
   void buildApiDocumentation(MethodDocBuilder methodDoc) {
     if (!isPlatformContext()) {
       new MethodParamDocBuilder(methodDoc, this).build();
@@ -214,7 +211,7 @@ public class ElementReader {
       // body passed as method parameter (Helidon)
       return;
     }
-    final var shortType = handlerShortType();
+    String shortType = handlerShortType();
     writer.append("%s  var %s = ", ctx.platform().indent(), varName);
     if (setValue(writer, segments, shortType)) {
       writer.append(";").eol();
@@ -226,15 +223,15 @@ public class ElementReader {
   }
 
   private boolean setValue(Append writer, PathSegments segments, String shortType) {
-    //    if (formMarker && impliedParamType && typeHandler == null) {
-    //      if (ParamType.FORM != paramType) {
-    //        throw new IllegalStateException("Don't get here?");
-    //      }
-    ////      // @Form on method and this type is a "bean" so treat is as a form bean
-    ////      writeForm(writer, shortType, varName, ParamType.FORMPARAM);
-    ////      paramType = ParamType.FORM;
-    ////      return false;
-    //    }
+//    if (formMarker && impliedParamType && typeHandler == null) {
+//      if (ParamType.FORM != paramType) {
+//        throw new IllegalStateException("Don't get here?");
+//      }
+////      // @Form on method and this type is a "bean" so treat is as a form bean
+////      writeForm(writer, shortType, varName, ParamType.FORMPARAM);
+////      paramType = ParamType.FORM;
+////      return false;
+//    }
     if (ParamType.FORM == paramType) {
       writeForm(writer, shortType, varName, ParamType.FORMPARAM);
       return false;
@@ -244,12 +241,12 @@ public class ElementReader {
       return false;
     }
     if (impliedParamType) {
-      final var name = matrixParamName != null ? matrixParamName : varName;
-      final var segment = segments.segment(name);
+      var name = matrixParamName != null ? matrixParamName : varName;
+      PathSegments.Segment segment = segments.segment(name);
       if (segment != null) {
         // path or matrix parameter
-        final var requiredParam = segment.isRequired(varName);
-        final var asMethod =
+        boolean requiredParam = segment.isRequired(varName);
+        String asMethod =
             (typeHandler == null)
                 ? null
                 : (requiredParam) ? typeHandler.asMethod() : typeHandler.toMethod();
@@ -265,7 +262,7 @@ public class ElementReader {
       }
     }
 
-    final var asMethod = (typeHandler == null) ? null : typeHandler.toMethod();
+    String asMethod = (typeHandler == null) ? null : typeHandler.toMethod();
     if (asMethod != null) {
       writer.append(asMethod);
     }
@@ -274,18 +271,19 @@ public class ElementReader {
       // this is a body (POST, PATCH)
       writer.append(ctx.platform().bodyAsClass(type));
 
-    } else if (hasParamDefault()) {
-      ctx.platform().writeReadParameter(writer, paramType, paramName, paramDefault);
     } else {
-      final var checkNull =
-          notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
-      if (checkNull) {
-        writer.append("checkNull(");
-      }
-      ctx.platform().writeReadParameter(writer, paramType, paramName);
-      // writer.append("ctx.%s(\"%s\")", paramType, paramName);
-      if (checkNull) {
-        writer.append(", \"%s\")", paramName);
+      if (hasParamDefault()) {
+        ctx.platform().writeReadParameter(writer, paramType, paramName, paramDefault);
+      } else {
+        boolean checkNull = notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
+        if (checkNull) {
+          writer.append("checkNull(");
+        }
+        ctx.platform().writeReadParameter(writer, paramType, paramName);
+        //writer.append("ctx.%s(\"%s\")", paramType, paramName);
+        if (checkNull) {
+          writer.append(", \"%s\")", paramName);
+        }
       }
     }
 
@@ -295,10 +293,9 @@ public class ElementReader {
     return true;
   }
 
-  private void writeForm(
-      Append writer, String shortType, String varName, ParamType defaultParamType) {
-    final var formBeanType = ctx.typeElement(rawType);
-    final var form = new BeanParamReader(ctx, formBeanType, varName, shortType, defaultParamType);
+  private void writeForm(Append writer, String shortType, String varName, ParamType defaultParamType) {
+    TypeElement formBeanType = ctx.typeElement(rawType);
+    BeanParamReader form = new BeanParamReader(ctx, formBeanType, varName, shortType, defaultParamType);
     form.write(writer);
   }
 

@@ -6,7 +6,6 @@ import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
@@ -46,7 +45,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
     final Set<? extends Element> controllers =
         round.getElementsAnnotatedWith(ctx.typeElement(ControllerPrism.PRISM_TYPE));
-    for (final Element controller : controllers) {
+    for (Element controller : controllers) {
       writeControllerAdapter(controller);
     }
 
@@ -59,7 +58,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
   private void readOpenApiDefinition(RoundEnvironment round) {
     final Set<? extends Element> elements =
         round.getElementsAnnotatedWith(ctx.typeElement(OpenAPIDefinitionPrism.PRISM_TYPE));
-    for (final Element element : elements) {
+    for (Element element : elements) {
       ctx.doc().readApiDefinition(element);
     }
   }
@@ -67,34 +66,36 @@ public abstract class BaseProcessor extends AbstractProcessor {
   private void readTagDefinitions(RoundEnvironment round) {
     Set<? extends Element> elements =
         round.getElementsAnnotatedWith(ctx.typeElement(TagPrism.PRISM_TYPE));
-    for (final Element element : elements) {
+    for (Element element : elements) {
       ctx.doc().addTagDefinition(element);
     }
 
     elements = round.getElementsAnnotatedWith(ctx.typeElement(TagsPrism.PRISM_TYPE));
-    for (final Element element : elements) {
+    for (Element element : elements) {
       ctx.doc().addTagsDefinition(element);
     }
   }
-
+  
   private void writeOpenAPI() {
     ctx.doc().writeApi();
   }
 
   private void writeControllerAdapter(Element controller) {
     if (controller instanceof TypeElement) {
-      final var reader = new ControllerReader((TypeElement) controller, ctx);
+      ControllerReader reader = new ControllerReader((TypeElement) controller, ctx);
       reader.read(true);
       try {
         writeControllerAdapter(ctx, reader);
-      } catch (final Throwable e) {
+      } catch (Throwable e) {
         e.printStackTrace();
         ctx.logError(reader.beanType(), "Failed to write $Route class " + e);
       }
     }
   }
 
-  /** Write the adapter code for the given controller. */
-  public abstract void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader)
-      throws IOException;
+  /**
+   * Write the adapter code for the given controller.
+   */
+  public abstract void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException;
+
 }

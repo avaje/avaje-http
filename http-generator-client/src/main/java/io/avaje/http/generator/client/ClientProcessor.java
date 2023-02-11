@@ -1,6 +1,7 @@
 package io.avaje.http.generator.client;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +15,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.tools.FileObject;
 
 import io.avaje.http.generator.core.ClientPrism;
 import io.avaje.http.generator.core.ControllerReader;
@@ -24,8 +26,7 @@ import io.avaje.http.generator.core.ProcessingContext;
 @SupportedAnnotationTypes({ClientPrism.PRISM_TYPE, ImportPrism.PRISM_TYPE})
 public class ClientProcessor extends AbstractProcessor {
 
-  private static final String METAINF_SERVICES_PROVIDER =
-      "META-INF/services/io.avaje.http.client.HttpApiProvider";
+  private static final String METAINF_SERVICES_PROVIDER = "META-INF/services/io.avaje.http.client.HttpApiProvider";
 
   private final Set<String> generatedClients = new LinkedHashSet<>();
 
@@ -68,24 +69,24 @@ public class ClientProcessor extends AbstractProcessor {
     }
     return false;
   }
-
+  
   private void writeServicesFile() {
     try {
-      final var metaInfWriter = ctx.createMetaInfWriter(METAINF_SERVICES_PROVIDER);
-      final var writer = metaInfWriter.openWriter();
-      for (final String generatedClient : generatedClients) {
+      final FileObject metaInfWriter = ctx.createMetaInfWriter(METAINF_SERVICES_PROVIDER);
+      final Writer writer = metaInfWriter.openWriter();
+      for (String generatedClient : generatedClients) {
         writer.append(generatedClient).append("$Provider\n");
       }
       writer.close();
-    } catch (final IOException e) {
+    } catch (IOException e) {
       ctx.logError(null, "Error writing services file " + e, e);
     }
   }
 
   private void writeForImported(Element importedElement) {
-    for (final AnnotationMirror annotationMirror : importedElement.getAnnotationMirrors()) {
-      for (final AnnotationValue value : annotationMirror.getElementValues().values()) {
-        for (final Object apiClassDef : (List<?>) value.getValue()) {
+    for (AnnotationMirror annotationMirror : importedElement.getAnnotationMirrors()) {
+      for (AnnotationValue value : annotationMirror.getElementValues().values()) {
+        for (Object apiClassDef : (List<?>) value.getValue()) {
           writeImported(apiClassDef.toString());
         }
       }
@@ -94,8 +95,8 @@ public class ClientProcessor extends AbstractProcessor {
 
   private void writeImported(String fullName) {
     // trim .class suffix
-    final var apiClassName = fullName.substring(0, fullName.length() - 6);
-    final var typeElement = ctx.typeElement(apiClassName);
+    String apiClassName = fullName.substring(0, fullName.length() - 6);
+    TypeElement typeElement = ctx.typeElement(apiClassName);
     if (typeElement != null) {
       writeClient(typeElement);
     }
@@ -103,19 +104,19 @@ public class ClientProcessor extends AbstractProcessor {
 
   private void writeClient(Element controller) {
     if (controller instanceof TypeElement) {
-      final var reader = new ControllerReader((TypeElement) controller, ctx);
+      ControllerReader reader = new ControllerReader((TypeElement) controller, ctx);
       reader.read(false);
       try {
         generatedClients.add(writeClientAdapter(ctx, reader));
-      } catch (final Throwable e) {
+      } catch (Throwable e) {
         e.printStackTrace();
         ctx.logError(reader.beanType(), "Failed to write client class " + e);
       }
     }
   }
 
-  protected String writeClientAdapter(ProcessingContext ctx, ControllerReader reader)
-      throws IOException {
+  protected String writeClientAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException {
     return new ClientWriter(reader, ctx, useJsonB).write();
   }
+
 }
