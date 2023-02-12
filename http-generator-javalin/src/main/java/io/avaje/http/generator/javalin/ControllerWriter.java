@@ -89,8 +89,13 @@ class ControllerWriter extends BaseControllerWriter {
 
     for (UType type : jsonTypes.values()) {
       // Support for CompletableFuture's.
-      if (type.isGeneric() && type.mainType().equals("java.util.concurrent.CompletableFuture")) {
+      if (type.mainType().equals("java.util.concurrent.CompletableFuture")) {
         type = type.paramRaw();
+
+        if (this.jsonTypes.containsKey(type.full())) {
+          // Already written before -- we can skip.
+          continue;
+        }
       }
 
       // Everything else
@@ -113,6 +118,12 @@ class ControllerWriter extends BaseControllerWriter {
     }
     if (useJsonB) {
       for (final UType type : jsonTypes.values()) {
+        // Skip trying to assign a global variable value for any UType that is a Completable Future. Because the paramRaw() should
+        // already be in this jsonTypes map anyway and write the assignment all by itself.
+        if (type.mainType().equals("java.util.concurrent.CompletableFuture")) {
+          continue;
+        }
+
         JsonBUtil.writeJsonbType(type, writer);
       }
     }
