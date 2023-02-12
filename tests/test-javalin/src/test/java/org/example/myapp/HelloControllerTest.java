@@ -55,11 +55,12 @@ class HelloControllerTest extends BaseWebTest {
 
     assertThat(beans).hasSize(2);
 
-    final List<HelloDto> helloDtos = client.request()
+    final HttpResponse<List<HelloDto>> helloDtos = client.request()
       .path("hello")
-      .GET().list(HelloDto.class);
+      .GET().asList(HelloDto.class);
 
-    assertThat(helloDtos).hasSize(2);
+    assertThat(helloDtos.statusCode()).isEqualTo(200);
+    assertThat(helloDtos.body()).hasSize(2);
   }
 
   @Test
@@ -74,11 +75,12 @@ class HelloControllerTest extends BaseWebTest {
 
     assertThat(beans).hasSize(2);
 
-    final List<HelloDto> helloDtos = client.request()
+    final HttpResponse<List<HelloDto>> helloDtos = client.request()
       .path("hello/async")
-      .GET().list(HelloDto.class);
+      .GET().asList(HelloDto.class);
 
-    assertThat(helloDtos).hasSize(2);
+    assertThat(helloDtos.statusCode()).isEqualTo(200);
+    assertThat(helloDtos.body()).hasSize(2);
   }
 
   @Test
