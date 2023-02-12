@@ -92,20 +92,47 @@ class ControllerMethodWriter {
   }
 
   private void writeContextReturn() {
+    // Support for CompletableFuture's.
+    final UType type = UType.parse(method.returnType());
+    if (type.mainType().equals("java.util.concurrent.CompletableFuture")) {
+      if (!type.isGeneric()) {
+        throw new IllegalStateException("CompletableFuture must be generic type (e.g. CompletableFuture<String>, CompletableFuture<Void>).");
+      }
+
+      final String futureResultVariableName = "futureResult";
+
+      writer.append("      ctx.future(() -> {").eol();
+      writer.append("        return result.thenAccept(%s -> {", futureResultVariableName).eol();
+      writer.append("    ");
+      this.writeContextReturn(futureResultVariableName);
+      writer.eol().append("        });").eol();
+      writer.append("      });").eol();
+      return;
+    }
+
+    // Everything else
+    this.writeContextReturn("result");
+  }
+
+  private void writeContextReturn(final String resultVariableName) {
     final var produces = method.produces();
     if (produces == null || MediaType.APPLICATION_JSON.getValue().equalsIgnoreCase(produces)) {
       if (useJsonB) {
-        final var uType = UType.parse(method.returnType());
-        writer.append("      %sJsonType.toJson(result, ctx.contentType(\"application/json\").outputStream());", uType.shortName());
+        var uType = UType.parse(method.returnType());
+        if (uType.mainType().equals("java.util.concurrent.CompletableFuture")) {
+          uType = uType.paramRaw();
+        }
+
+        writer.append("      %sJsonType.toJson(%s, ctx.contentType(\"application/json\").outputStream());", uType.shortName(), resultVariableName);
       } else {
-        writer.append("      ctx.json(result);");
+        writer.append("      ctx.json(%s);", resultVariableName);
       }
     } else if (MediaType.TEXT_HTML.getValue().equalsIgnoreCase(produces)) {
-      writer.append("      ctx.html(result);");
+      writer.append("      ctx.html(%s);", resultVariableName);
     } else if (MediaType.TEXT_PLAIN.getValue().equalsIgnoreCase(produces)) {
-      writer.append("      ctx.contentType(\"text/plain\").result(result);");
+      writer.append("      ctx.contentType(\"text/plain\").result(%s);", resultVariableName);
     } else {
-      writer.append("      ctx.contentType(\"%s\").result(result);", produces);
+      writer.append("      ctx.contentType(\"%s\").result(%s);", produces, resultVariableName);
     }
   }
 }
