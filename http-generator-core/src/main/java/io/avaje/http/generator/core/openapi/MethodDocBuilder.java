@@ -1,21 +1,17 @@
 package io.avaje.http.generator.core.openapi;
 
-import javax.lang.model.type.MirroredTypeException;
-import javax.lang.model.type.TypeMirror;
-
-import io.avaje.http.api.MediaType;
+import io.avaje.http.generator.core.HiddenPrism;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.javadoc.Javadoc;
-import io.swagger.v3.oas.annotations.Hidden;
+import io.avaje.prism.GeneratePrism;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 
-/**
- * Build the OpenAPI documentation for a method.
- */
+/** Build the OpenAPI documentation for a method. */
+@GeneratePrism(Deprecated.class)
 public class MethodDocBuilder {
 
   private final Javadoc javadoc;
@@ -32,7 +28,8 @@ public class MethodDocBuilder {
 
   public void build() {
 
-    if (ctx.isOpenApiAvailable() && methodReader.findAnnotation(Hidden.class) != null) {
+    if (ctx.isOpenApiAvailable()
+        && methodReader.findAnnotation(HiddenPrism::getOptionalOn).isPresent()) {
       return;
     }
 
@@ -41,9 +38,8 @@ public class MethodDocBuilder {
     operation.setDescription(javadoc.getDescription());
     operation.setTags(methodReader.tags());
 
-    if (javadoc.isDeprecated()) {
-      operation.setDeprecated(true);
-    } else if (methodReader.findAnnotation(Deprecated.class) != null) {
+    if (javadoc.isDeprecated()
+        || methodReader.findAnnotation(DeprecatedPrism::getOptionalOn).isPresent()) {
       operation.setDeprecated(true);
     }
 
@@ -78,7 +74,7 @@ public class MethodDocBuilder {
 
     final var produces = methodReader.produces();
     final var hasProducesStatus = methodReader.hasProducesStatus();
-    final var contentMediaType = (produces == null) ? MediaType.APPLICATION_JSON : produces;
+    final var contentMediaType = (produces == null) ? "application/json" : produces;
 
     if (methodReader.isVoid()) {
       if (isEmpty(response.getDescription())) {
@@ -102,13 +98,7 @@ public class MethodDocBuilder {
         newResponse.setContent(response.getContent());
         override2xx = !hasProducesStatus;
       }
-      TypeMirror returnType = null;
-      try {
-        // this will always throw
-        responseAnnotation.type();
-      } catch (final MirroredTypeException mte) {
-        returnType = mte.getTypeMirror();
-      }
+      final var returnType = responseAnnotation.type();
 
       if (!"java.lang.Void".equals(returnType.toString())) {
         newResponse.setContent(ctx.createContent(returnType, contentMediaType));

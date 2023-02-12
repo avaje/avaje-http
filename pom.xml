@@ -19,6 +19,8 @@
 
   <properties>
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
+    <swagger.version>2.0.8</swagger.version>
+    <module-info.shade>${project.build.directory}${file.separator}module-info.shade</module-info.shade>
   </properties>
 
   <dependencies>
@@ -56,7 +58,92 @@
         <module>tests</module>
       </modules>
     </profile>
+
+
+    <profile>
+      <id>module-info.shade</id>
+      <activation>
+        <file>
+          <exists>src/etc/activate-shade-module</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.7</version>
+            <executions>
+              <execution>
+                <phase>process-resources</phase>
+                <configuration>
+                  <target>
+                    <property name="input"
+                      value="src${file.separator}main${file.separator}java${file.separator}module-info.java" />
+                    <copy file="${input}" tofile="${module-info.shade}" />
+                    <replaceregexp file="${module-info.shade}" match="(// SHADED:).*" flags="s"
+                      replace="}" />
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <configuration>
+              <artifactSet>
+                <excludes>
+                  <exclude>module-info.java</exclude>
+                </excludes>
+              </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>io.swagger.core.v3:swagger-models</artifact>
+                  <excludes>
+                    <exclude>io/swagger/v3/oas/models/callbacks/**</exclude>
+                    <exclude>io/swagger/v3/oas/models/examples/**</exclude>
+                    <exclude>io/swagger/v3/oas/models/security/**</exclude>
+                    <exclude>io/swagger/v3/oas/models/servers/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>shade</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.moditect</groupId>
+            <artifactId>moditect-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-module-infos</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>add-module-info</goal>
+                </goals>
+                <configuration>
+                  <overwriteExistingFiles>true</overwriteExistingFiles>
+                  <module>
+                    <moduleInfoFile>${module-info.shade}</moduleInfoFile>
+                  </module>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
-</project>
 
+</project>

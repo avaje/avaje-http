@@ -1,7 +1,6 @@
 package io.avaje.http.generator.core;
 
 import java.io.IOException;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -12,12 +11,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-import io.avaje.http.api.Controller;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
-
-@SupportedOptions({"useJavax","useSingleton"})
+@SupportedOptions({"useJavax", "useSingleton"})
 public abstract class BaseProcessor extends AbstractProcessor {
 
   protected ProcessingContext ctx;
@@ -29,10 +23,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
-    Set<String> annotations = new LinkedHashSet<>();
-    annotations.add(Controller.class.getCanonicalName());
-    annotations.add(OpenAPIDefinition.class.getCanonicalName());
-    return annotations;
+    return Set.of(ControllerPrism.PRISM_TYPE, OpenAPIDefinitionPrism.PRISM_TYPE);
   }
 
   @Override
@@ -41,9 +32,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
     this.ctx = new ProcessingContext(processingEnv, providePlatformAdapter());
   }
 
-  /**
-   * Provide the platform specific adapter to use for Javalin, Helidon etc.
-   */
+  /** Provide the platform specific adapter to use for Javalin, Helidon etc. */
   protected abstract PlatformAdapter providePlatformAdapter();
 
   @Override
@@ -54,7 +43,8 @@ public abstract class BaseProcessor extends AbstractProcessor {
       readTagDefinitions(round);
     }
 
-    Set<? extends Element> controllers = round.getElementsAnnotatedWith(Controller.class);
+    final Set<? extends Element> controllers =
+        round.getElementsAnnotatedWith(ctx.typeElement(ControllerPrism.PRISM_TYPE));
     for (Element controller : controllers) {
       writeControllerAdapter(controller);
     }
@@ -66,24 +56,26 @@ public abstract class BaseProcessor extends AbstractProcessor {
   }
 
   private void readOpenApiDefinition(RoundEnvironment round) {
-    Set<? extends Element> elements = round.getElementsAnnotatedWith(OpenAPIDefinition.class);
+    final Set<? extends Element> elements =
+        round.getElementsAnnotatedWith(ctx.typeElement(OpenAPIDefinitionPrism.PRISM_TYPE));
     for (Element element : elements) {
       ctx.doc().readApiDefinition(element);
     }
   }
 
   private void readTagDefinitions(RoundEnvironment round) {
-    Set<? extends Element> elements = round.getElementsAnnotatedWith(Tag.class);
+    Set<? extends Element> elements =
+        round.getElementsAnnotatedWith(ctx.typeElement(TagPrism.PRISM_TYPE));
     for (Element element : elements) {
       ctx.doc().addTagDefinition(element);
     }
 
-    elements = round.getElementsAnnotatedWith(Tags.class);
+    elements = round.getElementsAnnotatedWith(ctx.typeElement(TagsPrism.PRISM_TYPE));
     for (Element element : elements) {
       ctx.doc().addTagsDefinition(element);
     }
   }
-
+  
   private void writeOpenAPI() {
     ctx.doc().writeApi();
   }
