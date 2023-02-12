@@ -314,6 +314,27 @@
 				}
 			}
 		},
+		"/hello/async" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloDto"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/hello/findbyname/{name}" : {
 			"get" : {
 				"tags" : [

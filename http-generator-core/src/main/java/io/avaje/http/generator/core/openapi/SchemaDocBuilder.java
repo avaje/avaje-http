@@ -22,6 +22,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import io.avaje.http.generator.core.HiddenPrism;
+import io.avaje.http.generator.core.UType;
 import io.avaje.http.generator.core.Util;
 import io.avaje.prism.GeneratePrism;
 import io.swagger.v3.oas.models.Operation;
@@ -43,6 +44,7 @@ class SchemaDocBuilder {
   private static final String APP_FORM = "application/x-www-form-urlencoded";
   private static final String APP_JSON = "application/json";
 
+  private final Elements elements;
   private final Types types;
   private final KnownTypes knownTypes;
   private final TypeMirror iterableType;
@@ -52,6 +54,7 @@ class SchemaDocBuilder {
 
   SchemaDocBuilder(Types types, Elements elements) {
     this.types = types;
+    this.elements = elements;
     this.knownTypes = new KnownTypes();
     this.iterableType = types.erasure(elements.getTypeElement("java.lang.Iterable").asType());
     this.mapType = types.erasure(elements.getTypeElement("java.util.Map").asType());
@@ -112,7 +115,6 @@ class SchemaDocBuilder {
   }
 
   private RequestBody requestBody(Operation operation) {
-
     RequestBody body = operation.getRequestBody();
     if (body == null) {
       body = new RequestBody();
@@ -125,7 +127,15 @@ class SchemaDocBuilder {
   }
 
   Schema<?> toSchema(TypeMirror type) {
-
+    UType uType = UType.parse(type);
+    if (uType.mainType().equals("java.util.concurrent.CompletableFuture")) {
+      UType bodyType = uType.paramRaw();
+      if (bodyType.isGeneric()) { // Container type like List, Set etc
+        bodyType = bodyType.paramRaw();
+      }
+      TypeElement typeElement = elements.getTypeElement(bodyType.full());
+      type = typeElement.asType();
+    }
     Schema<?> schema = knownTypes.createSchema(typeDef(type));
     if (schema != null) {
       return schema;

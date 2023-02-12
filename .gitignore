@@ -11,3 +11,4 @@ build/
 */bin/
 *.editorconfig
 *.Module
+dependency-reduced-pom.xml
