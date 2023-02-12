@@ -49,6 +49,7 @@ class SchemaDocBuilder {
   private final KnownTypes knownTypes;
   private final TypeMirror iterableType;
   private final TypeMirror mapType;
+  private final TypeMirror completableFutureType;
 
   private final Map<String, Schema> schemas = new TreeMap<>();
 
@@ -58,6 +59,7 @@ class SchemaDocBuilder {
     this.knownTypes = new KnownTypes();
     this.iterableType = types.erasure(elements.getTypeElement("java.lang.Iterable").asType());
     this.mapType = types.erasure(elements.getTypeElement("java.util.Map").asType());
+    this.completableFutureType = types.erasure(elements.getTypeElement("java.util.concurrent.CompletableFuture").asType());
   }
 
   Map<String, Schema> getSchemas() {
@@ -82,7 +84,6 @@ class SchemaDocBuilder {
   }
 
   private Schema requestFormParamSchema(RequestBody body) {
-
     final Content content = body.getContent();
     MediaType mediaType = content.get(APP_FORM);
 
@@ -103,7 +104,6 @@ class SchemaDocBuilder {
    * Add as request body.
    */
   void addRequestBody(Operation operation, Schema schema, boolean asForm, String description) {
-
     RequestBody body = requestBody(operation);
     body.setDescription(description);
 
@@ -126,15 +126,14 @@ class SchemaDocBuilder {
     return body;
   }
 
+  private static TypeMirror typeArgument(TypeMirror type) {
+    List<? extends TypeMirror> typeArguments = ((DeclaredType) type).getTypeArguments();
+    return typeArguments.get(0);
+  }
+
   Schema<?> toSchema(TypeMirror type) {
-    UType uType = UType.parse(type);
-    if (uType.mainType().equals("java.util.concurrent.CompletableFuture")) {
-      UType bodyType = uType.paramRaw();
-      if (bodyType.isGeneric()) { // Container type like List, Set etc
-        bodyType = bodyType.paramRaw();
-      }
-      TypeElement typeElement = elements.getTypeElement(bodyType.full());
-      type = typeElement.asType();
+    if (types.isAssignable(type, completableFutureType)) {
+      type = typeArgument(type);
     }
     Schema<?> schema = knownTypes.createSchema(typeDef(type));
     if (schema != null) {
@@ -143,20 +142,16 @@ class SchemaDocBuilder {
     if (types.isAssignable(type, mapType)) {
       return buildMapSchema(type);
     }
-
     if (type.getKind() == TypeKind.ARRAY) {
       return buildArraySchema(type);
     }
-
     if (types.isAssignable(type, iterableType)) {
       return buildIterableSchema(type);
     }
-
     return buildObjectSchema(type);
   }
 
   private Schema<?> buildObjectSchema(TypeMirror type) {
-
     String objectSchemaKey = getObjectSchemaName(type);
 
     Schema objectSchema = schemas.get(objectSchemaKey);
@@ -173,7 +168,6 @@ class SchemaDocBuilder {
   }
 
   private Schema<?> buildIterableSchema(TypeMirror type) {
-
     Schema<?> itemSchema = new ObjectSchema().format("unknownIterableType");
 
     if (type.getKind() == TypeKind.DECLARED) {
@@ -189,7 +183,6 @@ class SchemaDocBuilder {
   }
 
   private Schema<?> buildArraySchema(TypeMirror type) {
-
     ArrayType arrayType = (ArrayType) type;
     Schema<?> itemSchema = toSchema(arrayType.getComponentType());
 
@@ -199,7 +192,6 @@ class SchemaDocBuilder {
   }
 
   private Schema<?> buildMapSchema(TypeMirror type) {
-
     Schema<?> valueSchema = new ObjectSchema().format("unknownMapValueType");
 
     if (type.getKind() == TypeKind.DECLARED) {
@@ -216,7 +208,6 @@ class SchemaDocBuilder {
   }
 
   private String getObjectSchemaName(TypeMirror type) {
-
     var canonicalName = Util.trimAnnotations(type.toString());
     final var pos = canonicalName.lastIndexOf('.');
     if (pos > -1) {
@@ -246,7 +237,6 @@ class SchemaDocBuilder {
   }
 
   private void setLengthMinMax(Element element, Schema<?> propSchema) {
-
     SizePrism.getOptionalOn(element)
         .ifPresent(
             size -> {
@@ -279,7 +269,6 @@ class SchemaDocBuilder {
    * Gather all the fields (properties) for the given bean element.
    */
   private List<VariableElement> allFields(Element element) {
-
     List<VariableElement> list = new ArrayList<>();
     gatherProperties(list, element);
     return list;
@@ -289,7 +278,6 @@ class SchemaDocBuilder {
    * Recursively gather all the fields (properties) for the given bean element.
    */
   private void gatherProperties(List<VariableElement> fields, Element element) {
-
     if (element == null) {
       return;
     }
@@ -314,7 +302,6 @@ class SchemaDocBuilder {
   }
 
   private boolean isHiddenField(VariableElement field) {
-
     if (HiddenPrism.getOptionalOn(field).isPresent()) {
       return true;
     }
