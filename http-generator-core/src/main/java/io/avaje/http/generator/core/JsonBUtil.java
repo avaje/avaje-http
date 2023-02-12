@@ -52,10 +52,6 @@ public class JsonBUtil {
   public static void writeJsonbType(UType type, Append writer) {
     // Support for CompletableFuture's.
     if (type.mainType().equals("java.util.concurrent.CompletableFuture")) {
-      if (!type.isGeneric()) {
-        throw new IllegalStateException("CompletableFuture usages must have a generic type defined. e.g. `CompletableFuture<String>` or `CompletableFuture<Void>`.");
-      }
-
       writeJsonbType(type.paramRaw(), writer);
       return;
     }
