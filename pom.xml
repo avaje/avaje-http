@@ -9,12 +9,12 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-parent</artifactId>
-  <version>1.26-SNAPSHOT</version>
+  <version>1.26</version>
   <packaging>pom</packaging>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
-    <tag>avaje-http-parent-1.19</tag>
+    <tag>avaje-http-parent-1.26</tag>
   </scm>
 
   <properties>
@@ -77,11 +77,9 @@
                 <phase>process-resources</phase>
                 <configuration>
                   <target>
-                    <property name="input"
-                      value="src${file.separator}main${file.separator}java${file.separator}module-info.java" />
+                    <property name="input" value="src${file.separator}main${file.separator}java${file.separator}module-info.java" />
                     <copy file="${input}" tofile="${module-info.shade}" />
-                    <replaceregexp file="${module-info.shade}" match="(// SHADED:).*" flags="s"
-                      replace="}" />
+                    <replaceregexp file="${module-info.shade}" match="(// SHADED:).*" flags="s" replace="}" />
                   </target>
                 </configuration>
                 <goals>
