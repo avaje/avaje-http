@@ -5,6 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 import javax.validation.Valid;
 
@@ -140,6 +142,21 @@ class HelloController {
   @Get
   List<HelloDto> getAll() {
     return myService.findAll();
+  }
+
+  @Get("/async")
+  CompletableFuture<List<HelloDto>> getAllAsync() {
+    return CompletableFuture.supplyAsync(() -> {
+      // Simulate a delay as if an actual IO operation is being executed.
+      // This also helps ensure that we aren't just getting lucky with timings.
+      try {
+        Thread.sleep(10L);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+
+      return myService.findAll();
+    }, Executors.newSingleThreadExecutor()); // Example of how to use a custom executor.
   }
 
   //  @Hidden
