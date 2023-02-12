@@ -1,14 +1,12 @@
 package io.avaje.http.generator.core;
 
-import io.avaje.http.api.*;
-import io.avaje.http.generator.core.openapi.MethodDocBuilder;
-import io.avaje.http.generator.core.openapi.MethodParamDocBuilder;
+import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.validation.Valid;
 
-import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
+import io.avaje.http.generator.core.openapi.MethodDocBuilder;
+import io.avaje.http.generator.core.openapi.MethodParamDocBuilder;
 
 public class ElementReader {
 
@@ -62,67 +60,65 @@ public class ElementReader {
     if (typeHandler != null) {
       return false;
     }
-    TypeElement elementType = ctx.typeElement(rawType);
-    var elementRawType = element.asType().toString();
+    final var elementType = ctx.typeElement(rawType);
     return elementType != null
-        && (elementType.getAnnotation(Valid.class) != null
-            || (elementRawType.contains("@") && elementRawType.contains("validation")));
+        && (ValidPrism.getInstanceOn(elementType) != null
+            || JavaxValidPrism.getInstanceOn(elementType) != null);
   }
 
   private void readAnnotations(Element element, ParamType defaultType) {
 
-    notNullKotlin = (element.getAnnotation(org.jetbrains.annotations.NotNull.class) != null);
-    //notNullJavax = (element.getAnnotation(javax.validation.constraints.NotNull.class) != null);
+    notNullKotlin = NotNullPrism.getInstanceOn(element) != null;
 
-    Default defaultVal = element.getAnnotation(Default.class);
+    final var defaultVal = DefaultPrism.getInstanceOn(element);
     if (defaultVal != null) {
       this.paramDefault = defaultVal.value();
     }
-    Form form = element.getAnnotation(Form.class);
+    final var form = FormPrism.getInstanceOn(element);
     if (form != null) {
       this.paramType = ParamType.FORM;
       return;
     }
-    BeanParam beanParam = element.getAnnotation(BeanParam.class);
+    final var beanParam = BeanParamPrism.getInstanceOn(element);
     if (beanParam != null) {
       this.paramType = ParamType.BEANPARAM;
       return;
     }
-    QueryParam queryParam = element.getAnnotation(QueryParam.class);
+    final var queryParam = QueryParamPrism.getInstanceOn(element);
     if (queryParam != null) {
       this.paramName = nameFrom(queryParam.value(), varName);
       this.paramType = ParamType.QUERYPARAM;
       return;
     }
-    FormParam formParam = element.getAnnotation(FormParam.class);
+    final var formParam = FormParamPrism.getInstanceOn(element);
     if (formParam != null) {
       this.paramName = nameFrom(formParam.value(), varName);
       this.paramType = ParamType.FORMPARAM;
       return;
     }
-    Cookie cookieParam = element.getAnnotation(Cookie.class);
+    final var cookieParam = CookiePrism.getInstanceOn(element);
     if (cookieParam != null) {
       this.paramName = nameFrom(cookieParam.value(), varName);
       this.paramType = ParamType.COOKIE;
       this.paramDefault = null;
       return;
     }
-    Header headerParam = element.getAnnotation(Header.class);
+    final var headerParam = HeaderPrism.getInstanceOn(element);
     if (headerParam != null) {
       this.paramName = nameFrom(headerParam.value(), Util.initcapSnake(snakeName));
       this.paramType = ParamType.HEADER;
       this.paramDefault = null;
       return;
     }
-   
-    MatrixParam matrixParam = element.getAnnotation(MatrixParam.class);
+
+    final var matrixParam = MatrixParamPrism.getInstanceOn(element);
     if (matrixParam != null) {
       this.matrixParamName = nameFrom(matrixParam.value(), varName);
       this.paramType = defaultType;
       this.impliedParamType = true;
       return;
     }
-    
+
     if (paramType == null) {
       this.impliedParamType = true;
       if (typeHandler != null) {
@@ -210,11 +206,8 @@ public class ElementReader {
   }
 
   void writeCtxGet(Append writer, PathSegments segments) {
-    if (isPlatformContext()) {
-      // no conversion for this parameter
-      return;
-    }
-    if (paramType == ParamType.BODY && ctx.platform().isBodyMethodParam()) {
+    if (isPlatformContext()
+        || (paramType == ParamType.BODY && ctx.platform().isBodyMethodParam())) {
       // body passed as method parameter (Helidon)
       return;
     }

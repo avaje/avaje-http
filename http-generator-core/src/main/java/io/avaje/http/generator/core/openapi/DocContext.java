@@ -1,16 +1,9 @@
 package io.avaje.http.generator.core.openapi;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.PathItem;
-import io.swagger.v3.oas.models.Paths;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.Schema;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -22,14 +15,21 @@ import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Map;
-import java.util.TreeMap;
 
-/**
- * Context for building the OpenAPI documentation.
- */
+import io.avaje.http.generator.core.OpenAPIDefinitionPrism;
+import io.avaje.http.generator.core.TagPrism;
+import io.avaje.http.generator.core.TagsPrism;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.tags.Tag;
+
+/** Context for building the OpenAPI documentation. */
 public class DocContext {
 
   private final boolean openApiAvailable;
@@ -129,8 +129,8 @@ public class DocContext {
     return components;
   }
 
-  private io.swagger.v3.oas.models.tags.Tag createTagItem(Tag tag){
-    io.swagger.v3.oas.models.tags.Tag tagsItem = new io.swagger.v3.oas.models.tags.Tag();
+  private Tag createTagItem(TagPrism tag) {
+    final var tagsItem = new Tag();
     tagsItem.setName(tag.name());
     tagsItem.setDescription(tag.description());
     // tagsItem.setExtensions(tag.extensions());  # Not sure about the extensions
@@ -139,27 +139,25 @@ public class DocContext {
   }
 
   public void addTagsDefinition(Element element) {
-    Tags tags = element.getAnnotation(Tags.class);
-    if(tags == null)
-      return;
+    final var tags = TagsPrism.getInstanceOn(element);
+    if (tags == null) return;
 
-    for(Tag tag: tags.value()){
+    for(var tag : tags.value()){
       openAPI.addTagsItem(createTagItem(tag));
     }
   }
 
-  public void addTagDefinition(Element element){
-    Tag tag = element.getAnnotation(Tag.class);
-    if(tag == null)
-      return;
+  public void addTagDefinition(Element element) {
+    final var tag = TagPrism.getInstanceOn(element);
+    if (tag == null) return;
 
     openAPI.addTagsItem(createTagItem(tag));
   }
 
   public void readApiDefinition(Element element) {
 
-    OpenAPIDefinition openApi = element.getAnnotation(OpenAPIDefinition.class);
-    io.swagger.v3.oas.annotations.info.Info info = openApi.info();
+    final var openApi = OpenAPIDefinitionPrism.getInstanceOn(element);
+    final var info = openApi.info();
     if (!info.title().isEmpty()) {
       openAPI.getInfo().setTitle(info.title());
     }
@@ -194,5 +192,4 @@ public class DocContext {
   private void logError(Element e, String msg, Object... args) {
     messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
-
 }

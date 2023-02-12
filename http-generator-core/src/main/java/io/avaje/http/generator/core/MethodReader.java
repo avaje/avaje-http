@@ -1,10 +1,12 @@
 package io.avaje.http.generator.core;
 
-import io.avaje.http.api.*;
-import io.avaje.http.generator.core.javadoc.Javadoc;
-import io.avaje.http.generator.core.openapi.MethodDocBuilder;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -12,15 +14,9 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.validation.Valid;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import io.avaje.http.generator.core.javadoc.Javadoc;
+import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 
 public class MethodReader {
 
@@ -34,8 +30,8 @@ public class MethodReader {
    * Holds enum Roles that are required for the method.
    */
   private final List<String> methodRoles;
-  private final Optional<Produces> producesAnnotation;
-  private final List<OpenAPIResponse> apiResponses;
+  private final Optional<ProducesPrism> producesAnnotation;
+  private final List<OpenAPIResponsePrism> apiResponses;
   private final ExecutableType actualExecutable;
   private final List<? extends TypeMirror> actualParams;
   private final PathSegments pathSegments;
@@ -54,23 +50,18 @@ public class MethodReader {
     this.actualParams = (actualExecutable == null) ? null : actualExecutable.getParameterTypes();
     this.isVoid = element.getReturnType().getKind() == TypeKind.VOID;
     this.methodRoles = Util.findRoles(element);
-    this.producesAnnotation = Optional.ofNullable(findAnnotation(Produces.class));
+    this.producesAnnotation = findAnnotation(ProducesPrism::getOptionalOn);
     initWebMethodViaAnnotation();
 
-    this.superMethods = ctx.superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
+    this.superMethods =
+        ctx.superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
     superMethods.forEach(m -> methodRoles.addAll(Util.findRoles(m)));
 
     this.apiResponses = buildApiResponses();
     this.javadoc = buildJavadoc(element, ctx);
 
     if (isWebMethod()) {
-      Class<Annotation> jakartaValidAnnotation;
-      try {
-        jakartaValidAnnotation = jakartaValidAnnotation();
-      } catch (final ClassNotFoundException e) {
-        jakartaValidAnnotation = null;
-      }
-      this.hasValid = hasValid(jakartaValidAnnotation);
+      this.hasValid = initValid();
       this.pathSegments = PathSegments.parse(Util.combinePath(bean.path(), webMethodPath));
     } else {
       this.hasValid = false;
@@ -80,30 +71,28 @@ public class MethodReader {
 
   private Javadoc buildJavadoc(ExecutableElement element, ProcessingContext ctx) {
     return Optional.of(Javadoc.parse(ctx.docComment(element)))
-      .filter(Predicate.not(Javadoc::isEmpty))
-      .orElseGet(() -> superMethods.stream()
-        .map(e -> Javadoc.parse(ctx.docComment(e)))
         .filter(Predicate.not(Javadoc::isEmpty))
-        .findFirst()
-        .orElse(Javadoc.parse("")));
+        .orElseGet(
+            () ->
+                superMethods.stream()
+                    .map(e -> Javadoc.parse(ctx.docComment(e)))
+                    .filter(Predicate.not(Javadoc::isEmpty))
+                    .findFirst()
+                    .orElse(Javadoc.parse("")));
   }
 
-  private boolean hasValid(Class<Annotation> jakartaValidAnnotation) {
-    return findAnnotation(Valid.class) != null
-      || (jakartaValidAnnotation != null && findAnnotation(jakartaValidAnnotation) != null)
-      || superMethodHasValid(jakartaValidAnnotation);
+  private boolean initValid() {
+    return findAnnotation(ValidPrism::getOptionalOn).isPresent()
+        || findAnnotation(JavaxValidPrism::getOptionalOn).isPresent()
+        || superMethodHasValid();
   }
 
-  private boolean superMethodHasValid(Class<Annotation> jakartaAnnotation) {
+  private boolean superMethodHasValid() {
     return superMethods.stream()
-      .anyMatch(e ->
-        findAnnotation(Valid.class, e) != null
-          || (jakartaAnnotation != null && findAnnotation(jakartaAnnotation, e) != null));
-  }
-
-  @SuppressWarnings("unchecked")
-  private static Class<Annotation> jakartaValidAnnotation() throws ClassNotFoundException {
-    return (Class<Annotation>) Class.forName(Valid.class.getCanonicalName().replace("javax", "jakarta"));
+        .anyMatch(
+            e ->
+                findAnnotation(ValidPrism::getOptionalOn).isPresent()
+                    || findAnnotation(JavaxValidPrism::getOptionalOn).isPresent());
   }
 
   @Override
@@ -112,34 +101,24 @@ public class MethodReader {
   }
 
   private void initWebMethodViaAnnotation() {
-    Form form = findAnnotation(Form.class);
-    if (form != null) {
+
+    if (findAnnotation(FormPrism::getOptionalOn).isPresent()) {
       this.formMarker = true;
     }
-    Get get = findAnnotation(Get.class);
-    if (get != null) {
-      initSetWebMethod(WebMethod.GET, get.value());
-      return;
-    }
-    Put put = findAnnotation(Put.class);
-    if (put != null) {
-      initSetWebMethod(WebMethod.PUT, put.value());
-      return;
-    }
-    Post post = findAnnotation(Post.class);
-    if (post != null) {
-      initSetWebMethod(WebMethod.POST, post.value());
-      return;
-    }
-    Patch patch = findAnnotation(Patch.class);
-    if (patch != null) {
-      initSetWebMethod(WebMethod.PATCH, patch.value());
-      return;
-    }
-    Delete delete = findAnnotation(Delete.class);
-    if (delete != null) {
-      initSetWebMethod(WebMethod.DELETE, delete.value());
-    }
+
+    findAnnotation(GetPrism::getOptionalOn)
+        .ifPresent(get -> initSetWebMethod(WebMethod.GET, get.value()));
+
+    findAnnotation(PutPrism::getOptionalOn)
+        .ifPresent(put -> initSetWebMethod(WebMethod.PUT, put.value()));
+
+    findAnnotation(PostPrism::getOptionalOn)
+        .ifPresent(post -> initSetWebMethod(WebMethod.POST, post.value()));
+
+    findAnnotation(PatchPrism::getOptionalOn)
+        .ifPresent(patch -> initSetWebMethod(WebMethod.PATCH, patch.value()));
+    findAnnotation(DeletePrism::getOptionalOn)
+        .ifPresent(delete -> initSetWebMethod(WebMethod.DELETE, delete.value()));
   }
 
   private void initSetWebMethod(WebMethod webMethod, String value) {
@@ -151,54 +130,54 @@ public class MethodReader {
     return javadoc;
   }
 
-  private List<OpenAPIResponse> buildApiResponses() {
+  private List<OpenAPIResponsePrism> buildApiResponses() {
+
     final var container =
-      Optional.ofNullable(findAnnotation(OpenAPIResponses.class)).stream()
-        .map(OpenAPIResponses::value)
-        .flatMap(Arrays::stream);
+        findAnnotation(OpenAPIResponsesPrism::getOptionalOn).stream()
+            .map(OpenAPIResponsesPrism::value)
+            .flatMap(List::stream);
 
     final var methodResponses =
-      Stream.concat(
-        container, Arrays.stream(element.getAnnotationsByType(OpenAPIResponse.class)));
+        Stream.concat(container, OpenAPIResponsePrism.getAllInstancesOn(element).stream());
 
     final var superMethodResponses =
-      superMethods.stream()
-        .flatMap(
-          method ->
-            Stream.concat(
-              Optional.ofNullable(findAnnotation(OpenAPIResponses.class, method)).stream()
-                .map(OpenAPIResponses::value)
-                .flatMap(Arrays::stream),
-              Arrays.stream(method.getAnnotationsByType(OpenAPIResponse.class))));
-    
-    var responses =
+        superMethods.stream()
+            .flatMap(
+                method ->
+                    Stream.concat(
+                        findAnnotation(OpenAPIResponsesPrism::getOptionalOn, method).stream()
+                            .map(OpenAPIResponsesPrism::value)
+                            .flatMap(List::stream),
+                        OpenAPIResponsePrism.getAllInstancesOn(method).stream()));
+
+    final var responses =
         Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
-    
+
     responses.addAll(bean.openApiResponses());
+
     return responses;
   }
 
-  public <A extends Annotation> A findAnnotation(Class<A> type) {
-    return findAnnotation(type, element);
+  public <A> Optional<A> findAnnotation(Function<Element, Optional<A>> prismFunc) {
+    return findAnnotation(prismFunc, element);
   }
 
-  public <A extends Annotation> A findAnnotation(Class<A> type, ExecutableElement elem) {
-    final var annotation = elem.getAnnotation(type);
-    if (annotation != null) {
-      return annotation;
-    }
-    return bean.findMethodAnnotation(type, elem);
+  public <A> Optional<A> findAnnotation(Function<Element, Optional<A>> prismFunc, ExecutableElement elem) {
+
+    return prismFunc.apply(elem).or(() -> bean.findMethodAnnotation(prismFunc, elem));
   }
 
   private List<String> addTagsToList(Element element, List<String> list) {
     if (element == null) {
       return list;
     }
-    if (element.getAnnotation(Tag.class) != null) {
-      list.add(element.getAnnotation(Tag.class).name());
-    }
-    if (element.getAnnotation(Tags.class) != null) {
-      for (Tag tag : element.getAnnotation(Tags.class).value()) {
+
+    TagPrism.getAllInstancesOn(element).forEach(t -> list.add(t.name()));
+
+    final var tags = TagsPrism.getInstanceOn(element);
+
+    if (tags != null) {
+      for (final var tag : tags.value()) {
         list.add(tag.name());
       }
     }
@@ -274,14 +253,14 @@ public class MethodReader {
   }
 
   public boolean hasProducesStatus() {
-    return producesAnnotation.map(Produces::defaultStatus).filter(s -> s > 0).isPresent();
+    return producesAnnotation.map(ProducesPrism::defaultStatus).filter(s -> s > 0).isPresent();
   }
 
   public String produces() {
-    return producesAnnotation.map(Produces::value).orElseGet(bean::produces);
+    return producesAnnotation.map(ProducesPrism::value).orElseGet(bean::produces);
   }
 
-  public List<OpenAPIResponse> apiResponses() {
+  public List<OpenAPIResponsePrism> apiResponses() {
     return apiResponses;
   }
 
@@ -294,9 +273,10 @@ public class MethodReader {
 
   public String statusCode() {
     return producesAnnotation
-        .map(Produces::defaultStatus)
+        .map(ProducesPrism::defaultStatus)
         .filter(s -> s > 0)
-        .orElseGet(() -> webMethod.statusCode(isVoid)).toString();
+        .orElseGet(() -> webMethod.statusCode(isVoid))
+        .toString();
   }
 
   public PathSegments pathSegments() {

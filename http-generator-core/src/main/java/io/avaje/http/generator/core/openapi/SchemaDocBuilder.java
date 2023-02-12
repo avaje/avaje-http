@@ -1,15 +1,12 @@
 package io.avaje.http.generator.core.openapi;
 
-import io.avaje.http.generator.core.Util;
-import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.ArraySchema;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.MapSchema;
-import io.swagger.v3.oas.models.media.MediaType;
-import io.swagger.v3.oas.models.media.ObjectSchema;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.RequestBody;
+import static io.avaje.http.generator.core.Util.typeDef;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -23,19 +20,24 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
-import static io.avaje.http.generator.core.Util.typeDef;
+import io.avaje.http.generator.core.HiddenPrism;
+import io.avaje.http.generator.core.Util;
+import io.avaje.prism.GeneratePrism;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MapSchema;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.ObjectSchema;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
-/**
- * Help build OpenAPI Schema objects.
- */
+/** Help build OpenAPI Schema objects. */
+@GeneratePrism(jakarta.validation.constraints.Size.class)
+@GeneratePrism(jakarta.validation.constraints.Email.class)
+@GeneratePrism(value = javax.validation.constraints.Size.class, name = "JavaxSizePrism")
+@GeneratePrism(value = javax.validation.constraints.Email.class, name = "JavaxEmailPrism")
 class SchemaDocBuilder {
 
   private static final String APP_FORM = "application/x-www-form-urlencoded";
@@ -227,26 +229,40 @@ class SchemaDocBuilder {
   }
 
   private void setFormatFromValidation(Element element, Schema<?> propSchema) {
-    if (element.getAnnotation(Email.class) != null) {
+    if (EmailPrism.getOptionalOn(element).isPresent()
+        || JavaxEmailPrism.getOptionalOn(element).isPresent()) {
       propSchema.setFormat("email");
     }
   }
 
   private void setLengthMinMax(Element element, Schema<?> propSchema) {
-    final Size size = element.getAnnotation(Size.class);
-    if (size != null) {
-      if (size.min() > 0) {
-        propSchema.setMinLength(size.min());
-      }
-      if (size.max() > 0) {
-        propSchema.setMaxLength(size.max());
-      }
-    }
+
+    SizePrism.getOptionalOn(element)
+        .ifPresent(
+            size -> {
+              if (size.min() > 0) {
+                propSchema.setMinLength(size.min());
+              }
+              if (size.max() > 0) {
+                propSchema.setMaxLength(size.max());
+              }
+            });
+
+    JavaxSizePrism.getOptionalOn(element)
+        .ifPresent(
+            size -> {
+              if (size.min() > 0) {
+                propSchema.setMinLength(size.min());
+              }
+              if (size.max() > 0) {
+                propSchema.setMaxLength(size.max());
+              }
+            });
   }
 
   private boolean isNotNullable(Element element) {
-    return element.getAnnotation(org.jetbrains.annotations.NotNull.class) != null
-      || element.getAnnotation(javax.validation.constraints.NotNull.class) != null;
+    return element.getAnnotationMirrors().stream()
+        .anyMatch(m -> m.toString().contains("@") && m.toString().contains("NotNull"));
   }
 
   /**
@@ -289,8 +305,7 @@ class SchemaDocBuilder {
 
   private boolean isHiddenField(VariableElement field) {
 
-    Hidden hidden = field.getAnnotation(Hidden.class);
-    if (hidden != null) {
+    if (HiddenPrism.getOptionalOn(field).isPresent()) {
       return true;
     }
     for (AnnotationMirror annotationMirror : field.getAnnotationMirrors()) {
