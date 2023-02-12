@@ -106,7 +106,7 @@ class ControllerMethodWriter {
       writer.append("    ");
       this.writeContextReturn(futureResultVariableName);
       writer.eol().append("        });").eol();
-      writer.append("      });").eol();
+      writer.append("      });");
       return;
     }
 
