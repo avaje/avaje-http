@@ -9,12 +9,12 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-parent</artifactId>
-  <version>1.27-SNAPSHOT</version>
+  <version>1.27</version>
   <packaging>pom</packaging>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
-    <tag>avaje-http-parent-1.19</tag>
+    <tag>avaje-http-parent-1.27</tag>
   </scm>
 
   <properties>
