@@ -1,6 +1,7 @@
 package io.avaje.http.generator.jex;
 
-import io.avaje.http.api.MediaType;
+import java.util.List;
+
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
@@ -8,8 +9,7 @@ import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.Util;
 import io.avaje.http.generator.core.WebMethod;
-
-import java.util.List;
+import io.avaje.http.generator.core.openapi.MediaType;
 
 /**
  * Write code to register Web route for a given controller method.
@@ -88,12 +88,12 @@ class ControllerMethodWriter {
   }
 
   private void writeContextReturn() {
-    final String produces = method.produces();
-    if (produces == null || produces.equalsIgnoreCase(MediaType.APPLICATION_JSON)) {
+    final var produces = method.produces();
+    if (produces == null || produces.equalsIgnoreCase(MediaType.APPLICATION_JSON.getValue())) {
       writer.append("ctx.json(");
-    } else if (produces.equalsIgnoreCase(MediaType.TEXT_HTML)) {
+    } else if (produces.equalsIgnoreCase(MediaType.TEXT_HTML.getValue())) {
       writer.append("ctx.html(");
-    } else if (produces.equalsIgnoreCase(MediaType.TEXT_PLAIN)) {
+    } else if (produces.equalsIgnoreCase(MediaType.TEXT_PLAIN.getValue())) {
       writer.append("ctx.text(");
     } else {
       writer.append("ctx.contentType(\"%s\").write(", produces);

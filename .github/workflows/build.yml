@@ -35,7 +35,7 @@ jobs:
         run: |
           if (( JAVA_VERSION < 19 ));
           then
-             mvn clean test -pl "!:avaje-http-nima-generator"
+             mvn clean package -pl "!:avaje-http-nima-generator"
           else
-             mvn clean test
+             mvn clean package
           fi

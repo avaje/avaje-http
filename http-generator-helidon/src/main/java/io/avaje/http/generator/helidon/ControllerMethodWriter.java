@@ -1,14 +1,14 @@
 package io.avaje.http.generator.helidon;
 
-import io.avaje.http.api.MediaType;
+import java.util.List;
+
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.WebMethod;
-
-import java.util.List;
+import io.avaje.http.generator.core.openapi.MediaType;
 
 /**
  * Write code to register Web route for a given controller method.
@@ -96,11 +96,11 @@ class ControllerMethodWriter {
     final String produces = method.produces();
     if (produces == null) {
       // let it be automatically set
-    } else if (MediaType.APPLICATION_JSON.equalsIgnoreCase(produces)) {
+    } else if (MediaType.APPLICATION_JSON.getValue().equalsIgnoreCase(produces)) {
       writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.APPLICATION_JSON);").eol();
-    } else if (MediaType.TEXT_HTML.equalsIgnoreCase(produces)) {
+    } else if (MediaType.TEXT_HTML.getValue().equalsIgnoreCase(produces)) {
       writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_HTML);").eol();
-    } else if (MediaType.TEXT_PLAIN.equalsIgnoreCase(produces)) {
+    } else if (MediaType.TEXT_PLAIN.getValue().equalsIgnoreCase(produces)) {
       writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.TEXT_PLAIN);").eol();
     } else {
       writer.append("    res.writerContext().contentType(io.helidon.common.http.MediaType.parse(\"%s\"));", produces).eol();

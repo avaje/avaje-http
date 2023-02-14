@@ -1,25 +1,29 @@
 package io.avaje.http.generator.client;
 
-import io.avaje.http.api.Client;
-import io.avaje.http.generator.core.ControllerReader;
-import io.avaje.http.generator.core.JsonBUtil;
-import io.avaje.http.generator.core.ProcessingContext;
-
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.tools.FileObject;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.tools.FileObject;
+
+import io.avaje.http.generator.core.ClientPrism;
+import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.ImportPrism;
+import io.avaje.http.generator.core.JsonBUtil;
+import io.avaje.http.generator.core.ProcessingContext;
+
+@SupportedAnnotationTypes({ClientPrism.PRISM_TYPE, ImportPrism.PRISM_TYPE})
 public class ClientProcessor extends AbstractProcessor {
 
   private static final String METAINF_SERVICES_PROVIDER = "META-INF/services/io.avaje.http.client.HttpApiProvider";
@@ -44,14 +48,6 @@ public class ClientProcessor extends AbstractProcessor {
   }
 
   @Override
-  public Set<String> getSupportedAnnotationTypes() {
-    Set<String> annotations = new LinkedHashSet<>();
-    annotations.add(Client.class.getCanonicalName());
-    annotations.add(Client.Import.class.getCanonicalName());
-    return annotations;
-  }
-
-  @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     this.processingEnv = processingEnv;
@@ -60,10 +56,12 @@ public class ClientProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
-    for (Element controller : round.getElementsAnnotatedWith(Client.class)) {
+    for (final Element controller :
+        round.getElementsAnnotatedWith(ctx.typeElement(ClientPrism.PRISM_TYPE))) {
       writeClient(controller);
     }
-    for (Element importedElement : round.getElementsAnnotatedWith(Client.Import.class)) {
+    for (final Element importedElement :
+        round.getElementsAnnotatedWith(ctx.typeElement(ImportPrism.PRISM_TYPE))) {
       writeForImported(importedElement);
     }
     if (round.processingOver()) {
@@ -71,7 +69,7 @@ public class ClientProcessor extends AbstractProcessor {
     }
     return false;
   }
-
+  
   private void writeServicesFile() {
     try {
       final FileObject metaInfWriter = ctx.createMetaInfWriter(METAINF_SERVICES_PROVIDER);

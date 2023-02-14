@@ -122,6 +122,13 @@ public class UtilTest {
 
     assertThat(type.importTypes()).containsExactly("java.util.concurrent.CompletableFuture", "java.util.List", "org.example.Repo");
     assertThat(type.shortType()).isEqualTo("CompletableFuture<List<Repo>>");
+
+    assertThat(type.mainType()).isEqualTo("java.util.concurrent.CompletableFuture");
+    UType param = type.paramRaw();
+    assertThat(param.isGeneric()).isTrue();
+    assertThat(param.full()).isEqualTo("java.util.List<org.example.Repo>");
+    UType uType = param.paramRaw();
+    assertThat(uType.full()).isEqualTo("org.example.Repo");
   }
 
   @Test

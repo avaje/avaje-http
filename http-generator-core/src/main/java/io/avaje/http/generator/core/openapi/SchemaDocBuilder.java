@@ -1,15 +1,12 @@
 package io.avaje.http.generator.core.openapi;
 
-import io.avaje.http.generator.core.Util;
-import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.ArraySchema;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.MapSchema;
-import io.swagger.v3.oas.models.media.MediaType;
-import io.swagger.v3.oas.models.media.ObjectSchema;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.RequestBody;
+import static io.avaje.http.generator.core.Util.typeDef;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -23,36 +20,46 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
-import static io.avaje.http.generator.core.Util.typeDef;
+import io.avaje.http.generator.core.HiddenPrism;
+import io.avaje.http.generator.core.UType;
+import io.avaje.http.generator.core.Util;
+import io.avaje.prism.GeneratePrism;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MapSchema;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.ObjectSchema;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
-/**
- * Help build OpenAPI Schema objects.
- */
+/** Help build OpenAPI Schema objects. */
+@GeneratePrism(jakarta.validation.constraints.Size.class)
+@GeneratePrism(jakarta.validation.constraints.Email.class)
+@GeneratePrism(value = javax.validation.constraints.Size.class, name = "JavaxSizePrism")
+@GeneratePrism(value = javax.validation.constraints.Email.class, name = "JavaxEmailPrism")
 class SchemaDocBuilder {
 
   private static final String APP_FORM = "application/x-www-form-urlencoded";
   private static final String APP_JSON = "application/json";
 
+  private final Elements elements;
   private final Types types;
   private final KnownTypes knownTypes;
   private final TypeMirror iterableType;
   private final TypeMirror mapType;
+  private final TypeMirror completableFutureType;
 
   private final Map<String, Schema> schemas = new TreeMap<>();
 
   SchemaDocBuilder(Types types, Elements elements) {
     this.types = types;
+    this.elements = elements;
     this.knownTypes = new KnownTypes();
     this.iterableType = types.erasure(elements.getTypeElement("java.lang.Iterable").asType());
     this.mapType = types.erasure(elements.getTypeElement("java.util.Map").asType());
+    this.completableFutureType = types.erasure(elements.getTypeElement("java.util.concurrent.CompletableFuture").asType());
   }
 
   Map<String, Schema> getSchemas() {
@@ -77,7 +84,6 @@ class SchemaDocBuilder {
   }
 
   private Schema requestFormParamSchema(RequestBody body) {
-
     final Content content = body.getContent();
     MediaType mediaType = content.get(APP_FORM);
 
@@ -98,7 +104,6 @@ class SchemaDocBuilder {
    * Add as request body.
    */
   void addRequestBody(Operation operation, Schema schema, boolean asForm, String description) {
-
     RequestBody body = requestBody(operation);
     body.setDescription(description);
 
@@ -110,7 +115,6 @@ class SchemaDocBuilder {
   }
 
   private RequestBody requestBody(Operation operation) {
-
     RequestBody body = operation.getRequestBody();
     if (body == null) {
       body = new RequestBody();
@@ -122,8 +126,15 @@ class SchemaDocBuilder {
     return body;
   }
 
-  Schema<?> toSchema(TypeMirror type) {
+  private static TypeMirror typeArgument(TypeMirror type) {
+    List<? extends TypeMirror> typeArguments = ((DeclaredType) type).getTypeArguments();
+    return typeArguments.get(0);
+  }
 
+  Schema<?> toSchema(TypeMirror type) {
+    if (types.isAssignable(type, completableFutureType)) {
+      type = typeArgument(type);
+    }
     Schema<?> schema = knownTypes.createSchema(typeDef(type));
     if (schema != null) {
       return schema;
@@ -131,20 +142,16 @@ class SchemaDocBuilder {
     if (types.isAssignable(type, mapType)) {
       return buildMapSchema(type);
     }
-
     if (type.getKind() == TypeKind.ARRAY) {
       return buildArraySchema(type);
     }
-
     if (types.isAssignable(type, iterableType)) {
       return buildIterableSchema(type);
     }
-
     return buildObjectSchema(type);
   }
 
   private Schema<?> buildObjectSchema(TypeMirror type) {
-
     String objectSchemaKey = getObjectSchemaName(type);
 
     Schema objectSchema = schemas.get(objectSchemaKey);
@@ -161,7 +168,6 @@ class SchemaDocBuilder {
   }
 
   private Schema<?> buildIterableSchema(TypeMirror type) {
-
     Schema<?> itemSchema = new ObjectSchema().format("unknownIterableType");
 
     if (type.getKind() == TypeKind.DECLARED) {
@@ -177,7 +183,6 @@ class SchemaDocBuilder {
   }
 
   private Schema<?> buildArraySchema(TypeMirror type) {
-
     ArrayType arrayType = (ArrayType) type;
     Schema<?> itemSchema = toSchema(arrayType.getComponentType());
 
@@ -187,7 +192,6 @@ class SchemaDocBuilder {
   }
 
   private Schema<?> buildMapSchema(TypeMirror type) {
-
     Schema<?> valueSchema = new ObjectSchema().format("unknownMapValueType");
 
     if (type.getKind() == TypeKind.DECLARED) {
@@ -204,7 +208,6 @@ class SchemaDocBuilder {
   }
 
   private String getObjectSchemaName(TypeMirror type) {
-
     var canonicalName = Util.trimAnnotations(type.toString());
     final var pos = canonicalName.lastIndexOf('.');
     if (pos > -1) {
@@ -227,33 +230,45 @@ class SchemaDocBuilder {
   }
 
   private void setFormatFromValidation(Element element, Schema<?> propSchema) {
-    if (element.getAnnotation(Email.class) != null) {
+    if (EmailPrism.getOptionalOn(element).isPresent()
+        || JavaxEmailPrism.getOptionalOn(element).isPresent()) {
       propSchema.setFormat("email");
     }
   }
 
   private void setLengthMinMax(Element element, Schema<?> propSchema) {
-    final Size size = element.getAnnotation(Size.class);
-    if (size != null) {
-      if (size.min() > 0) {
-        propSchema.setMinLength(size.min());
-      }
-      if (size.max() > 0) {
-        propSchema.setMaxLength(size.max());
-      }
-    }
+    SizePrism.getOptionalOn(element)
+        .ifPresent(
+            size -> {
+              if (size.min() > 0) {
+                propSchema.setMinLength(size.min());
+              }
+              if (size.max() > 0) {
+                propSchema.setMaxLength(size.max());
+              }
+            });
+
+    JavaxSizePrism.getOptionalOn(element)
+        .ifPresent(
+            size -> {
+              if (size.min() > 0) {
+                propSchema.setMinLength(size.min());
+              }
+              if (size.max() > 0) {
+                propSchema.setMaxLength(size.max());
+              }
+            });
   }
 
   private boolean isNotNullable(Element element) {
-    return element.getAnnotation(org.jetbrains.annotations.NotNull.class) != null
-      || element.getAnnotation(javax.validation.constraints.NotNull.class) != null;
+    return element.getAnnotationMirrors().stream()
+        .anyMatch(m -> m.toString().contains("@") && m.toString().contains("NotNull"));
   }
 
   /**
    * Gather all the fields (properties) for the given bean element.
    */
   private List<VariableElement> allFields(Element element) {
-
     List<VariableElement> list = new ArrayList<>();
     gatherProperties(list, element);
     return list;
@@ -263,7 +278,6 @@ class SchemaDocBuilder {
    * Recursively gather all the fields (properties) for the given bean element.
    */
   private void gatherProperties(List<VariableElement> fields, Element element) {
-
     if (element == null) {
       return;
     }
@@ -288,9 +302,7 @@ class SchemaDocBuilder {
   }
 
   private boolean isHiddenField(VariableElement field) {
-
-    Hidden hidden = field.getAnnotation(Hidden.class);
-    if (hidden != null) {
+    if (HiddenPrism.getOptionalOn(field).isPresent()) {
       return true;
     }
     for (AnnotationMirror annotationMirror : field.getAnnotationMirrors()) {

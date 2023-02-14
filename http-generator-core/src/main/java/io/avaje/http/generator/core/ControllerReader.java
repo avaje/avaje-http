@@ -2,13 +2,12 @@ package io.avaje.http.generator.core;
 
 import static java.util.function.Predicate.not;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -19,15 +18,6 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-import javax.validation.Valid;
-
-import io.avaje.http.api.Controller;
-import io.avaje.http.api.OpenAPIResponse;
-import io.avaje.http.api.OpenAPIResponses;
-import io.avaje.http.api.Path;
-import io.avaje.http.api.Produces;
-import io.swagger.v3.oas.annotations.Hidden;
-
 /**
  * Reads the type information for the Controller (bean).
  */
@@ -41,12 +31,11 @@ public final class ControllerReader {
   private final List<MethodReader> methods = new ArrayList<>();
   private final Set<String> staticImportTypes = new TreeSet<>();
   private final Set<String> importTypes = new TreeSet<>();
-  private final List<OpenAPIResponse> apiResponses;
+  private final List<OpenAPIResponsePrism> apiResponses;
 
-  /**
-   * The produces media type for the controller. Null implies JSON.
-   */
-  private final String produces;
+  /** The producesPrism media type for the controller. Null implies JSON. */
+  private final String producesPrism;
+
   private final boolean hasValid;
   private boolean methodHasValid;
 
@@ -66,12 +55,12 @@ public final class ControllerReader {
       docHidden = initDocHidden();
     }
     this.hasValid = initHasValid();
-    this.produces = initProduces();
+    this.producesPrism = initProduces();
     this.apiResponses = buildApiResponses();
   }
 
-  private List<OpenAPIResponse> buildApiResponses() {
-    final var responses = new ArrayList<OpenAPIResponse>();
+  private List<OpenAPIResponsePrism> buildApiResponses() {
+    final var responses = new ArrayList<OpenAPIResponsePrism>();
     buildApiResponsesFor(beanType, responses);
     for (final Element anInterface : interfaces) {
       buildApiResponsesFor(anInterface, responses);
@@ -79,13 +68,14 @@ public final class ControllerReader {
     return responses;
   }
 
-  private void buildApiResponsesFor(Element element, ArrayList<OpenAPIResponse> responses) {
-    Optional.ofNullable(element.getAnnotation(OpenAPIResponses.class)).stream()
-      .map(OpenAPIResponses::value)
-      .flatMap(Arrays::stream)
-      .forEach(responses::add);
+  private void buildApiResponsesFor(Element element, ArrayList<OpenAPIResponsePrism> responses) {
 
-    Arrays.stream(element.getAnnotationsByType(OpenAPIResponse.class)).forEach(responses::add);
+    OpenAPIResponsesPrism.getOptionalOn(element).stream()
+        .map(OpenAPIResponsesPrism::value)
+        .flatMap(List::stream)
+        .forEach(responses::add);
+
+    responses.addAll(OpenAPIResponsePrism.getAllInstancesOn(element));
   }
 
   private ArrayList<String> buildRoles() {
@@ -115,9 +105,9 @@ public final class ControllerReader {
     List<Element> interfaces = new ArrayList<>();
     for (TypeMirror anInterface : beanType.getInterfaces()) {
       final Element ifaceElement = ctx.asElement(anInterface);
-      var controller = ifaceElement.getAnnotation(Controller.class);
+      final var controller = ControllerPrism.getInstanceOn(ifaceElement);
       if (controller != null && !controller.value().isBlank()
-          || ifaceElement.getAnnotation(Path.class) != null) {
+          || PathPrism.getInstanceOn(ifaceElement) != null) {
         interfaces.add(ifaceElement);
       }
     }
@@ -132,30 +122,30 @@ public final class ControllerReader {
     return ifaceMethods;
   }
 
-  private <A extends Annotation> A findAnnotation(Class<A> type) {
-    A annotation = beanType.getAnnotation(type);
-    if (annotation != null) {
+  private <A> Optional<A> findAnnotation(Function<Element, Optional<A>> func) {
+    var annotation = func.apply(beanType);
+    if (annotation.isPresent()) {
       return annotation;
     }
-    for (Element anInterface : interfaces) {
-      annotation = anInterface.getAnnotation(type);
-      if (annotation != null) {
+    for (final Element anInterface : interfaces) {
+      annotation = func.apply(anInterface);
+      if (annotation.isPresent()) {
         return annotation;
       }
     }
-    return null;
+    return Optional.empty();
   }
 
-  <A extends Annotation> A findMethodAnnotation(Class<A> type, ExecutableElement element) {
-    for (ExecutableElement interfaceMethod : interfaceMethods) {
+  <A> Optional<A> findMethodAnnotation(Function<Element, Optional<A>> func, ExecutableElement element) {
+    for (final ExecutableElement interfaceMethod : interfaceMethods) {
       if (matchMethod(interfaceMethod, element)) {
-        final A annotation = interfaceMethod.getAnnotation(type);
-        if (annotation != null) {
+        final var annotation = func.apply(interfaceMethod);
+        if (annotation.isPresent()) {
           return annotation;
         }
       }
     }
-    return null;
+    return Optional.empty();
   }
 
   private boolean matchMethod(ExecutableElement interfaceMethod, ExecutableElement element) {
@@ -163,31 +153,21 @@ public final class ControllerReader {
   }
 
   private String initProduces() {
-    final Produces produces = findAnnotation(Produces.class);
-    return (produces == null) ? null : produces.value();
+    return findAnnotation(ProducesPrism::getOptionalOn).map(ProducesPrism::value).orElse(null);
   }
 
   private boolean initDocHidden() {
-    return findAnnotation(Hidden.class) != null;
+    return findAnnotation(HiddenPrism::getOptionalOn).isPresent();
   }
 
   private boolean initHasValid() {
-    Annotation jakartaValidAnnotation = null;
-    try {
-      jakartaValidAnnotation = findAnnotation(jakarataValidAnnotation());
-    } catch (final ClassNotFoundException e) {
-      // ignore
-    }
-    return findAnnotation(Valid.class) != null || jakartaValidAnnotation != null;
-  }
 
-  @SuppressWarnings("unchecked")
-  private static Class<Annotation> jakarataValidAnnotation() throws ClassNotFoundException {
-    return (Class<Annotation>)Class.forName(Valid.class.getCanonicalName().replace("javax", "jakarta"));
+    return findAnnotation(JavaxValidPrism::getOptionalOn).isPresent()
+        || findAnnotation(ValidPrism::getOptionalOn).isPresent();
   }
 
   String produces() {
-    return produces;
+    return producesPrism;
   }
 
   public TypeElement beanType() {
@@ -298,16 +278,16 @@ public final class ControllerReader {
     return methods;
   }
 
-  public List<OpenAPIResponse> openApiResponses() {
+  public List<OpenAPIResponsePrism> openApiResponses() {
     return apiResponses;
   }
 
   public String path() {
 
-    return Optional.ofNullable(findAnnotation(Controller.class))
-        .map(Controller::value)
+    return findAnnotation(ControllerPrism::getOptionalOn)
+        .map(ControllerPrism::value)
         .filter(not(String::isBlank))
-        .or(() -> Optional.ofNullable(findAnnotation(Path.class)).map(Path::value))
+        .or(() -> findAnnotation(PathPrism::getOptionalOn).map(PathPrism::value))
         .map(Util::trimPath)
         .orElse(null);
   }
@@ -335,5 +315,4 @@ public final class ControllerReader {
   public Set<String> importTypes() {
     return importTypes;
   }
-
 }

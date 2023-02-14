@@ -3,7 +3,6 @@ package io.avaje.http.generator.helidon.nima;
 import java.util.List;
 import java.util.Optional;
 
-import io.avaje.http.api.MediaType;
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
@@ -12,6 +11,7 @@ import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.UType;
 import io.avaje.http.generator.core.WebMethod;
+import io.avaje.http.generator.core.openapi.MediaType;
 
 /**
  * Write code to register Web route for a given controller method.
@@ -142,13 +142,13 @@ class ControllerMethodWriter {
       return;
     }
 
-    final var produces = producesOp.orElse(MediaType.APPLICATION_JSON);
+    final var produces = producesOp.map(MediaType::parse).orElse(MediaType.APPLICATION_JSON);
     final var contentTypeString = "    res.headers().contentType(HttpMediaType.";
-    switch (produces.toLowerCase()) {
-      case MediaType.APPLICATION_JSON -> writer.append(contentTypeString + "APPLICATION_JSON);").eol();
-      case MediaType.TEXT_HTML -> writer.append(contentTypeString + "TEXT_HTML);").eol();
-      case MediaType.TEXT_PLAIN -> writer.append(contentTypeString + "TEXT_PLAIN);").eol();
-      default -> writer.append(contentTypeString + "create(\"%s\"));", produces).eol();
+    switch (produces) {
+      case APPLICATION_JSON -> writer.append(contentTypeString + "APPLICATION_JSON);").eol();
+      case TEXT_HTML -> writer.append(contentTypeString + "TEXT_HTML);").eol();
+      case TEXT_PLAIN -> writer.append(contentTypeString + "TEXT_PLAIN);").eol();
+      case UNKNOWN -> writer.append(contentTypeString + "create(\"%s\"));", produces).eol();
     }
   }
 
