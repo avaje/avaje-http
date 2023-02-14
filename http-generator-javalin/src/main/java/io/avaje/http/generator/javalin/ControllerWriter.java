@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
@@ -35,7 +34,6 @@ class ControllerWriter extends BaseControllerWriter {
       reader.addImportType("io.avaje.jsonb.Types");
       this.jsonTypes = JsonBUtil.jsonTypes(reader);
       jsonTypes.values().stream()
-          .filter(Predicate.not(UType::isCFuture))
           .map(UType::importTypes)
           .forEach(reader::addImportTypes);
     } else {
