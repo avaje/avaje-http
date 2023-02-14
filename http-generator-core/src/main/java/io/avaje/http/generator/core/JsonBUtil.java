@@ -33,7 +33,13 @@ public class JsonBUtil {
             methodReader -> {
               addJsonBodyType(methodReader, addToMap);
               if (!methodReader.isVoid()) {
-                addToMap.accept(UType.parse(methodReader.returnType()));
+                UType uType = UType.parse(methodReader.returnType());
+
+                if (uType.mainType().equals("java.util.concurrent.CompletableFuture")) {
+                  uType = uType.paramRaw();
+                }
+
+                addToMap.accept(uType);
               }
             });
 
@@ -50,12 +56,6 @@ public class JsonBUtil {
   }
 
   public static void writeJsonbType(UType type, Append writer) {
-    // Support for CompletableFuture's.
-    if (type.mainType().equals("java.util.concurrent.CompletableFuture")) {
-      writeJsonbType(type.paramRaw(), writer);
-      return;
-    }
-
     writer.append("    this.%sJsonType = jsonB.type(", type.shortName());
     if (!type.isGeneric()) {
       writer.append("%s.class)", Util.shortName(PrimitiveUtil.wrap(type.full())));
