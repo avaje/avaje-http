@@ -1024,6 +1024,27 @@
 				}
 			}
 		},
+		"/test/async" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloDto"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/test/byte" : {
 			"get" : {
 				"tags" : [
