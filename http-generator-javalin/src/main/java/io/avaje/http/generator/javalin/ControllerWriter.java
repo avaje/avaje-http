@@ -1,7 +1,9 @@
 package io.avaje.http.generator.javalin;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
@@ -21,6 +23,7 @@ class ControllerWriter extends BaseControllerWriter {
   private static final String API_BUILDER = "io.javalin.apibuilder.ApiBuilder";
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
+  private final Set<String> futureSet = new HashSet<>();
 
   ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB) throws IOException {
     super(reader, ctx);
@@ -89,14 +92,22 @@ class ControllerWriter extends BaseControllerWriter {
 
     for (UType type : jsonTypes.values()) {
       // Support for CompletableFuture's.
-      if (type.mainType().equals("java.util.concurrent.CompletableFuture")) {
+      if (type.isCFuture()) {
+
+        if (!type.isGeneric()) {
+          throw new IllegalStateException(
+              "CompletableFuture must be generic type (e.g. CompletableFuture<String>, CompletableFuture<Void>).");
+        }
+
         type = type.paramRaw();
 
-        if (this.jsonTypes.containsKey(type.full())) {
+        if (jsonTypes.containsKey(type.full()) || !futureSet.add(type.full())) {
           // Already written before -- we can skip.
           continue;
         }
       }
+
+      futureSet.clear();
 
       // Everything else
       final var typeString = PrimitiveUtil.wrap(type.shortType()).replace(",", ", ");
@@ -117,11 +128,17 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append("    this.validator = validator;").eol();
     }
     if (useJsonB) {
-      for (final UType type : jsonTypes.values()) {
-        // Skip trying to assign a global variable value for any UType that is a Completable Future. Because the paramRaw() should
-        // already be in this jsonTypes map anyway and write the assignment all by itself.
-        if (type.mainType().equals("java.util.concurrent.CompletableFuture")) {
-          continue;
+
+      for (UType type : jsonTypes.values()) {
+
+        // Support for CompletableFuture's.
+        if (type.isCFuture()) {
+          type = type.paramRaw();
+
+          if (jsonTypes.containsKey(type.full()) || !futureSet.add(type.full())) {
+            // Already written before -- we can skip.
+            continue;
+          }
         }
 
         JsonBUtil.writeJsonbType(type, writer);

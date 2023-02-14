@@ -3,8 +3,10 @@ package org.example.myapp.web.test;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.example.myapp.web.AppRoles;
+import org.example.myapp.web.HelloDto;
 import org.example.myapp.web.Roles;
 
 import io.avaje.http.api.Controller;
@@ -121,5 +123,10 @@ public class TestController {
       String style) {
 
     System.out.println("Ever have that feeling where you're not sure if you're awake or dreaming?");
+  }
+
+  @Get("/async")
+  CompletableFuture<HelloDto> getAllAsync() {
+    return CompletableFuture.supplyAsync(() -> new HelloDto(12, "Jim", "asd"));
   }
 }

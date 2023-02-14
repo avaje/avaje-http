@@ -94,10 +94,7 @@ class ControllerMethodWriter {
   private void writeContextReturn() {
     // Support for CompletableFuture's.
     final UType type = UType.parse(method.returnType());
-    if (type.mainType().equals("java.util.concurrent.CompletableFuture")) {
-      if (!type.isGeneric()) {
-        throw new IllegalStateException("CompletableFuture must be generic type (e.g. CompletableFuture<String>, CompletableFuture<Void>).");
-      }
+    if (type.isCFuture()) {
 
       final String futureResultVariableName = "futureResult";
 
@@ -119,7 +116,7 @@ class ControllerMethodWriter {
     if (produces == null || MediaType.APPLICATION_JSON.getValue().equalsIgnoreCase(produces)) {
       if (useJsonB) {
         var uType = UType.parse(method.returnType());
-        if (uType.mainType().equals("java.util.concurrent.CompletableFuture")) {
+        if (uType.isCFuture()) {
           uType = uType.paramRaw();
         }
 

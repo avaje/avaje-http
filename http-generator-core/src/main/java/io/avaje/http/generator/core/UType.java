@@ -75,6 +75,10 @@ public interface UType {
     return "";
   }
 
+  default boolean isCFuture() {
+    return false;
+  }
+
   class VoidType implements UType {
 
     @Override
@@ -280,5 +284,11 @@ public interface UType {
     public UType paramRaw() {
       return rawParamType;
     }
+
+    @Override
+    public boolean isCFuture() {
+      return "java.util.concurrent.CompletableFuture".equals(mainType());
+    }
   }
+
 }
