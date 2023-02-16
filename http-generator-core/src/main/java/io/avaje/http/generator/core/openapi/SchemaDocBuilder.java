@@ -2,6 +2,7 @@ package io.avaje.http.generator.core.openapi;
 
 import static io.avaje.http.generator.core.Util.typeDef;
 
+import io.avaje.http.generator.core.javadoc.Javadoc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -223,6 +224,7 @@ class SchemaDocBuilder {
       if (isNotNullable(field)) {
         propSchema.setNullable(Boolean.FALSE);
       }
+      setDescription(field, propSchema);
       setLengthMinMax(field, propSchema);
       setFormatFromValidation(field, propSchema);
       objectSchema.addProperties(field.getSimpleName().toString(), propSchema);
@@ -233,6 +235,13 @@ class SchemaDocBuilder {
     if (EmailPrism.getOptionalOn(element).isPresent()
         || JavaxEmailPrism.getOptionalOn(element).isPresent()) {
       propSchema.setFormat("email");
+    }
+  }
+
+  private void setDescription(Element element, Schema<?> propSchema) {
+    var doc = Javadoc.parse(elements.getDocComment(element));
+    if (!doc.getSummary().isEmpty()) {
+      propSchema.setDescription(doc.getSummary());
     }
   }
 
