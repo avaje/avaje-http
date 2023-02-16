@@ -1575,10 +1575,12 @@
 						"nullable" : false
 					},
 					"name" : {
-						"type" : "string"
+						"type" : "string",
+						"description" : "This is a comment"
 					},
 					"otherParam" : {
-						"type" : "string"
+						"type" : "string",
+						"description" : "This is a comment"
 					},
 					"gid" : {
 						"type" : "string",
