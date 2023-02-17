@@ -1,10 +1,26 @@
 package io.avaje.http.generator.core.openapi;
 
+import io.avaje.http.generator.core.OpenAPIDefinitionPrism;
+import io.avaje.http.generator.core.SecuritySchemePrism;
+import io.avaje.http.generator.core.SecuritySchemesPrism;
+import io.avaje.http.generator.core.TagPrism;
+import io.avaje.http.generator.core.TagsPrism;
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.tags.Tag;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -15,19 +31,6 @@ import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
-
-import io.avaje.http.generator.core.OpenAPIDefinitionPrism;
-import io.avaje.http.generator.core.TagPrism;
-import io.avaje.http.generator.core.TagsPrism;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.PathItem;
-import io.swagger.v3.oas.models.Paths;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.tags.Tag;
 
 /** Context for building the OpenAPI documentation. */
 public class DocContext {
@@ -154,6 +157,39 @@ public class DocContext {
     openAPI.addTagsItem(createTagItem(tag));
   }
 
+  public void addSecurityScheme(Element element) {
+    var schemes = SecuritySchemePrism.getAllInstancesOn(element);
+    if (schemes == null) {
+      return;
+    }
+    this.addSecuritySchemes(schemes);
+  }
+
+  public void addSecuritySchemes(Element element) {
+    var schemes = SecuritySchemesPrism.getInstanceOn(element);
+    this.addSecuritySchemes(schemes.value());
+  }
+
+  void addSecuritySchemes(List<SecuritySchemePrism> schemes) {
+    for (SecuritySchemePrism p : schemes) {
+      var ss = new SecurityScheme()
+        .type(SecurityScheme.Type.valueOf(p.type()))
+        .in(SecurityScheme.In.valueOf(p.in()))
+        .name(p.paramName());
+
+      if (!p.description().isEmpty()) {
+        ss.description(p.description());
+      }
+      if (!p.bearerFormat().isEmpty()) {
+        ss.bearerFormat(p.bearerFormat());
+      }
+      if (!p.scheme().isEmpty()) {
+        ss.scheme(p.scheme());
+      }
+      components().addSecuritySchemes(p.name(), ss);
+    }
+  }
+
   public void readApiDefinition(Element element) {
 
     final var openApi = OpenAPIDefinitionPrism.getInstanceOn(element);
@@ -167,17 +203,12 @@ public class DocContext {
     if (!info.version().isEmpty()) {
       openAPI.getInfo().setVersion(info.version());
     }
-
   }
 
   public void writeApi() {
-
     final var openAPI = getApiForWriting();
     try (var metaWriter = createMetaWriter()) {
-
-      final var json = OpenAPISerializer.serialize(openAPI);
-      JsonFormatter.prettyPrintJson(metaWriter, json);
-
+      Json.pretty().writeValue(metaWriter, openAPI);
     } catch (final Exception e) {
       logError(null, "Error writing openapi file" + e.getMessage());
       e.printStackTrace();

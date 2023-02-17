@@ -6,6 +6,10 @@ module io.avaje.http.generator.core {
 
   requires java.sql;
   requires java.compiler;
+  requires com.fasterxml.jackson.annotation;
+  requires com.fasterxml.jackson.core;
+  requires com.fasterxml.jackson.databind;
+  requires io.swagger.v3.core;
 
   // SHADED: All content after this line will be removed at package time
   requires static io.avaje.prism;

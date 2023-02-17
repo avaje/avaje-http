@@ -11,13 +11,7 @@
     <relativePath>..</relativePath>
   </parent>
 
-  <properties>
-    <swagger.version>2.0.8</swagger.version>
-  </properties>
-
   <dependencies>
-
-
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-prisms</artifactId>
@@ -36,12 +30,12 @@
 
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
-      <artifactId>swagger-models</artifactId>
+      <artifactId>swagger-core</artifactId>
       <version>${swagger.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-annotations</artifactId>
+          <groupId>jakarta.validation</groupId>
+          <artifactId>jakarta.validation-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -66,15 +60,6 @@
       <groupId>jakarta.inject</groupId>
       <artifactId>jakarta.inject-api</artifactId>
       <version>2.0.1</version>
-      <optional>true</optional>
-      <scope>provided</scope>
-    </dependency>
-
-
-    <dependency>
-      <groupId>io.swagger.core.v3</groupId>
-      <artifactId>swagger-annotations</artifactId>
-      <version>${swagger.version}</version>
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>

@@ -1,64 +1,60 @@
 {
-	"openapi" : "3.0.1",
-	"info" : {
-		"title" : "Example service showing off the Path extension method of controller",
-		"version" : ""
-	},
-	"tags" : [
-		{
-			"name" : "tag1",
-			"description" : "it's somethin"
-		}
-	],
-	"paths" : {
-		"/javalin/health" : {
-			"get" : {
-				"tags" : [
-					"tag1"
-				],
-				"summary" : "Standard Get",
-				"description" : "",
-				"responses" : {
-					"500" : {
-						"description" : "a health check",
-						"content" : {
-							"text/plain" : {
-								"schema" : {
-									"$ref" : "#/components/schemas/ErrorResponse"
-								}
-							}
-						}
-					},
-					"403" : {
-						"description" : "Not Authorized"
-					},
-					"200" : {
-						"description" : "a health check",
-						"content" : {
-							"text/plain" : {
-								"schema" : {
-									"type" : "string"
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	},
-	"components" : {
-		"schemas" : {
-			"ErrorResponse" : {
-				"type" : "object",
-				"properties" : {
-					"id" : {
-						"type" : "string"
-					},
-					"text" : {
-						"type" : "string"
-					}
-				}
-			}
-		}
-	}
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Example service showing off the Path extension method of controller",
+    "version" : ""
+  },
+  "tags" : [ {
+    "name" : "tag1",
+    "description" : "it's somethin"
+  } ],
+  "paths" : {
+    "/javalin/health" : {
+      "get" : {
+        "tags" : [ "tag1" ],
+        "summary" : "Standard Get",
+        "description" : "",
+        "responses" : {
+          "500" : {
+            "description" : "a health check",
+            "content" : {
+              "text/plain" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Not Authorized"
+          },
+          "200" : {
+            "description" : "a health check",
+            "content" : {
+              "text/plain" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "ErrorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "text" : {
+            "type" : "string"
+          }
+        }
+      }
+    }
+  }
 }
