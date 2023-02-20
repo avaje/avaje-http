@@ -38,11 +38,6 @@
       <artifactId>swagger-models</artifactId>
       <version>${swagger.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>jakarta.validation</groupId>

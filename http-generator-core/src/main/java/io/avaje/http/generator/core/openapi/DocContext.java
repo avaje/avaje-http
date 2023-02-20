@@ -1,10 +1,22 @@
 package io.avaje.http.generator.core.openapi;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
+import javax.tools.Diagnostic;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+
 import io.avaje.http.generator.core.OpenAPIDefinitionPrism;
 import io.avaje.http.generator.core.SecuritySchemePrism;
 import io.avaje.http.generator.core.SecuritySchemesPrism;
@@ -20,21 +32,6 @@ import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
-import javax.tools.Diagnostic;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 
 /** Context for building the OpenAPI documentation. */
 public class DocContext {
@@ -210,15 +207,10 @@ public class DocContext {
   }
 
   public void writeApi() {
-    final var openAPI = getApiForWriting();
     try (var metaWriter = createMetaWriter()) {
-      var mapper = new ObjectMapper();
-      mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-      mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-      mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
-      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-      mapper.writer(new DefaultPrettyPrinter()).writeValue(metaWriter, openAPI);
+      final var json = OpenAPISerializer.serialize(getApiForWriting());
+      JsonFormatter.prettyPrintJson(metaWriter, json);
+
     } catch (final Exception e) {
       logError(null, "Error writing openapi file" + e.getMessage());
       e.printStackTrace();

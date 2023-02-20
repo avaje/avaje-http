@@ -1,252 +1,239 @@
 {
-  "openapi" : "3.0.1",
-  "info" : {
-    "title" : "",
-    "version" : ""
-  },
-  "paths" : {
-    "/" : {
-      "get" : {
-        "tags" : [ ],
-        "summary" : "",
-        "description" : "",
-        "responses" : {
-          "200" : {
-            "description" : "",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/HelloDto",
-                  "exampleSetFlag" : false
-                },
-                "exampleSetFlag" : false
-              }
-            }
-          }
-        }
-      },
-      "put" : {
-        "tags" : [ ],
-        "summary" : "",
-        "description" : "",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/HelloDto",
-                "exampleSetFlag" : false
-              },
-              "exampleSetFlag" : false
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "204" : {
-            "description" : "No content"
-          }
-        }
-      }
-    },
-    "/other/{name}" : {
-      "get" : {
-        "tags" : [ ],
-        "summary" : "",
-        "description" : "",
-        "parameters" : [ {
-          "name" : "name",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "exampleSetFlag" : false,
-            "types" : [ "string" ]
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "",
-            "content" : {
-              "text/plain" : {
-                "schema" : {
-                  "type" : "string",
-                  "exampleSetFlag" : false,
-                  "types" : [ "string" ]
-                },
-                "exampleSetFlag" : false
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plain" : {
-      "get" : {
-        "tags" : [ ],
-        "summary" : "",
-        "description" : "",
-        "responses" : {
-          "200" : {
-            "description" : "",
-            "content" : {
-              "text/plain" : {
-                "schema" : {
-                  "type" : "string",
-                  "exampleSetFlag" : false,
-                  "types" : [ "string" ]
-                },
-                "exampleSetFlag" : false
-              }
-            }
-          }
-        }
-      }
-    },
-    "/splat/{name}/<s0>/other/<s1>" : {
-      "get" : {
-        "tags" : [ ],
-        "summary" : "",
-        "description" : "",
-        "parameters" : [ {
-          "name" : "name",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "exampleSetFlag" : false,
-            "types" : [ "string" ]
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "",
-            "content" : {
-              "text/plain" : {
-                "schema" : {
-                  "type" : "string",
-                  "exampleSetFlag" : false,
-                  "types" : [ "string" ]
-                },
-                "exampleSetFlag" : false
-              }
-            }
-          }
-        }
-      }
-    },
-    "/splat2/{name}/<nam0>/other/<nam1>" : {
-      "get" : {
-        "tags" : [ ],
-        "summary" : "",
-        "description" : "",
-        "parameters" : [ {
-          "name" : "name",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "exampleSetFlag" : false,
-            "types" : [ "string" ]
-          }
-        }, {
-          "name" : "nam0",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "exampleSetFlag" : false,
-            "types" : [ "string" ]
-          }
-        }, {
-          "name" : "nam1",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "exampleSetFlag" : false,
-            "types" : [ "string" ]
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "",
-            "content" : {
-              "text/plain" : {
-                "schema" : {
-                  "type" : "string",
-                  "exampleSetFlag" : false,
-                  "types" : [ "string" ]
-                },
-                "exampleSetFlag" : false
-              }
-            }
-          }
-        }
-      }
-    },
-    "/withDefault/{name}" : {
-      "get" : {
-        "tags" : [ ],
-        "summary" : "",
-        "description" : "",
-        "parameters" : [ {
-          "name" : "name",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string",
-            "exampleSetFlag" : false,
-            "types" : [ "string" ]
-          }
-        }, {
-          "name" : "limit",
-          "in" : "query",
-          "schema" : {
-            "type" : "string",
-            "exampleSetFlag" : false,
-            "types" : [ "string" ]
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "",
-            "content" : {
-              "text/plain" : {
-                "schema" : {
-                  "type" : "string",
-                  "exampleSetFlag" : false,
-                  "types" : [ "string" ]
-                },
-                "exampleSetFlag" : false
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components" : {
-    "schemas" : {
-      "HelloDto" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "integer",
-            "format" : "int32",
-            "nullable" : false,
-            "exampleSetFlag" : false,
-            "types" : [ "integer" ]
-          },
-          "name" : {
-            "type" : "string",
-            "nullable" : false,
-            "exampleSetFlag" : false,
-            "types" : [ "string" ]
-          }
-        },
-        "exampleSetFlag" : false,
-        "types" : [ "object" ]
-      }
-    }
-  }
+	"openapi" : "3.0.1",
+	"info" : {
+		"title" : "",
+		"version" : ""
+	},
+	"paths" : {
+		"/" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloDto"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/HelloDto"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"204" : {
+						"description" : "No content"
+					}
+				}
+			}
+		},
+		"/other/{name}" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "name",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/plain" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/splat/{name}/<s0>/other/<s1>" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "name",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/splat2/{name}/<nam0>/other/<nam1>" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "name",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "nam0",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "nam1",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/withDefault/{name}" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "name",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "limit",
+						"in" : "query",
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components" : {
+		"COMPONENTS_SCHEMAS_REF" : "#/components/schemas/",
+		"schemas" : {
+			"HelloDto" : {
+				"type" : "object",
+				"properties" : {
+					"id" : {
+						"type" : "integer",
+						"format" : "int32",
+						"nullable" : false
+					},
+					"name" : {
+						"type" : "string",
+						"nullable" : false
+					}
+				}
+			}
+		}
+	}
 }
