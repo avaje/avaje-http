@@ -104,7 +104,6 @@
                   <excludes>
                     <exclude>io/swagger/v3/oas/models/callbacks/**</exclude>
                     <exclude>io/swagger/v3/oas/models/examples/**</exclude>
-                    <exclude>io/swagger/v3/oas/models/security/**</exclude>
                     <exclude>io/swagger/v3/oas/models/servers/**</exclude>
                   </excludes>
                 </filter>
