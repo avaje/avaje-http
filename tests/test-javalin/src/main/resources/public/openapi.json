@@ -805,7 +805,6 @@
 		}
 	},
 	"components" : {
-		"COMPONENTS_SCHEMAS_REF" : "#/components/schemas/",
 		"schemas" : {
 			"Bar" : {
 				"type" : "object",

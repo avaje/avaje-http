@@ -47,7 +47,6 @@
 		}
 	},
 	"components" : {
-		"COMPONENTS_SCHEMAS_REF" : "#/components/schemas/",
 		"schemas" : {
 			"ErrorResponse" : {
 				"type" : "object",

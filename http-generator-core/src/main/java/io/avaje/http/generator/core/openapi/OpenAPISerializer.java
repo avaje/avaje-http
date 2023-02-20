@@ -66,6 +66,7 @@ final class OpenAPISerializer {
 
           // skip JsonIgnored fields
           if ("BIND_TYPE_AND_TYPES".equals(field.getName())
+              || "COMPONENTS_SCHEMAS_REF".equals(field.getName())
               || "exampleSetFlag".equals(field.getName())
               || "types".equals(field.getName())
               || "specVersion".equals(field.getName())) {
