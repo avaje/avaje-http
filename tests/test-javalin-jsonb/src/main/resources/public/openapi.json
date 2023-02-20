@@ -24,8 +24,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -42,7 +45,9 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -52,10 +57,14 @@
               "application/json" : {
                 "schema" : {
                   "type" : "array",
+                  "exampleSetFlag" : false,
                   "items" : {
-                    "$ref" : "#/components/schemas/Bar"
-                  }
-                }
+                    "$ref" : "#/components/schemas/Bar",
+                    "exampleSetFlag" : false
+                  },
+                  "types" : [ "array" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -74,7 +83,9 @@
           "schema" : {
             "type" : "integer",
             "format" : "int64",
-            "nullable" : false
+            "nullable" : false,
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
           }
         } ],
         "responses" : {
@@ -83,8 +94,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Bar"
-                }
+                  "$ref" : "#/components/schemas/Bar",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -103,10 +116,14 @@
               "application/json" : {
                 "schema" : {
                   "type" : "array",
+                  "exampleSetFlag" : false,
                   "items" : {
-                    "$ref" : "#/components/schemas/Baz"
-                  }
-                }
+                    "$ref" : "#/components/schemas/Baz",
+                    "exampleSetFlag" : false
+                  },
+                  "types" : [ "array" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -120,8 +137,10 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/Baz"
-              }
+                "$ref" : "#/components/schemas/Baz",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -133,8 +152,11 @@
               "application/json" : {
                 "schema" : {
                   "type" : "integer",
-                  "format" : "int64"
-                }
+                  "format" : "int64",
+                  "exampleSetFlag" : false,
+                  "types" : [ "integer" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -153,38 +175,50 @@
           "schema" : {
             "type" : "integer",
             "format" : "int32",
-            "nullable" : false
+            "nullable" : false,
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
           }
         }, {
           "name" : "p1",
           "in" : "query",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "p2",
           "in" : "query",
           "schema" : {
-            "type" : "number"
+            "type" : "number",
+            "exampleSetFlag" : false,
+            "types" : [ "number" ]
           }
         }, {
           "name" : "p3",
           "in" : "query",
           "schema" : {
             "type" : "integer",
-            "format" : "int32"
+            "format" : "int32",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
           }
         }, {
           "name" : "p4",
           "in" : "query",
           "schema" : {
-            "type" : "number"
+            "type" : "number",
+            "exampleSetFlag" : false,
+            "types" : [ "number" ]
           }
         }, {
           "name" : "body",
           "in" : "query",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -193,8 +227,11 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -211,7 +248,9 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -221,10 +260,14 @@
               "application/json" : {
                 "schema" : {
                   "type" : "array",
+                  "exampleSetFlag" : false,
                   "items" : {
-                    "$ref" : "#/components/schemas/Baz"
-                  }
-                }
+                    "$ref" : "#/components/schemas/Baz",
+                    "exampleSetFlag" : false
+                  },
+                  "types" : [ "array" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -242,7 +285,9 @@
           "required" : true,
           "schema" : {
             "type" : "integer",
-            "format" : "int64"
+            "format" : "int64",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
           }
         } ],
         "responses" : {
@@ -251,8 +296,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Baz"
-                }
+                  "$ref" : "#/components/schemas/Baz",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -268,8 +315,10 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/HelloDto"
-              }
+                "$ref" : "#/components/schemas/HelloDto",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -280,8 +329,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/HelloDto"
-                }
+                  "$ref" : "#/components/schemas/HelloDto",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -300,10 +351,14 @@
               "application/json" : {
                 "schema" : {
                   "type" : "array",
+                  "exampleSetFlag" : false,
                   "items" : {
-                    "$ref" : "#/components/schemas/HelloDto"
-                  }
-                }
+                    "$ref" : "#/components/schemas/HelloDto",
+                    "exampleSetFlag" : false
+                  },
+                  "types" : [ "array" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -321,13 +376,17 @@
           "description" : "The name to search for",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "myParam",
           "in" : "query",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -337,10 +396,14 @@
               "application/json" : {
                 "schema" : {
                   "type" : "array",
+                  "exampleSetFlag" : false,
                   "items" : {
-                    "$ref" : "#/components/schemas/HelloDto"
-                  }
-                }
+                    "$ref" : "#/components/schemas/HelloDto",
+                    "exampleSetFlag" : false
+                  },
+                  "types" : [ "array" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -358,8 +421,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -378,16 +444,24 @@
                 "type" : "object",
                 "properties" : {
                   "name" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
                   },
                   "email" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
                   },
                   "url" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
                   }
-                }
-              }
+                },
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -410,7 +484,9 @@
           "description" : "The hello doo id",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "requestBody" : {
@@ -418,8 +494,10 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/HelloDto"
-              }
+                "$ref" : "#/components/schemas/HelloDto",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -440,8 +518,10 @@
           "content" : {
             "application/x-www-form-urlencoded" : {
               "schema" : {
-                "$ref" : "#/components/schemas/HelloForm"
-              }
+                "$ref" : "#/components/schemas/HelloForm",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -465,16 +545,24 @@
                 "type" : "object",
                 "properties" : {
                   "name" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
                   },
                   "email" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
                   },
                   "url" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
                   }
-                }
-              }
+                },
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -495,8 +583,10 @@
           "content" : {
             "application/x-www-form-urlencoded" : {
               "schema" : {
-                "$ref" : "#/components/schemas/HelloForm"
-              }
+                "$ref" : "#/components/schemas/HelloForm",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -507,8 +597,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/HelloDto"
-                }
+                  "$ref" : "#/components/schemas/HelloDto",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -525,21 +617,27 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "nam0",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "nam1",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -548,8 +646,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -568,34 +669,44 @@
           "schema" : {
             "type" : "integer",
             "format" : "int32",
-            "nullable" : false
+            "nullable" : false,
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
           }
         }, {
           "name" : "author",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "country",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "other",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "extra",
           "in" : "query",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -604,8 +715,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -621,7 +735,8 @@
           "name" : "bean",
           "in" : "bean",
           "schema" : {
-            "$ref" : "#/components/schemas/GetBeanForm"
+            "$ref" : "#/components/schemas/GetBeanForm",
+            "exampleSetFlag" : false
           }
         } ],
         "responses" : {
@@ -630,8 +745,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -650,7 +768,9 @@
           "schema" : {
             "type" : "integer",
             "format" : "int32",
-            "nullable" : false
+            "nullable" : false,
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
           }
         } ],
         "responses" : {
@@ -673,7 +793,9 @@
           "schema" : {
             "type" : "integer",
             "format" : "int32",
-            "nullable" : false
+            "nullable" : false,
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
           }
         }, {
           "name" : "date",
@@ -682,14 +804,18 @@
           "required" : true,
           "schema" : {
             "type" : "string",
-            "format" : "date"
+            "format" : "date",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "otherParam",
           "in" : "query",
           "description" : "Optional other parameter",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -698,8 +824,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/HelloDto"
-                }
+                  "$ref" : "#/components/schemas/HelloDto",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -718,8 +846,10 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
-                }
+                  "$ref" : "#/components/schemas/ErrorResponse",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           },
@@ -731,8 +861,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -750,8 +883,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -768,8 +904,10 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/Person"
-              }
+                "$ref" : "#/components/schemas/Person",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -780,8 +918,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Person"
-                }
+                  "$ref" : "#/components/schemas/Person",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           },
@@ -790,8 +930,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Person"
-                }
+                  "$ref" : "#/components/schemas/Person",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           },
@@ -803,8 +945,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
-                }
+                  "$ref" : "#/components/schemas/ErrorResponse",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -822,10 +966,14 @@
             "application/json" : {
               "schema" : {
                 "type" : "array",
+                "exampleSetFlag" : false,
                 "items" : {
-                  "$ref" : "#/components/schemas/Person"
-                }
-              }
+                  "$ref" : "#/components/schemas/Person",
+                  "exampleSetFlag" : false
+                },
+                "types" : [ "array" ]
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -839,8 +987,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
-                }
+                  "$ref" : "#/components/schemas/ErrorResponse",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           },
@@ -849,8 +999,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Person"
-                }
+                  "$ref" : "#/components/schemas/Person",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -869,8 +1021,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           },
@@ -879,8 +1034,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -898,8 +1056,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -917,8 +1078,11 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -939,8 +1103,11 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -961,8 +1128,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -980,8 +1150,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/HelloDto"
-                }
+                  "$ref" : "#/components/schemas/HelloDto",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1000,10 +1172,14 @@
               "image/png" : {
                 "schema" : {
                   "type" : "array",
+                  "exampleSetFlag" : false,
                   "items" : {
-                    "$ref" : "#/components/schemas/byte"
-                  }
-                }
+                    "$ref" : "#/components/schemas/byte",
+                    "exampleSetFlag" : false
+                  },
+                  "types" : [ "array" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1034,16 +1210,24 @@
                 "type" : "object",
                 "properties" : {
                   "name" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
                   },
                   "email" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
                   },
                   "url" : {
-                    "type" : "string"
+                    "type" : "string",
+                    "exampleSetFlag" : false,
+                    "types" : [ "string" ]
                   }
-                }
-              }
+                },
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -1054,8 +1238,11 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1071,8 +1258,10 @@
           "content" : {
             "application/x-www-form-urlencoded" : {
               "schema" : {
-                "$ref" : "#/components/schemas/MyForm"
-              }
+                "$ref" : "#/components/schemas/MyForm",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -1083,8 +1272,11 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1100,7 +1292,9 @@
           "name" : "head",
           "in" : "header",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -1109,8 +1303,11 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1128,8 +1325,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1149,8 +1349,11 @@
                 "schema" : {
                   "type" : "integer",
                   "format" : "int32",
-                  "nullable" : false
-                }
+                  "nullable" : false,
+                  "exampleSetFlag" : false,
+                  "types" : [ "integer" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1170,8 +1373,11 @@
                 "schema" : {
                   "type" : "integer",
                   "format" : "int64",
-                  "nullable" : false
-                }
+                  "nullable" : false,
+                  "exampleSetFlag" : false,
+                  "types" : [ "integer" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1187,8 +1393,10 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/Person"
-              }
+                "$ref" : "#/components/schemas/Person",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -1199,8 +1407,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Person"
-                }
+                  "$ref" : "#/components/schemas/Person",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1217,10 +1427,14 @@
             "application/json" : {
               "schema" : {
                 "type" : "array",
+                "exampleSetFlag" : false,
                 "items" : {
-                  "$ref" : "#/components/schemas/Person"
-                }
-              }
+                  "$ref" : "#/components/schemas/Person",
+                  "exampleSetFlag" : false
+                },
+                "types" : [ "array" ]
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -1231,8 +1445,11 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1249,7 +1466,9 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -1258,8 +1477,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Person"
-                }
+                  "$ref" : "#/components/schemas/Person",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1276,7 +1497,9 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -1286,10 +1509,14 @@
               "application/json" : {
                 "schema" : {
                   "type" : "array",
+                  "exampleSetFlag" : false,
                   "items" : {
-                    "$ref" : "#/components/schemas/Person"
-                  }
-                }
+                    "$ref" : "#/components/schemas/Person",
+                    "exampleSetFlag" : false
+                  },
+                  "types" : [ "array" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1306,7 +1533,9 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -1317,9 +1546,13 @@
                 "schema" : {
                   "type" : "object",
                   "additionalProperties" : {
-                    "$ref" : "#/components/schemas/Person"
-                  }
-                }
+                    "$ref" : "#/components/schemas/Person",
+                    "exampleSetFlag" : false
+                  },
+                  "exampleSetFlag" : false,
+                  "types" : [ "object" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1336,7 +1569,9 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -1346,10 +1581,14 @@
               "application/json" : {
                 "schema" : {
                   "type" : "array",
+                  "exampleSetFlag" : false,
                   "items" : {
-                    "$ref" : "#/components/schemas/Person"
-                  }
-                }
+                    "$ref" : "#/components/schemas/Person",
+                    "exampleSetFlag" : false
+                  },
+                  "types" : [ "array" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -1366,35 +1605,45 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "category",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "vendor",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "range",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "style",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -1413,39 +1662,59 @@
           "id" : {
             "type" : "integer",
             "format" : "int64",
-            "nullable" : false
+            "nullable" : false,
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
-        }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
       },
       "Baz" : {
         "type" : "object",
         "properties" : {
           "id" : {
             "type" : "integer",
-            "format" : "int64"
+            "format" : "int64",
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           },
           "startDate" : {
             "type" : "string",
-            "format" : "date"
+            "format" : "date",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
-        }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
       },
       "ErrorResponse" : {
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           },
           "text" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
-        }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
       },
       "GetBeanForm" : {
         "type" : "object",
@@ -1454,14 +1723,20 @@
             "maxLength" : 150,
             "minLength" : 2,
             "type" : "string",
-            "nullable" : false
+            "nullable" : false,
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           },
           "email" : {
             "maxLength" : 100,
             "type" : "string",
-            "format" : "email"
+            "format" : "email",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
-        }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
       },
       "HelloDto" : {
         "type" : "object",
@@ -1469,25 +1744,37 @@
           "id" : {
             "type" : "integer",
             "format" : "int32",
-            "nullable" : false
+            "nullable" : false,
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
           },
           "name" : {
             "type" : "string",
-            "description" : "This is a comment"
+            "description" : "This is a comment",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           },
           "otherParam" : {
             "type" : "string",
-            "description" : "This is a comment"
+            "description" : "This is a comment",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           },
           "gid" : {
             "type" : "string",
-            "format" : "uuid"
+            "format" : "uuid",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           },
           "whenAction" : {
             "type" : "string",
-            "format" : "date-time"
+            "format" : "date-time",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
-        }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
       },
       "HelloForm" : {
         "type" : "object",
@@ -1496,35 +1783,53 @@
             "maxLength" : 150,
             "minLength" : 2,
             "type" : "string",
-            "nullable" : false
+            "nullable" : false,
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           },
           "email" : {
             "maxLength" : 100,
             "type" : "string",
-            "format" : "email"
+            "format" : "email",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           },
           "url" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           },
           "startDate" : {
             "type" : "string",
-            "format" : "date"
+            "format" : "date",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
-        }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
       },
       "MyForm" : {
         "type" : "object",
         "properties" : {
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           },
           "email" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           },
           "url" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
-        }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
       },
       "Person" : {
         "type" : "object",
@@ -1532,15 +1837,23 @@
           "id" : {
             "type" : "integer",
             "format" : "int64",
-            "nullable" : false
+            "nullable" : false,
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
-        }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
       },
       "byte" : {
-        "type" : "object"
+        "type" : "object",
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
       }
     },
     "securitySchemes" : {

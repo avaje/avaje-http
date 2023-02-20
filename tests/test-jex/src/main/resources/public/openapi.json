@@ -16,8 +16,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/HelloDto"
-                }
+                  "$ref" : "#/components/schemas/HelloDto",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -31,8 +33,10 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/HelloDto"
-              }
+                "$ref" : "#/components/schemas/HelloDto",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -54,7 +58,9 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -63,8 +69,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -82,8 +91,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -100,7 +112,9 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -109,8 +123,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -127,21 +144,27 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "nam0",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "nam1",
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -150,8 +173,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -168,13 +194,17 @@
           "in" : "path",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         }, {
           "name" : "limit",
           "in" : "query",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
         } ],
         "responses" : {
@@ -183,8 +213,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -200,13 +233,19 @@
           "id" : {
             "type" : "integer",
             "format" : "int32",
-            "nullable" : false
+            "nullable" : false,
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
           },
           "name" : {
             "type" : "string",
-            "nullable" : false
+            "nullable" : false,
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
-        }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
       }
     }
   }

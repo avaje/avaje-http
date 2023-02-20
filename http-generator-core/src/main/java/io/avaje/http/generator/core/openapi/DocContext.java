@@ -1,11 +1,15 @@
 package io.avaje.http.generator.core.openapi;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.avaje.http.generator.core.OpenAPIDefinitionPrism;
 import io.avaje.http.generator.core.SecuritySchemePrism;
 import io.avaje.http.generator.core.SecuritySchemesPrism;
 import io.avaje.http.generator.core.TagPrism;
 import io.avaje.http.generator.core.TagsPrism;
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -208,7 +212,13 @@ public class DocContext {
   public void writeApi() {
     final var openAPI = getApiForWriting();
     try (var metaWriter = createMetaWriter()) {
-      Json.pretty().writeValue(metaWriter, openAPI);
+      var mapper = new ObjectMapper();
+      mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+      mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+      mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+      mapper.writer(new DefaultPrettyPrinter()).writeValue(metaWriter, openAPI);
     } catch (final Exception e) {
       logError(null, "Error writing openapi file" + e.getMessage());
       e.printStackTrace();

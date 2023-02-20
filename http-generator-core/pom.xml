@@ -30,14 +30,18 @@
 
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
-      <artifactId>swagger-core</artifactId>
+      <artifactId>swagger-annotations</artifactId>
       <version>${swagger.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>jakarta.validation</groupId>
-          <artifactId>jakarta.validation-api</artifactId>
-        </exclusion>
-      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-models</artifactId>
+      <version>${swagger.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
 
     <dependency>

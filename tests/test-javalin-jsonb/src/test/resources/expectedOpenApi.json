@@ -21,8 +21,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -39,8 +42,10 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/Person"
-              }
+                "$ref" : "#/components/schemas/Person",
+                "exampleSetFlag" : false
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -51,8 +56,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Person"
-                }
+                  "$ref" : "#/components/schemas/Person",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           },
@@ -61,8 +68,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Person"
-                }
+                  "$ref" : "#/components/schemas/Person",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           },
@@ -74,8 +83,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
-                }
+                  "$ref" : "#/components/schemas/ErrorResponse",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -93,10 +104,14 @@
             "application/json" : {
               "schema" : {
                 "type" : "array",
+                "exampleSetFlag" : false,
                 "items" : {
-                  "$ref" : "#/components/schemas/Person"
-                }
-              }
+                  "$ref" : "#/components/schemas/Person",
+                  "exampleSetFlag" : false
+                },
+                "types" : [ "array" ]
+              },
+              "exampleSetFlag" : false
             }
           },
           "required" : true
@@ -110,8 +125,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
-                }
+                  "$ref" : "#/components/schemas/ErrorResponse",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           },
@@ -120,8 +137,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/Person"
-                }
+                  "$ref" : "#/components/schemas/Person",
+                  "exampleSetFlag" : false
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -140,8 +159,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           },
@@ -150,8 +172,11 @@
             "content" : {
               "text/plain" : {
                 "schema" : {
-                  "type" : "string"
-                }
+                  "type" : "string",
+                  "exampleSetFlag" : false,
+                  "types" : [ "string" ]
+                },
+                "exampleSetFlag" : false
               }
             }
           }
@@ -165,12 +190,18 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           },
           "text" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
-        }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
       },
       "Person" : {
         "type" : "object",
@@ -178,12 +209,18 @@
           "id" : {
             "type" : "integer",
             "format" : "int64",
-            "nullable" : false
+            "nullable" : false,
+            "exampleSetFlag" : false,
+            "types" : [ "integer" ]
           },
           "name" : {
-            "type" : "string"
+            "type" : "string",
+            "exampleSetFlag" : false,
+            "types" : [ "string" ]
           }
-        }
+        },
+        "exampleSetFlag" : false,
+        "types" : [ "object" ]
       }
     }
   }
