@@ -13,6 +13,5 @@ module io.avaje.http.generator.core {
   requires static transitive io.swagger.v3.oas.models;
   requires static transitive io.swagger.v3.oas.annotations;
   requires static transitive java.validation;
-  requires static transitive jakarta.inject;
   requires static transitive jakarta.validation;
 }

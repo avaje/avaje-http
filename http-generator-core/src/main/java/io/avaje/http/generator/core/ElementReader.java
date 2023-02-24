@@ -62,8 +62,7 @@ public class ElementReader {
     }
     final var elementType = ctx.typeElement(rawType);
     return elementType != null
-        && (ValidPrism.getInstanceOn(elementType) != null
-            || JavaxValidPrism.getInstanceOn(elementType) != null);
+        && (ValidPrism.isPresent(elementType) || JavaxValidPrism.isPresent(elementType));
   }
 
   private void readAnnotations(Element element, ParamType defaultType) {

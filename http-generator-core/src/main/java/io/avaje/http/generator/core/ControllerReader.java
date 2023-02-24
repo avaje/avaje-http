@@ -107,7 +107,7 @@ public final class ControllerReader {
       final Element ifaceElement = ctx.asElement(anInterface);
       final var controller = ControllerPrism.getInstanceOn(ifaceElement);
       if (controller != null && !controller.value().isBlank()
-          || PathPrism.getInstanceOn(ifaceElement) != null) {
+          || PathPrism.isPresent(ifaceElement)) {
         interfaces.add(ifaceElement);
       }
     }
