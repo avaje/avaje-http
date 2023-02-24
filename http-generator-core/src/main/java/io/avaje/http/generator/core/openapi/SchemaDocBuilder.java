@@ -232,8 +232,7 @@ class SchemaDocBuilder {
   }
 
   private void setFormatFromValidation(Element element, Schema<?> propSchema) {
-    if (EmailPrism.getOptionalOn(element).isPresent()
-        || JavaxEmailPrism.getOptionalOn(element).isPresent()) {
+    if (EmailPrism.isPresent(element) || JavaxEmailPrism.isPresent(element)) {
       propSchema.setFormat("email");
     }
   }
@@ -311,7 +310,7 @@ class SchemaDocBuilder {
   }
 
   private boolean isHiddenField(VariableElement field) {
-    if (HiddenPrism.getOptionalOn(field).isPresent()) {
+    if (HiddenPrism.isPresent(field)) {
       return true;
     }
     for (AnnotationMirror annotationMirror : field.getAnnotationMirrors()) {
