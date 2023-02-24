@@ -152,22 +152,22 @@ public class DocContext {
   }
 
   public void addTagDefinition(Element element) {
-    final var tag = TagPrism.getInstanceOn(element);
-    if (tag == null) return;
 
-    openAPI.addTagsItem(createTagItem(tag));
+    for (var tag : TagPrism.getAllInstancesOn(element)) {
+      openAPI.addTagsItem(createTagItem(tag));
+    }
   }
 
   public void addSecurityScheme(Element element) {
-    var schemes = SecuritySchemePrism.getAllInstancesOn(element);
-    if (schemes == null) {
-      return;
-    }
-    this.addSecuritySchemes(schemes);
+
+    this.addSecuritySchemes(SecuritySchemePrism.getAllInstancesOn(element));
   }
 
   public void addSecuritySchemes(Element element) {
     var schemes = SecuritySchemesPrism.getInstanceOn(element);
+    if (schemes == null) {
+        return;
+      }
     this.addSecuritySchemes(schemes.value());
   }
 
