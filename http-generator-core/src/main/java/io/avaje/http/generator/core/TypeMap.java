@@ -43,6 +43,20 @@ class TypeMap {
     return types.get(type);
   }
 
+  static TypeHandler enumParamHandler(UType type) {
+    return new ObjectHandler(type.mainType(), type.shortName()) {
+      @Override
+      public String toMethod() {
+        return type.shortType() + ".valueOf(";
+      }
+
+      @Override
+      public String asMethod() {
+        return "java.util. Objects.toString(";
+      }
+    };
+  }
+
   static class StringHandler extends JavaLangType {
     StringHandler() {
       super("String");

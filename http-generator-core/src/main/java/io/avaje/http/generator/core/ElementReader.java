@@ -2,7 +2,10 @@ package io.avaje.http.generator.core;
 
 import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
 
+import java.util.Optional;
+
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
@@ -42,7 +45,19 @@ public class ElementReader {
     this.rawType = rawType;
     this.shortType = Util.shortName(rawType);
     this.contextType = ctx.platform().isContextType(rawType);
-    this.typeHandler = TypeMap.get(rawType);
+
+    if (type != null
+        && (defaultType == ParamType.FORMPARAM || defaultType == ParamType.QUERYPARAM)
+        && Optional.ofNullable(ctx.typeElement(type.mainType()))
+            .map(TypeElement::getKind)
+            .filter(ElementKind.ENUM::equals)
+            .isPresent()) {
+
+      this.typeHandler = TypeMap.enumParamHandler(type);
+    } else {
+
+      this.typeHandler = TypeMap.get(rawType);
+    }
     this.formMarker = formMarker;
     this.varName = element.getSimpleName().toString();
     this.snakeName = Util.snakeCase(varName);
