@@ -127,20 +127,22 @@ class NimaPlatformAdapter implements PlatformAdapter {
 
   @Override
   public void writeReadCollectionParameter(
-      Append writer, ParamType paramType, String paramName, String paramDefault) {
+      Append writer, ParamType paramType, String paramName, List<String> paramDefault) {
     switch (paramType) {
       case QUERYPARAM:
         writer.append(
-            "req.query().all(\"%s\", () -> java.util.List.of(\"%s\"))", paramName, paramDefault);
+            "req.query().all(\"%s\", () -> java.util.List.of(\"%s\"))",
+            paramName, String.join(",", paramDefault));
         break;
       case HEADER:
         writer.append(
-            "req.headers().all(\"%s\", () -> java.util.List.of(\"%s\"))", paramName, paramDefault);
+            "req.headers().all(\"%s\", () -> java.util.List.of(\"%s\"))",
+            paramName, String.join(",", paramDefault));
         break;
       case COOKIE:
         writer.append(
             "req.headers().cookies().all(\"%s\", () -> java.util.List.of(\"%s\"))",
-            paramName, paramDefault);
+            paramName, String.join(",", paramDefault));
         break;
       default:
         throw new UnsupportedOperationException("Unsupported MultiValue Parameter");

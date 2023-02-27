@@ -80,11 +80,11 @@ class JavalinAdapter implements PlatformAdapter {
 
   @Override
   public void writeReadCollectionParameter(
-      Append writer, ParamType paramType, String paramName, String paramDefault) {
+      Append writer, ParamType paramType, String paramName, List<String> paramDefault) {
     if (paramType != ParamType.QUERYPARAM) {
       throw new UnsupportedOperationException(
           "Only MultiValue Query Params are supported in Javalin");
     }
-    writer.append("withDefault(ctx.queryParams(\"%s\"), \"%s\")", paramName, paramDefault);
+    writer.append("withDefault(ctx.queryParams(\"%s\"), java.util.List.of(\"%s\"))", paramName, String.join(",", paramDefault));
   }
 }

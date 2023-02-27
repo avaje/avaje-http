@@ -65,6 +65,6 @@ class ClientPlatformAdapter implements PlatformAdapter {
       Append writer,
       ParamType paramType,
       String paramName,
-      String paramDefault) {
+      List<String> paramDefault) {
   }
 }

@@ -28,8 +28,8 @@ public final class PathTypeConversion {
     return value != null ? value : defaultValue;
   }
 
-  public static List<String> withDefault(List<String> value, String defaultValue) {
-    return value != null && !value.isEmpty() ? value : List.of(defaultValue);
+  public static List<String> withDefault(List<String> value, List<String> defaultValue) {
+    return value != null && !value.isEmpty() ? value : defaultValue;
   }
 
   /**

@@ -22,7 +22,7 @@ class PathTypeConversionTest {
     assertEquals("", PathTypeConversion.withDefault("", "myVal"));
     String nully = null;
     assertEquals("myVal", PathTypeConversion.withDefault(nully, "myVal"));
-    assertThat(PathTypeConversion.withDefault(List.of(), "myVal")).anyMatch(s -> "myVal".equals(s));
+    assertThat(PathTypeConversion.withDefault(List.of(), List.of("myVal"))).anyMatch(s -> "myVal".equals(s));
   }
 
   @Test

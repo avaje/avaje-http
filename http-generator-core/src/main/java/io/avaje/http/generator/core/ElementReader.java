@@ -2,6 +2,7 @@ package io.avaje.http.generator.core;
 
 import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -31,7 +32,7 @@ public class ElementReader {
   private ParamType paramType;
   private String matrixParamName;
   private boolean impliedParamType;
-  private String paramDefault;
+  private List<String> paramDefault;
 
   private boolean notNullKotlin;
   private boolean isParamCollection;
@@ -326,7 +327,7 @@ public class ElementReader {
         ctx.platform().writeReadCollectionParameter(writer, paramType, paramName);
       }
     } else if (hasParamDefault()) {
-      ctx.platform().writeReadParameter(writer, paramType, paramName, paramDefault);
+      ctx.platform().writeReadParameter(writer, paramType, paramName, paramDefault.get(0));
     } else {
       final var checkNull =
           notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
