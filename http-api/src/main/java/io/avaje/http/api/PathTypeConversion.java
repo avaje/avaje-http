@@ -52,11 +52,11 @@ public final class PathTypeConversion {
   }
 
   public static <T> List<T> list(Function<String, T> func, List<String> params) {
-    return params.stream().map(func).collect(Collectors.toList());
+    return params.stream().filter(Objects::nonNull).map(func).collect(Collectors.toList());
   }
 
   public static <T> Set<T> set(Function<String, T> func, List<String> params) {
-    return params.stream().map(func).collect(Collectors.toSet());
+    return params.stream().filter(Objects::nonNull).map(func).collect(Collectors.toSet());
   }
 
   /** Convert to int. */
