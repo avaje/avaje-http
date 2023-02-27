@@ -93,9 +93,6 @@ public class ElementReader {
         return TypeMap.enumParamHandler(type);
       } else if (isCollection) {
         this.isParamCollection = true;
-        if (paramType == ParamType.FORMPARAM) {
-          throw new IllegalStateException("You can't have a single Form Parameter be a list");
-        }
         final var isEnumCollection =
             typeOp
                 .flatMap(t -> Optional.ofNullable(ctx.typeElement(t.param0())))
