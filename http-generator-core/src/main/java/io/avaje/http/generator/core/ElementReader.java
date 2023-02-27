@@ -246,7 +246,7 @@ public class ElementReader {
    * Build the OpenAPI documentation for this parameter.
    */
   void buildApiDocumentation(MethodDocBuilder methodDoc) {
-    if (!isPlatformContext()) {
+    if (!isPlatformContext() && !isParamMap) {
       new MethodParamDocBuilder(methodDoc, this).build();
     }
   }
