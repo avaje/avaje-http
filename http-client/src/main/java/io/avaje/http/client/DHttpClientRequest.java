@@ -125,6 +125,14 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public HttpClientRequest header(String name, Object value) {
+
+    if (value instanceof Collection) {
+      for (final var e : (Collection) value) {
+        header(name, e);
+      }
+      return this;
+    }
+
     return value != null ? header(name, value.toString()) : this;
   }
 
