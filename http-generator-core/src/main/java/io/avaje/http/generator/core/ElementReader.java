@@ -34,6 +34,7 @@ public class ElementReader {
   private String paramDefault;
 
   private boolean notNullKotlin;
+  private boolean isParamCollection;
   //private boolean notNullJavax;
 
   ElementReader(Element element, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
@@ -73,7 +74,8 @@ public class ElementReader {
 
     if (specialParam) {
 
-      final var typeOp = Optional.ofNullable(type);
+      final var typeOp =
+          Optional.ofNullable(type).or(() -> Optional.of(UType.parse(element.asType())));
 
       final var mainTypeEnum =
           typeOp
@@ -90,7 +92,7 @@ public class ElementReader {
       if (mainTypeEnum) {
         return TypeMap.enumParamHandler(type);
       } else if (isCollection) {
-
+        this.isParamCollection = true;
         if (paramType == ParamType.FORMPARAM) {
           throw new IllegalStateException("You can't have a single Form Parameter be a list");
         }
@@ -101,7 +103,7 @@ public class ElementReader {
                 .filter(ElementKind.ENUM::equals)
                 .isPresent();
 
-        return TypeMap.collectionHandler(type, isEnumCollection);
+        return TypeMap.collectionHandler(typeOp.orElseThrow(), isEnumCollection);
       }
     }
 
@@ -320,7 +322,7 @@ public class ElementReader {
       // this is a body (POST, PATCH)
       writer.append(ctx.platform().bodyAsClass(type));
 
-    } else if (type != null && type.isGeneric() && specialParam) {
+    } else if (isParamCollection && specialParam) {
       if (hasParamDefault()) {
         ctx.platform().writeReadCollectionParameter(writer, paramType, paramName, paramDefault);
       } else {
