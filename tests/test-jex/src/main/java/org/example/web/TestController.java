@@ -24,12 +24,13 @@ public class TestController {
   }
 
   @Get("/enumQuery2")
-  String enumMultiQuery(@QueryParam @Default("FFA") Set<ServerType> type) {
+  String enumMultiQuery(@QueryParam @Default({"FFA", "PROXY"}) Set<ServerType> type) {
     return type.toString();
   }
 
   @Post("/enumQueryImplied")
-  String enumQueryImplied(HelloDto s, @QueryParam ServerType type) {
+  String enumQueryImplied(String s, @QueryParam ServerType type) {
     return type.name();
   }
+
 }

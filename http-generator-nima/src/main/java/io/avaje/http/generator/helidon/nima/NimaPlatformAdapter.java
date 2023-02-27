@@ -100,11 +100,22 @@ class NimaPlatformAdapter implements PlatformAdapter {
       case COOKIE:
         writer.append("req.headers().cookies().first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
         break;
-      case BODY:
-      case BEANPARAM:
-      case FORM:
       default:
         writer.append("null // TODO req.%s().param(\"%s\")", paramType.type(), paramName);
+    }
+  }
+
+  @Override
+  public void writeReadMapParameter(Append writer, ParamType paramType) {
+    switch (paramType) {
+      case QUERYPARAM:
+        writer.append("req.query().toMap()");
+        break;
+      case COOKIE:
+        writer.append("req.headers().cookies().toMap()");
+        break;
+      default:
+        throw new UnsupportedOperationException("Unsupported Map Parameter");
     }
   }
 

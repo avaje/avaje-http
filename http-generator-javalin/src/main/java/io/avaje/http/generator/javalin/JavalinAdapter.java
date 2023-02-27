@@ -70,6 +70,15 @@ class JavalinAdapter implements PlatformAdapter {
   }
 
   @Override
+  public void writeReadMapParameter(Append writer, ParamType paramType) {
+    if (paramType != ParamType.QUERYPARAM) {
+      throw new UnsupportedOperationException(
+          "Only Query Params have Map<String, List<String>> supported in Javalin");
+    }
+    writer.append("ctx.queryParamMap()");
+  }
+
+  @Override
   public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
     if (paramType != ParamType.QUERYPARAM) {
       throw new UnsupportedOperationException(

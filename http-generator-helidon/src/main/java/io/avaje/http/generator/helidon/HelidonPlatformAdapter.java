@@ -115,6 +115,20 @@ class HelidonPlatformAdapter implements PlatformAdapter {
   }
 
   @Override
+  public void writeReadMapParameter(Append writer, ParamType paramType) {
+    switch (paramType) {
+      case QUERYPARAM:
+        writer.append("req.queryParams().toMap()");
+        break;
+      case COOKIE:
+        writer.append("req.headers().cookies().toMap()");
+        break;
+      default:
+        throw new UnsupportedOperationException("Unsupported Map Parameter");
+    }
+  }
+
+  @Override
   public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
     switch (paramType) {
       case QUERYPARAM:
@@ -137,16 +151,18 @@ class HelidonPlatformAdapter implements PlatformAdapter {
     switch (paramType) {
       case QUERYPARAM:
         writer.append(
-            "withDefault(req.queryParams().all(\"%s\"), java.util.List.of(\"%s\"))", paramName, String.join(",", paramDefault));
+            "withDefault(req.queryParams().all(\"%s\"), java.util.List.of(\"%s\"))",
+            paramName, String.join(",", paramDefault));
         break;
       case HEADER:
         writer.append(
-            "withDefault(req.headers().all(\"%s\"), java.util.List.of(\"%s\"))", paramName, String.join(",", paramDefault));
+            "withDefault(req.headers().all(\"%s\"), java.util.List.of(\"%s\"))",
+            paramName, String.join(",", paramDefault));
         break;
       case COOKIE:
         writer.append(
-            "withDefault(req.headers().cookies().all(\"%s\"), java.util.List.of\"%s\"))", paramName, String.join(",", paramDefault)
-         );
+            "withDefault(req.headers().cookies().all(\"%s\"), java.util.List.of\"%s\"))",
+            paramName, String.join(",", paramDefault));
         break;
       default:
         throw new UnsupportedOperationException("Unsupported MultiValue Parameter");

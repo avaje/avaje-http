@@ -36,7 +36,8 @@ public class ElementReader {
 
   private boolean notNullKotlin;
   private boolean isParamCollection;
-  //private boolean notNullJavax;
+  private boolean isParamMap;
+  // private boolean notNullJavax;
 
   ElementReader(Element element, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
     this(element, null, Util.typeDef(element.asType()), ctx, defaultType, formMarker);
@@ -90,6 +91,9 @@ public class ElementReader {
               .filter(t -> t.isGeneric() && !t.mainType().startsWith("java.util.Map"))
               .isPresent();
 
+      final var isMap =
+          !isCollection && typeOp.filter(t -> t.mainType().startsWith("java.util.Map")).isPresent();
+
       if (mainTypeEnum) {
         return TypeMap.enumParamHandler(type);
       } else if (isCollection) {
@@ -102,6 +106,10 @@ public class ElementReader {
                 .isPresent();
 
         return TypeMap.collectionHandler(typeOp.orElseThrow(), isEnumCollection);
+      } else if (isMap) {
+        this.isParamMap = true;
+
+        return new TypeMap.StringHandler();
       }
     }
 
@@ -326,6 +334,8 @@ public class ElementReader {
       } else {
         ctx.platform().writeReadCollectionParameter(writer, paramType, paramName);
       }
+    } else if (isParamMap) {
+      ctx.platform().writeReadMapParameter(writer, paramType);
     } else if (hasParamDefault()) {
       ctx.platform().writeReadParameter(writer, paramType, paramName, paramDefault.get(0));
     } else {

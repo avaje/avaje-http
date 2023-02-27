@@ -1,8 +1,8 @@
 package org.example.myapp.web.test;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
-import org.example.myapp.web.HelloDto;
 
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Default;
@@ -34,12 +34,17 @@ public class TestController2 {
   }
 
   @Get("/enumQuery2")
-  String enumMultiQuery(@QueryParam @Default("FFA") Set<ServerType> type) {
+  String enumMultiQuery(@QueryParam @Default({"FFA", "PROXY"}) Set<ServerType> type) {
     return type.toString();
   }
 
   @Post("/enumQueryImplied")
-  String enumQueryImplied(HelloDto s, ServerType type) {
+  String enumQueryImplied(String s, @QueryParam ServerType type) {
     return type.name();
+  }
+
+  @Get("/mapTest")
+  String mapTest(Map<String, List<String>> strings) {
+    return strings.toString();
   }
 }
