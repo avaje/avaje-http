@@ -62,4 +62,23 @@ class JexAdapter implements PlatformAdapter {
   public void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault) {
     writer.append("withDefault(ctx.%s(\"%s\"), \"%s\")", paramType, paramName, paramDefault);
   }
+
+  @Override
+  public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
+    if (paramType != ParamType.QUERYPARAM) {
+      throw new UnsupportedOperationException(
+          "Only MultiValue Query Params are supported in Jex");
+    }
+    writer.append("ctx.queryParams(\"%s\")", paramName);
+  }
+
+  @Override
+  public void writeReadCollectionParameter(
+      Append writer, ParamType paramType, String paramName, String paramDefault) {
+    if (paramType != ParamType.QUERYPARAM) {
+      throw new UnsupportedOperationException(
+          "Only MultiValue Query Params are supported in Jex");
+    }
+    writer.append("withDefault(ctx.queryParams(\"%s\"), \"%s\")", paramName, paramDefault);
+  }
 }

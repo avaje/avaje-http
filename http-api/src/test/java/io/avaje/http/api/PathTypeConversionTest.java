@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -19,7 +20,9 @@ class PathTypeConversionTest {
   void withDefault() {
     assertEquals("a", PathTypeConversion.withDefault("a", "myVal"));
     assertEquals("", PathTypeConversion.withDefault("", "myVal"));
-    assertEquals("myVal", PathTypeConversion.withDefault(null, "myVal"));
+    String nully = null;
+    assertEquals("myVal", PathTypeConversion.withDefault(nully, "myVal"));
+    assertThat(PathTypeConversion.withDefault(List.of(), "myVal")).anyMatch(s -> "myVal".equals(s));
   }
 
   @Test
