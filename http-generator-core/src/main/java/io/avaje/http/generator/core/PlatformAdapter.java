@@ -46,4 +46,9 @@ public interface PlatformAdapter {
   void writeReadParameter(Append writer, ParamType paramType, String paramName);
 
   void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault);
+
+  void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName);
+
+  void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName, String paramDefault);
+
 }

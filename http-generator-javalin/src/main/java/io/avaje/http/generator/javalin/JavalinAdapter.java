@@ -67,4 +67,15 @@ class JavalinAdapter implements PlatformAdapter {
   public void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault) {
     writer.append("withDefault(ctx.%s(\"%s\"), \"%s\")", paramType, paramName, paramDefault);
   }
+
+  @Override
+  public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
+    writer.append("ctx.%s(\"%s\")", paramName);
+  }
+
+  @Override
+  public void writeReadCollectionParameter(
+      Append writer, ParamType paramType, String paramName, String paramDefault) {
+    writer.append("withDefault(ctx.queryParams(\"%s\"), \"%s\")", paramName, paramDefault);
+  }
 }

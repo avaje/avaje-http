@@ -1,5 +1,7 @@
 package io.avaje.http.generator.core;
 
+import java.util.List;
+
 /**
  * Handles type conversion for path and query parameters.
  */
@@ -18,7 +20,7 @@ interface TypeHandler {
   /**
    * The type for adding to imports.
    */
-  String importType();
+  List<String> importTypes();
 
   /**
    * The short name.

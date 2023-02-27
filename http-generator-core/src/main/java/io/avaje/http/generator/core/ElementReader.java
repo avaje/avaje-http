@@ -2,6 +2,7 @@ package io.avaje.http.generator.core;
 
 import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.lang.model.element.Element;
@@ -46,18 +47,7 @@ public class ElementReader {
     this.shortType = Util.shortName(rawType);
     this.contextType = ctx.platform().isContextType(rawType);
 
-    if (type != null
-        && (defaultType == ParamType.FORMPARAM || defaultType == ParamType.QUERYPARAM)
-        && Optional.ofNullable(ctx.typeElement(type.mainType()))
-            .map(TypeElement::getKind)
-            .filter(ElementKind.ENUM::equals)
-            .isPresent()) {
-
-      this.typeHandler = TypeMap.enumParamHandler(type);
-    } else {
-
-      this.typeHandler = TypeMap.get(rawType);
-    }
+    typeHandler = initTypeHandler(defaultType);
     this.formMarker = formMarker;
     this.varName = element.getSimpleName().toString();
     this.snakeName = Util.snakeCase(varName);
@@ -69,6 +59,46 @@ public class ElementReader {
       paramType = ParamType.CONTEXT;
       useValidation = false;
     }
+  }
+
+  TypeHandler initTypeHandler(ParamType paramType) {
+    if ((paramType == ParamType.FORMPARAM
+        || paramType == ParamType.QUERYPARAM
+        || paramType == ParamType.HEADER)) {
+
+      final var typeOp = Optional.ofNullable(type);
+
+      final var mainTypeEnum =
+          typeOp
+              .flatMap(t -> Optional.ofNullable(ctx.typeElement(t.mainType())))
+              .map(TypeElement::getKind)
+              .filter(ElementKind.ENUM::equals)
+              .isPresent();
+
+      final var isCollection =
+          typeOp
+              .filter(t -> t.isGeneric() && !t.mainType().startsWith("java.util.Map"))
+              .isPresent();
+
+      if (mainTypeEnum) {
+        return TypeMap.enumParamHandler(type);
+      } else if (isCollection) {
+
+        if (paramType == ParamType.FORMPARAM) {
+          throw new IllegalStateException("You can't have a single Form Parameter be a list");
+        }
+        final var isEnumCollection =
+            typeOp
+                .flatMap(t -> Optional.ofNullable(ctx.typeElement(t.param0())))
+                .map(TypeElement::getKind)
+                .filter(ElementKind.ENUM::equals)
+                .isPresent();
+
+        return TypeMap.collectionHandler(type, isEnumCollection);
+      }
+    }
+
+    return TypeMap.get(rawType);
   }
 
   private boolean useValidation() {
@@ -182,10 +212,8 @@ public class ElementReader {
 
   void addImports(ControllerReader bean) {
     if (typeHandler != null) {
-      String importType = typeHandler.importType();
-      if (importType != null) {
-        bean.addImportType(rawType);
-      }
+      typeHandler.importTypes().stream().filter(Objects::nonNull).forEach(bean::addImportType);
+
     } else {
       bean.addImportType(rawType);
     }
@@ -285,19 +313,24 @@ public class ElementReader {
       // this is a body (POST, PATCH)
       writer.append(ctx.platform().bodyAsClass(type));
 
-    } else {
+    } else if (type != null && type.isGeneric() && paramType == ParamType.QUERYPARAM) {
       if (hasParamDefault()) {
-        ctx.platform().writeReadParameter(writer, paramType, paramName, paramDefault);
+        ctx.platform().writeReadCollectionParameter(writer, paramType, paramName, paramDefault);
       } else {
-        boolean checkNull = notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
-        if (checkNull) {
-          writer.append("checkNull(");
-        }
-        ctx.platform().writeReadParameter(writer, paramType, paramName);
-        //writer.append("ctx.%s(\"%s\")", paramType, paramName);
-        if (checkNull) {
-          writer.append(", \"%s\")", paramName);
-        }
+        ctx.platform().writeReadCollectionParameter(writer, paramType, paramName);
+      }
+    } else if (hasParamDefault()) {
+      ctx.platform().writeReadParameter(writer, paramType, paramName, paramDefault);
+    } else {
+      final var checkNull =
+          notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
+      if (checkNull) {
+        writer.append("checkNull(");
+      }
+      ctx.platform().writeReadParameter(writer, paramType, paramName);
+      // writer.append("ctx.%s(\"%s\")", paramType, paramName);
+      if (checkNull) {
+        writer.append(", \"%s\")", paramName);
       }
     }
 

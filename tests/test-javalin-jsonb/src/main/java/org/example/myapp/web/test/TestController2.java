@@ -1,5 +1,7 @@
 package org.example.myapp.web.test;
 
+import java.util.Set;
+
 import org.example.myapp.web.HelloDto;
 
 import io.avaje.http.api.Controller;
@@ -29,6 +31,11 @@ public class TestController2 {
   @Get("/enumQuery")
   String enumQuery(@QueryParam @Default("FFA") ServerType type) {
     return type.name();
+  }
+
+  @Get("/enumQuery2")
+  String enumMultiQuery(@QueryParam @Default("FFA") Set<ServerType> type) {
+    return type.toString();
   }
 
   @Post("/enumQueryImplied")
