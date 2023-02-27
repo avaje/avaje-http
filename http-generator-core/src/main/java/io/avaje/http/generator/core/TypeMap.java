@@ -320,13 +320,14 @@ class TypeMap {
 
   static class CollectionHandler implements TypeHandler {
 
-    private final String importType;
+    private final List<String> importTypes;
     private final String shortName;
-    private final String toMethod;
+    private String toMethod;
 
     CollectionHandler(TypeHandler handler, boolean set, boolean isEnum) {
 
-      this.importType = handler.importTypes().get(0);
+      this.importTypes = new ArrayList<>(handler.importTypes());
+      importTypes.add("io.avaje.http.api.PathTypeConversion");
       this.shortName = handler.shortName();
       this.toMethod =
           (set ? "set" : "list")
@@ -335,6 +336,8 @@ class TypeMap {
                   ? handler.toMethod().replace(".", "::").replace("(", "")
                   : "PathTypeConversion::" + shortName)
               + ", ";
+
+      this.toMethod = toMethod.replace("PathTypeConversion::String", "Object::toString");
     }
 
     @Override
@@ -344,7 +347,8 @@ class TypeMap {
 
     @Override
     public List<String> importTypes() {
-      return List.of("io.avaje.http.api.PathTypeConversion", importType);
+
+      return importTypes;
     }
 
     @Override

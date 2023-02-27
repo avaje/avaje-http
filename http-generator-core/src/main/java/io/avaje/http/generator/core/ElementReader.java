@@ -25,6 +25,7 @@ public class ElementReader {
   private final boolean formMarker;
   private final boolean contextType;
   private final boolean useValidation;
+  private final boolean specialParam;
 
   private String paramName;
   private ParamType paramType;
@@ -47,7 +48,14 @@ public class ElementReader {
     this.shortType = Util.shortName(rawType);
     this.contextType = ctx.platform().isContextType(rawType);
 
-    typeHandler = initTypeHandler(defaultType);
+    this.specialParam =
+        defaultType == ParamType.FORMPARAM
+            || defaultType == ParamType.QUERYPARAM
+            || defaultType == ParamType.HEADER
+            || defaultType == ParamType.COOKIE;
+
+    typeHandler = initTypeHandler();
+
     this.formMarker = formMarker;
     this.varName = element.getSimpleName().toString();
     this.snakeName = Util.snakeCase(varName);
@@ -61,10 +69,9 @@ public class ElementReader {
     }
   }
 
-  TypeHandler initTypeHandler(ParamType paramType) {
-    if ((paramType == ParamType.FORMPARAM
-        || paramType == ParamType.QUERYPARAM
-        || paramType == ParamType.HEADER)) {
+  TypeHandler initTypeHandler() {
+
+    if (specialParam) {
 
       final var typeOp = Optional.ofNullable(type);
 
@@ -313,7 +320,7 @@ public class ElementReader {
       // this is a body (POST, PATCH)
       writer.append(ctx.platform().bodyAsClass(type));
 
-    } else if (type != null && type.isGeneric() && paramType == ParamType.QUERYPARAM) {
+    } else if (type != null && type.isGeneric() && specialParam) {
       if (hasParamDefault()) {
         ctx.platform().writeReadCollectionParameter(writer, paramType, paramName, paramDefault);
       } else {
