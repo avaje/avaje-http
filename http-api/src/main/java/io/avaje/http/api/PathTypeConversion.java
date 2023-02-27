@@ -3,6 +3,7 @@ package io.avaje.http.api;
 import java.math.BigDecimal;
 import java.time.*;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
