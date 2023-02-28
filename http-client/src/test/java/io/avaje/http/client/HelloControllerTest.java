@@ -31,6 +31,8 @@ class HelloControllerTest extends BaseWebTest {
   private static final ObjectMapper objectMapper = new ObjectMapper();
 
   final HttpClientContext clientContext = client();
+  
+  String nullString = null;
 
   @Test
   void newClientTest() {
@@ -801,7 +803,7 @@ class HelloControllerTest extends BaseWebTest {
   void get_withPathParamAndQueryParam_returningBean() {
 
     final HelloDto dto = clientContext.request()
-      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", nullString)
       .GET()
       .bean(HelloDto.class);
 
@@ -813,7 +815,7 @@ class HelloControllerTest extends BaseWebTest {
   @Test
   void callBean() {
     final HelloDto dto = clientContext.request()
-      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", (String) null)
       .GET()
       .call().bean(HelloDto.class).execute();
 
@@ -825,7 +827,7 @@ class HelloControllerTest extends BaseWebTest {
   @Test
   void callBeanAsync() throws ExecutionException, InterruptedException {
     final CompletableFuture<HelloDto> future = clientContext.request()
-      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", (String) null)
       .GET()
       .call().bean(HelloDto.class).async();
 
@@ -842,7 +844,7 @@ class HelloControllerTest extends BaseWebTest {
     final AtomicReference<HelloDto> ref = new AtomicReference<>();
 
     final CompletableFuture<HelloDto> future = clientContext.request()
-      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", nullString)
       .GET()
       .async().bean(HelloDto.class);
 
@@ -872,7 +874,7 @@ class HelloControllerTest extends BaseWebTest {
     final AtomicReference<HttpResponse<HelloDto>> ref = new AtomicReference<>();
 
     final CompletableFuture<HttpResponse<HelloDto>> future = clientContext.request()
-      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", nullString)
       .GET()
       .async().as(HelloDto.class);
 
