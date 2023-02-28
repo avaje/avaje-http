@@ -27,6 +27,7 @@
 @GeneratePrism(value = org.jetbrains.annotations.NotNull.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Client.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Client.Import.class, publicAccess = true)
+@GeneratePrism(value = io.avaje.http.api.RequestTimeout.class, publicAccess = true)
 package io.avaje.http.generator.core;
 
 import io.avaje.prism.GeneratePrism;
