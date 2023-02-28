@@ -238,6 +238,17 @@ public interface HttpClientRequest {
   HttpClientRequest queryParam(String name, Object value);
 
   /**
+   * Add a collection query parameters associated with a single key
+   *
+   * @param name The name of the query parameter
+   * @param values The values of the query parameter which can be null
+   * @return The request being built
+   */
+  default HttpClientRequest queryParam(String name, Collection<Object> value) {
+    return queryParam(name, (Object) value);
+  }
+
+  /**
    * Add a multiple query parameters as name value map.
    *
    * @param params The query parameters
