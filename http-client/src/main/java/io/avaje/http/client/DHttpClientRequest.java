@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.net.http.HttpResponse.BodyHandlers.discarding;
@@ -124,13 +125,11 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public HttpClientRequest header(String name, Object value) {
 
     if (value instanceof Collection) {
-      for (final var e : (Collection) value) {
-        header(name, e);
-      }
-      return this;
+      value = ((Collection) value).stream().map(Object::toString).collect(Collectors.joining(","));
     }
 
     return value != null ? header(name, value.toString()) : this;
