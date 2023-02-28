@@ -86,10 +86,10 @@ class ClientMethodWriter {
 
     writeHeaders();
     writePaths(segments);
-    timeout.ifPresent(this::writeTimeout);
     writeQueryParams(pathSegments);
     writeBeanParams(pathSegments);
     writeFormParams(pathSegments);
+    timeout.ifPresent(this::writeTimeout);
     writeBody();
     writeEnd();
   }
