@@ -5,6 +5,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -125,6 +126,15 @@ public interface HttpClientRequest {
    * @return The request being built
    */
   HttpClientRequest header(Map<String, ?> headers);
+
+  /**
+   * Add the headers to the request via Collection.
+   *
+   * @param name The header name
+   * @param value The header values
+   * @return The request being built
+   */
+  HttpClientRequest header(String name, Collection<String> value);
 
   /**
    * Return the header values that have been set for the given header name.

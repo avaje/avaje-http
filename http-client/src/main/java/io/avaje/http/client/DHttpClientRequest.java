@@ -125,11 +125,23 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpClientRequest header(String name, Collection<String> value) {
+    if (headers == null) {
+      headers = new LinkedHashMap<>();
+    }
+    headers.computeIfAbsent(name, s -> new ArrayList<>()).addAll(value);
+    return this;
+  }
+
+  @Override
   @SuppressWarnings("unchecked")
   public HttpClientRequest header(String name, Object value) {
 
     if (value instanceof Collection) {
-      value = ((Collection) value).stream().map(Object::toString).collect(Collectors.joining(","));
+      final var headerList =
+          ((Collection<Object>) value).stream().map(Object::toString).collect(Collectors.toList());
+
+      return header(name, headerList);
     }
 
     return value != null ? header(name, value.toString()) : this;
