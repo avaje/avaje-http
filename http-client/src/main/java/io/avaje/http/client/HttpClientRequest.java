@@ -253,7 +253,7 @@ public interface HttpClientRequest {
    * @return The request being built
    */
   default HttpClientRequest queryParam(String name, Collection<String> values) {
-    return queryParam(name, values);
+    return queryParam(name, (Object) values);
   }
 
   /**
