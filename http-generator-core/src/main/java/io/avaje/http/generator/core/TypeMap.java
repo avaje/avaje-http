@@ -43,6 +43,10 @@ class TypeMap {
     return types.get(type);
   }
 
+  static TypeHandler enumParamHandler(UType type) {
+    return new EnumHandler(type);
+  }
+
   static class StringHandler extends JavaLangType {
     StringHandler() {
       super("String");
@@ -169,7 +173,7 @@ class TypeMap {
     }
   }
 
-  static abstract class JavaLangType implements TypeHandler {
+  abstract static class JavaLangType implements TypeHandler {
 
     final String shortName;
 
@@ -193,7 +197,7 @@ class TypeMap {
     }
   }
 
-  static abstract class Primitive implements TypeHandler {
+  abstract static class Primitive implements TypeHandler {
 
     private final String type;
 
@@ -277,8 +281,27 @@ class TypeMap {
     }
   }
 
+  static class EnumHandler extends ObjectHandler {
+    private final UType type;
 
-  static abstract class ObjectHandler implements TypeHandler {
+    EnumHandler(UType type) {
+
+      super(type.mainType(), type.shortName());
+      this.type = type;
+    }
+
+    @Override
+    public String toMethod() {
+      return type.shortType() + ".valueOf(";
+    }
+
+    @Override
+    public String asMethod() {
+      return "java.util.Objects.toString(";
+    }
+  }
+
+  abstract static class ObjectHandler implements TypeHandler {
 
     private final String importType;
     private final String shortName;

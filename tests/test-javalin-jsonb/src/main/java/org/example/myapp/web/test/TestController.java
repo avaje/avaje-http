@@ -129,5 +129,4 @@ public class TestController {
   CompletableFuture<HelloDto> getAllAsync() {
     return CompletableFuture.supplyAsync(() -> new HelloDto(12, "Jim", "asd"));
   }
-
 }
