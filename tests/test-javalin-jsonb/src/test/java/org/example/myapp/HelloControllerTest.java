@@ -96,7 +96,7 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(bean.otherParam).isEqualTo("other");
 
     final HelloDto dto = client.request()
-      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", null)
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", (String) null)
       .GET().bean(HelloDto.class);
 
     assertThat(dto.id).isEqualTo(43L);
