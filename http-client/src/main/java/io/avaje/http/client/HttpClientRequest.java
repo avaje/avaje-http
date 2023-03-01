@@ -246,6 +246,17 @@ public interface HttpClientRequest {
   HttpClientRequest queryParam(Map<String, ?> params);
 
   /**
+   * Add a query parameter with multiple values
+   *
+   * @param name The name of the query parameter
+   * @param value The values of the query parameter which can be null
+   * @return The request being built
+   */
+  default HttpClientRequest queryParam(String name, Collection<String> values) {
+    return queryParam(name, values);
+  }
+
+  /**
    * Add a form parameter.
    *
    * @param name  The form parameter name
