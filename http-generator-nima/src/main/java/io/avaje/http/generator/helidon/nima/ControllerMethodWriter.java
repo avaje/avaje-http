@@ -1,5 +1,6 @@
 package io.avaje.http.generator.helidon.nima;
 
+import static io.avaje.http.generator.core.ProcessingContext.platform;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,7 +9,6 @@ import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PathSegments;
-import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.UType;
 import io.avaje.http.generator.core.WebMethod;
 import io.avaje.http.generator.core.openapi.MediaType;
@@ -21,14 +21,12 @@ class ControllerMethodWriter {
   private final MethodReader method;
   private final Append writer;
   private final WebMethod webMethod;
-  private final ProcessingContext ctx;
   private final boolean useJsonB;
 
-  ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonB) {
+  ControllerMethodWriter(MethodReader method, Append writer, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
-    this.ctx = ctx;
     this.useJsonB = useJsonB;
   }
 
@@ -78,7 +76,7 @@ class ControllerMethodWriter {
     }
     final var matrixSegments = segments.matrixSegments();
     for (final PathSegments.Segment matrixSegment : matrixSegments) {
-      matrixSegment.writeCreateSegment(writer, ctx.platform());
+      matrixSegment.writeCreateSegment(writer, platform());
     }
 
     final var params = method.params();

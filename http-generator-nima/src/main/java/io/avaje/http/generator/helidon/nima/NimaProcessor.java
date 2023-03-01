@@ -22,7 +22,7 @@ public class NimaProcessor extends BaseProcessor {
   }
 
   @Override
-  public void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException {
-    new ControllerWriter(reader, ctx, jsonB).write();
+  public void writeControllerAdapter(ControllerReader reader) throws IOException {
+    new ControllerWriter(reader, jsonB).write();
   }
 }

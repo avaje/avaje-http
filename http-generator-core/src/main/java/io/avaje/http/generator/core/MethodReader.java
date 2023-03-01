@@ -1,5 +1,6 @@
 package io.avaje.http.generator.core;
 
+import static io.avaje.http.generator.core.ProcessingContext.*;
 import io.avaje.http.generator.core.javadoc.Javadoc;
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ import javax.lang.model.type.TypeMirror;
 
 public class MethodReader {
 
-  private final ProcessingContext ctx;
   private final ControllerReader bean;
   private final ExecutableElement element;
   private final boolean isVoid;
@@ -45,8 +45,7 @@ public class MethodReader {
   private String webMethodPath;
   private boolean formMarker;
 
-  MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable, ProcessingContext ctx) {
-    this.ctx = ctx;
+  MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable) {
     this.bean = bean;
     this.element = element;
     this.actualExecutable = actualExecutable;
@@ -57,12 +56,12 @@ public class MethodReader {
     initWebMethodViaAnnotation();
 
     this.superMethods =
-        ctx.superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
+        superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
     superMethods.forEach(m -> methodRoles.addAll(Util.findRoles(m)));
 
     this.securityRequirements = readSecurityRequirements();
     this.apiResponses = buildApiResponses();
-    this.javadoc = buildJavadoc(element, ctx);
+    this.javadoc = buildJavadoc(element);
     this.timeout = RequestTimeoutPrism.getOptionalOn(element);
     timeout.ifPresent(
         p -> {
@@ -78,13 +77,13 @@ public class MethodReader {
     }
   }
 
-  private Javadoc buildJavadoc(ExecutableElement element, ProcessingContext ctx) {
-    return Optional.of(Javadoc.parse(ctx.docComment(element)))
+  private Javadoc buildJavadoc(ExecutableElement element) {
+    return Optional.of(Javadoc.parse(docComment(element)))
         .filter(Predicate.not(Javadoc::isEmpty))
         .orElseGet(
             () ->
                 superMethods.stream()
-                    .map(e -> Javadoc.parse(ctx.docComment(e)))
+                    .map(e -> Javadoc.parse(docComment(e)))
                     .filter(Predicate.not(Javadoc::isEmpty))
                     .findFirst()
                     .orElse(Javadoc.parse("")));
@@ -235,7 +234,7 @@ public class MethodReader {
 
   void read() {
     if (!methodRoles.isEmpty()) {
-      ctx.platform().methodRoles(methodRoles, bean);
+      platform().methodRoles(methodRoles, bean);
     }
     // non-path parameters default to form or query parameters based on the
     // existence of @Form annotation on the method
@@ -252,21 +251,21 @@ public class MethodReader {
       }
       String rawType = Util.typeDef(typeMirror);
       UType type = Util.parse(typeMirror.toString());
-      MethodParam param = new MethodParam(p, type, rawType, ctx, defaultParamType, formMarker);
+      MethodParam param = new MethodParam(p, type, rawType, defaultParamType, formMarker);
       params.add(param);
       param.addImports(bean);
     }
   }
 
   public void buildApiDoc() {
-    buildApiDocumentation(ctx);
+    buildApiDocumentation();
   }
 
   /**
    * Build the OpenAPI documentation for the method / operation.
    */
-  public void buildApiDocumentation(ProcessingContext ctx) {
-    new MethodDocBuilder(this, ctx.doc()).build();
+  public void buildApiDocumentation() {
+    new MethodDocBuilder(this, doc()).build();
   }
 
   public List<String> roles() {

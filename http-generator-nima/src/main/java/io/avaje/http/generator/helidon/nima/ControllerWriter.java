@@ -1,5 +1,6 @@
 package io.avaje.http.generator.helidon.nima;
 
+import static io.avaje.http.generator.core.ProcessingContext.diAnnotation;
 import io.avaje.http.generator.core.*;
 
 import java.io.IOException;
@@ -15,8 +16,8 @@ class ControllerWriter extends BaseControllerWriter {
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
 
-  ControllerWriter(ControllerReader reader, ProcessingContext ctx, boolean jsonB) throws IOException {
-    super(reader, ctx);
+  ControllerWriter(ControllerReader reader, boolean jsonB) throws IOException {
+    super(reader);
     this.useJsonB = jsonB;
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
@@ -49,7 +50,7 @@ class ControllerWriter extends BaseControllerWriter {
   private List<ControllerMethodWriter> writerMethods() {
     return reader.methods().stream()
       .filter(MethodReader::isWebMethod)
-      .map(it -> new ControllerMethodWriter(it, writer, ctx, useJsonB))
+      .map(it -> new ControllerMethodWriter(it, writer, useJsonB))
       .toList();
   }
 
@@ -76,7 +77,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
-    writer.append(ctx.diAnnotation()).eol();
+    writer.append(diAnnotation()).eol();
     writer.append("public class %s$Route implements HttpService {", shortName).eol().eol();
 
     var controllerName = "controller";

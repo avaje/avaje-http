@@ -22,7 +22,7 @@ public class JavalinProcessor extends BaseProcessor {
   }
 
   @Override
-  public void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException {
-    new ControllerWriter(reader, ctx, useJsonB).write();
+  public void writeControllerAdapter(ControllerReader reader) throws IOException {
+    new ControllerWriter(reader, useJsonB).write();
   }
 }

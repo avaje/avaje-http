@@ -1,11 +1,11 @@
 package io.avaje.http.generator.core;
 
+import static io.avaje.http.generator.core.ProcessingContext.*;
 import javax.lang.model.element.*;
 import java.util.*;
 
 public class BeanParamReader {
 
-  private final ProcessingContext ctx;
   private final String beanVarName;
   private final String beanShortType;
   private final TypeElement beanType;
@@ -15,8 +15,7 @@ public class BeanParamReader {
   private final List<ExecutableElement> constructors = new ArrayList<>();
   private final Map<String, ExecutableElement> methodMap = new LinkedHashMap<>();
 
-  public BeanParamReader(ProcessingContext ctx, TypeElement beanType, String beanVarName, String beanShortType, ParamType defaultParamType) {
-    this.ctx = ctx;
+  public BeanParamReader(TypeElement beanType, String beanVarName, String beanShortType, ParamType defaultParamType) {
     this.beanType = beanType;
     this.beanVarName = beanVarName;
     this.beanShortType = beanShortType;
@@ -41,7 +40,7 @@ public class BeanParamReader {
   }
 
   private void readField(Element enclosedElement) {
-    FieldReader field = new FieldReader(ctx, enclosedElement, defaultParamType);
+    FieldReader field = new FieldReader(enclosedElement, defaultParamType);
     fieldMap.put(field.varName(), field);
   }
 
@@ -141,14 +140,12 @@ public class BeanParamReader {
 
   static class FieldReader {
 
-    private final ProcessingContext ctx;
     private final ElementReader element;
     private String setterMethod;
     private boolean constructorParam;
 
-    FieldReader(ProcessingContext ctx, Element enclosedElement, ParamType defaultParamType) {
-      this.ctx = ctx;
-      this.element = new ElementReader(enclosedElement, ctx, defaultParamType, false);
+    FieldReader(Element enclosedElement, ParamType defaultParamType) {
+      this.element = new ElementReader(enclosedElement, defaultParamType, false);
     }
 
     boolean isPublic() {
@@ -181,13 +178,13 @@ public class BeanParamReader {
     void writeSet(Append writer, String beanVarName) {
       if (setterMethod != null) {
         // populate via setter method
-        writer.append("%s  %s.%s(", ctx.platform().indent(), beanVarName, setterMethod);
+        writer.append("%s  %s.%s(", platform().indent(), beanVarName, setterMethod);
         element.setValue(writer);
         writer.append(");").eol();
 
       } else {
         // populate via field put
-        writer.append("%s  %s.%s = ", ctx.platform().indent(), beanVarName, varName());
+        writer.append("%s  %s.%s = ", platform().indent(), beanVarName, varName());
         element.setValue(writer);
         writer.append(";").eol();
       }
