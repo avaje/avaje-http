@@ -3,7 +3,7 @@ package io.avaje.http.generator.client;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -11,8 +11,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
@@ -84,22 +82,11 @@ public class ClientProcessor extends AbstractProcessor {
   }
 
   private void writeForImported(Element importedElement) {
-    for (AnnotationMirror annotationMirror : importedElement.getAnnotationMirrors()) {
-      for (AnnotationValue value : annotationMirror.getElementValues().values()) {
-        for (Object apiClassDef : (List<?>) value.getValue()) {
-          writeImported(apiClassDef.toString());
-        }
-      }
-    }
-  }
 
-  private void writeImported(String fullName) {
-    // trim .class suffix
-    String apiClassName = fullName.substring(0, fullName.length() - 6);
-    TypeElement typeElement = ctx.typeElement(apiClassName);
-    if (typeElement != null) {
-      writeClient(typeElement);
-    }
+    ImportPrism.getInstanceOn(importedElement).types().stream()
+        .map(ctx::asElement)
+        .filter(Objects::nonNull)
+        .forEach(this::writeClient);
   }
 
   private void writeClient(Element controller) {

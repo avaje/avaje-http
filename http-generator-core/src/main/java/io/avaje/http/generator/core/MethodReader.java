@@ -39,6 +39,7 @@ public class MethodReader {
   private final PathSegments pathSegments;
   private final boolean hasValid;
   private final List<ExecutableElement> superMethods;
+  private final Optional<RequestTimeoutPrism> timeout;
 
   private WebMethod webMethod;
   private String webMethodPath;
@@ -62,7 +63,12 @@ public class MethodReader {
     this.securityRequirements = readSecurityRequirements();
     this.apiResponses = buildApiResponses();
     this.javadoc = buildJavadoc(element, ctx);
-
+    this.timeout = RequestTimeoutPrism.getOptionalOn(element);
+    timeout.ifPresent(
+        p -> {
+          bean.addStaticImportType("java.time.temporal.ChronoUnit." + p.chronoUnit());
+          bean.addStaticImportType("java.time.Duration.of");
+        });
     if (isWebMethod()) {
       this.hasValid = initValid();
       this.pathSegments = PathSegments.parse(Util.combinePath(bean.path(), webMethodPath));
@@ -365,5 +371,9 @@ public class MethodReader {
       }
     }
     return "body";
+  }
+
+  public Optional<RequestTimeoutPrism> timeout() {
+    return timeout;
   }
 }

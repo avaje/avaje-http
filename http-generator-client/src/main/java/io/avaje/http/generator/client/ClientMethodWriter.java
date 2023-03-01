@@ -3,6 +3,7 @@ package io.avaje.http.generator.client;
 import io.avaje.http.generator.core.*;
 
 import javax.lang.model.element.TypeElement;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ class ClientMethodWriter {
   private MethodParam bodyHandlerParam;
   private String methodGenericParams = "";
   private final boolean useJsonb;
+  private final Optional<RequestTimeoutPrism> timeout;
 
   ClientMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonb) {
     this.method = method;
@@ -32,6 +34,7 @@ class ClientMethodWriter {
     this.ctx = ctx;
     this.returnType = Util.parseType(method.returnType());
     this.useJsonb = useJsonb;
+    this.timeout = method.timeout();
   }
 
   void addImportTypes(ControllerReader reader) {
@@ -86,12 +89,18 @@ class ClientMethodWriter {
     writeQueryParams(pathSegments);
     writeBeanParams(pathSegments);
     writeFormParams(pathSegments);
+    timeout.ifPresent(this::writeTimeout);
     writeBody();
     writeEnd();
   }
 
-  private void writeEnd() {
-    WebMethod webMethod = method.webMethod();
+  private void writeTimeout(RequestTimeoutPrism p) {
+
+    writer.append("      .requestTimeout(of(%s, %s))", p.value(), p.chronoUnit()).eol();
+  }
+
+private void writeEnd() {
+    final var webMethod = method.webMethod();
     writer.append("      .%s()", webMethod.name()).eol();
     if (returnType == UType.VOID) {
       writer.append("      .asVoid();").eol();
