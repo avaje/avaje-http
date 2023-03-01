@@ -2,7 +2,6 @@ package io.avaje.http.client;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -85,14 +84,6 @@ public final class UrlBuilder {
    * The name and value parameters are url encoded.
    */
   public UrlBuilder queryParam(String name, Object value) {
-	  
-    if (value instanceof Collection) {
-      for (var e : (Collection) value) {
-        queryParam(name, e);
-      }
-      return this;
-    }
-    
     if (value != null) {
       addQueryParam(name, value.toString());
     }
