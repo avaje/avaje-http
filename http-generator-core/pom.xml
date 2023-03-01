@@ -11,13 +11,7 @@
     <relativePath>..</relativePath>
   </parent>
 
-  <properties>
-    <swagger.version>2.0.8</swagger.version>
-  </properties>
-
   <dependencies>
-
-
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-prisms</artifactId>
@@ -34,6 +28,12 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swagger.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-models</artifactId>

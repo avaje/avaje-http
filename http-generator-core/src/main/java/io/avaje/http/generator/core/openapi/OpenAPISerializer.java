@@ -58,14 +58,21 @@ final class OpenAPISerializer {
       } else {
 
         sb.append("{");
-        if (obj instanceof String) {
-          System.out.println();
-        }
 
         final var fields = getAllFields(cls);
 
         var firstField = true;
         for (final Field field : fields) {
+
+          // skip JsonIgnored fields
+          if ("BIND_TYPE_AND_TYPES".equals(field.getName())
+              || "COMPONENTS_SCHEMAS_REF".equals(field.getName())
+              || "exampleSetFlag".equals(field.getName())
+              || "types".equals(field.getName())
+              || "specVersion".equals(field.getName())) {
+            continue;
+          }
+
           field.setAccessible(true);
           final var value = field.get(obj);
           if (value != null) {
@@ -168,6 +175,10 @@ final class OpenAPISerializer {
         sb.append(value.toString().replace("\"", "\\\""));
         sb.append("\"");
       }
+    } else if (value.getClass().isEnum()) {
+      sb.append("\"");
+      sb.append(value.toString().replace("\"", "\\\""));
+      sb.append("\"");
     } else {
       // Recursively handle other object types
       sb.append(serialize(value));

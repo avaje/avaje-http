@@ -3,12 +3,14 @@ package io.avaje.http.generator.core.openapi;
 import io.avaje.http.generator.core.HiddenPrism;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.SecurityRequirementPrism;
 import io.avaje.http.generator.core.javadoc.Javadoc;
 import io.avaje.prism.GeneratePrism;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 
 /** Build the OpenAPI documentation for a method. */
 @GeneratePrism(Deprecated.class)
@@ -60,6 +62,12 @@ public class MethodDocBuilder {
       case PATCH:
         pathItem.setPatch(operation);
         break;
+    }
+
+    var securityRequirements = methodReader.securityRequirements();
+    for (SecurityRequirementPrism p : securityRequirements) {
+        var o = new SecurityRequirement().addList(p.name(), p.scopes());
+        operation.addSecurityItem(o);
     }
 
     for (MethodParam param : methodReader.params()) {

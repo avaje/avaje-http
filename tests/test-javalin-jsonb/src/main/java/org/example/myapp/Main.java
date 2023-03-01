@@ -1,12 +1,5 @@
 package org.example.myapp;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.avaje.http.api.InvalidPathArgumentException;
 import io.avaje.http.api.InvalidTypeArgumentException;
 import io.avaje.http.api.ValidationException;
@@ -17,10 +10,19 @@ import io.avaje.inject.InjectModule;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @InjectModule(name = "app", requires = Validator.class)
 @OpenAPIDefinition(info = @Info(title = "Example service", description = "Example Javalin controllers with Java and Maven"))
+@SecurityScheme(type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.QUERY, name = "JWT", paramName = "access_token", description = "JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.")
 public class Main {
 
   private static final Logger log = LoggerFactory.getLogger(Main.class);

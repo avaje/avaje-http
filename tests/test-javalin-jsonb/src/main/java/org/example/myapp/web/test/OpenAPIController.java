@@ -13,7 +13,10 @@ import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
 import io.javalin.http.Context;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @OpenAPIDefinition(
@@ -23,6 +26,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
             description = "Example Javalin controllers with Java and Maven"))
 @Controller
 @Path("openapi/")
+@SecurityScheme(type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.QUERY, name = "JWT", paramName = "access_token", description = "JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.")
 public class OpenAPIController {
 
   /**
