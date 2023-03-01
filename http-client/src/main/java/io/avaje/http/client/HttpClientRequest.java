@@ -109,10 +109,9 @@ public interface HttpClientRequest {
   HttpClientRequest header(String name, String value);
 
   /**
-   * Add the header to the request implicitly converting the value to a String. If the value is a
-   * collection then it's values are appended with the same key
+   * Add the header to the request implicitly converting the value to a String.
    *
-   * @param name The header name
+   * @param name  The header name
    * @param value The header value
    * @return The request being built
    */
@@ -219,7 +218,7 @@ public interface HttpClientRequest {
   HttpClientRequest queryParam(String name, String value);
 
   /**
-   * Add a query parameter, if value is a collection then it's values are appended with the same key
+   * Add a query parameter
    *
    * @param name  The name of the query parameter
    * @param value The value of the query parameter which can be null
