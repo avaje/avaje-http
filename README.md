@@ -2,6 +2,7 @@
 [![Build](https://github.com/avaje/avaje-http/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-http/actions/workflows/build.yml)
 <img src="https://img.shields.io/maven-central/v/io.avaje/avaje-http-api.svg?label=Maven%20Central">
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-inject/blob/master/LICENSE)
+[![Discord](https://img.shields.io/discord/1074074312421683250?color=%237289da&label=discord)](https://discord.gg/Qcqf9R27BR)
 
 HTTP server and client libraries via code generation.
 

@@ -19,6 +19,10 @@
 @GeneratePrism(value = io.swagger.v3.oas.annotations.OpenAPIDefinition.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.tags.Tag.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.tags.Tags.class, publicAccess = true)
+@GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecurityScheme.class, publicAccess = true)
+@GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecuritySchemes.class, publicAccess = true)
+@GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecurityRequirement.class, publicAccess = true)
+@GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecurityRequirements.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.OpenAPIResponse.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.OpenAPIResponses.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.Hidden.class, publicAccess = true)
@@ -27,6 +31,7 @@
 @GeneratePrism(value = org.jetbrains.annotations.NotNull.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Client.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Client.Import.class, publicAccess = true)
+@GeneratePrism(value = io.avaje.http.api.RequestTimeout.class, publicAccess = true)
 package io.avaje.http.generator.core;
 
 import io.avaje.prism.GeneratePrism;

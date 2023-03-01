@@ -2,7 +2,6 @@ package io.avaje.http.generator.core;
 
 import java.io.IOException;
 import java.util.Set;
-
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -41,6 +40,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
     if (ctx.isOpenApiAvailable()) {
       readOpenApiDefinition(round);
       readTagDefinitions(round);
+      readSecuritySchemes(round);
     }
 
     final Set<? extends Element> controllers =
@@ -75,7 +75,19 @@ public abstract class BaseProcessor extends AbstractProcessor {
       ctx.doc().addTagsDefinition(element);
     }
   }
-  
+
+  private void readSecuritySchemes(RoundEnvironment round) {
+    Set<? extends Element> elements = round.getElementsAnnotatedWith(ctx.typeElement(SecuritySchemePrism.PRISM_TYPE));
+    for (Element element : elements) {
+        ctx.doc().addSecurityScheme(element);
+    }
+
+    elements = round.getElementsAnnotatedWith(ctx.typeElement(SecuritySchemesPrism.PRISM_TYPE));
+    for (Element element : elements) {
+        ctx.doc().addSecuritySchemes(element);
+    }
+  }
+
   private void writeOpenAPI() {
     ctx.doc().writeApi();
   }

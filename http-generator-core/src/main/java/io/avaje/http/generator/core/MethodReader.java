@@ -1,22 +1,23 @@
 package io.avaje.http.generator.core;
 
+import io.avaje.http.generator.core.javadoc.Javadoc;
+import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-
-import io.avaje.http.generator.core.javadoc.Javadoc;
-import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 
 public class MethodReader {
 
@@ -31,12 +32,14 @@ public class MethodReader {
    */
   private final List<String> methodRoles;
   private final Optional<ProducesPrism> producesAnnotation;
+  private final List<SecurityRequirementPrism> securityRequirements;
   private final List<OpenAPIResponsePrism> apiResponses;
   private final ExecutableType actualExecutable;
   private final List<? extends TypeMirror> actualParams;
   private final PathSegments pathSegments;
   private final boolean hasValid;
   private final List<ExecutableElement> superMethods;
+  private final Optional<RequestTimeoutPrism> timeout;
 
   private WebMethod webMethod;
   private String webMethodPath;
@@ -57,9 +60,15 @@ public class MethodReader {
         ctx.superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
     superMethods.forEach(m -> methodRoles.addAll(Util.findRoles(m)));
 
+    this.securityRequirements = readSecurityRequirements();
     this.apiResponses = buildApiResponses();
     this.javadoc = buildJavadoc(element, ctx);
-
+    this.timeout = RequestTimeoutPrism.getOptionalOn(element);
+    timeout.ifPresent(
+        p -> {
+          bean.addStaticImportType("java.time.temporal.ChronoUnit." + p.chronoUnit());
+          bean.addStaticImportType("java.time.Duration.of");
+        });
     if (isWebMethod()) {
       this.hasValid = initValid();
       this.pathSegments = PathSegments.parse(Util.combinePath(bean.path(), webMethodPath));
@@ -128,6 +137,40 @@ public class MethodReader {
 
   public Javadoc javadoc() {
     return javadoc;
+  }
+
+  private List<SecurityRequirementPrism> readSecurityRequirements() {
+    var list = new ArrayList<SecurityRequirementPrism>();
+
+    readSecurityRequirements(element, list);
+    for (ExecutableElement superMethod : superMethods) {
+        readSecurityRequirements(superMethod, list);
+    }
+    readSecurityRequirements(bean.beanType(), list);
+
+    var map = new HashMap<String, SecurityRequirementPrism>();
+    for (SecurityRequirementPrism p : list) {
+        if (!map.containsKey(p.name())) {
+          map.put(p.name(), p);
+        }
+    }
+    return List.copyOf(map.values());
+  }
+
+  private void readSecurityRequirements(Element element, List<SecurityRequirementPrism> list) {
+    Consumer<Element> f = e -> {
+      Optional.ofNullable(SecurityRequirementsPrism.getInstanceOn(e))
+        .map(SecurityRequirementsPrism::value)
+        .ifPresent(list::addAll);
+      Optional.ofNullable(SecurityRequirementPrism.getAllInstancesOn(e))
+        .ifPresent(list::addAll);
+    };
+    f.accept(element);
+
+    for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
+      // find only one level
+      f.accept(annotationMirror.getAnnotationType().asElement());
+    }
   }
 
   private List<OpenAPIResponsePrism> buildApiResponses() {
@@ -260,6 +303,10 @@ public class MethodReader {
     return producesAnnotation.map(ProducesPrism::value).orElseGet(bean::produces);
   }
 
+  public List<SecurityRequirementPrism> securityRequirements() {
+    return securityRequirements;
+  }
+
   public List<OpenAPIResponsePrism> apiResponses() {
     return apiResponses;
   }
@@ -324,5 +371,9 @@ public class MethodReader {
       }
     }
     return "body";
+  }
+
+  public Optional<RequestTimeoutPrism> timeout() {
+    return timeout;
   }
 }
