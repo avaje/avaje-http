@@ -1,7 +1,5 @@
-package org.example.myapp.web.test;
+package org.example;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import io.avaje.http.api.Controller;
@@ -15,7 +13,12 @@ import io.avaje.http.api.QueryParam;
 
 @Path("test/")
 @Controller
-public class TestController2 {
+public class TestController {
+
+  @Get("/paramMulti")
+  String paramMulti(Set<String> strings) {
+    return strings.toString();
+  }
 
   @Form
   @Get("/enumForm")
@@ -41,10 +44,5 @@ public class TestController2 {
   @Post("/enumQueryImplied")
   String enumQueryImplied(String s, @QueryParam ServerType type) {
     return type.name();
-  }
-
-  @Get("/mapTest")
-  String mapTest(Map<String, List<String>> strings) {
-    return strings.toString();
   }
 }

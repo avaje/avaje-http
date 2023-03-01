@@ -1,5 +1,7 @@
 package org.example.myapp.web;
 
+import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -18,6 +20,8 @@ public class GetBeanForm {
   @Email
   @Size(max = 100)
   private String email;
+
+  private List<String> addresses;
 
   public String getName() {
     return name;
@@ -43,5 +47,13 @@ public class GetBeanForm {
   @Override
   public String toString() {
     return "HelloForm{" + "name='" + name + '\'' + ", email='" + email + '\'' + '}';
+  }
+
+  public List<String> getAddresses() {
+    return addresses;
+  }
+
+  public void setAddresses(List<String> addresses) {
+    this.addresses = addresses;
   }
 }

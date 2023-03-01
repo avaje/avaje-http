@@ -2,6 +2,8 @@ package io.avaje.http.generator.core;
 
 import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.lang.model.element.Element;
@@ -24,15 +26,18 @@ public class ElementReader {
   private final boolean formMarker;
   private final boolean contextType;
   private final boolean useValidation;
+  private final boolean specialParam;
 
   private String paramName;
   private ParamType paramType;
   private String matrixParamName;
   private boolean impliedParamType;
-  private String paramDefault;
+  private List<String> paramDefault;
 
   private boolean notNullKotlin;
-  //private boolean notNullJavax;
+  private boolean isParamCollection;
+  private boolean isParamMap;
+  // private boolean notNullJavax;
 
   ElementReader(Element element, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
     this(element, null, Util.typeDef(element.asType()), ctx, defaultType, formMarker);
@@ -46,18 +51,14 @@ public class ElementReader {
     this.shortType = Util.shortName(rawType);
     this.contextType = ctx.platform().isContextType(rawType);
 
-    if (type != null
-        && (defaultType == ParamType.FORMPARAM || defaultType == ParamType.QUERYPARAM)
-        && Optional.ofNullable(ctx.typeElement(type.mainType()))
-            .map(TypeElement::getKind)
-            .filter(ElementKind.ENUM::equals)
-            .isPresent()) {
+    this.specialParam =
+        defaultType == ParamType.FORMPARAM
+            || defaultType == ParamType.QUERYPARAM
+            || defaultType == ParamType.HEADER
+            || defaultType == ParamType.COOKIE;
 
-      this.typeHandler = TypeMap.enumParamHandler(type);
-    } else {
+    typeHandler = initTypeHandler();
 
-      this.typeHandler = TypeMap.get(rawType);
-    }
     this.formMarker = formMarker;
     this.varName = element.getSimpleName().toString();
     this.snakeName = Util.snakeCase(varName);
@@ -69,6 +70,50 @@ public class ElementReader {
       paramType = ParamType.CONTEXT;
       useValidation = false;
     }
+  }
+
+  TypeHandler initTypeHandler() {
+
+    if (specialParam) {
+
+      final var typeOp =
+          Optional.ofNullable(type).or(() -> Optional.of(UType.parse(element.asType())));
+
+      final var mainTypeEnum =
+          typeOp
+              .flatMap(t -> Optional.ofNullable(ctx.typeElement(t.mainType())))
+              .map(TypeElement::getKind)
+              .filter(ElementKind.ENUM::equals)
+              .isPresent();
+
+      final var isCollection =
+          typeOp
+              .filter(t -> t.isGeneric() && !t.mainType().startsWith("java.util.Map"))
+              .isPresent();
+
+      final var isMap =
+          !isCollection && typeOp.filter(t -> t.mainType().startsWith("java.util.Map")).isPresent();
+
+      if (mainTypeEnum) {
+        return TypeMap.enumParamHandler(type);
+      } else if (isCollection) {
+        this.isParamCollection = true;
+        final var isEnumCollection =
+            typeOp
+                .flatMap(t -> Optional.ofNullable(ctx.typeElement(t.param0())))
+                .map(TypeElement::getKind)
+                .filter(ElementKind.ENUM::equals)
+                .isPresent();
+
+        return TypeMap.collectionHandler(typeOp.orElseThrow(), isEnumCollection);
+      } else if (isMap) {
+        this.isParamMap = true;
+
+        return new TypeMap.StringHandler();
+      }
+    }
+
+    return TypeMap.get(rawType);
   }
 
   private boolean useValidation() {
@@ -182,10 +227,8 @@ public class ElementReader {
 
   void addImports(ControllerReader bean) {
     if (typeHandler != null) {
-      String importType = typeHandler.importType();
-      if (importType != null) {
-        bean.addImportType(rawType);
-      }
+      typeHandler.importTypes().stream().filter(Objects::nonNull).forEach(bean::addImportType);
+
     } else {
       bean.addImportType(rawType);
     }
@@ -203,7 +246,7 @@ public class ElementReader {
    * Build the OpenAPI documentation for this parameter.
    */
   void buildApiDocumentation(MethodDocBuilder methodDoc) {
-    if (!isPlatformContext()) {
+    if (!isPlatformContext() && !isParamMap) {
       new MethodParamDocBuilder(methodDoc, this).build();
     }
   }
@@ -285,19 +328,26 @@ public class ElementReader {
       // this is a body (POST, PATCH)
       writer.append(ctx.platform().bodyAsClass(type));
 
-    } else {
+    } else if (isParamCollection && specialParam) {
       if (hasParamDefault()) {
-        ctx.platform().writeReadParameter(writer, paramType, paramName, paramDefault);
+        ctx.platform().writeReadCollectionParameter(writer, paramType, paramName, paramDefault);
       } else {
-        boolean checkNull = notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
-        if (checkNull) {
-          writer.append("checkNull(");
-        }
-        ctx.platform().writeReadParameter(writer, paramType, paramName);
-        //writer.append("ctx.%s(\"%s\")", paramType, paramName);
-        if (checkNull) {
-          writer.append(", \"%s\")", paramName);
-        }
+        ctx.platform().writeReadCollectionParameter(writer, paramType, paramName);
+      }
+    } else if (isParamMap) {
+      ctx.platform().writeReadMapParameter(writer, paramType);
+    } else if (hasParamDefault()) {
+      ctx.platform().writeReadParameter(writer, paramType, paramName, paramDefault.get(0));
+    } else {
+      final var checkNull =
+          notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
+      if (checkNull) {
+        writer.append("checkNull(");
+      }
+      ctx.platform().writeReadParameter(writer, paramType, paramName);
+      // writer.append("ctx.%s(\"%s\")", paramType, paramName);
+      if (checkNull) {
+        writer.append(", \"%s\")", paramName);
       }
     }
 

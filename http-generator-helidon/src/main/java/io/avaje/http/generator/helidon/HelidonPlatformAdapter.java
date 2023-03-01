@@ -113,4 +113,59 @@ class HelidonPlatformAdapter implements PlatformAdapter {
         writer.append("null // TODO req.%s().param(\"%s\")", paramType.type(), paramName);
     }
   }
+
+  @Override
+  public void writeReadMapParameter(Append writer, ParamType paramType) {
+    switch (paramType) {
+      case QUERYPARAM:
+        writer.append("req.queryParams().toMap()");
+        break;
+      case COOKIE:
+        writer.append("req.headers().cookies().toMap()");
+        break;
+      default:
+        throw new UnsupportedOperationException("Unsupported Map Parameter");
+    }
+  }
+
+  @Override
+  public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
+    switch (paramType) {
+      case QUERYPARAM:
+        writer.append("req.queryParams().all(\"%s\")", paramName);
+        break;
+      case HEADER:
+        writer.append("req.headers().all(\"%s\")", paramName);
+        break;
+      case COOKIE:
+        writer.append("req.headers().cookies().all(\"%s\")", paramName);
+        break;
+      default:
+        throw new UnsupportedOperationException("Unsupported MultiValue Parameter");
+    }
+  }
+
+  @Override
+  public void writeReadCollectionParameter(
+      Append writer, ParamType paramType, String paramName, List<String> paramDefault) {
+    switch (paramType) {
+      case QUERYPARAM:
+        writer.append(
+            "withDefault(req.queryParams().all(\"%s\"), java.util.List.of(\"%s\"))",
+            paramName, String.join(",", paramDefault));
+        break;
+      case HEADER:
+        writer.append(
+            "withDefault(req.headers().all(\"%s\"), java.util.List.of(\"%s\"))",
+            paramName, String.join(",", paramDefault));
+        break;
+      case COOKIE:
+        writer.append(
+            "withDefault(req.headers().cookies().all(\"%s\"), java.util.List.of\"%s\"))",
+            paramName, String.join(",", paramDefault));
+        break;
+      default:
+        throw new UnsupportedOperationException("Unsupported MultiValue Parameter");
+    }
+  }
 }

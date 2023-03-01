@@ -12,6 +12,7 @@ import io.avaje.http.api.MediaType;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
+import io.avaje.http.api.QueryParam;
 import io.helidon.common.http.HttpMediaType;
 import io.helidon.nima.webserver.http.ServerRequest;
 import io.helidon.nima.webserver.http.ServerResponse;
@@ -52,6 +53,11 @@ public class HelloController {
   @Get("/header")
   String testHeader(@Header String head) {
     return head;
+  }
+
+  @Get("/param")
+  String testParam(@QueryParam String param) {
+    return param;
   }
 
   // curl -v localhost:8081/person/jack

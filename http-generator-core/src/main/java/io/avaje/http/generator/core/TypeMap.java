@@ -1,6 +1,8 @@
 package io.avaje.http.generator.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,7 +15,7 @@ class TypeMap {
   private static final Map<String, TypeHandler> types = new HashMap<>();
 
   private static void add(TypeHandler h) {
-    types.put(h.importType(), h);
+    types.put(h.importTypes().get(0), h);
   }
 
   static {
@@ -41,6 +43,22 @@ class TypeMap {
 
   static TypeHandler get(String type) {
     return types.get(type);
+  }
+
+  static TypeHandler collectionHandler(UType type, boolean isEnum) {
+    final var handler = types.get(type.param0());
+
+    if (!isEnum && handler == null) {
+      return null;
+    }
+
+    return types.computeIfAbsent(
+        type.full(),
+        k ->
+            new CollectionHandler(
+                isEnum ? enumParamHandler(type.paramRaw()) : handler,
+                type.mainType().startsWith("java.util.Set"),
+                isEnum));
   }
 
   static TypeHandler enumParamHandler(UType type) {
@@ -192,8 +210,8 @@ class TypeMap {
     }
 
     @Override
-    public String importType() {
-      return null;
+    public List<String> importTypes() {
+      return List.of();
     }
   }
 
@@ -234,8 +252,8 @@ class TypeMap {
     }
 
     @Override
-    public String importType() {
-      return null;
+    public List<String> importTypes() {
+      return List.of();
     }
   }
 
@@ -301,6 +319,55 @@ class TypeMap {
     }
   }
 
+  static class CollectionHandler implements TypeHandler {
+
+    private final List<String> importTypes;
+    private final String shortName;
+    private String toMethod;
+
+    CollectionHandler(TypeHandler handler, boolean set, boolean isEnum) {
+
+      this.importTypes = new ArrayList<>(handler.importTypes());
+      importTypes.add("io.avaje.http.api.PathTypeConversion");
+      this.shortName = handler.shortName();
+      this.toMethod =
+          (set ? "set" : "list")
+              + "("
+              + (isEnum
+                  ? handler.toMethod().replace(".", "::").replace("(", "")
+                  : "PathTypeConversion::" + shortName)
+              + ", ";
+
+      this.toMethod = toMethod.replace("PathTypeConversion::String", "Object::toString");
+    }
+
+    @Override
+    public boolean isPrimitive() {
+      return false;
+    }
+
+    @Override
+    public List<String> importTypes() {
+
+      return importTypes;
+    }
+
+    @Override
+    public String shortName() {
+      return shortName;
+    }
+
+    @Override
+    public String asMethod() {
+      return null;
+    }
+
+    @Override
+    public String toMethod() {
+      return toMethod;
+    }
+  }
+
   abstract static class ObjectHandler implements TypeHandler {
 
     private final String importType;
@@ -321,8 +388,8 @@ class TypeMap {
     }
 
     @Override
-    public String importType() {
-      return importType;
+    public List<String> importTypes() {
+      return List.of(importType);
     }
 
     @Override
