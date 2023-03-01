@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.net.http.HttpResponse.BodyHandlers.discarding;
@@ -124,7 +125,25 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpClientRequest header(String name, Collection<String> value) {
+    if (headers == null) {
+      headers = new LinkedHashMap<>();
+    }
+    headers.computeIfAbsent(name, s -> new ArrayList<>()).addAll(value);
+    return this;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
   public HttpClientRequest header(String name, Object value) {
+
+    if (value instanceof Collection) {
+      final var headerList =
+          ((Collection<Object>) value).stream().map(Object::toString).collect(Collectors.toList());
+
+      return header(name, headerList);
+    }
+
     return value != null ? header(name, value.toString()) : this;
   }
 

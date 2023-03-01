@@ -5,6 +5,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -109,9 +110,10 @@ public interface HttpClientRequest {
   HttpClientRequest header(String name, String value);
 
   /**
-   * Add the header to the request implicitly converting the value to a String.
+   * Add the header to the request implicitly converting the value to a String. If the value is a
+   * collection then it's values are appended with the same key
    *
-   * @param name  The header name
+   * @param name The header name
    * @param value The header value
    * @return The request being built
    */
@@ -124,6 +126,15 @@ public interface HttpClientRequest {
    * @return The request being built
    */
   HttpClientRequest header(Map<String, ?> headers);
+
+  /**
+   * Add the headers to the request via Collection.
+   *
+   * @param name The header name
+   * @param value The header values
+   * @return The request being built
+   */
+  HttpClientRequest header(String name, Collection<String> value);
 
   /**
    * Return the header values that have been set for the given header name.
@@ -218,7 +229,7 @@ public interface HttpClientRequest {
   HttpClientRequest queryParam(String name, String value);
 
   /**
-   * Add a query parameter
+   * Add a query parameter, if value is a collection then it's values are appended with the same key
    *
    * @param name  The name of the query parameter
    * @param value The value of the query parameter which can be null
@@ -233,6 +244,17 @@ public interface HttpClientRequest {
    * @return The request being built
    */
   HttpClientRequest queryParam(Map<String, ?> params);
+
+  /**
+   * Add a query parameter with multiple values
+   *
+   * @param name The name of the query parameter
+   * @param value The values of the query parameter which can be null
+   * @return The request being built
+   */
+  default HttpClientRequest queryParam(String name, Collection<String> values) {
+    return queryParam(name, (Object) values);
+  }
 
   /**
    * Add a form parameter.
