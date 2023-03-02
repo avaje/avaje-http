@@ -15,6 +15,6 @@ public final class ValidatorProvider implements io.avaje.inject.spi.Plugin {
 
   @Override
   public void apply(BeanScopeBuilder builder) {
-    builder.provideDefault(Validator.class, BeanValidator::new);
+    builder.provideDefault(null, Validator.class, BeanValidator::new);
   }
 }
