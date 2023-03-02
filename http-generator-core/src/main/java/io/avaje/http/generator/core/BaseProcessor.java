@@ -1,8 +1,8 @@
 package io.avaje.http.generator.core;
 
+import static io.avaje.http.generator.core.ProcessingContext.*;
 import java.io.IOException;
 import java.util.Set;
-
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -14,7 +14,6 @@ import javax.lang.model.element.TypeElement;
 @SupportedOptions({"useJavax", "useSingleton"})
 public abstract class BaseProcessor extends AbstractProcessor {
 
-  protected ProcessingContext ctx;
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -29,7 +28,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
-    this.ctx = new ProcessingContext(processingEnv, providePlatformAdapter());
+    ProcessingContext.init(processingEnv, providePlatformAdapter());
   }
 
   /** Provide the platform specific adapter to use for Javalin, Helidon etc. */
@@ -38,15 +37,16 @@ public abstract class BaseProcessor extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
 
-    if (ctx.isOpenApiAvailable()) {
+    if (isOpenApiAvailable()) {
       readOpenApiDefinition(round);
       readTagDefinitions(round);
+      readSecuritySchemes(round);
     }
 
     final Set<? extends Element> controllers =
-        round.getElementsAnnotatedWith(ctx.typeElement(ControllerPrism.PRISM_TYPE));
+        round.getElementsAnnotatedWith(typeElement(ControllerPrism.PRISM_TYPE));
     for (Element controller : controllers) {
-      writeControllerAdapter(controller);
+      writeAdapter(controller);
     }
 
     if (round.processingOver()) {
@@ -57,38 +57,50 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   private void readOpenApiDefinition(RoundEnvironment round) {
     final Set<? extends Element> elements =
-        round.getElementsAnnotatedWith(ctx.typeElement(OpenAPIDefinitionPrism.PRISM_TYPE));
+        round.getElementsAnnotatedWith(typeElement(OpenAPIDefinitionPrism.PRISM_TYPE));
     for (Element element : elements) {
-      ctx.doc().readApiDefinition(element);
+      doc().readApiDefinition(element);
     }
   }
 
   private void readTagDefinitions(RoundEnvironment round) {
     Set<? extends Element> elements =
-        round.getElementsAnnotatedWith(ctx.typeElement(TagPrism.PRISM_TYPE));
+        round.getElementsAnnotatedWith(typeElement(TagPrism.PRISM_TYPE));
     for (Element element : elements) {
-      ctx.doc().addTagDefinition(element);
+      doc().addTagDefinition(element);
     }
 
-    elements = round.getElementsAnnotatedWith(ctx.typeElement(TagsPrism.PRISM_TYPE));
+    elements = round.getElementsAnnotatedWith(typeElement(TagsPrism.PRISM_TYPE));
     for (Element element : elements) {
-      ctx.doc().addTagsDefinition(element);
+      doc().addTagsDefinition(element);
     }
   }
-  
+
+  private void readSecuritySchemes(RoundEnvironment round) {
+    Set<? extends Element> elements = round.getElementsAnnotatedWith(typeElement(SecuritySchemePrism.PRISM_TYPE));
+    for (Element element : elements) {
+        doc().addSecurityScheme(element);
+    }
+
+    elements = round.getElementsAnnotatedWith(typeElement(SecuritySchemesPrism.PRISM_TYPE));
+    for (Element element : elements) {
+        doc().addSecuritySchemes(element);
+    }
+  }
+
   private void writeOpenAPI() {
-    ctx.doc().writeApi();
+    doc().writeApi();
   }
 
-  private void writeControllerAdapter(Element controller) {
+  private void writeAdapter(Element controller) {
     if (controller instanceof TypeElement) {
-      ControllerReader reader = new ControllerReader((TypeElement) controller, ctx);
+      ControllerReader reader = new ControllerReader((TypeElement) controller);
       reader.read(true);
       try {
-        writeControllerAdapter(ctx, reader);
+        writeControllerAdapter(reader);
       } catch (Throwable e) {
         e.printStackTrace();
-        ctx.logError(reader.beanType(), "Failed to write $Route class " + e);
+        logError(reader.beanType(), "Failed to write $Route class " + e);
       }
     }
   }
@@ -96,6 +108,6 @@ public abstract class BaseProcessor extends AbstractProcessor {
   /**
    * Write the adapter code for the given controller.
    */
-  public abstract void writeControllerAdapter(ProcessingContext ctx, ControllerReader reader) throws IOException;
+  public abstract void writeControllerAdapter(ControllerReader reader) throws IOException;
 
 }

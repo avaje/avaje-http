@@ -1,12 +1,12 @@
 package io.avaje.http.generator.helidon;
 
+import static io.avaje.http.generator.core.ProcessingContext.platform;
 import java.util.List;
 
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.PathSegments;
-import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.WebMethod;
 import io.avaje.http.generator.core.openapi.MediaType;
 
@@ -18,13 +18,11 @@ class ControllerMethodWriter {
   private final MethodReader method;
   private final Append writer;
   private final WebMethod webMethod;
-  private final ProcessingContext ctx;
 
-  ControllerMethodWriter(MethodReader method, Append writer, ProcessingContext ctx) {
+  ControllerMethodWriter(MethodReader method, Append writer) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
-    this.ctx = ctx;
   }
 
   void writeRule() {
@@ -55,7 +53,7 @@ class ControllerMethodWriter {
     final PathSegments segments = method.pathSegments();
     List<PathSegments.Segment> matrixSegments = segments.matrixSegments();
     for (PathSegments.Segment matrixSegment : matrixSegments) {
-      matrixSegment.writeCreateSegment(writer, ctx.platform());
+      matrixSegment.writeCreateSegment(writer, platform());
     }
 
     final List<MethodParam> params = method.params();

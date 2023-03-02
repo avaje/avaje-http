@@ -1,18 +1,18 @@
 {
 	"openapi" : "3.0.1",
 	"info" : {
-		"title" : "Example service showing off the Path extension method of controller",
+		"title" : "Example service",
 		"description" : "Example Javalin controllers with Java and Maven",
 		"version" : ""
 	},
 	"tags" : [
 		{
 			"name" : "tag1",
-			"description" : "this is added to openapi tags"
+			"description" : "it's somethin"
 		},
 		{
 			"name" : "tag1",
-			"description" : "it's somethin"
+			"description" : "this is added to openapi tags"
 		}
 	],
 	"paths" : {
@@ -60,10 +60,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
+									"type" : "array",
 									"items" : {
 										"$ref" : "#/components/schemas/Bar"
-									},
-									"type" : "array"
+									}
 								}
 							}
 						}
@@ -117,10 +117,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
+									"type" : "array",
 									"items" : {
 										"$ref" : "#/components/schemas/Baz"
-									},
-									"type" : "array"
+									}
 								}
 							}
 						}
@@ -250,10 +250,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
+									"type" : "array",
 									"items" : {
 										"$ref" : "#/components/schemas/Baz"
-									},
-									"type" : "array"
+									}
 								}
 							}
 						}
@@ -337,10 +337,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
+									"type" : "array",
 									"items" : {
 										"$ref" : "#/components/schemas/HelloDto"
-									},
-									"type" : "array"
+									}
 								}
 							}
 						}
@@ -379,10 +379,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
+									"type" : "array",
 									"items" : {
 										"$ref" : "#/components/schemas/HelloDto"
-									},
-									"type" : "array"
+									}
 								}
 							}
 						}
@@ -914,10 +914,10 @@
 					"content" : {
 						"application/json" : {
 							"schema" : {
+								"type" : "array",
 								"items" : {
 									"$ref" : "#/components/schemas/Person"
-								},
-								"type" : "array"
+								}
 							}
 						}
 					},
@@ -1003,6 +1003,62 @@
 				}
 			}
 		},
+		"/security/first" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				},
+				"security" : [
+					{
+						"JWT" : [
+							
+						]
+					}
+				]
+			}
+		},
+		"/security/second" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				},
+				"security" : [
+					{
+						"JWT" : [
+							
+						]
+					}
+				]
+			}
+		},
 		"/test" : {
 			"get" : {
 				"tags" : [
@@ -1024,6 +1080,27 @@
 				}
 			}
 		},
+		"/test/async" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloDto"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/test/byte" : {
 			"get" : {
 				"tags" : [
@@ -1037,10 +1114,10 @@
 						"content" : {
 							"image/png" : {
 								"schema" : {
+									"type" : "array",
 									"items" : {
 										"$ref" : "#/components/schemas/byte"
-									},
-									"type" : "array"
+									}
 								}
 							}
 						}
@@ -1274,10 +1351,10 @@
 					"content" : {
 						"application/json" : {
 							"schema" : {
+								"type" : "array",
 								"items" : {
 									"$ref" : "#/components/schemas/Person"
-								},
-								"type" : "array"
+								}
 							}
 						}
 					},
@@ -1351,10 +1428,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
+									"type" : "array",
 									"items" : {
 										"$ref" : "#/components/schemas/Person"
-									},
-									"type" : "array"
+									}
 								}
 							}
 						}
@@ -1419,10 +1496,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
+									"type" : "array",
 									"items" : {
 										"$ref" : "#/components/schemas/Person"
-									},
-									"type" : "array"
+									}
 								}
 							}
 						}
@@ -1554,10 +1631,12 @@
 						"nullable" : false
 					},
 					"name" : {
-						"type" : "string"
+						"type" : "string",
+						"description" : "This is a comment"
 					},
 					"otherParam" : {
-						"type" : "string"
+						"type" : "string",
+						"description" : "This is a comment"
 					},
 					"gid" : {
 						"type" : "string",
@@ -1621,6 +1700,14 @@
 			},
 			"byte" : {
 				"type" : "object"
+			}
+		},
+		"securitySchemes" : {
+			"JWT" : {
+				"type" : "apiKey",
+				"description" : "JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.",
+				"name" : "access_token",
+				"in" : "query"
 			}
 		}
 	}

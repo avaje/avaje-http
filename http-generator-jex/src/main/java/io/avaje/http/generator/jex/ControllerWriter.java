@@ -1,5 +1,6 @@
 package io.avaje.http.generator.jex;
 
+import static io.avaje.http.generator.core.ProcessingContext.diAnnotation;
 import io.avaje.http.generator.core.*;
 
 import java.io.IOException;
@@ -13,8 +14,8 @@ class ControllerWriter extends BaseControllerWriter {
   private static final String API_ROUTING = "io.avaje.jex.Routing";
   private static final String API_ROUTING_SERVICE = "io.avaje.jex.Routing.Service";
 
-  ControllerWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
-    super(reader, ctx);
+  ControllerWriter(ControllerReader reader) throws IOException {
+    super(reader);
     reader.addImportType(API_ROUTING);
     reader.addImportType(API_ROUTING_SERVICE);
   }
@@ -39,15 +40,15 @@ class ControllerWriter extends BaseControllerWriter {
   }
 
   private void writeForMethod(MethodReader method) {
-    new ControllerMethodWriter(method, writer, ctx).write(isRequestScoped());
+    new ControllerMethodWriter(method, writer).write(isRequestScoped());
     if (!reader.isDocHidden()) {
-      method.buildApiDocumentation(ctx);
+      method.buildApiDocumentation();
     }
   }
 
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
-    writer.append(ctx.diAnnotation()).eol();
+    writer.append(diAnnotation()).eol();
     writer.append("public class ").append(shortName).append("$Route implements Routing.Service {").eol().eol();
 
     String controllerName = "controller";

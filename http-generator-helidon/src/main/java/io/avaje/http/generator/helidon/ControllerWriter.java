@@ -1,5 +1,6 @@
 package io.avaje.http.generator.helidon;
 
+import static io.avaje.http.generator.core.ProcessingContext.diAnnotation;
 import io.avaje.http.generator.core.*;
 
 import java.io.IOException;
@@ -13,8 +14,8 @@ class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-helidon-generator\")";
 
-  ControllerWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
-    super(reader, ctx);
+  ControllerWriter(ControllerReader reader) throws IOException {
+    super(reader);
     reader.addImportType("io.helidon.common.http.FormParams");
     reader.addImportType("io.helidon.webserver.Handler");
     reader.addImportType("io.helidon.webserver.Routing");
@@ -34,7 +35,7 @@ class ControllerWriter extends BaseControllerWriter {
   private List<ControllerMethodWriter> getWriterMethods() {
     return reader.methods().stream()
       .filter(MethodReader::isWebMethod)
-      .map(it -> new ControllerMethodWriter(it, writer, ctx))
+      .map(it -> new ControllerMethodWriter(it, writer))
       .collect(Collectors.toList());
   }
 
@@ -60,7 +61,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
-    writer.append(ctx.diAnnotation()).eol();
+    writer.append(diAnnotation()).eol();
     writer.append("public class ").append(shortName).append("$Route implements Service {").eol().eol();
 
     String controllerName = "controller";

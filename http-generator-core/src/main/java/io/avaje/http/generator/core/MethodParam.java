@@ -8,8 +8,8 @@ public class MethodParam {
 
   private final ElementReader elementParam;
 
-  MethodParam(VariableElement param, UType type, String rawType, ProcessingContext ctx, ParamType defaultParamType, boolean formMarker) {
-    this.elementParam = new ElementReader(param, type, rawType, ctx, defaultParamType, formMarker);
+  MethodParam(VariableElement param, UType type, String rawType, ParamType defaultParamType, boolean formMarker) {
+    this.elementParam = new ElementReader(param, type, rawType, defaultParamType, formMarker);
   }
 
   public void writeCtxGet(Append writer, PathSegments segments) {

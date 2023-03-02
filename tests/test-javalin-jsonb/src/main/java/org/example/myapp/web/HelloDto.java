@@ -8,7 +8,13 @@ import io.avaje.jsonb.Json;
 public class HelloDto {
 
   public int id;
+  /**
+   * This is a comment.
+   */
   public String name;
+  /**
+   * This is a comment
+   */
   public String otherParam;
   private UUID gid;
 

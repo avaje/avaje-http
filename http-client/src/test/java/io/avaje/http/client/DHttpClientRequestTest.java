@@ -1,10 +1,11 @@
 package io.avaje.http.client;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
+import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 class DHttpClientRequestTest {
 
@@ -19,6 +20,35 @@ class DHttpClientRequestTest {
 
     assertThat(event.requestBody()).isEqualTo("<suppressed request body>");
     assertThat(event.responseBody()).isEqualTo("<suppressed response body>");
+  }
+
+  @Test
+  void assertHeader() {
+    final var request = new DHttpClientRequest(context, Duration.ZERO);
+
+    final var headers =
+        request
+            .header("Accept", (Object) List.of("application/json", "application/json2"))
+            .header("Accept");
+
+    assertThat(headers).asList().contains("application/json", "application/json2");
+  }
+
+  @Test
+  void assertQuery() {
+    final var client = HttpClient.builder().baseUrl("https://ap7i.github.com").build();
+
+    final var uri =
+        client
+            .request()
+            .queryParam("param", List.of("param1", "param2"))
+            .HEAD()
+            .asDiscarding()
+            .request()
+            .uri()
+            .toString();
+
+    assertThat(uri).isEqualTo("https://ap7i.github.com?param=param1&param=param2");
   }
 
   @Test

@@ -25,9 +25,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(value = RUNTIME)
 public @interface Default {
 
-  /**
-   * The default value.
-   */
-  String value();
-
+  /** The default values. */
+  String[] value();
 }

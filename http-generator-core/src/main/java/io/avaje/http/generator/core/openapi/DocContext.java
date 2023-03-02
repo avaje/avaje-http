@@ -2,6 +2,7 @@ package io.avaje.http.generator.core.openapi;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -17,6 +18,8 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import io.avaje.http.generator.core.OpenAPIDefinitionPrism;
+import io.avaje.http.generator.core.SecuritySchemePrism;
+import io.avaje.http.generator.core.SecuritySchemesPrism;
 import io.avaje.http.generator.core.TagPrism;
 import io.avaje.http.generator.core.TagsPrism;
 import io.swagger.v3.oas.models.Components;
@@ -27,6 +30,7 @@ import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
 
 /** Context for building the OpenAPI documentation. */
@@ -148,10 +152,43 @@ public class DocContext {
   }
 
   public void addTagDefinition(Element element) {
-    final var tag = TagPrism.getInstanceOn(element);
-    if (tag == null) return;
 
-    openAPI.addTagsItem(createTagItem(tag));
+    for (var tag : TagPrism.getAllInstancesOn(element)) {
+      openAPI.addTagsItem(createTagItem(tag));
+    }
+  }
+
+  public void addSecurityScheme(Element element) {
+
+    this.addSecuritySchemes(SecuritySchemePrism.getAllInstancesOn(element));
+  }
+
+  public void addSecuritySchemes(Element element) {
+    var schemes = SecuritySchemesPrism.getInstanceOn(element);
+    if (schemes == null) {
+        return;
+      }
+    this.addSecuritySchemes(schemes.value());
+  }
+
+  void addSecuritySchemes(List<SecuritySchemePrism> schemes) {
+    for (SecuritySchemePrism p : schemes) {
+      var ss = new SecurityScheme()
+        .type(SecurityScheme.Type.valueOf(p.type()))
+        .in(SecurityScheme.In.valueOf(p.in()))
+        .name(p.paramName());
+
+      if (!p.description().isEmpty()) {
+        ss.description(p.description());
+      }
+      if (!p.bearerFormat().isEmpty()) {
+        ss.bearerFormat(p.bearerFormat());
+      }
+      if (!p.scheme().isEmpty()) {
+        ss.scheme(p.scheme());
+      }
+      components().addSecuritySchemes(p.name(), ss);
+    }
   }
 
   public void readApiDefinition(Element element) {
@@ -167,15 +204,11 @@ public class DocContext {
     if (!info.version().isEmpty()) {
       openAPI.getInfo().setVersion(info.version());
     }
-
   }
 
   public void writeApi() {
-
-    final var openAPI = getApiForWriting();
     try (var metaWriter = createMetaWriter()) {
-
-      final var json = OpenAPISerializer.serialize(openAPI);
+      final var json = OpenAPISerializer.serialize(getApiForWriting());
       JsonFormatter.prettyPrintJson(metaWriter, json);
 
     } catch (final Exception e) {

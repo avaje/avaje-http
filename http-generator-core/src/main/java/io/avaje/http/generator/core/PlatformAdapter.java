@@ -45,5 +45,19 @@ public interface PlatformAdapter {
 
   void writeReadParameter(Append writer, ParamType paramType, String paramName);
 
-  void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault);
+  void writeReadParameter(
+      Append writer, ParamType paramType, String paramName, String paramDefault);
+
+  default void writeReadMapParameter(Append writer, ParamType paramType) {
+    throw new UnsupportedOperationException("Unsupported Map Parameter");
+  }
+
+  default void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
+    throw new UnsupportedOperationException("Unsupported MultiValue Parameter");
+  }
+
+  default void writeReadCollectionParameter(
+      Append writer, ParamType paramType, String paramName, List<String> paramDefault) {
+    throw new UnsupportedOperationException("Unsupported MultiValue Parameter");
+  }
 }
