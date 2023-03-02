@@ -64,7 +64,17 @@ public final class PathTypeConversion {
     checkNull(value);
     try {
       return Integer.parseInt(value);
-    } catch (NumberFormatException e) {
+    } catch (final NumberFormatException e) {
+      throw new InvalidPathArgumentException(e);
+    }
+  }
+
+  /** Convert to enum. */
+  public static <T> Enum asEnum(Class<T> clazz, String value) {
+    checkNull(value);
+    try {
+      return Enum.valueOf((Class<Enum>) clazz, value.toUpperCase());
+    } catch (final IllegalArgumentException e) {
       throw new InvalidPathArgumentException(e);
     }
   }

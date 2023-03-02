@@ -310,7 +310,7 @@ class TypeMap {
 
     @Override
     public String toMethod() {
-      return type.shortType() + ".valueOf(";
+      return "(" + type.shortType() + ") asEnum(" + type.shortType() + ".class,";
     }
 
     @Override
@@ -334,7 +334,7 @@ class TypeMap {
           (set ? "set" : "list")
               + "("
               + (isEnum
-                  ? handler.toMethod().replace(".", "::").replace("(", "")
+                  ? "qp -> " + handler.toMethod() + " qp)"
                   : "PathTypeConversion::" + shortName)
               + ", ";
 
