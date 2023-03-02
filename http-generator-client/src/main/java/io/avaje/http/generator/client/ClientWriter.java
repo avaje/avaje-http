@@ -23,8 +23,8 @@ class ClientWriter extends BaseControllerWriter {
   private final List<ClientMethodWriter> methodList = new ArrayList<>();
   private final boolean useJsonb;
 
-  ClientWriter(ControllerReader reader, ProcessingContext ctx, boolean useJsonB) throws IOException {
-    super(reader, ctx, SUFFIX);
+  ClientWriter(ControllerReader reader, boolean useJsonB) throws IOException {
+    super(reader, SUFFIX);
     reader.addImportType(HTTP_CLIENT);
     reader.addImportType(HTTP_API_PROVIDER);
     this.useJsonb = useJsonB;
@@ -41,7 +41,7 @@ class ClientWriter extends BaseControllerWriter {
   private void readMethods() {
     for (MethodReader method : reader.methods()) {
       if (method.isWebMethod()) {
-        final var methodWriter = new ClientMethodWriter(method, writer, ctx, useJsonb);
+        final var methodWriter = new ClientMethodWriter(method, writer, useJsonb);
         methodWriter.addImportTypes(reader);
         methodList.add(methodWriter);
       }

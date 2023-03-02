@@ -1,5 +1,6 @@
 package io.avaje.http.generator.client;
 
+import static io.avaje.http.generator.core.ProcessingContext.*;
 import io.avaje.http.generator.core.*;
 
 import javax.lang.model.element.TypeElement;
@@ -20,18 +21,16 @@ class ClientMethodWriter {
   private final MethodReader method;
   private final Append writer;
   private final WebMethod webMethod;
-  private final ProcessingContext ctx;
   private final UType returnType;
   private MethodParam bodyHandlerParam;
   private String methodGenericParams = "";
   private final boolean useJsonb;
   private final Optional<RequestTimeoutPrism> timeout;
 
-  ClientMethodWriter(MethodReader method, Append writer, ProcessingContext ctx, boolean useJsonb) {
+  ClientMethodWriter(MethodReader method, Append writer, boolean useJsonb) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
-    this.ctx = ctx;
     this.returnType = Util.parseType(method.returnType());
     this.useJsonb = useJsonb;
     this.timeout = method.timeout();
@@ -215,8 +214,8 @@ private void writeEnd() {
       ParamType paramType = param.paramType();
       PathSegments.Segment segment = segments.segment(varName);
       if (segment == null && paramType == ParamType.BEANPARAM) {
-        TypeElement formBeanType = ctx.typeElement(param.rawType());
-        BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.name(), param.shortType(), ParamType.QUERYPARAM);
+        TypeElement formBeanType = typeElement(param.rawType());
+        BeanParamReader form = new BeanParamReader(formBeanType, param.name(), param.shortType(), ParamType.QUERYPARAM);
         form.writeFormParams(writer);
       }
     }
@@ -242,8 +241,8 @@ private void writeEnd() {
         writer.append("      .formParam(\"%s\", %s)", param.paramName(), param.name()).eol();
       }
     } else if (paramType == ParamType.FORM) {
-      TypeElement formBeanType = ctx.typeElement(param.rawType());
-      BeanParamReader form = new BeanParamReader(ctx, formBeanType, param.name(), param.shortType(), ParamType.FORMPARAM);
+      TypeElement formBeanType = typeElement(param.rawType());
+      BeanParamReader form = new BeanParamReader(formBeanType, param.name(), param.shortType(), ParamType.FORMPARAM);
       form.writeFormParams(writer);
     }
   }

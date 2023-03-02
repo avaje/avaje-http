@@ -1,5 +1,6 @@
 package io.avaje.http.generator.core;
 
+import static io.avaje.http.generator.core.ProcessingContext.*;
 import static java.util.function.Predicate.not;
 
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import javax.lang.model.util.ElementFilter;
  */
 public final class ControllerReader {
 
-  private final ProcessingContext ctx;
   private final TypeElement beanType;
   private final List<Element> interfaces;
   private final List<ExecutableElement> interfaceMethods;
@@ -45,13 +45,12 @@ public final class ControllerReader {
   private boolean requestScope;
   private boolean docHidden;
 
-  public ControllerReader(TypeElement beanType, ProcessingContext ctx) {
+  public ControllerReader(TypeElement beanType) {
     this.beanType = beanType;
-    this.ctx = ctx;
     this.interfaces = initInterfaces();
     this.interfaceMethods = initInterfaceMethods();
     this.roles = buildRoles();
-    if (ctx.isOpenApiAvailable()) {
+    if (isOpenApiAvailable()) {
       docHidden = initDocHidden();
     }
     this.hasValid = initHasValid();
@@ -93,10 +92,10 @@ public final class ControllerReader {
       importTypes.add(Constants.VALIDATOR);
     }
     if (withSingleton) {
-      if (ctx.useComponent()) {
+      if (useComponent()) {
         importTypes.add(Constants.COMPONENT);
       } else {
-        importTypes.add(ctx.useJavax() ? Constants.SINGLETON_JAVAX : Constants.SINGLETON_JAKARTA);
+        importTypes.add(useJavax() ? Constants.SINGLETON_JAVAX : Constants.SINGLETON_JAKARTA);
       }
     }
   }
@@ -104,7 +103,7 @@ public final class ControllerReader {
   private List<Element> initInterfaces() {
     List<Element> interfaces = new ArrayList<>();
     for (TypeMirror anInterface : beanType.getInterfaces()) {
-      final Element ifaceElement = ctx.asElement(anInterface);
+      final Element ifaceElement = asElement(anInterface);
       final var controller = ControllerPrism.getInstanceOn(ifaceElement);
       if (controller != null && !controller.value().isBlank()
           || PathPrism.isPresent(ifaceElement)) {
@@ -196,7 +195,7 @@ public final class ControllerReader {
 
   public void read(boolean withSingleton) {
     if (!roles.isEmpty()) {
-      ctx.platform().controllerRoles(roles, this);
+      platform().controllerRoles(roles, this);
     }
     for (Element element : beanType.getEnclosedElements()) {
       if (element.getKind() == ElementKind.METHOD) {
@@ -237,7 +236,7 @@ public final class ControllerReader {
     TypeMirror superclass = beanType.getSuperclass();
     if (superclass.getKind() != TypeKind.NONE) {
       DeclaredType declaredType = (DeclaredType) superclass;
-      final Element superElement = ctx.asElement(superclass);
+      final Element superElement = asElement(superclass);
       if (!"java.lang.Object".equals(superElement.toString())) {
         for (Element element : superElement.getEnclosedElements()) {
           if (element.getKind() == ElementKind.METHOD) {
@@ -261,9 +260,9 @@ public final class ControllerReader {
     ExecutableType actualExecutable = null;
     if (declaredType != null) {
       // actual taking into account generics
-      actualExecutable = (ExecutableType) ctx.asMemberOf(declaredType, method);
+      actualExecutable = (ExecutableType) asMemberOf(declaredType, method);
     }
-    MethodReader methodReader = new MethodReader(this, method, actualExecutable, ctx);
+    MethodReader methodReader = new MethodReader(this, method, actualExecutable);
     if (methodReader.isWebMethod()) {
       methodReader.read();
       methods.add(methodReader);

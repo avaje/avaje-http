@@ -1,5 +1,6 @@
 package io.avaje.http.generator.core;
 
+import static io.avaje.http.generator.core.ProcessingContext.*;
 import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
 
 import java.util.List;
@@ -15,7 +16,6 @@ import io.avaje.http.generator.core.openapi.MethodParamDocBuilder;
 
 public class ElementReader {
 
-  private final ProcessingContext ctx;
   private final Element element;
   private final UType type;
   private final String rawType;
@@ -39,17 +39,16 @@ public class ElementReader {
   private boolean isParamMap;
   // private boolean notNullJavax;
 
-  ElementReader(Element element, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
-    this(element, null, Util.typeDef(element.asType()), ctx, defaultType, formMarker);
+  ElementReader(Element element, ParamType defaultType, boolean formMarker) {
+    this(element, null, Util.typeDef(element.asType()), defaultType, formMarker);
   }
 
-  ElementReader(Element element, UType type, String rawType, ProcessingContext ctx, ParamType defaultType, boolean formMarker) {
-    this.ctx = ctx;
+  ElementReader(Element element, UType type, String rawType, ParamType defaultType, boolean formMarker) {
     this.element = element;
     this.type = type;
     this.rawType = rawType;
     this.shortType = Util.shortName(rawType);
-    this.contextType = ctx.platform().isContextType(rawType);
+    this.contextType = platform().isContextType(rawType);
 
     this.specialParam =
         defaultType == ParamType.FORMPARAM
@@ -81,7 +80,7 @@ public class ElementReader {
 
       final var mainTypeEnum =
           typeOp
-              .flatMap(t -> Optional.ofNullable(ctx.typeElement(t.mainType())))
+              .flatMap(t -> Optional.ofNullable(typeElement(t.mainType())))
               .map(TypeElement::getKind)
               .filter(ElementKind.ENUM::equals)
               .isPresent();
@@ -100,7 +99,7 @@ public class ElementReader {
         this.isParamCollection = true;
         final var isEnumCollection =
             typeOp
-                .flatMap(t -> Optional.ofNullable(ctx.typeElement(t.param0())))
+                .flatMap(t -> Optional.ofNullable(typeElement(t.param0())))
                 .map(TypeElement::getKind)
                 .filter(ElementKind.ENUM::equals)
                 .isPresent();
@@ -120,7 +119,7 @@ public class ElementReader {
     if (typeHandler != null) {
       return false;
     }
-    final var elementType = ctx.typeElement(rawType);
+    final var elementType = typeElement(rawType);
     return elementType != null
         && (ValidPrism.isPresent(elementType) || JavaxValidPrism.isPresent(elementType));
   }
@@ -214,7 +213,7 @@ public class ElementReader {
   }
 
   private String platformVariable() {
-    return ctx.platform().platformVariable(rawType);
+    return platform().platformVariable(rawType);
   }
 
   private String handlerShortType() {
@@ -264,12 +263,12 @@ public class ElementReader {
 
   void writeCtxGet(Append writer, PathSegments segments) {
     if (isPlatformContext()
-        || (paramType == ParamType.BODY && ctx.platform().isBodyMethodParam())) {
+        || (paramType == ParamType.BODY && platform().isBodyMethodParam())) {
       // body passed as method parameter (Helidon)
       return;
     }
     String shortType = handlerShortType();
-    writer.append("%s  var %s = ", ctx.platform().indent(), varName);
+    writer.append("%s  var %s = ", platform().indent(), varName);
     if (setValue(writer, segments, shortType)) {
       writer.append(";").eol();
     }
@@ -310,7 +309,7 @@ public class ElementReader {
         if (asMethod != null) {
           writer.append(asMethod);
         }
-        segment.writeGetVal(writer, name, ctx.platform());
+        segment.writeGetVal(writer, name, platform());
         if (asMethod != null) {
           writer.append(")");
         }
@@ -326,26 +325,26 @@ public class ElementReader {
 
     if (typeHandler == null) {
       // this is a body (POST, PATCH)
-      writer.append(ctx.platform().bodyAsClass(type));
+      writer.append(platform().bodyAsClass(type));
 
     } else if (isParamCollection && specialParam) {
       if (hasParamDefault()) {
-        ctx.platform().writeReadCollectionParameter(writer, paramType, paramName, paramDefault);
+        platform().writeReadCollectionParameter(writer, paramType, paramName, paramDefault);
       } else {
-        ctx.platform().writeReadCollectionParameter(writer, paramType, paramName);
+        platform().writeReadCollectionParameter(writer, paramType, paramName);
       }
     } else if (isParamMap) {
-      ctx.platform().writeReadMapParameter(writer, paramType);
+      platform().writeReadMapParameter(writer, paramType);
     } else if (hasParamDefault()) {
-      ctx.platform().writeReadParameter(writer, paramType, paramName, paramDefault.get(0));
+      platform().writeReadParameter(writer, paramType, paramName, paramDefault.get(0));
     } else {
       final var checkNull =
           notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
       if (checkNull) {
         writer.append("checkNull(");
       }
-      ctx.platform().writeReadParameter(writer, paramType, paramName);
-      // writer.append("ctx.%s(\"%s\")", paramType, paramName);
+      platform().writeReadParameter(writer, paramType, paramName);
+      // writer.append("%s(\"%s\")", paramType, paramName);
       if (checkNull) {
         writer.append(", \"%s\")", paramName);
       }
@@ -358,8 +357,8 @@ public class ElementReader {
   }
 
   private void writeForm(Append writer, String shortType, String varName, ParamType defaultParamType) {
-    TypeElement formBeanType = ctx.typeElement(rawType);
-    BeanParamReader form = new BeanParamReader(ctx, formBeanType, varName, shortType, defaultParamType);
+    TypeElement formBeanType = typeElement(rawType);
+    BeanParamReader form = new BeanParamReader(formBeanType, varName, shortType, defaultParamType);
     form.write(writer);
   }
 

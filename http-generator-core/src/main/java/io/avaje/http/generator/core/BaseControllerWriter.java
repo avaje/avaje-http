@@ -1,5 +1,6 @@
 package io.avaje.http.generator.core;
 
+import static io.avaje.http.generator.core.ProcessingContext.*;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
@@ -11,7 +12,6 @@ import java.io.Writer;
 public abstract class BaseControllerWriter {
 
   protected final ControllerReader reader;
-  protected final ProcessingContext ctx;
   protected final String originName;
   protected final String shortName;
   protected final String fullName;
@@ -19,13 +19,12 @@ public abstract class BaseControllerWriter {
   protected final boolean router;
   protected Append writer;
 
-  protected BaseControllerWriter(ControllerReader reader, ProcessingContext ctx) throws IOException {
-    this(reader, ctx, "$Route");
+  protected BaseControllerWriter(ControllerReader reader) throws IOException {
+    this(reader, "$Route");
   }
 
-  protected BaseControllerWriter(ControllerReader reader, ProcessingContext ctx, String suffix) throws IOException {
+  protected BaseControllerWriter(ControllerReader reader, String suffix) throws IOException {
     this.reader = reader;
-    this.ctx = ctx;
     this.router = "$Route".equals(suffix);
     TypeElement origin = reader.beanType();
     this.originName = origin.getQualifiedName().toString();
@@ -50,7 +49,7 @@ public abstract class BaseControllerWriter {
   }
 
   protected Writer createFileWriter() throws IOException {
-    JavaFileObject jfo = ctx.createWriter(fullName, reader.beanType());
+    JavaFileObject jfo = createWriter(fullName, reader.beanType());
     return jfo.openWriter();
   }
 

@@ -1,6 +1,9 @@
 package io.avaje.http.generator.core;
 
-import io.avaje.http.generator.core.openapi.DocContext;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -17,107 +20,105 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+
+import io.avaje.http.generator.core.openapi.DocContext;
 
 public class ProcessingContext {
 
-  private final PlatformAdapter readAdapter;
-  private final Messager messager;
-  private final Filer filer;
-  private final Elements elements;
-  private final Types types;
-  private final boolean openApiAvailable;
-  private final DocContext docContext;
-  private final boolean useComponent;
-  private final boolean useJavax;
-  private final String diAnnotation;
+  private static PlatformAdapter readAdapter;
+  private static Messager messager;
+  private static Filer filer;
+  private static Elements elements;
+  private static Types types;
+  private static boolean openApiAvailable;
+  private static DocContext docContext;
+  private static boolean useComponent;
+  private static boolean useJavax;
+  private static String diAnnotation;
 
-  public ProcessingContext(ProcessingEnvironment env, PlatformAdapter readAdapter) {
-    this.readAdapter = readAdapter;
-    this.messager = env.getMessager();
-    this.filer = env.getFiler();
-    this.elements = env.getElementUtils();
-    this.types = env.getTypeUtils();
-    this.openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
-    this.docContext = new DocContext(env, openApiAvailable);
+  public static void init(ProcessingEnvironment env, PlatformAdapter adapter) {
+    readAdapter = adapter;
+    messager = env.getMessager();
+    filer = env.getFiler();
+    elements = env.getElementUtils();
+    types = env.getTypeUtils();
+    openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
+    docContext = new DocContext(env, openApiAvailable);
 
     final var options = env.getOptions();
     final var singletonOverride = options.get("useSingleton");
     if (singletonOverride != null) {
-      this.useComponent = !Boolean.parseBoolean(singletonOverride);
+      useComponent = !Boolean.parseBoolean(singletonOverride);
     } else {
-      this.useComponent = isTypeAvailable(Constants.COMPONENT);
+      useComponent = isTypeAvailable(Constants.COMPONENT);
     }
-    this.diAnnotation = useComponent ? "@Component" : "@Singleton";
+    diAnnotation = useComponent ? "@Component" : "@Singleton";
 
     final var javax = isTypeAvailable(Constants.SINGLETON_JAVAX);
     final var jakarta = isTypeAvailable(Constants.SINGLETON_JAKARTA);
     final var override = env.getOptions().get("useJavax");
     if (override != null || (javax && jakarta)) {
-      this.useJavax = Boolean.parseBoolean(override);
+      useJavax = Boolean.parseBoolean(override);
     } else {
-      this.useJavax = javax;
+      useJavax = javax;
     }
   }
 
-  private boolean isTypeAvailable(String canonicalName) {
+  private static boolean isTypeAvailable(String canonicalName) {
     return null != typeElement(canonicalName);
   }
 
-  public TypeElement typeElement(String canonicalName) {
+  public static TypeElement typeElement(String canonicalName) {
     return elements.getTypeElement(canonicalName);
   }
 
-  public boolean isOpenApiAvailable() {
+  public static boolean isOpenApiAvailable() {
     return openApiAvailable;
   }
 
-  public boolean useJavax() {
+  public static boolean useJavax() {
     return useJavax;
   }
 
-  public boolean useComponent() {
+  public static boolean useComponent() {
     return useComponent;
   }
 
-  public void logError(Element e, String msg, Object... args) {
+  public static void logError(Element e, String msg, Object... args) {
     messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
 
   /**
    * Create a file writer for the given class name.
    */
-  public JavaFileObject createWriter(String cls, Element origin) throws IOException {
+  public static JavaFileObject createWriter(String cls, Element origin) throws IOException {
     return filer.createSourceFile(cls, origin);
   }
 
   /**
    * Create a file writer for the META-INF services file.
    */
-  public FileObject createMetaInfWriter(String target) throws IOException {
+  public static FileObject createMetaInfWriter(String target) throws IOException {
     return filer.createResource(StandardLocation.CLASS_OUTPUT, "", target);
   }
 
-  public String docComment(Element param) {
+  public static String docComment(Element param) {
     return elements.getDocComment(param);
   }
 
-  public DocContext doc() {
+  public static DocContext doc() {
     return docContext;
   }
 
-  public Element asElement(TypeMirror typeMirror) {
+  public static Element asElement(TypeMirror typeMirror) {
     return types.asElement(typeMirror);
   }
 
-  public TypeMirror asMemberOf(DeclaredType declaredType, Element element) {
+  public static TypeMirror asMemberOf(DeclaredType declaredType, Element element) {
     return types.asMemberOf(declaredType, element);
   }
 
-  public List<ExecutableElement> superMethods(Element element, String methodName) {
+  public static List<ExecutableElement> superMethods(Element element, String methodName) {
     return types.directSupertypes(element.asType()).stream()
       .filter(type -> !type.toString().contains("java.lang.Object"))
       .map(
@@ -134,11 +135,11 @@ public class ProcessingContext {
       .collect(Collectors.toList());
   }
 
-  public PlatformAdapter platform() {
+  public static PlatformAdapter platform() {
     return readAdapter;
   }
 
-  public String diAnnotation() {
+  public static String diAnnotation() {
     return diAnnotation;
   }
 }
