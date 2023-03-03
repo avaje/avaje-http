@@ -53,6 +53,15 @@ public class ClientProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+
+    final var platform = platform();
+
+    if (platform instanceof ClientPlatformAdapter) {
+
+    } else {
+      setPlatform(new ClientPlatformAdapter());
+    }
+
     for (final Element controller :
         round.getElementsAnnotatedWith(typeElement(ClientPrism.PRISM_TYPE))) {
       writeClient(controller);

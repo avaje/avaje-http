@@ -146,6 +146,10 @@ public class ProcessingContext {
     return readAdapter;
   }
 
+  public static void setPlatform(PlatformAdapter platform) {
+    readAdapter = platform;
+  }
+
   public static String diAnnotation() {
     return diAnnotation;
   }
