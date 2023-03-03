@@ -73,6 +73,7 @@ public class ClientProcessor extends AbstractProcessor {
     if (round.processingOver()) {
       writeServicesFile();
     }
+    setPlatform(platform);
     return false;
   }
   
