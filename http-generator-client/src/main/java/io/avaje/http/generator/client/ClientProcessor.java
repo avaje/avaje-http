@@ -48,7 +48,7 @@ public class ClientProcessor extends AbstractProcessor {
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     this.processingEnv = processingEnv;
-    ProcessingContext.init(processingEnv, new ClientPlatformAdapter());
+    ProcessingContext.init(processingEnv, new ClientPlatformAdapter(), false);
   }
 
   @Override
