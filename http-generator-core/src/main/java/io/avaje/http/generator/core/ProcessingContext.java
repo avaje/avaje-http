@@ -46,9 +46,9 @@ public class ProcessingContext {
     filer = env.getFiler();
     elements = env.getElementUtils();
     types = env.getTypeUtils();
-    openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
 
     if (generateOpenAPI) {
+      openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
       docContext = new DocContext(env, openApiAvailable);
     }
 
