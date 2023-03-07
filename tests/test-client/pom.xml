@@ -4,13 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>io.avaje.http</groupId>
-    <artifactId>tests-reactor</artifactId>
-    <version>1</version>
+    <groupId>io.avaje</groupId>
+    <artifactId>tests</artifactId>
+    <version>1.29</version>
   </parent>
 
   <artifactId>test-client</artifactId>
-  <version>1</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,19 +20,19 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>${avaje-http-version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client-gson</artifactId>
-      <version>${avaje-http-version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>${avaje-http-version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>

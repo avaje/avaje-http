@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <artifactId>avaje-http-generator-core</artifactId>
-
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>1.29-SNAPSHOT</version>
-    <relativePath>..</relativePath>
+    <version>1.29</version>
   </parent>
+
+  <artifactId>avaje-http-generator-core</artifactId>
 
   <dependencies>
     <dependency>
@@ -23,7 +21,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>1.29-SNAPSHOT</version>
+      <version>1.29</version>
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>

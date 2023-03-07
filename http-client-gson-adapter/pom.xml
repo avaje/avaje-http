@@ -4,13 +4,10 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>1.29-SNAPSHOT</version>
-    <relativePath>..</relativePath>
+    <version>1.29</version>
   </parent>
 
-  <groupId>io.avaje</groupId>
   <artifactId>avaje-http-client-gson</artifactId>
-  <version>1.29-SNAPSHOT</version>
 
   <dependencies>
 
@@ -23,7 +20,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>1.29-SNAPSHOT</version>
+      <version>1.29</version>
       <scope>provided</scope>
     </dependency>
 

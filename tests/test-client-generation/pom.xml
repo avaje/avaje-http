@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>io.avaje.http</groupId>
-    <artifactId>tests-reactor</artifactId>
-    <version>1</version>
+    <groupId>io.avaje</groupId>
+    <artifactId>tests</artifactId>
+    <version>1.29</version>
   </parent>
 
   <artifactId>test-client-generation</artifactId>
@@ -24,13 +24,13 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>${avaje-http-version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>${avaje-http-version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
@@ -102,12 +102,12 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-http-client-generator</artifactId>
-              <version>${avaje-http-version}</version>
+              <version>${project.version}</version>
             </path>
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-http-jex-generator</artifactId>
-              <version>${avaje-http-version}</version>
+              <version>${project.version}</version>
             </path>
             <path>
               <groupId>io.avaje</groupId>
