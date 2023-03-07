@@ -48,11 +48,20 @@ public class ClientProcessor extends AbstractProcessor {
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     this.processingEnv = processingEnv;
-    ProcessingContext.init(processingEnv, new ClientPlatformAdapter());
+    ProcessingContext.init(processingEnv, new ClientPlatformAdapter(), false);
   }
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+
+    final var platform = platform();
+
+    if (platform instanceof ClientPlatformAdapter) {
+
+    } else {
+      setPlatform(new ClientPlatformAdapter());
+    }
+
     for (final Element controller :
         round.getElementsAnnotatedWith(typeElement(ClientPrism.PRISM_TYPE))) {
       writeClient(controller);
@@ -64,6 +73,7 @@ public class ClientProcessor extends AbstractProcessor {
     if (round.processingOver()) {
       writeServicesFile();
     }
+    setPlatform(platform);
     return false;
   }
   
