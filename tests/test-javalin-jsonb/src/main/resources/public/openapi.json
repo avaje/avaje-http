@@ -1,18 +1,18 @@
 {
 	"openapi" : "3.0.1",
 	"info" : {
-		"title" : "Example service",
+		"title" : "Example service showing off the Path extension method of controller",
 		"description" : "Example Javalin controllers with Java and Maven",
 		"version" : ""
 	},
 	"tags" : [
 		{
 			"name" : "tag1",
-			"description" : "it's somethin"
+			"description" : "this is added to openapi tags"
 		},
 		{
 			"name" : "tag1",
-			"description" : "this is added to openapi tags"
+			"description" : "it's somethin"
 		}
 	],
 	"paths" : {
@@ -1139,6 +1139,184 @@
 				}
 			}
 		},
+		"/test/enumForm" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"type" : "object",
+								"properties" : {
+									"s" : {
+										"type" : "string"
+									},
+									"type" : {
+										"$ref" : "#/components/schemas/ServerType"
+									}
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/enumFormParam" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"type" : "object",
+								"properties" : {
+									"s" : {
+										"type" : "string"
+									},
+									"type" : {
+										"$ref" : "#/components/schemas/ServerType"
+									}
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/enumQuery" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "type",
+						"in" : "query",
+						"schema" : {
+							"$ref" : "#/components/schemas/ServerType"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/enumQuery2" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "type",
+						"in" : "query",
+						"schema" : {
+							"type" : "array",
+							"items" : {
+								"$ref" : "#/components/schemas/ServerType"
+							}
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/enumQueryImplied" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "s",
+						"in" : "query",
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "type",
+						"in" : "query",
+						"schema" : {
+							"$ref" : "#/components/schemas/ServerType"
+						}
+					}
+				],
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/test/form" : {
 			"post" : {
 				"tags" : [
@@ -1302,6 +1480,27 @@
 									"type" : "integer",
 									"format" : "int64",
 									"nullable" : false
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/mapTest" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
 								}
 							}
 						}
@@ -1619,6 +1818,12 @@
 						"maxLength" : 100,
 						"type" : "string",
 						"format" : "email"
+					},
+					"addresses" : {
+						"type" : "array",
+						"items" : {
+							"type" : "string"
+						}
 					}
 				}
 			},
@@ -1697,6 +1902,9 @@
 						"type" : "string"
 					}
 				}
+			},
+			"ServerType" : {
+				"type" : "object"
 			},
 			"byte" : {
 				"type" : "object"

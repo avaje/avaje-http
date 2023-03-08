@@ -48,25 +48,29 @@ public class ClientProcessor extends AbstractProcessor {
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     this.processingEnv = processingEnv;
-    ProcessingContext.init(processingEnv, new ClientPlatformAdapter());
+    ProcessingContext.init(processingEnv, new ClientPlatformAdapter(), false);
   }
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
-    for (final Element controller :
-        round.getElementsAnnotatedWith(typeElement(ClientPrism.PRISM_TYPE))) {
+    final var platform = platform();
+    if (!(platform instanceof ClientPlatformAdapter)) {
+      setPlatform(new ClientPlatformAdapter());
+    }
+
+    for (final Element controller : round.getElementsAnnotatedWith(typeElement(ClientPrism.PRISM_TYPE))) {
       writeClient(controller);
     }
-    for (final Element importedElement :
-        round.getElementsAnnotatedWith(typeElement(ImportPrism.PRISM_TYPE))) {
+    for (final Element importedElement : round.getElementsAnnotatedWith(typeElement(ImportPrism.PRISM_TYPE))) {
       writeForImported(importedElement);
     }
     if (round.processingOver()) {
       writeServicesFile();
     }
+    setPlatform(platform);
     return false;
   }
-  
+
   private void writeServicesFile() {
     try {
       final FileObject metaInfWriter = createMetaInfWriter(METAINF_SERVICES_PROVIDER);
@@ -81,7 +85,6 @@ public class ClientProcessor extends AbstractProcessor {
   }
 
   private void writeForImported(Element importedElement) {
-
     ImportPrism.getInstanceOn(importedElement).types().stream()
         .map(ProcessingContext::asElement)
         .filter(Objects::nonNull)
@@ -98,7 +101,7 @@ public class ClientProcessor extends AbstractProcessor {
         e.printStackTrace();
         logError(reader.beanType(), "Failed to write client class " + e);
       }
-    } 
+    }
   }
 
   protected String writeClientAdapter(ControllerReader reader) throws IOException {

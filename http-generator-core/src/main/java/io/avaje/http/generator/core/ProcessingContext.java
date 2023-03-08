@@ -37,13 +37,20 @@ public class ProcessingContext {
   private static String diAnnotation;
 
   public static void init(ProcessingEnvironment env, PlatformAdapter adapter) {
+    init(env, adapter, true);
+  }
+
+  public static void init(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
     readAdapter = adapter;
     messager = env.getMessager();
     filer = env.getFiler();
     elements = env.getElementUtils();
     types = env.getTypeUtils();
-    openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
-    docContext = new DocContext(env, openApiAvailable);
+
+    if (generateOpenAPI) {
+      openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
+      docContext = new DocContext(env, openApiAvailable);
+    }
 
     final var options = env.getOptions();
     final var singletonOverride = options.get("useSingleton");
@@ -137,6 +144,10 @@ public class ProcessingContext {
 
   public static PlatformAdapter platform() {
     return readAdapter;
+  }
+
+  public static void setPlatform(PlatformAdapter platform) {
+    readAdapter = platform;
   }
 
   public static String diAnnotation() {
