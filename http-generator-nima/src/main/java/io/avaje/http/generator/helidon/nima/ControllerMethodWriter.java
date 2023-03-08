@@ -41,7 +41,10 @@ class ControllerMethodWriter {
     writer.append("  private void _%s(ServerRequest req, ServerResponse res) {", method.simpleName()).eol();
     final var bodyType = method.bodyType();
     if (bodyType != null) {
-      if (useJsonB) {
+
+      if (bodyType.equals("InputStream")) {
+        writer.append("    var %s = req.content().inputStream();", method.bodyName()).eol();
+      } else if (useJsonB) {
         final var fieldName =
             method.params().stream()
                 .filter(MethodParam::isBody)
@@ -60,11 +63,6 @@ class ControllerMethodWriter {
                   final var type = param.utype();
 
                   writer.append("    var %s = req.content()", method.bodyName());
-
-                  if (type.full().startsWith("java.io.InputStream")) {
-                    writer.append(".inputStream();").eol();
-                    return;
-                  }
                   writer.append(".as(");
                   if (type.param0() != null) {
                     writer.append("new io.helidon.common.GenericType<%s>() {}", type.full());
