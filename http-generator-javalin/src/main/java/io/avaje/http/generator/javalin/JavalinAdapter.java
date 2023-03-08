@@ -31,10 +31,16 @@ class JavalinAdapter implements PlatformAdapter {
 
   @Override
   public String bodyAsClass(UType type) {
-    if (useJsonB) {
-      return type.shortName() + "JsonType.fromJson(ctx.bodyInputStream())";
+    if (type.full().startsWith("java.io.InputStream")) {
+      return "ctx.bodyInputStream()";
+    } else if (type.full().startsWith("byte[]")) {
+      return "ctx.bodyAsBytes()";
+    } else {
+      if (useJsonB) {
+        return type.shortName() + "JsonType.fromJson(ctx.bodyInputStream())";
+      }
+      return "ctx.bodyAsClass(" + type.mainType() + ".class)";
     }
-    return "ctx.bodyAsClass(" + type.mainType() + ".class)";
   }
 
   @Override
