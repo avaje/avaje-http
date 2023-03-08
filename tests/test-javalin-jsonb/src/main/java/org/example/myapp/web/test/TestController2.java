@@ -50,7 +50,12 @@ public class TestController2 {
   }
 
   @Get("/inputStream")
-  String mapTest(InputStream stream) {
+  String stream(InputStream stream) {
     return stream.toString();
+  }
+
+  @Get("/byteArray")
+  String bytes(byte[] array) {
+    return array.toString();
   }
 }

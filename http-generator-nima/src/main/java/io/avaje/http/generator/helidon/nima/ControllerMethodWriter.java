@@ -1,6 +1,7 @@
 package io.avaje.http.generator.helidon.nima;
 
 import static io.avaje.http.generator.core.ProcessingContext.platform;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -53,18 +54,25 @@ class ControllerMethodWriter {
       } else {
         // use default helidon content negotiation
         method.params().stream()
-          .filter(MethodParam::isBody)
-          .forEach(
-            param -> {
-              final var type = param.utype();
-              writer.append("    var %s = req.content().as(", method.bodyName());
-              if (type.param0() != null) {
-                writer.append("new io.helidon.common.GenericType<%s>() {}", type.full());
-              } else {
-                writer.append("%s.class", type.full());
-              }
-              writer.append(");").eol();
-            });
+            .filter(MethodParam::isBody)
+            .forEach(
+                param -> {
+                  final var type = param.utype();
+
+                  writer.append("    var %s = req.content()", method.bodyName());
+
+                  if (type.full().startsWith("java.io.InputStream")) {
+                    writer.append(".inputStream();").eol();
+                    return;
+                  }
+                  writer.append(".as(");
+                  if (type.param0() != null) {
+                    writer.append("new io.helidon.common.GenericType<%s>() {}", type.full());
+                  } else {
+                    writer.append("%s.class", type.full());
+                  }
+                  writer.append(");").eol();
+                });
       }
     } else if (usesFormParams()) {
       writer.append("    var formParams = req.content().as(Parameters.class);").eol();
@@ -111,7 +119,7 @@ class ControllerMethodWriter {
     if (!method.isVoid()) {
       writeContextReturn();
       if (producesJson()) {
-        final UType uType = UType.parse(method.returnType());
+        final var uType = UType.parse(method.returnType());
         writer.append("    %sJsonType.toJson(result, res.outputStream());", uType.shortName()).eol();
       } else {
         writer.append("    res.send(result);").eol();
