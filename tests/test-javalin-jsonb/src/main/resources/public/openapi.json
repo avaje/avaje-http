@@ -1154,6 +1154,40 @@
 				}
 			}
 		},
+		"/test/byteArray" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"type" : "array",
+								"items" : {
+									"$ref" : "#/components/schemas/byte"
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/test/ctx" : {
 			"get" : {
 				"tags" : [
@@ -1470,6 +1504,32 @@
 				}
 			}
 		},
+		"/test/inputStream" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/InputStream"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
 						}
 					}
 				}
