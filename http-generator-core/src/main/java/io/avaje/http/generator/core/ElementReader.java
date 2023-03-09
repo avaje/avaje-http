@@ -1,7 +1,8 @@
 package io.avaje.http.generator.core;
 
-import static io.avaje.http.generator.core.ProcessingContext.*;
 import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
+import static io.avaje.http.generator.core.ProcessingContext.platform;
+import static io.avaje.http.generator.core.ProcessingContext.typeElement;
 
 import java.util.List;
 import java.util.Objects;
@@ -245,7 +246,7 @@ public class ElementReader {
    * Build the OpenAPI documentation for this parameter.
    */
   void buildApiDocumentation(MethodDocBuilder methodDoc) {
-    if (!isPlatformContext() && !isParamMap) {
+    if (!isPlatformContext() && !isParamMap && paramType != ParamType.BEANPARAM) {
       new MethodParamDocBuilder(methodDoc, this).build();
     }
   }

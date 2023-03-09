@@ -1,8 +1,11 @@
 package io.avaje.http.generator.core;
 
-import io.avaje.http.generator.core.openapi.MethodDocBuilder;
+import static io.avaje.http.generator.core.ProcessingContext.asElement;
 
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.VariableElement;
+
+import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 
 public class MethodParam {
 
@@ -29,8 +32,26 @@ public class MethodParam {
   }
 
   public void buildApiDocumentation(MethodDocBuilder methodDoc) {
-    elementParam.buildApiDocumentation(methodDoc);
-  }
+    if (elementParam.paramType() != ParamType.BEANPARAM)
+      elementParam.buildApiDocumentation(methodDoc);
+    else {
+      asElement(elementParam.element().asType()).getEnclosedElements().stream()
+          .filter(e -> e.getKind() == ElementKind.FIELD)
+          .map(VariableElement.class::cast)
+          .forEach(
+              e -> {
+                final var typeMirror = e.asType();
+
+                new ElementReader(
+                        e,
+                        Util.parse(typeMirror.toString()),
+                        Util.typeDef(typeMirror),
+                        ParamType.QUERYPARAM,
+                        false)
+                    .buildApiDocumentation(methodDoc);
+              });
+    }
+      }
 
   public boolean isBody() {
     return elementParam.paramType() == ParamType.BODY;
