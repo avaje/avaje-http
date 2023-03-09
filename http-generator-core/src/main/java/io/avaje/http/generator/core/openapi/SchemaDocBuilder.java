@@ -3,6 +3,7 @@ package io.avaje.http.generator.core.openapi;
 import static io.avaje.http.generator.core.Util.typeDef;
 
 import io.avaje.http.generator.core.javadoc.Javadoc;
+import io.swagger.v3.oas.models.media.StringSchema;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.TreeMap;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -149,7 +151,22 @@ class SchemaDocBuilder {
     if (types.isAssignable(type, iterableType)) {
       return buildIterableSchema(type);
     }
+    Element e = types.asElement(type);
+    if (e != null && e.getKind() == ElementKind.ENUM) {
+      return buildEnumSchema(e);
+    }
     return buildObjectSchema(type);
+  }
+
+  private Schema<?> buildEnumSchema(Element e) {
+    var schema = new StringSchema();
+    e.getEnclosedElements().stream()
+      .filter(ec -> ec.getKind().equals(ElementKind.ENUM_CONSTANT))
+      .forEach(ec -> schema.addEnumItem(ec.getSimpleName().toString()));
+
+    var doc = Javadoc.parse(elements.getDocComment(e));
+    schema.setDescription(doc.getDescription());
+    return schema;
   }
 
   private Schema<?> buildObjectSchema(TypeMirror type) {
