@@ -51,7 +51,7 @@ public class MethodParam {
                     .buildApiDocumentation(methodDoc);
               });
     }
-      }
+  }
 
   public boolean isBody() {
     return elementParam.paramType() == ParamType.BODY;

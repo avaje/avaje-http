@@ -60,9 +60,11 @@ public class GetBeanForm {
     this.addresses = addresses;
   }
 
-public String getHead() {
-return head;}
+  public String getHead() {
+    return head;
+  }
 
-public void setHead(String head) {
-this.head = head;}
+  public void setHead(String head) {
+    this.head = head;
+  }
 }
