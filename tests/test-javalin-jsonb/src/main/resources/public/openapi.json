@@ -692,10 +692,39 @@
 				"description" : "",
 				"parameters" : [
 					{
-						"name" : "bean",
-						"in" : "bean",
+						"name" : "name",
+						"in" : "query",
 						"schema" : {
-							"$ref" : "#/components/schemas/GetBeanForm"
+							"maxLength" : 150,
+							"minLength" : 2,
+							"type" : "string",
+							"nullable" : false
+						}
+					},
+					{
+						"name" : "email",
+						"in" : "query",
+						"schema" : {
+							"maxLength" : 100,
+							"type" : "string",
+							"format" : "email"
+						}
+					},
+					{
+						"name" : "addresses",
+						"in" : "query",
+						"schema" : {
+							"type" : "array",
+							"items" : {
+								"type" : "string"
+							}
+						}
+					},
+					{
+						"name" : "head",
+						"in" : "header",
+						"schema" : {
+							"type" : "string"
 						}
 					}
 				],
@@ -1441,6 +1470,11 @@
 				}
 			}
 		},
+						}
+					}
+				}
+			}
+		},
 		"/test/int" : {
 			"put" : {
 				"tags" : [
@@ -1805,28 +1839,6 @@
 					}
 				}
 			},
-			"GetBeanForm" : {
-				"type" : "object",
-				"properties" : {
-					"name" : {
-						"maxLength" : 150,
-						"minLength" : 2,
-						"type" : "string",
-						"nullable" : false
-					},
-					"email" : {
-						"maxLength" : 100,
-						"type" : "string",
-						"format" : "email"
-					},
-					"addresses" : {
-						"type" : "array",
-						"items" : {
-							"type" : "string"
-						}
-					}
-				}
-			},
 			"HelloDto" : {
 				"type" : "object",
 				"properties" : {
@@ -1875,6 +1887,9 @@
 						"format" : "date"
 					}
 				}
+			},
+			"InputStream" : {
+				"type" : "object"
 			},
 			"MyForm" : {
 				"type" : "object",
