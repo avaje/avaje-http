@@ -165,7 +165,10 @@ class SchemaDocBuilder {
       .forEach(ec -> schema.addEnumItem(ec.getSimpleName().toString()));
 
     var doc = Javadoc.parse(elements.getDocComment(e));
-    schema.setDescription(doc.getDescription());
+    var desc = doc.getDescription();
+    if (desc != null && !desc.isEmpty()) {
+      schema.setDescription(desc);
+    }
     return schema;
   }
 
