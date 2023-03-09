@@ -1,5 +1,6 @@
 package org.example;
 
+import java.io.InputStream;
 import java.util.Set;
 
 import io.avaje.http.api.Controller;
@@ -44,5 +45,10 @@ public class TestController {
   @Post("/enumQueryImplied")
   String enumQueryImplied(String s, @QueryParam ServerType type) {
     return type.name();
+  }
+
+  @Get("/inputStream")
+  String stream(InputStream stream) {
+    return stream.toString();
   }
 }

@@ -1,5 +1,6 @@
 package org.example.myapp.web.test;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,5 +47,15 @@ public class TestController2 {
   @Get("/mapTest")
   String mapTest(Map<String, List<String>> strings) {
     return strings.toString();
+  }
+
+  @Get("/inputStream")
+  String stream(InputStream stream) {
+    return stream.toString();
+  }
+
+  @Get("/byteArray")
+  String bytes(byte[] array) {
+    return array.toString();
   }
 }
