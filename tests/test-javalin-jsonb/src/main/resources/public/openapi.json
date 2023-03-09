@@ -1,18 +1,18 @@
 {
 	"openapi" : "3.0.1",
 	"info" : {
-		"title" : "Example service showing off the Path extension method of controller",
+		"title" : "Example service",
 		"description" : "Example Javalin controllers with Java and Maven",
 		"version" : ""
 	},
 	"tags" : [
 		{
 			"name" : "tag1",
-			"description" : "this is added to openapi tags"
+			"description" : "it's somethin"
 		},
 		{
 			"name" : "tag1",
-			"description" : "it's somethin"
+			"description" : "this is added to openapi tags"
 		}
 	],
 	"paths" : {
@@ -1156,7 +1156,12 @@
 										"type" : "string"
 									},
 									"type" : {
-										"$ref" : "#/components/schemas/ServerType"
+										"type" : "string",
+										"enum" : [
+											"PROXY",
+											"HIDE_N_SEEK",
+											"FFA"
+										]
 									}
 								}
 							}
@@ -1195,7 +1200,12 @@
 										"type" : "string"
 									},
 									"type" : {
-										"$ref" : "#/components/schemas/ServerType"
+										"type" : "string",
+										"enum" : [
+											"PROXY",
+											"HIDE_N_SEEK",
+											"FFA"
+										]
 									}
 								}
 							}
@@ -1229,7 +1239,12 @@
 						"name" : "type",
 						"in" : "query",
 						"schema" : {
-							"$ref" : "#/components/schemas/ServerType"
+							"type" : "string",
+							"enum" : [
+								"PROXY",
+								"HIDE_N_SEEK",
+								"FFA"
+							]
 						}
 					}
 				],
@@ -1261,7 +1276,12 @@
 						"schema" : {
 							"type" : "array",
 							"items" : {
-								"$ref" : "#/components/schemas/ServerType"
+								"type" : "string",
+								"enum" : [
+									"PROXY",
+									"HIDE_N_SEEK",
+									"FFA"
+								]
 							}
 						}
 					}
@@ -1299,7 +1319,12 @@
 						"name" : "type",
 						"in" : "query",
 						"schema" : {
-							"$ref" : "#/components/schemas/ServerType"
+							"type" : "string",
+							"enum" : [
+								"PROXY",
+								"HIDE_N_SEEK",
+								"FFA"
+							]
 						}
 					}
 				],
@@ -1902,9 +1927,6 @@
 						"type" : "string"
 					}
 				}
-			},
-			"ServerType" : {
-				"type" : "object"
 			},
 			"byte" : {
 				"type" : "object"

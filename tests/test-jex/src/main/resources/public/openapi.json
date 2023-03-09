@@ -190,7 +190,12 @@
 						"name" : "type",
 						"in" : "query",
 						"schema" : {
-							"$ref" : "#/components/schemas/ServerType"
+							"type" : "string",
+							"enum" : [
+								"PROXY",
+								"HIDE_N_SEEK",
+								"FFA"
+							]
 						}
 					}
 				],
@@ -222,7 +227,12 @@
 						"schema" : {
 							"type" : "array",
 							"items" : {
-								"$ref" : "#/components/schemas/ServerType"
+								"type" : "string",
+								"enum" : [
+									"PROXY",
+									"HIDE_N_SEEK",
+									"FFA"
+								]
 							}
 						}
 					}
@@ -260,7 +270,12 @@
 						"name" : "type",
 						"in" : "query",
 						"schema" : {
-							"$ref" : "#/components/schemas/ServerType"
+							"type" : "string",
+							"enum" : [
+								"PROXY",
+								"HIDE_N_SEEK",
+								"FFA"
+							]
 						}
 					}
 				],
@@ -363,11 +378,16 @@
 					"name" : {
 						"type" : "string",
 						"nullable" : false
+					},
+					"serverType" : {
+						"type" : "string",
+						"enum" : [
+							"PROXY",
+							"HIDE_N_SEEK",
+							"FFA"
+						]
 					}
 				}
-			},
-			"ServerType" : {
-				"type" : "object"
 			}
 		}
 	}

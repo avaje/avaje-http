@@ -81,7 +81,7 @@ final class OpenAPISerializer {
               sb.append(",");
             }
             sb.append("\"");
-            sb.append(field.getName());
+            sb.append(field.getName().replace("_enum", "enum"));
             sb.append("\" : ");
             write(sb, value);
             firstField = false;
