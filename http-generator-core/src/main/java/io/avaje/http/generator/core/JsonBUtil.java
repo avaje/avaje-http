@@ -33,9 +33,9 @@ public class JsonBUtil {
             methodReader -> {
               addJsonBodyType(methodReader, addToMap);
               if (!methodReader.isVoid()) {
-                UType uType = UType.parse(methodReader.returnType());
+                var uType = UType.parse(methodReader.returnType());
 
-                if (uType.mainType().equals("java.util.concurrent.CompletableFuture")) {
+                if ("java.util.concurrent.CompletableFuture".equals(uType.mainType())) {
                   uType = uType.paramRaw();
                 }
 
@@ -51,6 +51,8 @@ public class JsonBUtil {
       methodReader.params().stream()
           .filter(MethodParam::isBody)
           .map(MethodParam::utype)
+          .filter(s -> !s.full().startsWith("java.io.InputStream"))
+          .filter(s -> !s.full().startsWith("byte[]"))
           .forEach(addToMap);
     }
   }
