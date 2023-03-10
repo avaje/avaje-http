@@ -134,6 +134,17 @@ class SchemaDocBuilder {
     return typeArguments.get(0);
   }
 
+  Schema<?> toSchema(Element element) {
+    var schema = toSchema(element.asType());
+
+    setLengthMinMax(element, schema);
+    setFormatFromValidation(element, schema);
+    if (isNotNullable(element)) {
+      schema.setNullable(Boolean.FALSE);
+    }
+    return schema;
+  }
+
   Schema<?> toSchema(TypeMirror type) {
     if (types.isAssignable(type, completableFutureType)) {
       type = typeArgument(type);

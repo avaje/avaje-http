@@ -22,6 +22,7 @@ import io.avaje.http.generator.core.SecuritySchemePrism;
 import io.avaje.http.generator.core.SecuritySchemesPrism;
 import io.avaje.http.generator.core.TagPrism;
 import io.avaje.http.generator.core.TagsPrism;
+import io.avaje.http.generator.core.Util;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -77,12 +78,17 @@ public class DocContext {
   }
 
   Schema toSchema(String rawType, Element element) {
-    TypeElement typeElement = elements.getTypeElement(rawType);
+    final var typeElement = elements.getTypeElement(rawType);
+    final var varElement =
+        elements.getTypeElement(Util.trimAnnotations(element.asType().toString()));
+
     if (typeElement == null) {
       // primitive types etc
       return schemaBuilder.toSchema(element.asType());
+    } else if (varElement != null) {
+      return schemaBuilder.toSchema(element);
     } else {
-      return schemaBuilder.toSchema(typeElement.asType());
+      return schemaBuilder.toSchema(typeElement);
     }
   }
 
