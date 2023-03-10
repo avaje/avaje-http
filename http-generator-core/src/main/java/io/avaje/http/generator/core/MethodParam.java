@@ -32,25 +32,20 @@ public class MethodParam {
   }
 
   public void buildApiDocumentation(MethodDocBuilder methodDoc) {
-    if (elementParam.paramType() != ParamType.BEANPARAM)
+    if (elementParam.paramType() != ParamType.BEANPARAM) {
       elementParam.buildApiDocumentation(methodDoc);
-    else {
+    } else {
       asElement(elementParam.element().asType()).getEnclosedElements().stream()
           .filter(e -> e.getKind() == ElementKind.FIELD)
           .map(VariableElement.class::cast)
-          .forEach(
-              e -> {
-                final var typeMirror = e.asType();
-
-                new ElementReader(
-                        e,
-                        Util.parse(typeMirror.toString()),
-                        Util.typeDef(typeMirror),
-                        ParamType.QUERYPARAM,
-                        false)
-                    .buildApiDocumentation(methodDoc);
-              });
+          .forEach(e -> buildDoc(methodDoc, e));
     }
+  }
+
+  private static void buildDoc(MethodDocBuilder methodDoc, VariableElement e) {
+    final var typeMirror = e.asType();
+    new ElementReader(e, Util.parse(typeMirror.toString()), Util.typeDef(typeMirror), ParamType.QUERYPARAM, false)
+      .buildApiDocumentation(methodDoc);
   }
 
   public boolean isBody() {

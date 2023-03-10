@@ -135,8 +135,7 @@ class SchemaDocBuilder {
   }
 
   Schema<?> toSchema(Element element) {
-    var schema = toSchema(element.asType());
-
+    final var schema = toSchema(element.asType());
     setLengthMinMax(element, schema);
     setFormatFromValidation(element, schema);
     if (isNotNullable(element)) {
