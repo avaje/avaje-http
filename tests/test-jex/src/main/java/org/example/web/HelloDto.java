@@ -8,4 +8,5 @@ public class HelloDto {
   public int id;
   @NotNull
   public String name;
+  public ServerType serverType;
 }
