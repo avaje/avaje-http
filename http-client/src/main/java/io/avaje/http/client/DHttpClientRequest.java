@@ -266,14 +266,25 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public HttpClientRequest body(Object bean, String contentType) {
-    encodedRequestBody = context.write(bean, contentType);
-    return this;
+  public HttpClientRequest body(Object bean) {
+    return body(bean, bean.getClass(), null);
   }
 
   @Override
-  public HttpClientRequest body(Object bean) {
-    return body(bean, null);
+  public HttpClientRequest body(Object bean, String contentType) {
+
+    return body(bean, bean.getClass(), contentType);
+  }
+
+  @Override
+  public HttpClientRequest body(Object bean, Class<?> type) {
+    return body(bean, type, null);
+  }
+
+  @Override
+  public HttpClientRequest body(Object bean, Class<?> type, String contentType) {
+    encodedRequestBody = context.write(bean, type, contentType);
+    return this;
   }
 
   @Override

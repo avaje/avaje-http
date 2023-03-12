@@ -299,6 +299,17 @@ public interface HttpClientRequest {
   HttpClientRequest body(Object bean);
 
   /**
+   * Set the body as a bean with the given content type using a BodyWriter.
+   * Used for JsonbAdapter
+   */
+  HttpClientRequest body(Object bean, Class<?> type);
+
+  /**
+   * Set the body as a bean with the given content type using a BodyWriter.
+   */
+  HttpClientRequest body(Object bean, Class<?> type, String contentType);
+
+  /**
    * Set the body content as a string.
    *
    * @param body The body content
