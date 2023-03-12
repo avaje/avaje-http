@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  * <h4>Example using .join() for testing purposes</h4>
  * <pre>{@code
  *
- *    clientContext.request()
+ *    client.request()
  *       ...
  *       .POST().async()
  *       .bean(HelloDto.class)
@@ -38,7 +38,7 @@ import java.util.stream.Stream;
  * In this example POST async that will return a bean converted from json response.
  * <pre>{@code
  *
- *    clientContext.request()
+ *    client.request()
  *       ...
  *       .POST().async()
  *       .bean(HelloDto.class)
@@ -80,7 +80,7 @@ public interface HttpAsyncResponse {
    *
    * <pre>{@code
    *
-   *   clientContext.request()
+   *   client.request()
    *       .path("hello/world")
    *       .GET()
    *       .async().asVoid()
@@ -115,7 +115,7 @@ public interface HttpAsyncResponse {
    *
    * <pre>{@code
    *
-   *   clientContext.request()
+   *   client.request()
    *       .path("hello/world")
    *       .GET()
    *       .async().asDiscarding()
@@ -140,7 +140,7 @@ public interface HttpAsyncResponse {
    *
    * <pre>{@code
    *
-   *   clientContext.request()
+   *   client.request()
    *       .path("hello/world")
    *       .GET()
    *       .async().asString()
@@ -191,7 +191,7 @@ public interface HttpAsyncResponse {
    * </p>
    * <pre>{@code
    *
-   *    CompletableFuture<HttpResponse<Void>> future = clientContext.request()
+   *    CompletableFuture<HttpResponse<Void>> future = client.request()
    *       .path("hello/lineStream")
    *       .GET().async()
    *       .handler(HttpResponse.BodyHandlers.fromLineSubscriber(new Flow.Subscriber<>() {
@@ -240,7 +240,7 @@ public interface HttpAsyncResponse {
    *
    * <pre>{@code
    *
-   *    clientContext.request()
+   *    client.request()
    *       ...
    *       .POST().async()
    *       .as(HelloDto.class)
@@ -280,7 +280,7 @@ public interface HttpAsyncResponse {
    *
    * <pre>{@code
    *
-   *    clientContext.request()
+   *    client.request()
    *       ...
    *       .POST().async()
    *       .bean(HelloDto.class)
@@ -314,7 +314,7 @@ public interface HttpAsyncResponse {
    *
    * <pre>{@code
    *
-   *    clientContext.request()
+   *    client.request()
    *       ...
    *       .POST().async()
    *       .asList(HelloDto.class)
@@ -356,7 +356,7 @@ public interface HttpAsyncResponse {
    *
    * <pre>{@code
    *
-   *    clientContext.request()
+   *    client.request()
    *       ...
    *       .GET().async()
    *       .list(HelloDto.class)
@@ -387,7 +387,7 @@ public interface HttpAsyncResponse {
    *
    * <pre>{@code
    *
-   *    clientContext.request()
+   *    client.request()
    *       ...
    *       .POST().async()
    *       .asStream(HelloDto.class)

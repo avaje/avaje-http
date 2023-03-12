@@ -13,7 +13,7 @@ import io.avaje.jsonb.Jsonb;
  *
  * <pre>{@code
  *
- *   HttpClientContext.builder()
+ *   HttpClient.builder()
  *       .baseUrl(baseUrl)
  *       .bodyAdapter(new JsonbBodyAdapter())
  *       .build();

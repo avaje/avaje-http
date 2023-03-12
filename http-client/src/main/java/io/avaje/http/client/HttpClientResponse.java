@@ -21,7 +21,7 @@ public interface HttpClientResponse {
    * In this example POST async that will return a bean converted from json response.
    * <pre>{@code
    *
-   *    clientContext.request()
+   *    client.request()
    *       ...
    *       .POST().async()
    *       .bean(HelloDto.class)

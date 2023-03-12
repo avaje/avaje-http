@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
  * <pre>{@code
  *
  *   try {
- *       clientContext.request()
+ *       client.request()
  *         .path("hello/saveForm")
  *         .formParam("email", "user@foo.com")
  *         .formParam("url", "notAValidUrl")
@@ -115,7 +115,7 @@ public class HttpException extends RuntimeException {
     return new String(body.content(), StandardCharsets.UTF_8);
   }
 
-  /** 
+  /**
    * Return the response body content as raw bytes, or else null if body content doesn't exist.
    */
   public byte[] bodyAsBytes() {
