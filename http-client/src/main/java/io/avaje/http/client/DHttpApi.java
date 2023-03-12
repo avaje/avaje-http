@@ -41,19 +41,19 @@ final class DHttpApi {
   }
 
   @SuppressWarnings("unchecked")
-  <T> T provideFor(Class<T> type, HttpClient clientContext) {
+  <T> T provideFor(Class<T> type, HttpClient httpClient) {
     final HttpApiProvider<T> apiProvider = lookup(type);
     if (apiProvider == null) {
       throw new IllegalArgumentException("No registered HttpApiProvider for type: " + type);
     }
-    return apiProvider.provide(clientContext);
+    return apiProvider.provide(httpClient);
   }
 
   /**
    * Return the client implementation via service loading.
    */
-  static <T> T provide(Class<T> type, HttpClient clientContext) {
-    return INSTANCE.provideFor(type, clientContext);
+  static <T> T provide(Class<T> type, HttpClient httpClient) {
+    return INSTANCE.provideFor(type, httpClient);
   }
 
   /**

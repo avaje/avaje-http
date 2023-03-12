@@ -6,12 +6,12 @@
  *
  * <pre>{@code
  *
- *   HttpClientContext ctx = HttpClientContext.builder()
+ *   HttpClient client = HttpClient.builder()
  *       .baseUrl("http://localhost:8080")
  *       .bodyAdapter(new JacksonBodyAdapter())
  *       .build();
  *
- *  HelloDto dto = ctx.request()
+ *  HelloDto dto = client.request()
  *       .path("hello")
  *       .queryParam("say", "Whats up")
  *       .GET()

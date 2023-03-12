@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * <pre>{@code
  *
- *   HttpClientContext.builder()
+ *   HttpClient.builder()
  *       .baseUrl(baseUrl)
  *       .bodyAdapter(new JacksonBodyAdapter())
  *       .build();

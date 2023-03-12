@@ -19,14 +19,14 @@ import java.util.function.Supplier;
  *
  * <pre>{@code
  *
- *  HelloDto dto = clientContext.request()
+ *  HelloDto dto = client.request()
  *       .path("hello").queryParam("name", "Rob").queryParam("say", "Whats up")
  *       .GET()
  *       .bean(HelloDto.class);
  *
  * }</pre>
  *
- * @see HttpClientContext
+ * @see HttpClient
  */
 public interface HttpClientRequest {
 
@@ -113,7 +113,7 @@ public interface HttpClientRequest {
    * Add the header to the request implicitly converting the value to a String. If the value is a
    * collection then it's values are appended with the same key
    *
-   * @param name The header name
+   * @param name  The header name
    * @param value The header value
    * @return The request being built
    */
@@ -130,7 +130,7 @@ public interface HttpClientRequest {
   /**
    * Add the headers to the request via Collection.
    *
-   * @param name The header name
+   * @param name  The header name
    * @param value The header values
    * @return The request being built
    */
@@ -155,7 +155,7 @@ public interface HttpClientRequest {
    * Set the URL to use replacing the base URL.
    * <pre>{code
    *
-   *  HttpResponse<String> res = clientContext.request()
+   *  HttpResponse<String> res = client.request()
    *       .url("http://127.0.0.1:8889")
    *       .path("hello")
    *       .GET()
@@ -165,7 +165,7 @@ public interface HttpClientRequest {
    *
    * @param url The url effectively replacing the base url.
    * @return The request being built
-   * @see HttpClientContext.Builder#baseUrl(String)
+   * @see HttpClient.Builder#baseUrl(String)
    */
   HttpClientRequest url(String url);
 
@@ -248,8 +248,8 @@ public interface HttpClientRequest {
   /**
    * Add a query parameter with multiple values
    *
-   * @param name The name of the query parameter
-   * @param value The values of the query parameter which can be null
+   * @param name   The name of the query parameter
+   * @param values The values of the query parameter which can be null
    * @return The request being built
    */
   default HttpClientRequest queryParam(String name, Collection<String> values) {
@@ -293,24 +293,41 @@ public interface HttpClientRequest {
   HttpClientRequest body(Object bean, String contentType);
 
   /**
-   * Set the body as a bean using the default content type. The default
-   * content type will often be <code>application/json; charset=utf8</code>.
+   * Set the body as a bean using the default content type.
+   * <p>
+   * The default content type will often be {@code application/json; charset=utf8}.
    */
   HttpClientRequest body(Object bean);
 
   /**
-   * Set the body as a bean with the given content type using a BodyWriter.
-   * Used for JsonbAdapter
+   * Set the body as a bean additionally specifying the type that will be
+   * used to serialise the content (e.g. JsonbAdapter).
+   * <p>
+   * Specifying the type allows the bean instance to be a type that extends
+   * a type that is known to JsonbAdapter / the body content adapter used.
+   *
+   * @param bean The body content as an instance
+   * @param type The type used by the body content adapter to write the body content
+   * @return The request being built
    */
   HttpClientRequest body(Object bean, Class<?> type);
 
   /**
-   * Set the body as a bean with the given content type using a BodyWriter.
+   * Set the body as a bean with the given content type and additionally specifying
+   * the type that will be used to serialise the content (e.g. JsonbAdapter).
+   * <p>
+   * Specifying the type allows the bean instance to be a type that extends
+   * a type that is known to JsonbAdapter / the body content adapter used.
+   *
+   * @param bean        The body content as an instance
+   * @param type        The type used by the body content adapter to write the body content
+   * @param contentType The content type of the body
+   * @return The request being built
    */
   HttpClientRequest body(Object bean, Class<?> type, String contentType);
 
   /**
-   * Set the body content as a string.
+   * Set the body content as a string using the default content type.
    *
    * @param body The body content
    * @return The request being built

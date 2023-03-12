@@ -32,7 +32,7 @@ public interface HttpCallResponse {
    * <pre>{@code
    *
    *   HttpCall<HttpResponse<Void>> call =
-   *     clientContext.request()
+   *     client.request()
    *       .path("hello/world")
    *       .GET()
    *       .call().asVoid();
@@ -54,7 +54,7 @@ public interface HttpCallResponse {
    * <pre>{@code
    *
    *   HttpCall<HttpResponse<Void>> call =
-   *     clientContext.request()
+   *     client.request()
    *       .path("hello/world")
    *       .GET()
    *       .call().asDiscarding();
@@ -71,7 +71,7 @@ public interface HttpCallResponse {
    * <pre>{@code
    *
    *   HttpCall<HttpResponse<String>> call =
-   *     clientContext.request()
+   *     client.request()
    *       .path("hello/world")
    *       .GET()
    *       .call().asString();
@@ -107,7 +107,7 @@ public interface HttpCallResponse {
    * Call using any given {@code HttpResponse.BodyHandler}.
    * <pre>{@code
    *
-   *    HttpCall<E> call = clientContext.request()
+   *    HttpCall<E> call = client.request()
    *       .path("hello/lineStream")
    *       .GET()
    *       .call().handler(HttpResponse.BodyHandler<E> ...);
