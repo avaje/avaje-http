@@ -107,14 +107,12 @@ private void writeEnd() {
       String known = KNOWN_RESPONSE.get(returnType.full());
       if (known != null) {
         writer.append("      %s", known).eol();
+      } else if (COMPLETABLE_FUTURE.equals(returnType.mainType())) {
+        writeAsyncResponse();
+      } else if (HTTP_CALL.equals(returnType.mainType())) {
+        writeCallResponse();
       } else {
-        if (COMPLETABLE_FUTURE.equals(returnType.mainType())) {
-          writeAsyncResponse();
-        } else if (HTTP_CALL.equals(returnType.mainType())) {
-            writeCallResponse();
-        } else {
-          writeSyncResponse();
-        }
+        writeSyncResponse();
       }
     }
     writer.append("  }").eol().eol();
@@ -141,27 +139,32 @@ private void writeEnd() {
     if (isList(mainType)) {
       writer.append(".list(");
       writeGeneric(param1);
+      writer.append(");").eol();
     } else if (isStream(mainType)) {
       writer.append(".stream(");
       writeGeneric(param1);
+      writer.append(");").eol();
     } else if (isHttpResponse(mainType)) {
       if (bodyHandlerParam == null) {
-        UType paramType = type.paramRaw();
-        if (paramType.mainType().equals("java.util.List")) {
+        final UType paramType = type.paramRaw();
+        if ("java.util.List".equals(paramType.mainType())) {
           writer.append(".asList(");
           writeGeneric(paramType.paramRaw());
-        } else if (paramType.mainType().equals("java.util.stream.Stream")) {
+        } else if ("java.util.stream.Stream".equals(paramType.mainType())) {
           writer.append(".asStream(");
           writeGeneric(paramType.paramRaw());
         } else {
           writer.append(".as(");
           writeGeneric(paramType);
         }
+        writer.append(");").eol();
       } else {
-        writer.append(".handler(%s);", bodyHandlerParam.name()).eol();      }
+        writer.append(".handler(%s);", bodyHandlerParam.name()).eol();
+      }
     } else {
       writer.append(".bean(");
       writeGeneric(type);
+      writer.append(");").eol();
     }
   }
 
@@ -177,19 +180,16 @@ private void writeEnd() {
     } else {
       writer.append("%s.class", Util.shortName(type.mainType()));
     }
-    writer.append(");").eol();
   }
 
   private void writeQueryParams(PathSegments pathSegments) {
-    for (MethodParam param : method.params()) {
-      ParamType paramType = param.paramType();
-      if (paramType == ParamType.QUERYPARAM) {
-        if (pathSegments.segment(param.paramName()) == null) {
-          if (isMap(param)) {
-            writer.append("      .queryParam(%s)", param.name()).eol();
-          } else {
-            writer.append("      .queryParam(\"%s\", %s)", param.paramName(), param.name()).eol();
-          }
+    for (final MethodParam param : method.params()) {
+      final ParamType paramType = param.paramType();
+      if (paramType == ParamType.QUERYPARAM && pathSegments.segment(param.paramName()) == null) {
+        if (isMap(param)) {
+          writer.append("      .queryParam(%s)", param.name()).eol();
+        } else {
+          writer.append("      .queryParam(\"%s\", %s)", param.paramName(), param.name()).eol();
         }
       }
     }
@@ -251,7 +251,9 @@ private void writeEnd() {
     for (MethodParam param : method.params()) {
       ParamType paramType = param.paramType();
       if (paramType == ParamType.BODY) {
-        writer.append("      .body(%s, %s.class)", param.name(), param.utype().shortType()).eol();
+        writer.append("      .body(%s, ", param.name());
+        writeGeneric(param.utype());
+        writer.append(")").eol();
       }
     }
   }
@@ -278,19 +280,19 @@ private void writeEnd() {
   }
 
   private boolean isMap(String type0) {
-    return type0.equals("java.util.Map");
+    return "java.util.Map".equals(type0);
   }
 
   private boolean isList(String type0) {
-    return type0.equals("java.util.List");
+    return "java.util.List".equals(type0);
   }
 
   private boolean isStream(String type0) {
-    return type0.equals("java.util.stream.Stream");
+    return "java.util.stream.Stream".equals(type0);
   }
 
   private boolean isHttpResponse(String type0) {
-    return type0.equals("java.net.http.HttpResponse");
+    return "java.net.http.HttpResponse".equals(type0);
   }
 
 }

@@ -1,6 +1,7 @@
 package io.avaje.http.client;
 
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
@@ -311,6 +312,19 @@ public interface HttpClientRequest {
    * @return The request being built
    */
   HttpClientRequest body(Object bean, Class<?> type);
+
+  /**
+   * Set the body as a bean additionally specifying the type that will be
+   * used to serialise the content (e.g. JsonbAdapter).
+   * <p>
+   * Specifying the type allows the bean instance to be a type that extends
+   * a type that is known to JsonbAdapter / the body content adapter used.
+   *
+   * @param bean The body content as an instance
+   * @param type The parameterized type used by the body content adapter to write the body content
+   * @return The request being built
+   */
+  HttpClientRequest body(Object bean, ParameterizedType type);
 
   /**
    * Set the body as a bean with the given content type and additionally specifying

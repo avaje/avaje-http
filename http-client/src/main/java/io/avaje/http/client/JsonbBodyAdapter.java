@@ -49,6 +49,12 @@ public final class JsonbBodyAdapter implements BodyAdapter {
 
   @SuppressWarnings("unchecked")
   @Override
+  public <T> BodyWriter<T> beanWriter(ParameterizedType type) {
+    return (BodyWriter<T>) beanWriterCache.computeIfAbsent(type, aClass -> new JWriter<>(jsonb.type(type)));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
   public <T> BodyReader<T> beanReader(Class<T> cls) {
     return (BodyReader<T>) beanReaderCache.computeIfAbsent(cls, aClass -> new JReader<>(jsonb.type(cls)));
   }

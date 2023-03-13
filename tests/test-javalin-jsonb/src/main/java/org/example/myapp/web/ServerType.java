@@ -1,4 +1,4 @@
-package org.example.myapp.web.test;
+package org.example.myapp.web;
 
 public enum ServerType {
   PROXY,
