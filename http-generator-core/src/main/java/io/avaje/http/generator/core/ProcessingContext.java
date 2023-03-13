@@ -30,10 +30,10 @@ public class ProcessingContext {
   private static ThreadLocal<Filer> FILER = new ThreadLocal<>();
   private static ThreadLocal<Elements> ELEMENTS = new ThreadLocal<>();
   private static ThreadLocal<Types> TYPES = new ThreadLocal<>();
-  private static ThreadLocal<Boolean> OPENAPI_AVAILABLE = new ThreadLocal<>();
+  private static ThreadLocal<Boolean> OPENAPI_AVAILABLE = ThreadLocal.withInitial(() -> false);
   private static ThreadLocal<DocContext> DOC_CONTEXT = new ThreadLocal<>();
-  private static ThreadLocal<Boolean> USE_COMPONENT = new ThreadLocal<>();
-  private static ThreadLocal<Boolean> USE_JAVAX = new ThreadLocal<>();
+  private static ThreadLocal<Boolean> USE_COMPONENT = ThreadLocal.withInitial(() -> false);
+  private static ThreadLocal<Boolean> USE_JAVAX = ThreadLocal.withInitial(() -> false);
   private static ThreadLocal<String> DI_ANNOTATION = new ThreadLocal<>();
 
   public static void init(ProcessingEnvironment env, PlatformAdapter adapter) {
