@@ -269,6 +269,10 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
     return bodyAdapter.beanWriter(type).write(bean, contentType);
   }
 
+  <T> BodyContent write(T bean, ParameterizedType type, String contentType) {
+    return bodyAdapter.beanWriter(type).write(bean, contentType);
+  }
+
   <T> BodyReader<T> beanReader(Class<T> type) {
     return bodyAdapter.beanReader(type);
   }

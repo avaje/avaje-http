@@ -18,6 +18,16 @@ public interface BodyAdapter {
   <T> BodyWriter<T> beanWriter(Class<?> type);
 
   /**
+   * Return a BodyWriter to write beans of this type as request content.
+   *
+   * @param type The type of the bean this writer is for
+   */
+  default <T> BodyWriter<T> beanWriter(ParameterizedType type) {
+
+    throw new UnsupportedOperationException("Parameterized types not supported for this adapter");
+  }
+
+  /**
    * Return a BodyReader to read response content and convert to a bean.
    *
    * @param type The bean type to convert the content to.

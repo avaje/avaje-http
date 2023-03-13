@@ -251,7 +251,8 @@ private void writeEnd() {
     for (MethodParam param : method.params()) {
       ParamType paramType = param.paramType();
       if (paramType == ParamType.BODY) {
-        writer.append("      .body(%s, %s.class)", param.name(), param.utype().shortType()).eol();
+        writer.append("      .body(%s, ", param.name());
+        writeGeneric(param.utype());
       }
     }
   }
