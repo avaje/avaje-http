@@ -9,11 +9,14 @@
 
   <artifactId>avaje-http-generator-core</artifactId>
 
+  <properties>
+    <avaje.prisms.version>1.6</avaje.prisms.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-prisms</artifactId>
-      <version>1.6</version>
+      <version>${avaje.prisms.version}</version>
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>
@@ -21,7 +24,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>1.31-SNAPSHOT</version>
+      <version>${project.version}</version>
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>
@@ -81,7 +84,7 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-prisms</artifactId>
-              <version>1.6</version>
+              <version>${avaje.prisms.version}</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
