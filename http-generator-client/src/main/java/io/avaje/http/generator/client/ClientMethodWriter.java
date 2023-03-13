@@ -141,6 +141,7 @@ private void writeEnd() {
     if (isList(mainType)) {
       writer.append(".list(");
       writeGeneric(param1);
+      writer.append(");").eol();
     } else if (isStream(mainType)) {
       writer.append(".stream(");
       writeGeneric(param1);
@@ -177,7 +178,6 @@ private void writeEnd() {
     } else {
       writer.append("%s.class", Util.shortName(type.mainType()));
     }
-    writer.append(");").eol();
   }
 
   private void writeQueryParams(PathSegments pathSegments) {
@@ -253,6 +253,7 @@ private void writeEnd() {
       if (paramType == ParamType.BODY) {
         writer.append("      .body(%s, ", param.name());
         writeGeneric(param.utype());
+        writer.append(")").eol();
       }
     }
   }
