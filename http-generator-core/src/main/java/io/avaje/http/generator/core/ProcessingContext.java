@@ -25,49 +25,50 @@ import io.avaje.http.generator.core.openapi.DocContext;
 
 public class ProcessingContext {
 
-  private static PlatformAdapter readAdapter;
-  private static Messager messager;
-  private static Filer filer;
-  private static Elements elements;
-  private static Types types;
-  private static boolean openApiAvailable;
-  private static DocContext docContext;
-  private static boolean useComponent;
-  private static boolean useJavax;
-  private static String diAnnotation;
+  private static ThreadLocal<PlatformAdapter> READ_ADAPTER = new ThreadLocal<>();
+  private static ThreadLocal<Messager> MESSAGER = new ThreadLocal<>();
+  private static ThreadLocal<Filer> FILER = new ThreadLocal<>();
+  private static ThreadLocal<Elements> ELEMENTS = new ThreadLocal<>();
+  private static ThreadLocal<Types> TYPES = new ThreadLocal<>();
+  private static ThreadLocal<Boolean> OPENAPI_AVAILABLE = new ThreadLocal<>();
+  private static ThreadLocal<DocContext> DOC_CONTEXT = new ThreadLocal<>();
+  private static ThreadLocal<Boolean> USE_COMPONENT = new ThreadLocal<>();
+  private static ThreadLocal<Boolean> USE_JAVAX = new ThreadLocal<>();
+  private static ThreadLocal<String> DI_ANNOTATION = new ThreadLocal<>();
 
   public static void init(ProcessingEnvironment env, PlatformAdapter adapter) {
     init(env, adapter, true);
   }
 
-  public static void init(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
-    readAdapter = adapter;
-    messager = env.getMessager();
-    filer = env.getFiler();
-    elements = env.getElementUtils();
-    types = env.getTypeUtils();
+  public static void init(
+      ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
+    READ_ADAPTER.set(adapter);
+    MESSAGER.set(env.getMessager());
+    FILER.set(env.getFiler());
+    ELEMENTS.set(env.getElementUtils());
+    TYPES.set(env.getTypeUtils());
 
     if (generateOpenAPI) {
-      openApiAvailable = isTypeAvailable(Constants.OPENAPIDEFINITION);
-      docContext = new DocContext(env, openApiAvailable);
+      OPENAPI_AVAILABLE.set(isTypeAvailable(Constants.OPENAPIDEFINITION));
+      DOC_CONTEXT.set(new DocContext(env, OPENAPI_AVAILABLE.get()));
     }
 
     final var options = env.getOptions();
     final var singletonOverride = options.get("useSingleton");
     if (singletonOverride != null) {
-      useComponent = !Boolean.parseBoolean(singletonOverride);
+      USE_COMPONENT.set(!Boolean.parseBoolean(singletonOverride));
     } else {
-      useComponent = isTypeAvailable(Constants.COMPONENT);
+      USE_COMPONENT.set(isTypeAvailable(Constants.COMPONENT));
     }
-    diAnnotation = useComponent ? "@Component" : "@Singleton";
+    DI_ANNOTATION.set(USE_COMPONENT.get() ? "@Component" : "@Singleton");
 
     final var javax = isTypeAvailable(Constants.SINGLETON_JAVAX);
     final var jakarta = isTypeAvailable(Constants.SINGLETON_JAKARTA);
-    final var override = env.getOptions().get("useJavax");
+    final var override = env.getOptions().get("USE_JAVAX");
     if (override != null || (javax && jakarta)) {
-      useJavax = Boolean.parseBoolean(override);
+      USE_JAVAX.set(Boolean.parseBoolean(override));
     } else {
-      useJavax = javax;
+      USE_JAVAX.set(javax);
     }
   }
 
@@ -76,81 +77,79 @@ public class ProcessingContext {
   }
 
   public static TypeElement typeElement(String canonicalName) {
-    return elements.getTypeElement(canonicalName);
+    return ELEMENTS.get().getTypeElement(canonicalName);
   }
 
   public static boolean isOpenApiAvailable() {
-    return openApiAvailable;
+    return OPENAPI_AVAILABLE.get();
   }
 
   public static boolean useJavax() {
-    return useJavax;
+    return USE_JAVAX.get();
   }
 
   public static boolean useComponent() {
-    return useComponent;
+    return USE_COMPONENT.get();
   }
 
   public static void logError(Element e, String msg, Object... args) {
-    messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
+    MESSAGER.get().printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
 
-  /**
-   * Create a file writer for the given class name.
-   */
+  /** Create a file writer for the given class name. */
   public static JavaFileObject createWriter(String cls, Element origin) throws IOException {
-    return filer.createSourceFile(cls, origin);
+    return FILER.get().createSourceFile(cls, origin);
   }
 
-  /**
-   * Create a file writer for the META-INF services file.
-   */
+  /** Create a file writer for the META-INF services file. */
   public static FileObject createMetaInfWriter(String target) throws IOException {
-    return filer.createResource(StandardLocation.CLASS_OUTPUT, "", target);
+    return FILER.get().createResource(StandardLocation.CLASS_OUTPUT, "", target);
   }
 
   public static String docComment(Element param) {
-    return elements.getDocComment(param);
+    return ELEMENTS.get().getDocComment(param);
   }
 
   public static DocContext doc() {
-    return docContext;
+    return DOC_CONTEXT.get();
   }
 
   public static Element asElement(TypeMirror typeMirror) {
-    return types.asElement(typeMirror);
+    return TYPES.get().asElement(typeMirror);
   }
 
   public static TypeMirror asMemberOf(DeclaredType declaredType, Element element) {
-    return types.asMemberOf(declaredType, element);
+    return TYPES.get().asMemberOf(declaredType, element);
   }
 
   public static List<ExecutableElement> superMethods(Element element, String methodName) {
+    final Types types = TYPES.get();
     return types.directSupertypes(element.asType()).stream()
-      .filter(type -> !type.toString().contains("java.lang.Object"))
-      .map(
-        superType -> {
-          final var superClass = (TypeElement) types.asElement(superType);
-          for (final ExecutableElement method : ElementFilter.methodsIn(elements.getAllMembers(superClass))) {
-            if (method.getSimpleName().contentEquals(methodName)) {
-              return method;
-            }
-          }
-          return null;
-        })
-      .filter(Objects::nonNull)
-      .collect(Collectors.toList());
+        .filter(type -> !type.toString().contains("java.lang.Object"))
+        .map(
+            superType -> {
+              final var superClass = (TypeElement) types.asElement(superType);
+              for (final ExecutableElement method :
+                  ElementFilter.methodsIn(ELEMENTS.get().getAllMembers(superClass))) {
+                if (method.getSimpleName().contentEquals(methodName)) {
+                  return method;
+                }
+              }
+              return null;
+            })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 
   public static PlatformAdapter platform() {
-    return readAdapter;
+    return READ_ADAPTER.get();
   }
 
   public static void setPlatform(PlatformAdapter platform) {
-    readAdapter = platform;
+    READ_ADAPTER.set(platform);
   }
 
   public static String diAnnotation() {
-    return diAnnotation;
+    return DI_ANNOTATION.get();
   }
 }
