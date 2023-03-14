@@ -1,6 +1,7 @@
 package org.example;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Set;
 
 import io.avaje.http.api.Controller;
@@ -19,6 +20,11 @@ public class TestController {
   @Get("/paramMulti")
   String paramMulti(Set<String> strings) {
     return strings.toString();
+  }
+
+  @Get("/BoxCollection")
+  String boxed(@QueryParam List<Long> l) {
+    return l.toString();
   }
 
   @Form
