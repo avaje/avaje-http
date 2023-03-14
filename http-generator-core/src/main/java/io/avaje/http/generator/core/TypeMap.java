@@ -335,10 +335,10 @@ class TypeMap {
               + "("
               + (isEnum
                   ? "qp -> " + handler.toMethod() + " qp)"
-                  : "PathTypeConversion::" + shortName)
+                  : "PathTypeConversion::as" + shortName)
               + ", ";
 
-      this.toMethod = toMethod.replace("PathTypeConversion::String", "Object::toString");
+      this.toMethod = toMethod.replace("PathTypeConversion::asString", "Object::toString");
     }
 
     @Override
