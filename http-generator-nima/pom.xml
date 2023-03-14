@@ -4,7 +4,7 @@
   <parent>
     <artifactId>avaje-http-parent</artifactId>
     <groupId>io.avaje</groupId>
-    <version>1.31-RC2</version>
+    <version>1.31-RC3</version>
   </parent>
 
   <artifactId>avaje-http-nima-generator</artifactId>
