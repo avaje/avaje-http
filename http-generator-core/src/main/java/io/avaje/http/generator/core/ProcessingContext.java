@@ -25,23 +25,22 @@ import io.avaje.http.generator.core.openapi.DocContext;
 
 public class ProcessingContext {
 
-  private static ThreadLocal<PlatformAdapter> READ_ADAPTER = new ThreadLocal<>();
-  private static ThreadLocal<Messager> MESSAGER = new ThreadLocal<>();
-  private static ThreadLocal<Filer> FILER = new ThreadLocal<>();
-  private static ThreadLocal<Elements> ELEMENTS = new ThreadLocal<>();
-  private static ThreadLocal<Types> TYPES = new ThreadLocal<>();
-  private static ThreadLocal<Boolean> OPENAPI_AVAILABLE = ThreadLocal.withInitial(() -> false);
-  private static ThreadLocal<DocContext> DOC_CONTEXT = new ThreadLocal<>();
-  private static ThreadLocal<Boolean> USE_COMPONENT = ThreadLocal.withInitial(() -> false);
-  private static ThreadLocal<Boolean> USE_JAVAX = ThreadLocal.withInitial(() -> false);
-  private static ThreadLocal<String> DI_ANNOTATION = new ThreadLocal<>();
+  private static final ThreadLocal<PlatformAdapter> READ_ADAPTER = new ThreadLocal<>();
+  private static final ThreadLocal<Messager> MESSAGER = new ThreadLocal<>();
+  private static final ThreadLocal<Filer> FILER = new ThreadLocal<>();
+  private static final ThreadLocal<Elements> ELEMENTS = new ThreadLocal<>();
+  private static final ThreadLocal<Types> TYPES = new ThreadLocal<>();
+  private static final ThreadLocal<Boolean> OPENAPI_AVAILABLE = ThreadLocal.withInitial(() -> false);
+  private static final ThreadLocal<DocContext> DOC_CONTEXT = new ThreadLocal<>();
+  private static final ThreadLocal<Boolean> USE_COMPONENT = ThreadLocal.withInitial(() -> false);
+  private static final ThreadLocal<Boolean> USE_JAVAX = ThreadLocal.withInitial(() -> false);
+  private static final ThreadLocal<String> DI_ANNOTATION = new ThreadLocal<>();
 
   public static void init(ProcessingEnvironment env, PlatformAdapter adapter) {
     init(env, adapter, true);
   }
 
-  public static void init(
-      ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
+  public static void init(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
     READ_ADAPTER.set(adapter);
     MESSAGER.set(env.getMessager());
     FILER.set(env.getFiler());
@@ -96,12 +95,16 @@ public class ProcessingContext {
     MESSAGER.get().printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
 
-  /** Create a file writer for the given class name. */
+  /**
+   * Create a file writer for the given class name.
+   */
   public static JavaFileObject createWriter(String cls, Element origin) throws IOException {
     return FILER.get().createSourceFile(cls, origin);
   }
 
-  /** Create a file writer for the META-INF services file. */
+  /**
+   * Create a file writer for the META-INF services file.
+   */
   public static FileObject createMetaInfWriter(String target) throws IOException {
     return FILER.get().createResource(StandardLocation.CLASS_OUTPUT, "", target);
   }
@@ -125,20 +128,20 @@ public class ProcessingContext {
   public static List<ExecutableElement> superMethods(Element element, String methodName) {
     final Types types = TYPES.get();
     return types.directSupertypes(element.asType()).stream()
-        .filter(type -> !type.toString().contains("java.lang.Object"))
-        .map(
-            superType -> {
-              final var superClass = (TypeElement) types.asElement(superType);
-              for (final ExecutableElement method :
-                  ElementFilter.methodsIn(ELEMENTS.get().getAllMembers(superClass))) {
-                if (method.getSimpleName().contentEquals(methodName)) {
-                  return method;
-                }
-              }
-              return null;
-            })
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+      .filter(type -> !type.toString().contains("java.lang.Object"))
+      .map(
+        superType -> {
+          final var superClass = (TypeElement) types.asElement(superType);
+          for (final ExecutableElement method :
+            ElementFilter.methodsIn(ELEMENTS.get().getAllMembers(superClass))) {
+            if (method.getSimpleName().contentEquals(methodName)) {
+              return method;
+            }
+          }
+          return null;
+        })
+      .filter(Objects::nonNull)
+      .collect(Collectors.toList());
   }
 
   public static PlatformAdapter platform() {
