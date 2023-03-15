@@ -75,7 +75,9 @@ public class ProcessingContext {
 
   public static void init(
       ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
-    CTX.set(new Ctx(env, adapter, generateOpenAPI));
+    if (CTX.get() == null) {
+      CTX.set(new Ctx(env, adapter, generateOpenAPI));
+    }
   }
 
   public static void init(ProcessingEnvironment env, PlatformAdapter adapter) {
