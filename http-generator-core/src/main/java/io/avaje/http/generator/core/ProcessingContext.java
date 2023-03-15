@@ -25,50 +25,61 @@ import io.avaje.http.generator.core.openapi.DocContext;
 
 public class ProcessingContext {
 
-  private static final ThreadLocal<PlatformAdapter> READ_ADAPTER = new ThreadLocal<>();
-  private static final ThreadLocal<Messager> MESSAGER = new ThreadLocal<>();
-  private static final ThreadLocal<Filer> FILER = new ThreadLocal<>();
-  private static final ThreadLocal<Elements> ELEMENTS = new ThreadLocal<>();
-  private static final ThreadLocal<Types> TYPES = new ThreadLocal<>();
-  private static final ThreadLocal<Boolean> OPENAPI_AVAILABLE = ThreadLocal.withInitial(() -> false);
-  private static final ThreadLocal<DocContext> DOC_CONTEXT = new ThreadLocal<>();
-  private static final ThreadLocal<Boolean> USE_COMPONENT = ThreadLocal.withInitial(() -> false);
-  private static final ThreadLocal<Boolean> USE_JAVAX = ThreadLocal.withInitial(() -> false);
-  private static final ThreadLocal<String> DI_ANNOTATION = new ThreadLocal<>();
+  private static final ThreadLocal<Ctx> CTX = new ThreadLocal<>();
+
+  private ProcessingContext() {}
+
+  static final class Ctx {
+    private PlatformAdapter readAdapter;
+    private final Messager messager;
+    private final Filer filer;
+    private final Elements elementUtils;
+    private final Types typeUtils;
+    private boolean openApiAvailable;
+    private DocContext docContext;
+    private final boolean useComponent;
+    private final boolean useJavax;
+    private final String diAnnotation;
+
+    public Ctx(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
+      readAdapter = adapter;
+      messager = env.getMessager();
+      filer = env.getFiler();
+      elementUtils = env.getElementUtils();
+      typeUtils = env.getTypeUtils();
+
+      if (generateOpenAPI) {
+        openApiAvailable = elementUtils.getTypeElement(Constants.OPENAPIDEFINITION) != null;
+        docContext = new DocContext(env, openApiAvailable);
+      }
+
+      final var options = env.getOptions();
+      final var singletonOverride = options.get("useSingleton");
+      if (singletonOverride != null) {
+        useComponent = (!Boolean.parseBoolean(singletonOverride));
+      } else {
+        useComponent = elementUtils.getTypeElement(Constants.COMPONENT) != null;
+      }
+      diAnnotation = (useComponent ? "@Component" : "@Singleton");
+
+      final var javax = elementUtils.getTypeElement(Constants.SINGLETON_JAVAX) != null;
+      final var jakarta = elementUtils.getTypeElement(Constants.SINGLETON_JAKARTA) != null;
+      final var override = env.getOptions().get("useJavax");
+      if (override != null || (javax && jakarta)) {
+        useJavax = Boolean.parseBoolean(override);
+      } else {
+        useJavax = (javax);
+      }
+    }
+  }
+
+  public static void init(
+      ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
+    CTX.set(new Ctx(env, adapter, generateOpenAPI));
+  }
 
   public static void init(ProcessingEnvironment env, PlatformAdapter adapter) {
     init(env, adapter, true);
-  }
-
-  public static void init(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
-    READ_ADAPTER.set(adapter);
-    MESSAGER.set(env.getMessager());
-    FILER.set(env.getFiler());
-    ELEMENTS.set(env.getElementUtils());
-    TYPES.set(env.getTypeUtils());
-
-    if (generateOpenAPI) {
-      OPENAPI_AVAILABLE.set(isTypeAvailable(Constants.OPENAPIDEFINITION));
-      DOC_CONTEXT.set(new DocContext(env, OPENAPI_AVAILABLE.get()));
-    }
-
-    final var options = env.getOptions();
-    final var singletonOverride = options.get("useSingleton");
-    if (singletonOverride != null) {
-      USE_COMPONENT.set(!Boolean.parseBoolean(singletonOverride));
-    } else {
-      USE_COMPONENT.set(isTypeAvailable(Constants.COMPONENT));
-    }
-    DI_ANNOTATION.set(USE_COMPONENT.get() ? "@Component" : "@Singleton");
-
-    final var javax = isTypeAvailable(Constants.SINGLETON_JAVAX);
-    final var jakarta = isTypeAvailable(Constants.SINGLETON_JAKARTA);
-    final var override = env.getOptions().get("useJavax");
-    if (override != null || (javax && jakarta)) {
-      USE_JAVAX.set(Boolean.parseBoolean(override));
-    } else {
-      USE_JAVAX.set(javax);
-    }
   }
 
   private static boolean isTypeAvailable(String canonicalName) {
@@ -76,83 +87,79 @@ public class ProcessingContext {
   }
 
   public static TypeElement typeElement(String canonicalName) {
-    return ELEMENTS.get().getTypeElement(canonicalName);
+    return CTX.get().elementUtils.getTypeElement(canonicalName);
   }
 
   public static boolean isOpenApiAvailable() {
-    return OPENAPI_AVAILABLE.get();
+    return CTX.get().openApiAvailable;
   }
 
   public static boolean useJavax() {
-    return USE_JAVAX.get();
+    return CTX.get().useJavax;
   }
 
   public static boolean useComponent() {
-    return USE_COMPONENT.get();
+    return CTX.get().useComponent;
   }
 
   public static void logError(Element e, String msg, Object... args) {
-    MESSAGER.get().printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
+    CTX.get().messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
 
-  /**
-   * Create a file writer for the given class name.
-   */
+  /** Create a file writer for the given class name. */
   public static JavaFileObject createWriter(String cls, Element origin) throws IOException {
-    return FILER.get().createSourceFile(cls, origin);
+    return CTX.get().filer.createSourceFile(cls, origin);
   }
 
-  /**
-   * Create a file writer for the META-INF services file.
-   */
+  /** Create a file writer for the META-INF services file. */
   public static FileObject createMetaInfWriter(String target) throws IOException {
-    return FILER.get().createResource(StandardLocation.CLASS_OUTPUT, "", target);
+    return CTX.get().filer.createResource(StandardLocation.CLASS_OUTPUT, "", target);
   }
 
   public static String docComment(Element param) {
-    return ELEMENTS.get().getDocComment(param);
+    return CTX.get().elementUtils.getDocComment(param);
   }
 
   public static DocContext doc() {
-    return DOC_CONTEXT.get();
+    return CTX.get().docContext;
   }
 
-  public static Element asElement(TypeMirror typeMirror) {
-    return TYPES.get().asElement(typeMirror);
+  public static TypeElement asElement(TypeMirror typeMirror) {
+    return (TypeElement) CTX.get().typeUtils.asElement(typeMirror);
   }
 
   public static TypeMirror asMemberOf(DeclaredType declaredType, Element element) {
-    return TYPES.get().asMemberOf(declaredType, element);
+    return CTX.get().typeUtils.asMemberOf(declaredType, element);
   }
 
   public static List<ExecutableElement> superMethods(Element element, String methodName) {
-    final Types types = TYPES.get();
+    final Types types = CTX.get().typeUtils;
     return types.directSupertypes(element.asType()).stream()
-      .filter(type -> !type.toString().contains("java.lang.Object"))
-      .map(
-        superType -> {
-          final var superClass = (TypeElement) types.asElement(superType);
-          for (final ExecutableElement method :
-            ElementFilter.methodsIn(ELEMENTS.get().getAllMembers(superClass))) {
-            if (method.getSimpleName().contentEquals(methodName)) {
-              return method;
-            }
-          }
-          return null;
-        })
-      .filter(Objects::nonNull)
-      .collect(Collectors.toList());
+        .filter(type -> !type.toString().contains("java.lang.Object"))
+        .map(
+            superType -> {
+              final var superClass = (TypeElement) types.asElement(superType);
+              for (final ExecutableElement method :
+                  ElementFilter.methodsIn(CTX.get().elementUtils.getAllMembers(superClass))) {
+                if (method.getSimpleName().contentEquals(methodName)) {
+                  return method;
+                }
+              }
+              return null;
+            })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 
   public static PlatformAdapter platform() {
-    return READ_ADAPTER.get();
+    return CTX.get().readAdapter;
   }
 
   public static void setPlatform(PlatformAdapter platform) {
-    READ_ADAPTER.set(platform);
+    CTX.get().readAdapter = (platform);
   }
 
   public static String diAnnotation() {
-    return DI_ANNOTATION.get();
+    return CTX.get().diAnnotation;
   }
 }
