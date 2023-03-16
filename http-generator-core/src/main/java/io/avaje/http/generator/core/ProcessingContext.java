@@ -29,7 +29,7 @@ public class ProcessingContext {
 
   private ProcessingContext() {}
 
-  static final class Ctx {
+  private static final class Ctx {
     private PlatformAdapter readAdapter;
     private final Messager messager;
     private final Filer filer;
@@ -41,7 +41,7 @@ public class ProcessingContext {
     private final boolean useJavax;
     private final String diAnnotation;
 
-    public Ctx(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
+    Ctx(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
       readAdapter = adapter;
       messager = env.getMessager();
       filer = env.getFiler();
@@ -56,7 +56,7 @@ public class ProcessingContext {
       final var options = env.getOptions();
       final var singletonOverride = options.get("useSingleton");
       if (singletonOverride != null) {
-        useComponent = (!Boolean.parseBoolean(singletonOverride));
+        useComponent = !Boolean.parseBoolean(singletonOverride);
       } else {
         useComponent = elementUtils.getTypeElement(Constants.COMPONENT) != null;
       }
@@ -73,11 +73,9 @@ public class ProcessingContext {
     }
   }
 
-  public static void init(
-      ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
+  public static void init(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
     final var oldCtx = CTX.get();
     final var newCTX = new Ctx(env, adapter, generateOpenAPI);
-
     if (oldCtx != null && newCTX.docContext == null) {
       newCTX.docContext = oldCtx.docContext;
     }
@@ -141,20 +139,16 @@ public class ProcessingContext {
   public static List<ExecutableElement> superMethods(Element element, String methodName) {
     final Types types = CTX.get().typeUtils;
     return types.directSupertypes(element.asType()).stream()
-        .filter(type -> !type.toString().contains("java.lang.Object"))
-        .map(
-            superType -> {
-              final var superClass = (TypeElement) types.asElement(superType);
-              for (final ExecutableElement method :
-                  ElementFilter.methodsIn(CTX.get().elementUtils.getAllMembers(superClass))) {
-                if (method.getSimpleName().contentEquals(methodName)) {
-                  return method;
-                }
-              }
-              return null;
-            })
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+      .filter(type -> !type.toString().contains("java.lang.Object"))
+      .map(superType -> {
+        final var superClass = (TypeElement) types.asElement(superType);
+        for (final ExecutableElement method : ElementFilter.methodsIn(CTX.get().elementUtils.getAllMembers(superClass))) {
+          if (method.getSimpleName().contentEquals(methodName)) {
+            return method;
+          }
+        }
+      return null;
+    }).filter(Objects::nonNull).collect(Collectors.toList());
   }
 
   public static PlatformAdapter platform() {
@@ -162,7 +156,7 @@ public class ProcessingContext {
   }
 
   public static void setPlatform(PlatformAdapter platform) {
-    CTX.get().readAdapter = (platform);
+    CTX.get().readAdapter = platform;
   }
 
   public static String diAnnotation() {
