@@ -4,9 +4,10 @@ import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
 import static io.avaje.http.generator.core.ProcessingContext.platform;
 import static io.avaje.http.generator.core.ProcessingContext.typeElement;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -38,6 +39,7 @@ public class ElementReader {
   private boolean notNullKotlin;
   private boolean isParamCollection;
   private boolean isParamMap;
+  private final Set<String> imports = new HashSet<>();
   // private boolean notNullJavax;
 
   ElementReader(Element element, ParamType defaultType, boolean formMarker) {
@@ -58,6 +60,11 @@ public class ElementReader {
             || defaultType == ParamType.COOKIE;
 
     typeHandler = initTypeHandler();
+
+    this.imports.add(rawType);
+    if (typeHandler != null) {
+      this.imports.addAll(typeHandler.importTypes());
+    }
 
     this.formMarker = formMarker;
     this.varName = element.getSimpleName().toString();
@@ -226,12 +233,8 @@ public class ElementReader {
   }
 
   void addImports(ControllerReader bean) {
-    if (typeHandler != null) {
-      typeHandler.importTypes().stream().filter(Objects::nonNull).forEach(bean::addImportType);
 
-    } else {
-      bean.addImportType(rawType);
-    }
+    bean.addImportTypes(imports);
   }
 
   void writeParamName(Append writer) {
