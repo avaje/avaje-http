@@ -3,7 +3,6 @@ package org.example.myapp.web.test;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.example.myapp.web.ServerType;
 
@@ -34,11 +33,6 @@ public class TestController2 {
   @Get("/enumQuery")
   String enumQuery(@QueryParam @Default("FFA") ServerType type) {
     return type.name();
-  }
-
-  @Get("/enumQuery2")
-  String enumMultiQuery(@QueryParam @Default({"FFA", "PROXY"}) Set<ServerType> type) {
-    return type.toString();
   }
 
   @Post("/enumQueryImplied")
