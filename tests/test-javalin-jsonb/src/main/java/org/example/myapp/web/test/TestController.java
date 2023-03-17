@@ -8,8 +8,10 @@ import java.util.concurrent.CompletableFuture;
 import org.example.myapp.web.AppRoles;
 import org.example.myapp.web.HelloDto;
 import org.example.myapp.web.Roles;
+import org.example.myapp.web.ServerType;
 
 import io.avaje.http.api.Controller;
+import io.avaje.http.api.Default;
 import io.avaje.http.api.Form;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Header;
@@ -19,6 +21,7 @@ import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
+import io.avaje.http.api.QueryParam;
 import io.javalin.http.Context;
 
 @Path("test/")
@@ -128,5 +131,10 @@ public class TestController {
   @Get("/async")
   CompletableFuture<HelloDto> getAllAsync() {
     return CompletableFuture.supplyAsync(() -> new HelloDto(12, "Jim", "asd"));
+  }
+
+  @Get("/enumQuery2")
+  String enumMultiQuery(@QueryParam @Default({"FFA", "PROXY"}) Set<ServerType> type) {
+    return type.toString();
   }
 }
