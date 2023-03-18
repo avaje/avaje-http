@@ -102,7 +102,7 @@ public class ElementReader {
           !isCollection && typeOp.filter(t -> t.mainType().startsWith("java.util.Map")).isPresent();
 
       if (mainTypeEnum) {
-        return TypeMap.enumParamHandler(type);
+        return TypeMap.enumParamHandler(typeOp.orElseThrow());
       } else if (isCollection) {
         this.isParamCollection = true;
         final var isEnumCollection =

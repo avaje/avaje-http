@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import io.avaje.http.api.Header;
+import io.avaje.http.api.QueryParam;
 import io.avaje.jsonb.Json;
 
 @Json
@@ -23,8 +24,10 @@ public class GetBeanForm {
   private String email;
 
   private List<String> addresses;
-  @Header
-  private String head;
+
+  @Header private String head;
+
+  @QueryParam private ServerType type;
 
   public String getName() {
     return name;
@@ -66,5 +69,13 @@ public class GetBeanForm {
 
   public void setHead(String head) {
     this.head = head;
+  }
+
+  public ServerType getType() {
+    return type;
+  }
+
+  public void setType(ServerType type) {
+    this.type = type;
   }
 }
