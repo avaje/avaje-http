@@ -1,6 +1,7 @@
 package org.example.myapp.web;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
@@ -27,7 +28,7 @@ public class GetBeanForm {
 
   @Header private String head;
 
-  @QueryParam private ServerType type;
+  @QueryParam private Set<ServerType> type;
 
   public String getName() {
     return name;
@@ -71,11 +72,11 @@ public class GetBeanForm {
     this.head = head;
   }
 
-  public ServerType getType() {
+  public Set<ServerType> getType() {
     return type;
   }
 
-  public void setType(ServerType type) {
+  public void setType(Set<ServerType> type) {
     this.type = type;
   }
 }
