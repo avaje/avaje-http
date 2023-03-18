@@ -241,6 +241,7 @@ class HelloControllerTest extends BaseWebTest {
     final HttpResponse<String> hres = client.request()
       .path("hello/withValidBean")
       .queryParam("email", "user@foo.com")
+      .queryParam("type", "PROXY")
       .GET()
       .asString();
 
@@ -253,6 +254,7 @@ class HelloControllerTest extends BaseWebTest {
       .path("hello/withValidBean")
       .queryParam("name", "hello")
       .queryParam("email", "user@foo.com")
+      .queryParam("type", "PROXY")
       .GET()
       .asString();
 
