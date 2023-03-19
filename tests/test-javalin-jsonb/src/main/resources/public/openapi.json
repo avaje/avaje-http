@@ -726,6 +726,21 @@
 						"schema" : {
 							"type" : "string"
 						}
+					},
+					{
+						"name" : "type",
+						"in" : "query",
+						"schema" : {
+							"type" : "array",
+							"items" : {
+								"type" : "string",
+								"enum" : [
+									"PROXY",
+									"HIDE_N_SEEK",
+									"FFA"
+								]
+							}
+						}
 					}
 				],
 				"responses" : {
