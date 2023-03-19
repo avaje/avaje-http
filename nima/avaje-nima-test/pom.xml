@@ -6,7 +6,6 @@
     <groupId>io.avaje</groupId>
     <artifactId>avaje-nima-parent</artifactId>
     <version>0.1</version>
-    <relativePath/>
   </parent>
 
   <artifactId>avaje-nima-test</artifactId>
@@ -23,27 +22,27 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject-test</artifactId>
-      <version>8.11</version>
+      <version>9.0-RC3</version>
     </dependency>
 
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>1.21</version>
+      <version>1.33</version>
     </dependency>
 
     <!-- dependency injection component testing -->
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject-test</artifactId>
-      <version>8.11</version>
+      <version>9.0-RC3</version>
       <optional>true</optional>
     </dependency>
 
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>1.1</version>
+      <version>1.4-RC6</version>
       <optional>true</optional>
     </dependency>
 

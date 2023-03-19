@@ -5,7 +5,6 @@
     <groupId>io.avaje</groupId>
     <artifactId>avaje-nima-parent</artifactId>
     <version>0.1</version>
-    <relativePath/>
   </parent>
 
   <artifactId>test-avaje-nima</artifactId>
@@ -43,7 +42,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject-test</artifactId>
-      <version>8.12-RC1</version>
+      <version>9.0-RC3</version>
       <scope>test</scope>
     </dependency>
 
@@ -65,17 +64,17 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-http-nima-generator</artifactId>
-              <version>1.21</version>
+              <version>1.33</version>
             </path>
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-inject-generator</artifactId>
-              <version>8.12-RC1</version>
+              <version>9.0-RC3</version>
             </path>
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-jsonb-generator</artifactId>
-              <version>1.2-SNAPSHOT</version>
+              <version>1.4-RC6</version>
             </path>
           </annotationProcessorPaths>
         </configuration>

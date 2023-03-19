@@ -10,7 +10,7 @@ import java.net.URI;
 class NimaTest {
 
   public static void main(String[] args) {
-    HttpRouting.Builder builder = HttpRouting.builder()
+    var builder = HttpRouting.builder()
 
       .any("/*", (req, res) -> {
         System.out.println("before any /*");
@@ -43,15 +43,15 @@ class NimaTest {
         System.out.println("after any /*");
         res.next();
       })
-      .addFilter((chain, req, res) -> {
-        System.out.println("Filter Before path:" + req.path().path() + " raw:" + req.path().rawPath()+" query:" + req.query().rawValue());
-        chain.proceed();
-        System.out.println("Filter After" + req.path());
-      }).addFilter((chain, req, res) -> {
-        System.out.println("Filter222 Before path:" + req.path().path());
-        chain.proceed();
-        System.out.println("Filter222 After" + req.path());
-      })
+//      .addFilter((chain, req, res) -> {
+//        System.out.println("Filter Before path:" + req.path().path() + " raw:" + req.path().rawPath()+" query:" + req.query().rawValue());
+//        chain.proceed();
+//        System.out.println("Filter After" + req.path());
+//      }).addFilter((chain, req, res) -> {
+//        System.out.println("Filter222 Before path:" + req.path().path());
+//        chain.proceed();
+//        System.out.println("Filter222 After" + req.path());
+//      })
       ;
     BeanScope scope = BeanScope.builder()
       .bean(HttpRouting.Builder.class, builder)

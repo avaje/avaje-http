@@ -5,7 +5,6 @@
     <groupId>io.avaje</groupId>
     <artifactId>avaje-nima-parent</artifactId>
     <version>0.1</version>
-    <relativePath/>
   </parent>
 
   <artifactId>avaje-nima-apt</artifactId>

@@ -6,7 +6,6 @@
     <groupId>io.avaje</groupId>
     <artifactId>avaje-nima-parent</artifactId>
     <version>0.1</version>
-    <relativePath/>
   </parent>
 
   <artifactId>avaje-nima</artifactId>
@@ -24,30 +23,30 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>1.2-SNAPSHOT</version>
+      <version>1.4-RC6</version>
     </dependency>
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>1.22</version>
+      <version>1.33</version>
     </dependency>
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject</artifactId>
-      <version>8.12-RC1</version>
+      <version>9.0-RC3</version>
     </dependency>
 
     <dependency>
       <groupId>io.helidon.nima.webserver</groupId>
       <artifactId>helidon-nima-webserver</artifactId>
-      <version>4.0.0-ALPHA2</version>
+      <version>4.0.0-ALPHA4</version>
     </dependency>
 
     <!-- test dependencies -->
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>1.21</version>
+      <version>1.33</version>
       <scope>test</scope>
     </dependency>
 
