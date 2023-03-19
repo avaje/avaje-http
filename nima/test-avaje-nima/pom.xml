@@ -57,9 +57,10 @@
         <version>3.10.1</version>
         <configuration>
           <release>19</release>
-          <compilerArgs>
-            --enable-preview
-          </compilerArgs>
+          <enablePreview>true</enablePreview>
+<!--          <compilerArgs>-->
+<!--            &#45;&#45;enable-preview-->
+<!--          </compilerArgs>-->
           <annotationProcessorPaths>
             <path>
               <groupId>io.avaje</groupId>
@@ -80,6 +81,14 @@
         </configuration>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M8</version>
+        <configuration>
+          <argLine>--enable-preview</argLine>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
