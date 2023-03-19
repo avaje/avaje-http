@@ -2,8 +2,8 @@ module io.avaje.nima {
 
   exports io.avaje.nima;
 
-  requires io.avaje.jsonb;
-  requires io.avaje.inject;
-  requires io.helidon.nima.webserver;
+  requires transitive io.avaje.jsonb;
+  requires transitive io.avaje.inject;
+  requires transitive io.helidon.nima.webserver;
 
 }

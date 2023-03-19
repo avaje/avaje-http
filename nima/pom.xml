@@ -22,6 +22,12 @@
     <maven.compiler.source>19</maven.compiler.source>
     <maven.compiler.target>19</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <avaje-inject.version>9.0-RC3</avaje-inject.version>
+    <avaje-jsonb.version>1.4-RC6</avaje-jsonb.version>
+    <avaje-http.version>1.33</avaje-http.version>
+    <nima.version>4.0.0-ALPHA4</nima.version>
+
   </properties>
 
   <profiles>

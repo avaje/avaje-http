@@ -21,35 +21,27 @@
 
     <dependency>
       <groupId>io.avaje</groupId>
-      <artifactId>avaje-inject-test</artifactId>
-      <version>9.0-RC3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>1.33</version>
+      <version>${avaje-http.version}</version>
     </dependency>
 
     <!-- dependency injection component testing -->
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject-test</artifactId>
-      <version>9.0-RC3</version>
-      <optional>true</optional>
+      <version>${avaje-inject.version}</version>
     </dependency>
 
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>1.4-RC6</version>
-      <optional>true</optional>
+      <version>${avaje-jsonb.version}</version>
     </dependency>
 
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.14.0</version>
+      <version>2.14.2</version>
       <optional>true</optional>
     </dependency>
 

@@ -8,14 +8,10 @@ import io.helidon.nima.webserver.http.HttpRouting;
 @Factory
 public class WebServerConfig {
 
-  //@Exclude(Context.Builder.class)
   @Bean
   HttpRouting.Builder routing() {
     var builder = HttpRouting.builder();
-    builder.get("/health", (req, res) -> {
-      res.send("ok");
-    });
-
+    builder.get("/health", (req, res) -> res.send("ok"));
     return builder;
   }
 }
