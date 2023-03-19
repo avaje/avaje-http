@@ -12,3 +12,4 @@ build/
 *.editorconfig
 *.Module
 dependency-reduced-pom.xml
+.Ds_Store
