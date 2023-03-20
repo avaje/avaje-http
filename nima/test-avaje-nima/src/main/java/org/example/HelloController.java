@@ -11,17 +11,17 @@ public class HelloController {
 
   @Produces("text/plain")
   @Get("/")
-  public String hello() {
+  String hello() {
     return "hello world";
   }
 
   @PreDestroy
-  public void close() {
+  void close() {
     System.out.println("HelloController closing ... ");
   }
 
   @Get("/one")
-  public Something one() {
+  Something one() {
     return new Something(52, "Asdasd");
   }
 

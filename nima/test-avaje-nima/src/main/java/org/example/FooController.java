@@ -10,7 +10,7 @@ import io.avaje.jsonb.Json;
 public class FooController {
 
   @Get
-  public Foo one() {
+  Foo one() {
     return new Foo(82, "Foo here");
   }
 

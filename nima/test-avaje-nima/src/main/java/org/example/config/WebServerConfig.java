@@ -6,7 +6,7 @@ import io.helidon.common.context.Context;
 import io.helidon.nima.webserver.http.HttpRouting;
 
 @Factory
-public class WebServerConfig {
+class WebServerConfig {
 
   @Bean
   HttpRouting.Builder routing() {

@@ -1,6 +1,6 @@
 package org.example;
 
-import io.avaje.http.client.HttpClientContext;
+import io.avaje.http.client.HttpClient;
 import io.avaje.inject.test.InjectTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MainTest {
 
   @Inject
-  static HttpClientContext httpClient;
+  static HttpClient httpClient;
 
   @Test
   void one() {
