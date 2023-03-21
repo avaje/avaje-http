@@ -36,12 +36,12 @@
 		<dependency>
 			<groupId>io.helidon.nima.webserver</groupId>
 			<artifactId>helidon-nima-webserver</artifactId>
-			<version>4.0.0-ALPHA4</version>
+			<version>4.0.0-ALPHA5</version>
 		</dependency>
 		<dependency>
 			<groupId>io.helidon.nima.http.media</groupId>
 			<artifactId>helidon-nima-http-media-jsonb</artifactId>
-			<version>4.0.0-ALPHA4</version>
+			<version>4.0.0-ALPHA5</version>
 		</dependency>
 		<dependency>
 			<groupId>io.avaje</groupId>
@@ -49,16 +49,6 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<!--    <dependency>-->
-		<!--      <groupId>io.helidon.nima.http2</groupId>-->
-		<!--      <artifactId>helidon-nima-http2-webserver</artifactId>-->
-		<!--      <version>4.0.0-SNAPSHOT</version>-->
-		<!--    </dependency>-->
-		<!--    <dependency>-->
-		<!--      <groupId>io.helidon.nima.websocket</groupId>-->
-		<!--      <artifactId>helidon-nima-websocket-webserver</artifactId>-->
-		<!--      <version>4.0.0-SNAPSHOT</version>-->
-		<!--    </dependency>-->
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>junit</artifactId>
