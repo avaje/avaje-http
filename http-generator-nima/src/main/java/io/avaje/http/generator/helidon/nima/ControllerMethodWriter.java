@@ -118,7 +118,7 @@ class ControllerMethodWriter {
       writeContextReturn();
       if (producesJson()) {
         final var uType = UType.parse(method.returnType());
-        writer.append("    %sJsonType.toJson(result, new NimaJsonbStream(res));", uType.shortName()).eol();
+        writer.append("    %sJsonType.toJson(result, res.outputStream());", uType.shortName()).eol();
       } else {
         writer.append("    res.send(result);").eol();
       }
