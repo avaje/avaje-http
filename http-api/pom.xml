@@ -14,5 +14,15 @@
     <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
     <tag>avaje-http-parent-1.19</tag>
   </scm>
+  
+  <dependencies>
+		<dependency>
+			<groupId>io.helidon.nima.webserver</groupId>
+			<artifactId>helidon-nima-webserver</artifactId>
+			<version>4.0.0-ALPHA5</version>
+			<optional>true</optional>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 
 </project>

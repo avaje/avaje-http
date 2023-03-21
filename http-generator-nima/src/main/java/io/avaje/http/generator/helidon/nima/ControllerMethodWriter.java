@@ -42,7 +42,7 @@ class ControllerMethodWriter {
     final var bodyType = method.bodyType();
     if (bodyType != null) {
 
-      if (bodyType.equals("InputStream")) {
+      if ("InputStream".equals(bodyType)) {
         writer.append("    var %s = req.content().inputStream();", method.bodyName()).eol();
       } else if (useJsonB) {
         final var fieldName =
@@ -118,7 +118,7 @@ class ControllerMethodWriter {
       writeContextReturn();
       if (producesJson()) {
         final var uType = UType.parse(method.returnType());
-        writer.append("    %sJsonType.toJson(result, res.outputStream());", uType.shortName()).eol();
+        writer.append("    %sJsonType.toJson(result, new NimaJsonbStream(res));", uType.shortName()).eol();
       } else {
         writer.append("    res.send(result);").eol();
       }
