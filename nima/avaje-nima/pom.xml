@@ -22,6 +22,11 @@
   <dependencies>
     <dependency>
       <groupId>io.avaje</groupId>
+      <artifactId>avaje-config</artifactId>
+      <version>${avaje-config.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
       <version>${avaje-jsonb.version}</version>
     </dependency>
