@@ -23,6 +23,7 @@ class ControllerWriter extends BaseControllerWriter {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
       reader.addImportType("io.avaje.jsonb.Types");
+      reader.addImportType("io.avaje.jsonb.stream.JsonOutput");
       this.jsonTypes = JsonBUtil.jsonTypes(reader);
       jsonTypes.values().stream()
           .map(UType::importTypes)
