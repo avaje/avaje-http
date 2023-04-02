@@ -1,7 +1,7 @@
 package io.avaje.http.client;
 
 import java.io.InputStream;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
@@ -324,7 +324,7 @@ public interface HttpClientRequest {
    * @param type The parameterized type used by the body content adapter to write the body content
    * @return The request being built
    */
-  HttpClientRequest body(Object bean, ParameterizedType type);
+  HttpClientRequest body(Object bean, Type type);
 
   /**
    * Set the body as a bean with the given content type and additionally specifying

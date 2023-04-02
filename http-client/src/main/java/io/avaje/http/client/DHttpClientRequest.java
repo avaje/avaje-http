@@ -3,7 +3,7 @@ package io.avaje.http.client;
 import javax.net.ssl.SSLSession;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -282,7 +282,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public HttpClientRequest body(Object bean, ParameterizedType type) {
+  public HttpClientRequest body(Object bean, Type type) {
     encodedRequestBody = context.write(bean, type, null);
     return this;
   }
@@ -465,7 +465,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public <T> HttpResponse<T> as(ParameterizedType type) {
+  public <T> HttpResponse<T> as(Type type) {
     return new HttpWrapperResponse<>(bean(type), httpResponse);
   }
 
@@ -476,7 +476,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public <T> T bean(ParameterizedType type) {
+  public <T> T bean(Type type) {
     readResponseContent();
     return context.readBean(type, encodedResponseBody);
   }
@@ -487,7 +487,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public <T> HttpResponse<List<T>> asList(ParameterizedType type) {
+  public <T> HttpResponse<List<T>> asList(Type type) {
     return new HttpWrapperResponse<>(list(type), httpResponse);
   }
 
@@ -498,7 +498,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public <T> List<T> list(ParameterizedType type) {
+  public <T> List<T> list(Type type) {
     readResponseContent();
     return context.readList(type, encodedResponseBody);
   }
@@ -509,7 +509,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public <T> HttpResponse<Stream<T>> asStream(ParameterizedType type) {
+  public <T> HttpResponse<Stream<T>> asStream(Type type) {
     return new HttpWrapperResponse<>(stream(type), httpResponse);
   }
 
@@ -519,7 +519,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public <T> Stream<T> stream(ParameterizedType type) {
+  public <T> Stream<T> stream(Type type) {
     return stream(context.beanReader(type));
   }
 
@@ -577,7 +577,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return new HttpWrapperResponse<>(context.readBean(type, encodedResponseBody), httpResponse);
   }
 
-  protected <E> E asyncBean(ParameterizedType type, HttpResponse<byte[]> response) {
+  protected <E> E asyncBean(Type type, HttpResponse<byte[]> response) {
     afterAsyncEncoded(response);
     return context.readBean(type, encodedResponseBody);
   }
@@ -587,7 +587,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return new HttpWrapperResponse<>(context.readList(type, encodedResponseBody), httpResponse);
   }
 
-  protected <E> HttpResponse<List<E>> asyncList(ParameterizedType type, HttpResponse<byte[]> response) {
+  protected <E> HttpResponse<List<E>> asyncList(Type type, HttpResponse<byte[]> response) {
     afterAsyncEncoded(response);
     return new HttpWrapperResponse<>(context.readList(type, encodedResponseBody), httpResponse);
   }
@@ -603,7 +603,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return new HttpWrapperResponse<>(response.body().map(bodyReader::readBody), httpResponse);
   }
 
-  protected <E> HttpResponse<Stream<E>> asyncStream(ParameterizedType type, HttpResponse<Stream<String>> response) {
+  protected <E> HttpResponse<Stream<E>> asyncStream(Type type, HttpResponse<Stream<String>> response) {
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     context.afterResponse(this);

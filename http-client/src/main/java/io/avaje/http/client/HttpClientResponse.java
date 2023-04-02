@@ -1,7 +1,7 @@
 package io.avaje.http.client;
 
 import java.io.InputStream;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.util.List;
@@ -83,7 +83,7 @@ public interface HttpClientResponse {
    * @return The response containing the converted body.
    * @throws HttpException when the response has error status codes
    */
-  <T> HttpResponse<T> as(ParameterizedType type);
+  <T> HttpResponse<T> as(Type type);
 
   /**
    * Return the response with the body containing a list of the given type.
@@ -109,7 +109,7 @@ public interface HttpClientResponse {
    * @return The response containing the converted body.
    * @throws HttpException when the response has error status codes
    */
-  <T> HttpResponse<List<T>> asList(ParameterizedType type);
+  <T> HttpResponse<List<T>> asList(Type type);
 
   /**
    * Return the response with the body containing a stream of beans of the given type.
@@ -151,7 +151,7 @@ public interface HttpClientResponse {
    * @return The response containing the converted body.
    * @throws HttpException when the response has error status codes
    */
-  <T> HttpResponse<Stream<T>> asStream(ParameterizedType type);
+  <T> HttpResponse<Stream<T>> asStream(Type type);
 
   /**
    * Return the response as a single bean.
@@ -210,7 +210,7 @@ public interface HttpClientResponse {
    * @return The bean the response is converted into.
    * @throws HttpException when the response has error status codes
    */
-  <T> T bean(ParameterizedType type);
+  <T> T bean(Type type);
 
   /**
    * Return the response as a list of beans.
@@ -222,7 +222,7 @@ public interface HttpClientResponse {
    * @return The list of beans the response is converted into.
    * @throws HttpException when the response has error status codes
    */
-  <T> List<T> list(ParameterizedType type);
+  <T> List<T> list(Type type);
 
   /**
    * Return the response as a stream of beans.
@@ -242,7 +242,7 @@ public interface HttpClientResponse {
    * @return The stream of beans from the response
    * @throws HttpException when the response has error status codes
    */
-  <T> Stream<T> stream(ParameterizedType type);
+  <T> Stream<T> stream(Type type);
 
   /**
    * Return the response with check for 200 range status code.
