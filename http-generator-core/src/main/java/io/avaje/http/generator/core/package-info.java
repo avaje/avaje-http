@@ -26,12 +26,13 @@
 @GeneratePrism(value = io.avaje.http.api.OpenAPIResponse.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.OpenAPIResponses.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.Hidden.class, publicAccess = true)
-@GeneratePrism(value = javax.validation.Valid.class, name = "JavaxValidPrism", publicAccess = true)
-@GeneratePrism(value = jakarta.validation.Valid.class, publicAccess = true)
 @GeneratePrism(value = org.jetbrains.annotations.NotNull.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Client.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Client.Import.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.RequestTimeout.class, publicAccess = true)
+@GeneratePrism(value = javax.validation.Valid.class, name = "JavaxValidPrism")
+@GeneratePrism(value = jakarta.validation.Valid.class, name = "JakartaValidPrism")
+@GeneratePrism(value = io.avaje.http.api.Valid.class)
 package io.avaje.http.generator.core;
 
 import io.avaje.prism.GeneratePrism;
