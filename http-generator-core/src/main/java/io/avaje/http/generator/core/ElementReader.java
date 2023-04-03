@@ -40,7 +40,6 @@ public class ElementReader {
   private boolean isParamCollection;
   private boolean isParamMap;
   private final Set<String> imports = new HashSet<>();
-  // private boolean notNullJavax;
 
   ElementReader(Element element, ParamType defaultType, boolean formMarker) {
     this(element, null, Util.typeDef(element.asType()), defaultType, formMarker);
@@ -140,13 +139,11 @@ public class ElementReader {
     if (defaultVal != null) {
       this.paramDefault = defaultVal.value();
     }
-    final var form = FormPrism.getInstanceOn(element);
-    if (form != null) {
+    if (FormPrism.isPresent(element)) {
       this.paramType = ParamType.FORM;
       return;
     }
-    final var beanParam = BeanParamPrism.getInstanceOn(element);
-    if (beanParam != null) {
+    if (BeanParamPrism.isPresent(element)) {
       this.paramType = ParamType.BEANPARAM;
       return;
     }
@@ -182,6 +179,12 @@ public class ElementReader {
       this.matrixParamName = nameFrom(matrixParam.value(), varName);
       this.paramType = defaultType;
       this.impliedParamType = true;
+      return;
+    }
+
+    if ("java.lang.String".equals(element.asType().toString())
+        && BodyStringPrism.isPresent(element)) {
+      this.paramType = ParamType.BODY;
       return;
     }
 
@@ -327,7 +330,7 @@ public class ElementReader {
       writer.append(asMethod);
     }
 
-    if (typeHandler == null) {
+    if (typeHandler == null || paramType==ParamType.BODY) {
       // this is a body (POST, PATCH)
       writer.append(platform().bodyAsClass(type));
 

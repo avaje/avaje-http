@@ -1,8 +1,12 @@
 package io.avaje.http.generator.javalin;
 
-import io.avaje.http.generator.core.*;
-
 import java.util.List;
+
+import io.avaje.http.generator.core.Append;
+import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.ParamType;
+import io.avaje.http.generator.core.PlatformAdapter;
+import io.avaje.http.generator.core.UType;
 
 class JavalinAdapter implements PlatformAdapter {
 
@@ -31,9 +35,11 @@ class JavalinAdapter implements PlatformAdapter {
 
   @Override
   public String bodyAsClass(UType type) {
-    if (type.full().startsWith("java.io.InputStream")) {
+    if ("java.io.InputStream".equals(type.full())) {
       return "ctx.bodyInputStream()";
-    } else if (type.full().startsWith("byte[]")) {
+    } else if ("java.lang.String".equals(type.full())) {
+      return "ctx.body()";
+    } else if ("byte[]".equals(type.full())) {
       return "ctx.bodyAsBytes()";
     } else {
       if (useJsonB) {

@@ -40,6 +40,9 @@ class ClientMethodWriter {
     reader.addImportTypes(returnType.importTypes());
     for (final MethodParam param : method.params()) {
       reader.addImportTypes(param.utype().importTypes());
+      if (param.isBody() && "java.lang.String".equals(param.utype().full())) {
+        reader.addStaticImportType("java.net.http.HttpRequest.BodyPublishers.ofString");
+      }
     }
   }
 
@@ -250,6 +253,13 @@ private void writeEnd() {
   private void writeBody() {
     for (MethodParam param : method.params()) {
       ParamType paramType = param.paramType();
+
+      if (paramType == ParamType.BODY && "java.lang.String".equals(param.utype().full())) {
+
+        writer.append("      .body(ofString(%s))", param.name()).eol();
+        return;
+      }
+
       if (paramType == ParamType.BODY) {
         writer.append("      .body(%s, ", param.name());
         writeGeneric(param.utype());
