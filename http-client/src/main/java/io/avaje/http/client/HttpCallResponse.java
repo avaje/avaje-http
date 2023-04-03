@@ -1,7 +1,7 @@
 package io.avaje.http.client;
 
 import java.io.InputStream;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.stream.Stream;
@@ -150,7 +150,7 @@ public interface HttpCallResponse {
   /**
    * Same as {@link #as(Class)} but takes a generic parameterized type.
    */
-  <E> HttpCall<HttpResponse<E>> as(ParameterizedType type);
+  <E> HttpCall<HttpResponse<E>> as(Type type);
 
   /**
    * Same as {@link #as(Class)} but returns {@code HttpResponse<List<E>>}.
@@ -160,7 +160,7 @@ public interface HttpCallResponse {
   /**
    * Same as {@link #as(Class)} but returns {@code HttpResponse<List<E>>}.
    */
-  <E> HttpCall<HttpResponse<List<E>>> asList(ParameterizedType type);
+  <E> HttpCall<HttpResponse<List<E>>> asList(Type type);
 
   /**
    * Same as {@link #as(Class)} but returns {@code HttpResponse<Stream<E>>}.
@@ -170,7 +170,7 @@ public interface HttpCallResponse {
   /**
    * Same as {@link #as(Class)} but returns {@code HttpResponse<Stream<E>>}.
    */
-  <E> HttpCall<HttpResponse<Stream<E>>> asStream(ParameterizedType type);
+  <E> HttpCall<HttpResponse<Stream<E>>> asStream(Type type);
 
   /**
    * A bean response to execute async or sync.
@@ -239,7 +239,7 @@ public interface HttpCallResponse {
    * @param type The parameterized type to convert the content to
    * @return The HttpCall to allow sync or async execution
    */
-  <E> HttpCall<E> bean(ParameterizedType type);
+  <E> HttpCall<E> bean(Type type);
 
   /**
    * Process expecting a list of beans response body (typically from json content).
@@ -247,7 +247,7 @@ public interface HttpCallResponse {
    * @param type The parameterized type to convert the content to
    * @return The HttpCall to execute sync or async
    */
-  <E> HttpCall<List<E>> list(ParameterizedType type);
+  <E> HttpCall<List<E>> list(Type type);
 
   /**
    * Process expecting a stream of beans response body (typically from json content).
@@ -255,6 +255,6 @@ public interface HttpCallResponse {
    * @param type The parameterized type to convert the content to
    * @return The HttpCall to execute sync or async
    */
-  <E> HttpCall<Stream<E>> stream(ParameterizedType type);
+  <E> HttpCall<Stream<E>> stream(Type type);
 
 }
