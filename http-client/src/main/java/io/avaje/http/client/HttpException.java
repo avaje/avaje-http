@@ -75,7 +75,7 @@ public class HttpException extends RuntimeException {
   }
 
   HttpException(HttpResponse<?> httpResponse, DHttpClientContext context) {
-    super("Http Call failed with status: " + httpResponse.statusCode());
+    super("Http call failed with status: " + httpResponse.statusCode());
     this.httpResponse = httpResponse;
     this.statusCode = httpResponse.statusCode();
     this.context = context;
@@ -83,7 +83,7 @@ public class HttpException extends RuntimeException {
   }
 
   HttpException(DHttpClientContext context, HttpResponse<byte[]> httpResponse) {
-    super("Http Call failed with status: " + httpResponse.statusCode());
+    super("Http call failed with status: " + httpResponse.statusCode());
     this.httpResponse = httpResponse;
     this.statusCode = httpResponse.statusCode();
     this.context = context;
