@@ -129,7 +129,9 @@ public class ElementReader {
     }
     final var elementType = typeElement(rawType);
     return elementType != null
-        && (ValidPrism.isPresent(elementType) || JavaxValidPrism.isPresent(elementType));
+        && (ValidPrism.isPresent(elementType)
+            || JavaxValidPrism.isPresent(elementType)
+            || JakartaValidPrism.isPresent(elementType));
   }
 
   private void readAnnotations(Element element, ParamType defaultType) {

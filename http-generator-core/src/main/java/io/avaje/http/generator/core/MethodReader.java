@@ -92,6 +92,7 @@ public class MethodReader {
   private boolean initValid() {
     return findAnnotation(ValidPrism::getOptionalOn).isPresent()
         || findAnnotation(JavaxValidPrism::getOptionalOn).isPresent()
+        || findAnnotation(JakartaValidPrism::getOptionalOn).isPresent()
         || superMethodHasValid();
   }
 
