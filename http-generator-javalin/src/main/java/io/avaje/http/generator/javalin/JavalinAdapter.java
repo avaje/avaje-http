@@ -39,7 +39,7 @@ class JavalinAdapter implements PlatformAdapter {
       if (useJsonB) {
         return type.shortName() + "JsonType.fromJson(ctx.bodyInputStream())";
       }
-      return "ctx.bodyAsClass(" + type.mainType() + ".class)";
+      return "ctx.<" + type.mainType() + ">bodyStreamAsClass(" + type.mainType() + ".class)";
     }
   }
 
