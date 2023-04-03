@@ -330,7 +330,7 @@ public class ElementReader {
       writer.append(asMethod);
     }
 
-    if (typeHandler == null || paramType==ParamType.BODY) {
+    if (typeHandler == null || paramType == ParamType.BODY) {
       // this is a body (POST, PATCH)
       writer.append(platform().bodyAsClass(type));
 
