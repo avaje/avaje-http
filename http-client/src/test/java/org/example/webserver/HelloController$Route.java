@@ -64,7 +64,7 @@ public class HelloController$Route implements WebRoutes {
 
     ApiBuilder.post("/hello", ctx -> {
       ctx.status(201);
-      HelloDto dto = ctx.bodyStreamAsClass(HelloDto.class);
+      HelloDto dto = ctx.bodyAsClass(HelloDto.class);
       validator.validate(dto);
       ctx.json(controller.post(dto));
     });
@@ -72,7 +72,7 @@ public class HelloController$Route implements WebRoutes {
     ApiBuilder.post("/hello/savebean/{foo}", ctx -> {
       ctx.status(201);
       String foo = ctx.pathParam("foo");
-      HelloDto dto = ctx.bodyStreamAsClass(HelloDto.class);
+      HelloDto dto = ctx.bodyAsClass(HelloDto.class);
       validator.validate(dto);
       controller.saveBean(foo, dto, ctx);
     });
