@@ -1,6 +1,6 @@
 package io.avaje.http.client;
 
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -22,9 +22,9 @@ public interface BodyAdapter {
    *
    * @param type The type of the bean this writer is for
    */
-  default <T> BodyWriter<T> beanWriter(ParameterizedType type) {
+  default <T> BodyWriter<T> beanWriter(Type type) {
 
-    throw new UnsupportedOperationException("Parameterized types not supported for this adapter");
+    throw new UnsupportedOperationException("java.lang.reflect.Type is not supported for this adapter");
   }
 
   /**
@@ -39,8 +39,8 @@ public interface BodyAdapter {
    *
    * @param type The bean type to convert the content to.
    */
-  default <T> BodyReader<T> beanReader(ParameterizedType type) {
-    throw new UnsupportedOperationException("Parameterized types not supported for this adapter");
+  default <T> BodyReader<T> beanReader(Type type) {
+    throw new UnsupportedOperationException("java.lang.reflect.Type is not supported for this adapter");
   }
 
   /**
@@ -55,7 +55,7 @@ public interface BodyAdapter {
    *
    * @param type The bean type to convert the content to.
    */
-  default <T> BodyReader<List<T>> listReader(ParameterizedType type) {
-    throw new UnsupportedOperationException("Parameterized types not supported for this adapter");
+  default <T> BodyReader<List<T>> listReader(Type type) {
+    throw new UnsupportedOperationException("java.lang.reflect.Type is not supported for this adapter");
   }
 }

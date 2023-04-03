@@ -1,6 +1,5 @@
 package io.avaje.http.client;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,7 +48,7 @@ public final class JsonbBodyAdapter implements BodyAdapter {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> BodyWriter<T> beanWriter(ParameterizedType type) {
+  public <T> BodyWriter<T> beanWriter(Type type) {
     return (BodyWriter<T>) beanWriterCache.computeIfAbsent(type, aClass -> new JWriter<>(jsonb.type(type)));
   }
 
@@ -61,13 +60,13 @@ public final class JsonbBodyAdapter implements BodyAdapter {
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> BodyReader<T> beanReader(ParameterizedType type) {
+  public <T> BodyReader<T> beanReader(Type type) {
     return (BodyReader<T>) beanReaderCache.computeIfAbsent(type, aClass -> new JReader<>(jsonb.type(type)));
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public <T> BodyReader<List<T>> listReader(ParameterizedType type) {
+  public <T> BodyReader<List<T>> listReader(Type type) {
     return (BodyReader<List<T>>) listReaderCache.computeIfAbsent(type, aClass -> new JReader<>(jsonb.type(type).list()));
   }
 

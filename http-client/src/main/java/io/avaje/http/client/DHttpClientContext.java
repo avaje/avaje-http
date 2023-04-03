@@ -2,7 +2,7 @@ package io.avaje.http.client;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -269,7 +269,7 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
     return bodyAdapter.beanWriter(type).write(bean, contentType);
   }
 
-  <T> BodyContent write(T bean, ParameterizedType type, String contentType) {
+  <T> BodyContent write(T bean, Type type, String contentType) {
     return bodyAdapter.beanWriter(type).write(bean, contentType);
   }
 
@@ -277,7 +277,7 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
     return bodyAdapter.beanReader(type);
   }
 
-  <T> BodyReader<T> beanReader(ParameterizedType type) {
+  <T> BodyReader<T> beanReader(Type type) {
     return bodyAdapter.beanReader(type);
   }
 
@@ -290,12 +290,12 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
   }
 
   @SuppressWarnings("unchecked")
-  <T> T readBean(ParameterizedType type, BodyContent content) {
+  <T> T readBean(Type type, BodyContent content) {
     return (T) bodyAdapter.beanReader(type).read(content);
   }
 
   @SuppressWarnings("unchecked")
-  <T> List<T> readList(ParameterizedType type, BodyContent content) {
+  <T> List<T> readList(Type type, BodyContent content) {
     return (List<T>) bodyAdapter.listReader(type).read(content);
   }
 
