@@ -44,8 +44,8 @@ public class HttpException extends RuntimeException {
 
   private final int statusCode;
   private final boolean responseAsBytes;
-  private DHttpClientContext context;
-  private HttpResponse<?> httpResponse;
+  private final DHttpClientContext context;
+  private final HttpResponse<?> httpResponse;
 
   /**
    * Create with status code and message.
@@ -54,6 +54,8 @@ public class HttpException extends RuntimeException {
     super(message);
     this.statusCode = statusCode;
     this.responseAsBytes = false;
+    this.context = null;
+    this.httpResponse = null;
   }
 
   /**
@@ -63,6 +65,8 @@ public class HttpException extends RuntimeException {
     super(message, cause);
     this.statusCode = statusCode;
     this.responseAsBytes = false;
+    this.context = null;
+    this.httpResponse = null;
   }
 
   /**
@@ -72,6 +76,8 @@ public class HttpException extends RuntimeException {
     super(cause);
     this.statusCode = statusCode;
     this.responseAsBytes = false;
+    this.context = null;
+    this.httpResponse = null;
   }
 
   HttpException(HttpResponse<?> httpResponse, DHttpClientContext context) {
