@@ -4,7 +4,7 @@
 @GeneratePrism(value = io.avaje.http.api.QueryParam.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Client.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Cookie.class, publicAccess = true)
-@GeneratePrism(value = io.avaje.http.api.Body.class, publicAccess = true)
+@GeneratePrism(value = io.avaje.http.api.BodyString.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Default.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Delete.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Form.class, publicAccess = true)

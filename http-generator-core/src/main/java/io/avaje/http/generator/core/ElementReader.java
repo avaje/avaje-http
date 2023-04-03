@@ -183,7 +183,7 @@ public class ElementReader {
     }
 
     if ("java.lang.String".equals(element.asType().toString())
-        && BodyPrism.isPresent(element)) {
+        && BodyStringPrism.isPresent(element)) {
       this.paramType = ParamType.BODY;
       return;
     }

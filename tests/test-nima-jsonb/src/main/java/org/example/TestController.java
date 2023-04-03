@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
-import io.avaje.http.api.Body;
+import io.avaje.http.api.BodyString;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Default;
 import io.avaje.http.api.Form;
@@ -60,7 +60,7 @@ public class TestController {
   }
 
   @Post("/strBody")
-  String strBody(@Body String body) {
+  String strBody(@BodyString String body) {
     return body;
   }
 }
