@@ -1,7 +1,7 @@
 package io.avaje.http.client;
 
 import java.io.InputStream;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -270,7 +270,7 @@ public interface HttpAsyncResponse {
   /**
    * The same as {@link #as(Class)} but using a generic type.
    */
-  <E> CompletableFuture<HttpResponse<E>> as(ParameterizedType type);
+  <E> CompletableFuture<HttpResponse<E>> as(Type type);
 
   /**
    * Process expecting a bean response body (typically from json content).
@@ -346,7 +346,7 @@ public interface HttpAsyncResponse {
   /**
    * The same as {@link #asList(Class)} but using a generic type.
    */
-  <E> CompletableFuture<HttpResponse<List<E>>> asList(ParameterizedType type);
+  <E> CompletableFuture<HttpResponse<List<E>>> asList(Type type);
 
   /**
    * Process expecting a list of beans response body (typically from json content).
@@ -419,7 +419,7 @@ public interface HttpAsyncResponse {
   /**
    * The same as {@link #asStream(Class)} but using a generic type.
    */
-  <E> CompletableFuture<HttpResponse<Stream<E>>> asStream(ParameterizedType type);
+  <E> CompletableFuture<HttpResponse<Stream<E>>> asStream(Type type);
 
   /**
    * Process response as a stream of beans (x-json-stream).
@@ -463,25 +463,25 @@ public interface HttpAsyncResponse {
   /**
    * Process expecting a bean response body (typically from json content).
    *
-   * @param type The parameterized type to convert the content to
+   * @param type The type to convert the content to
    * @return The CompletableFuture of the response
    */
-  <E> CompletableFuture<E> bean(ParameterizedType type);
+  <E> CompletableFuture<E> bean(Type type);
 
   /**
    * Process expecting a list of beans response body (typically from json content).
    *
-   * @param type The parameterized type to convert the content to
+   * @param type The type to convert the content to
    * @return The CompletableFuture of the response
    */
-  <E> CompletableFuture<List<E>> list(ParameterizedType type);
+  <E> CompletableFuture<List<E>> list(Type type);
 
   /**
    * Process response as a stream of beans (x-json-stream).
    *
-   * @param type The parameterized type to convert the content to
+   * @param type The type to convert the content to
    * @return The CompletableFuture of the response
    */
-  <E> CompletableFuture<Stream<E>> stream(ParameterizedType type);
+  <E> CompletableFuture<Stream<E>> stream(Type type);
 
 }

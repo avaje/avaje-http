@@ -1,7 +1,7 @@
 package io.avaje.http.client;
 
 import java.io.InputStream;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -65,7 +65,7 @@ final class DHttpAsync implements HttpAsyncResponse {
   }
 
   @Override
-  public <E> CompletableFuture<E> bean(ParameterizedType type) {
+  public <E> CompletableFuture<E> bean(Type type) {
     final CompletableFuture<HttpResponse<E>> future = as(type);
     return future.thenApply(HttpResponse::body);
   }
@@ -76,7 +76,7 @@ final class DHttpAsync implements HttpAsyncResponse {
   }
 
   @Override
-  public <E> CompletableFuture<HttpResponse<E>> as(ParameterizedType type) {
+  public <E> CompletableFuture<HttpResponse<E>> as(Type type) {
     return asyncAsBytes().thenApply(httpResponse -> request.asyncBean(type, httpResponse));
   }
 
@@ -86,7 +86,7 @@ final class DHttpAsync implements HttpAsyncResponse {
   }
 
   @Override
-  public <E> CompletableFuture<List<E>> list(ParameterizedType type) {
+  public <E> CompletableFuture<List<E>> list(Type type) {
     final CompletableFuture<HttpResponse<List<E>>> future = asList(type);
     return future.thenApply(HttpResponse::body);
   }
@@ -97,7 +97,7 @@ final class DHttpAsync implements HttpAsyncResponse {
   }
 
   @Override
-  public <E> CompletableFuture<HttpResponse<List<E>>> asList(ParameterizedType type) {
+  public <E> CompletableFuture<HttpResponse<List<E>>> asList(Type type) {
     return asyncAsBytes().thenApply(httpResponse -> request.asyncList(type, httpResponse));
   }
 
@@ -107,7 +107,7 @@ final class DHttpAsync implements HttpAsyncResponse {
   }
 
   @Override
-  public <E> CompletableFuture<Stream<E>> stream(ParameterizedType type) {
+  public <E> CompletableFuture<Stream<E>> stream(Type type) {
     final CompletableFuture<HttpResponse<Stream<E>>> future = asStream(type);
     return future.thenApply(HttpResponse::body);
   }
@@ -118,7 +118,7 @@ final class DHttpAsync implements HttpAsyncResponse {
   }
 
   @Override
-  public <E> CompletableFuture<HttpResponse<Stream<E>>> asStream(ParameterizedType type) {
+  public <E> CompletableFuture<HttpResponse<Stream<E>>> asStream(Type type) {
     return asyncAsLines().thenApply(httpResponse -> request.asyncStream(type, httpResponse));
   }
 
