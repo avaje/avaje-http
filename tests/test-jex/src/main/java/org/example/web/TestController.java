@@ -36,7 +36,7 @@ public class TestController {
   }
 
   @Post("/strBody")
-  String strBody(@BodyString String body, Context ctx) {
+  String strBody(@Body String body, Context ctx) {
     return body;
   }
 }

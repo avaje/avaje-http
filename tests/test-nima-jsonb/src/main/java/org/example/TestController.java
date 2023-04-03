@@ -60,7 +60,7 @@ public class TestController {
   }
 
   @Post("/strBody")
-  String strBody(@BodyString String body) {
+  String strBody(@Body String body) {
     return body;
   }
 }
