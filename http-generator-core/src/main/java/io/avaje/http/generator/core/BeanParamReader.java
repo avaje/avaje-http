@@ -40,10 +40,6 @@ public class BeanParamReader {
   }
 
   private void readField(Element enclosedElement) {
-
-    if (IgnoreBeanFieldPrism.isPresent(enclosedElement)) {
-      return;
-    }
     FieldReader field = new FieldReader(enclosedElement, defaultParamType);
     fieldMap.put(field.varName(), field);
   }
