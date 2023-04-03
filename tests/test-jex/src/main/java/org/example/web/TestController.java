@@ -2,7 +2,7 @@ package org.example.web;
 
 import java.util.Set;
 
-import io.avaje.http.api.BodyString;
+import io.avaje.http.api.Body;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Default;
 import io.avaje.http.api.Get;

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.avaje.http.api.BodyString;
+import io.avaje.http.api.Body;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Cookie;
 import io.avaje.http.api.Default;
