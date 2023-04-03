@@ -9,4 +9,4 @@ import java.lang.annotation.Target;
 /** Mark a field on a BeanParam/FormParam class as not a request parameter of any kind */
 @Target(FIELD)
 @Retention(SOURCE)
-public @interface IgnoreBeanField {}
+public @interface Ignore {}

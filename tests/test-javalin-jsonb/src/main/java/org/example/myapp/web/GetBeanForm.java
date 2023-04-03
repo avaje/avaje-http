@@ -9,10 +9,9 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import io.avaje.http.api.Header;
-import io.avaje.http.api.IgnoreBeanField;
+import io.avaje.http.api.Ignore;
 import io.avaje.http.api.QueryParam;
 import io.avaje.jsonb.Json;
-import io.avaje.jsonb.Json.Ignore;
 
 @Json
 @Valid
@@ -32,7 +31,7 @@ public class GetBeanForm {
 
   @QueryParam private Set<ServerType> type;
 
-  @Ignore @IgnoreBeanField private String ignored;
+  @Json.Ignore @Ignore private String ignored;
 
   public String getIgnored() {
     return ignored;
