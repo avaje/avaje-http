@@ -258,6 +258,11 @@ private void writeEnd() {
 
         writer.append("      .body(ofString(%s))", param.name()).eol();
         return;
+      } else if (paramType == ParamType.BODY
+          && "java.net.http.HttpRequest.BodyPublisher".equals(param.utype().full())) {
+
+        writer.append("      .body(%s)", param.name()).eol();
+        return;
       }
 
       if (paramType == ParamType.BODY) {
