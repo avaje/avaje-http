@@ -81,15 +81,15 @@ There isn't a hard requirement to use Avaje for dependency injection. In the abs
 
 To force the AP to generate with `@javax.inject.Singleton`(in the case where you have both jakarta and javax on the classpath), use the compiler arg `-AuseJavax=true` 
 ```
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<compilerArgs>
-						<arg>-AuseJavax=true</arg>
-					</compilerArgs>
-				</configuration>
-			</plugin> 
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-compiler-plugin</artifactId>
+	<configuration>
+		<compilerArgs>
+			<arg>-AuseJavax=true</arg>
+		</compilerArgs>
+	</configuration>
+</plugin> 
 ```
 
 ### Usage with Javalin
