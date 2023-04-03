@@ -7,8 +7,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Marks a controller method parameter to be a body. Avaje can autodetect when a parameter is a
- * body, so this annotation is currently only for marking a string as a body parameter(for sending/receiving application/text or similar string input).
+ * Marks a controller method parameter to be a body. Avaje can autodetect when a non-string parameter is a
+ * body, so this annotation is currently only for marking a string as a body parameter (for sending/receiving application/text or similar string input).
  */
 @Retention(SOURCE)
 @Target(PARAMETER)
