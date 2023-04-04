@@ -102,8 +102,8 @@ public class DocContext {
     schemaBuilder.addFormParam(operation, varName, schema);
   }
 
-  void addRequestBody(Operation operation, Schema schema, boolean asForm, String description) {
-    schemaBuilder.addRequestBody(operation, schema, asForm, description);
+  void addRequestBody(Operation operation, Schema schema, String mediaType, String description) {
+    schemaBuilder.addRequestBody(operation, schema, mediaType, description);
   }
 
   /**

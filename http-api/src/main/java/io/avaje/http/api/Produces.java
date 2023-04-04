@@ -10,7 +10,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Specify endpoint response media type.
  *
- * When not specified the default MediaType is APPLICATION_JSON
+ * When not specified the default MediaType is application/json,
  * so we specify this on controllers or methods where the responses
  * return a different media type.
  *
@@ -24,14 +24,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * }</pre>
  */
-@Target(value = {TYPE, METHOD})
-@Retention(value = RUNTIME)
+@Target({TYPE, METHOD})
+@Retention(RUNTIME)
 public @interface Produces {
 
   /**
    * Specify response media type.
    *
-   * <p>When not specified the default MediaType is APPLICATION_JSON
+   * <p>When not specified the default MediaType is application/json
    */
   String value() default MediaType.APPLICATION_JSON;
 

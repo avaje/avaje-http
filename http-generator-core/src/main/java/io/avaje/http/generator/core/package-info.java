@@ -16,6 +16,7 @@
 @GeneratePrism(value = io.avaje.http.api.Path.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Post.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Produces.class, publicAccess = true)
+@GeneratePrism(value = io.avaje.http.api.Consumes.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Put.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.OpenAPIDefinition.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.tags.Tag.class, publicAccess = true)

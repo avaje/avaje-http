@@ -1,5 +1,6 @@
 package io.avaje.http.generator.core.openapi;
 
+import io.avaje.http.generator.core.ConsumesPrism;
 import io.avaje.http.generator.core.ElementReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.javadoc.Javadoc;
@@ -7,13 +8,16 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 
+import java.util.Optional;
+
 import javax.lang.model.element.Element;
 
 /**
  * Build the OpenAPI for a method parameter.
  */
 public class MethodParamDocBuilder {
-
+  private static final String APP_FORM = "application/x-www-form-urlencoded";
+  private static final String APP_JSON = "application/json";
   private final DocContext ctx;
   private final Javadoc javadoc;
   private final Operation operation;
@@ -22,12 +26,14 @@ public class MethodParamDocBuilder {
   private final String rawType;
   private final ParamType paramType;
   private final Element element;
+  private Optional<ConsumesPrism> consumeOp;
 
   public MethodParamDocBuilder(MethodDocBuilder methodDoc, ElementReader param) {
 
     this.ctx = methodDoc.getContext();
     this.javadoc = methodDoc.getJavadoc();
     this.operation = methodDoc.getOperation();
+    this.consumeOp = methodDoc.consumeOp();
 
     this.paramType = param.paramType();
     this.paramName = param.paramName();
@@ -65,9 +71,16 @@ public class MethodParamDocBuilder {
 
     Schema schema = ctx.toSchema(rawType, element);
     String description = javadoc.getParams().get(paramName);
+    var mediaType =
+        consumeOp
+            .map(ConsumesPrism::value)
+            .orElseGet(
+                () -> {
+                  boolean asForm = (paramType == ParamType.FORM);
+                  return asForm ? APP_FORM : APP_JSON;
+                });
 
-    boolean asForm = (paramType == ParamType.FORM);
-    ctx.addRequestBody(operation, schema, asForm, description);
+    ctx.addRequestBody(operation, schema, mediaType, description);
   }
 
 }

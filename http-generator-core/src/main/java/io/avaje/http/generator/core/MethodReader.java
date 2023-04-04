@@ -32,6 +32,7 @@ public class MethodReader {
    */
   private final List<String> methodRoles;
   private final Optional<ProducesPrism> producesAnnotation;
+  private final Optional<ConsumesPrism> consumesAnnotation;
   private final List<SecurityRequirementPrism> securityRequirements;
   private final List<OpenAPIResponsePrism> apiResponses;
   private final ExecutableType actualExecutable;
@@ -53,6 +54,7 @@ public class MethodReader {
     this.isVoid = element.getReturnType().getKind() == TypeKind.VOID;
     this.methodRoles = Util.findRoles(element);
     this.producesAnnotation = findAnnotation(ProducesPrism::getOptionalOn);
+    this.consumesAnnotation = findAnnotation(ConsumesPrism::getOptionalOn);
     initWebMethodViaAnnotation();
 
     this.superMethods =
@@ -301,6 +303,10 @@ public class MethodReader {
 
   public String produces() {
     return producesAnnotation.map(ProducesPrism::value).orElseGet(bean::produces);
+  }
+
+  public Optional<ConsumesPrism> consumesAnnotation() {
+    return consumesAnnotation;
   }
 
   public List<SecurityRequirementPrism> securityRequirements() {
