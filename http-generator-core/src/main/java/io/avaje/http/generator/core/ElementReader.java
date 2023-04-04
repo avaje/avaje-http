@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
 
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 import io.avaje.http.generator.core.openapi.MethodParamDocBuilder;
@@ -255,8 +253,19 @@ public class ElementReader {
    */
   void buildApiDocumentation(MethodDocBuilder methodDoc) {
     if (!isPlatformContext() && !isParamMap && paramType != ParamType.BEANPARAM) {
-      new MethodParamDocBuilder(methodDoc, this).build();
+      if (includeParam()) {
+        new MethodParamDocBuilder(methodDoc, this).build();
+      }
     }
+  }
+
+  private boolean includeParam() {
+    for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
+      if ("io.avaje.http.api.Ignore".equals(annotationMirror.getAnnotationType().toString())) {
+        return false;
+      }
+    }
+    return true;
   }
 
   void writeValidate(Append writer) {
