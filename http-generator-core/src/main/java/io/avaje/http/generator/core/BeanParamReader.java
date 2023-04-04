@@ -40,7 +40,6 @@ public class BeanParamReader {
   }
 
   private void readField(Element enclosedElement) {
-
     if (IgnorePrism.isPresent(enclosedElement)) {
       return;
     }
