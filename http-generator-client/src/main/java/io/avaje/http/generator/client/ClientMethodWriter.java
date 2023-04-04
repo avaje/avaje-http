@@ -40,9 +40,6 @@ class ClientMethodWriter {
     reader.addImportTypes(returnType.importTypes());
     for (final MethodParam param : method.params()) {
       reader.addImportTypes(param.utype().importTypes());
-      if (param.isBody() && "java.lang.String".equals(param.utype().full())) {
-        reader.addStaticImportType("java.net.http.HttpRequest.BodyPublishers.ofString");
-      }
     }
   }
 
@@ -58,7 +55,11 @@ class ClientMethodWriter {
       if (count++ > 0) {
         writer.append(", ");
       }
-      writer.append(param.utype().shortType()).append(" ");
+      var paramType =
+          "java.util.function.Supplier<?extendsjava.io.InputStream>".equals(param.utype().full())
+              ? "Supplier<? extends InputStream>"
+              : param.utype().shortType();
+      writer.append(paramType).append(" ");
       writer.append(param.name());
     }
     writer.append(") {").eol();
@@ -254,21 +255,27 @@ private void writeEnd() {
     for (MethodParam param : method.params()) {
       ParamType paramType = param.paramType();
 
-      if (paramType == ParamType.BODY && "java.lang.String".equals(param.utype().full())) {
-
-        writer.append("      .body(ofString(%s))", param.name()).eol();
-        return;
-      } else if (paramType == ParamType.BODY
-          && "java.net.http.HttpRequest.BodyPublisher".equals(param.utype().full())) {
-
-        writer.append("      .body(%s)", param.name()).eol();
-        return;
-      }
-
       if (paramType == ParamType.BODY) {
-        writer.append("      .body(%s, ", param.name());
-        writeGeneric(param.utype());
-        writer.append(")").eol();
+
+        var type = param.utype().full();
+        if ("java.net.http.HttpRequest.BodyPublisher".equals(type)
+            || "java.lang.String".equals(type)
+            || "byte[]".equals(type)
+            || "java.util.function.Supplier<?extendsjava.io.InputStream>".equals(type)
+            || "java.util.function.Supplier<java.io.InputStream>".equals(type)
+            || "java.nio.file.Path".equals(type)
+            || "io.avaje.http.client.BodyContent".equals(type)) {
+
+          writer.append("      .body(%s)", param.name()).eol();
+
+        } else {
+
+          writer.append("      .body(%s, ", param.name());
+          writeGeneric(param.utype());
+          writer.append(")").eol();
+        }
+
+        return;
       }
     }
   }
