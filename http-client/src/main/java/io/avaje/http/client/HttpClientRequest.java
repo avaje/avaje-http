@@ -367,7 +367,7 @@ public interface HttpClientRequest {
   /**
    * Set the body content with supplied InputStream.
    *
-   * @param supplier The InputStream content to send as body content
+   * @param stream The InputStream content to send as body content
    * @return The request being built
    */
   HttpClientRequest body(InputStream stream);
