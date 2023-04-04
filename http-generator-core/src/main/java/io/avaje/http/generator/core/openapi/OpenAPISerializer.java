@@ -165,10 +165,10 @@ final class OpenAPISerializer {
    * @throws IllegalAccessException if the fields of the value object cannot be accessed
    */
   static void write(StringBuilder sb, Object value) throws IllegalAccessException {
-    final var isprimitiveWrapper = isPrimitiveWrapperType(value);
+    final var isPrimitiveWrapper = isPrimitiveWrapperType(value);
     // Append primitive or string value as is
-    if (value.getClass().isPrimitive() || value instanceof String || isprimitiveWrapper) {
-      if (isprimitiveWrapper) {
+    if (value.getClass().isPrimitive() || value instanceof String || isPrimitiveWrapper) {
+      if (isPrimitiveWrapper) {
         sb.append(extractPrimitiveValue(value));
       } else {
         sb.append("\"");
