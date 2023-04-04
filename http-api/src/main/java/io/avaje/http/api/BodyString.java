@@ -7,8 +7,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Marks a controller string method parameter to be a string body. Use when you expect to recive an
- * application/text or similar body request
+ * Marks a controller string method parameter to be a string body. Use when you expect to receive an
+ * application/text or similar body request.
  */
 @Retention(SOURCE)
 @Target(PARAMETER)
