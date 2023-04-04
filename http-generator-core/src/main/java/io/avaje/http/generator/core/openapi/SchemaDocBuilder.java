@@ -25,7 +25,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import io.avaje.http.generator.core.HiddenPrism;
-import io.avaje.http.generator.core.UType;
 import io.avaje.http.generator.core.Util;
 import io.avaje.prism.GeneratePrism;
 import io.swagger.v3.oas.models.Operation;
