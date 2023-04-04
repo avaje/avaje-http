@@ -252,20 +252,12 @@ public class ElementReader {
    * Build the OpenAPI documentation for this parameter.
    */
   void buildApiDocumentation(MethodDocBuilder methodDoc) {
-    if (!isPlatformContext() && !isParamMap && paramType != ParamType.BEANPARAM) {
-      if (includeParam()) {
-        new MethodParamDocBuilder(methodDoc, this).build();
-      }
+    if (!isPlatformContext()
+        && !isParamMap
+        && paramType != ParamType.BEANPARAM
+        && !IgnorePrism.isPresent(element)) {
+      new MethodParamDocBuilder(methodDoc, this).build();
     }
-  }
-
-  private boolean includeParam() {
-    for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
-      if ("io.avaje.http.api.Ignore".equals(annotationMirror.getAnnotationType().toString())) {
-        return false;
-      }
-    }
-    return true;
   }
 
   void writeValidate(Append writer) {
