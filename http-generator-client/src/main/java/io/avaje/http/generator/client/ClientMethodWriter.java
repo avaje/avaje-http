@@ -253,32 +253,32 @@ private void writeEnd() {
 
   private void writeBody() {
     for (MethodParam param : method.params()) {
-      ParamType paramType = param.paramType();
-
-      if (paramType == ParamType.BODY) {
-
+      if (param.paramType() == ParamType.BODY) {
         var type = param.utype().full();
-        if ("java.net.http.HttpRequest.BodyPublisher".equals(type)
-            || "java.lang.String".equals(type)
-            || "byte[]".equals(type)
-            || "java.io.InputStream".equals(type)
-            || "java.util.function.Supplier<?extendsjava.io.InputStream>".equals(type)
-            || "java.util.function.Supplier<java.io.InputStream>".equals(type)
-            || "java.nio.file.Path".equals(type)
-            || "io.avaje.http.client.BodyContent".equals(type)) {
-
+        if (directBodyType(type)) {
           writer.append("      .body(%s)", param.name()).eol();
-
         } else {
-
           writer.append("      .body(%s, ", param.name());
           writeGeneric(param.utype());
           writer.append(")").eol();
         }
-
         return;
       }
     }
+  }
+
+  /**
+   * Return true for body types that are directly supported.
+   */
+  private static boolean directBodyType(String type) {
+    return "java.net.http.HttpRequest.BodyPublisher".equals(type)
+      || "java.lang.String".equals(type)
+      || "byte[]".equals(type)
+      || "java.io.InputStream".equals(type)
+      || "java.util.function.Supplier<?extendsjava.io.InputStream>".equals(type)
+      || "java.util.function.Supplier<java.io.InputStream>".equals(type)
+      || "java.nio.file.Path".equals(type)
+      || "io.avaje.http.client.BodyContent".equals(type);
   }
 
   private void writePaths(Set<PathSegments.Segment> segments) {

@@ -321,7 +321,7 @@ public interface HttpClientRequest {
    * a type that is known to JsonbAdapter / the body content adapter used.
    *
    * @param bean The body content as an instance
-   * @param type The parameterized type used by the body content adapter to write the body content
+   * @param type The type used by the body content adapter to write the body content
    * @return The request being built
    */
   HttpClientRequest body(Object bean, Type type);
@@ -367,7 +367,7 @@ public interface HttpClientRequest {
   /**
    * Set the body content with supplied InputStream.
    *
-   * @param supplier The InputStream content to send as body content
+   * @param stream The InputStream content to send as body content
    * @return The request being built
    */
   HttpClientRequest body(InputStream stream);

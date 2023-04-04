@@ -1,7 +1,7 @@
 package io.avaje.http.client;
 
 import java.io.InputStream;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -61,7 +61,7 @@ final class DHttpCall implements HttpCallResponse {
   }
 
   @Override
-  public <E> HttpCall<HttpResponse<E>> as(ParameterizedType type) {
+  public <E> HttpCall<HttpResponse<E>> as(Type type) {
     return new CallAs<>(type);
   }
 
@@ -71,7 +71,7 @@ final class DHttpCall implements HttpCallResponse {
   }
 
   @Override
-  public <E> HttpCall<HttpResponse<List<E>>> asList(ParameterizedType type) {
+  public <E> HttpCall<HttpResponse<List<E>>> asList(Type type) {
     return new CallAsList<>(type);
   }
 
@@ -81,7 +81,7 @@ final class DHttpCall implements HttpCallResponse {
   }
 
   @Override
-  public <E> HttpCall<HttpResponse<Stream<E>>> asStream(ParameterizedType type) {
+  public <E> HttpCall<HttpResponse<Stream<E>>> asStream(Type type) {
     return new CallAsStream<>(type);
   }
 
@@ -96,17 +96,17 @@ final class DHttpCall implements HttpCallResponse {
   }
 
   @Override
-  public <E> HttpCall<E> bean(ParameterizedType type) {
+  public <E> HttpCall<E> bean(Type type) {
     return new CallBean<>(type);
   }
 
   @Override
-  public <E> HttpCall<List<E>> list(ParameterizedType type) {
+  public <E> HttpCall<List<E>> list(Type type) {
     return new CallList<>(type);
   }
 
   @Override
-  public <E> HttpCall<Stream<E>> stream(ParameterizedType type) {
+  public <E> HttpCall<Stream<E>> stream(Type type) {
     return new CallStream<>(type);
   }
 
@@ -184,7 +184,7 @@ final class DHttpCall implements HttpCallResponse {
 
   private class CallAs<E> implements HttpCall<HttpResponse<E>> {
     private final Class<E> type;
-    private final ParameterizedType genericType;
+    private final Type genericType;
     private final boolean isGeneric;
 
     CallAs(Class<E> type) {
@@ -193,7 +193,7 @@ final class DHttpCall implements HttpCallResponse {
       this.genericType = null;
     }
 
-    CallAs(ParameterizedType type) {
+    CallAs(Type type) {
       this.isGeneric = true;
       this.type = null;
       this.genericType = type;
@@ -212,7 +212,7 @@ final class DHttpCall implements HttpCallResponse {
 
   private class CallAsList<E> implements HttpCall<HttpResponse<List<E>>> {
     private final Class<E> type;
-    private final ParameterizedType genericType;
+    private final Type genericType;
     private final boolean isGeneric;
 
     CallAsList(Class<E> type) {
@@ -221,7 +221,7 @@ final class DHttpCall implements HttpCallResponse {
       this.genericType = null;
     }
 
-    CallAsList(ParameterizedType type) {
+    CallAsList(Type type) {
       this.isGeneric = true;
       this.type = null;
       this.genericType = type;
@@ -240,7 +240,7 @@ final class DHttpCall implements HttpCallResponse {
 
   private class CallAsStream<E> implements HttpCall<HttpResponse<Stream<E>>> {
     private final Class<E> type;
-    private final ParameterizedType genericType;
+    private final Type genericType;
     private final boolean isGeneric;
 
     CallAsStream(Class<E> type) {
@@ -249,7 +249,7 @@ final class DHttpCall implements HttpCallResponse {
       this.genericType = null;
     }
 
-    CallAsStream(ParameterizedType type) {
+    CallAsStream(Type type) {
       this.isGeneric = true;
       this.type = null;
       this.genericType = type;
@@ -268,7 +268,7 @@ final class DHttpCall implements HttpCallResponse {
 
   private class CallBean<E> implements HttpCall<E> {
     private final Class<E> type;
-    private final ParameterizedType genericType;
+    private final Type genericType;
     private final boolean isGeneric;
 
     CallBean(Class<E> type) {
@@ -277,7 +277,7 @@ final class DHttpCall implements HttpCallResponse {
       this.genericType = null;
     }
 
-    CallBean(ParameterizedType type) {
+    CallBean(Type type) {
       this.isGeneric = true;
       this.type = null;
       this.genericType = type;
@@ -296,7 +296,7 @@ final class DHttpCall implements HttpCallResponse {
 
   private class CallList<E> implements HttpCall<List<E>> {
     private final Class<E> type;
-    private final ParameterizedType genericType;
+    private final Type genericType;
     private final boolean isGeneric;
 
     CallList(Class<E> type) {
@@ -305,7 +305,7 @@ final class DHttpCall implements HttpCallResponse {
       this.genericType = null;
     }
 
-    CallList(ParameterizedType type) {
+    CallList(Type type) {
       this.isGeneric = true;
       this.type = null;
       this.genericType = type;
@@ -324,7 +324,7 @@ final class DHttpCall implements HttpCallResponse {
 
   private class CallStream<E> implements HttpCall<Stream<E>> {
     private final Class<E> type;
-    private final ParameterizedType genericType;
+    private final Type genericType;
     private final boolean isGeneric;
 
     CallStream(Class<E> type) {
@@ -333,7 +333,7 @@ final class DHttpCall implements HttpCallResponse {
       this.genericType = null;
     }
 
-    CallStream(ParameterizedType type) {
+    CallStream(Type type) {
       this.isGeneric = true;
       this.type = null;
       this.genericType = type;

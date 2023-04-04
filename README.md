@@ -80,16 +80,16 @@ The annotation processor will generate controller adapters that can register rou
 There isn't a hard requirement to use Avaje for dependency injection. In the absence of avaje-inject the generated class will use `@jakarta.inject.Singleton` or `@javax.inject.Singleton` depending on what's on the classpath. Any DI library that can find and wire the generated @Singleton beans can be used. You can even use Dagger2 or Guice to wire the controllers if you so desire. 
 
 To force the AP to generate with `@javax.inject.Singleton`(in the case where you have both jakarta and javax on the classpath), use the compiler arg `-AuseJavax=true` 
-```
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<compilerArgs>
-						<arg>-AuseJavax=true</arg>
-					</compilerArgs>
-				</configuration>
-			</plugin> 
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <configuration>
+    <compilerArgs>
+      <arg>-AuseJavax=true</arg>
+    </compilerArgs>
+  </configuration>
+</plugin>
 ```
 
 ### Usage with Javalin
