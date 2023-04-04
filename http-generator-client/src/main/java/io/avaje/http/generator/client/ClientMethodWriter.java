@@ -261,6 +261,7 @@ private void writeEnd() {
         if ("java.net.http.HttpRequest.BodyPublisher".equals(type)
             || "java.lang.String".equals(type)
             || "byte[]".equals(type)
+            || "java.io.InputStream".equals(type)
             || "java.util.function.Supplier<?extendsjava.io.InputStream>".equals(type)
             || "java.util.function.Supplier<java.io.InputStream>".equals(type)
             || "java.nio.file.Path".equals(type)
