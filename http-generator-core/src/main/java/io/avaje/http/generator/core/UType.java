@@ -203,12 +203,13 @@ public interface UType {
       for (String type : allTypes) {
         if (!type.startsWith("java.lang.") && type.indexOf('.') > -1) {
           if (type.startsWith("java")) {
-            set.add(type.replace("[]", ""));
+            set.add(type.replace("[]", "").replace("?extends", ""));
           } else {
-            set.add(innerTypesImport(type).replace("[]", ""));
+            set.add(innerTypesImport(type).replace("[]", "").replace("?extends", ""));
           }
         }
       }
+      set.remove("?");
       return set;
     }
 

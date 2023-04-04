@@ -313,6 +313,12 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpClientRequest body(InputStream stream) {
+    this.body = HttpRequest.BodyPublishers.ofInputStream(() -> stream);
+    return this;
+  }
+
+  @Override
   public HttpClientRequest body(Path file) {
     try {
       this.body = HttpRequest.BodyPublishers.ofFile(file);
