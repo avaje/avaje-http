@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.avaje.http.api.BodyString;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Cookie;
 import io.avaje.http.api.Default;
@@ -39,5 +40,10 @@ public class TestController {
   @Get("/mapTest")
   String mapTest(Map<String, List<String>> strings, @Cookie Map<String, List<String>> cookie) {
     return strings.toString();
+  }
+
+  @Post("/strBody")
+  String strBody(@BodyString String body) {
+    return body;
   }
 }

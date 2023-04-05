@@ -43,8 +43,8 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 @GeneratePrism(value = javax.validation.constraints.Email.class, name = "JavaxEmailPrism")
 class SchemaDocBuilder {
 
-  private static final String APP_FORM = "application/x-www-form-urlencoded";
   private static final String APP_JSON = "application/json";
+  private static final String APP_TXT = "application/text";
 
   private final Elements elements;
   private final Types types;

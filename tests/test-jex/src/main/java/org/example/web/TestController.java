@@ -2,12 +2,14 @@ package org.example.web;
 
 import java.util.Set;
 
+import io.avaje.http.api.BodyString;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Default;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.QueryParam;
+import io.avaje.jex.Context;
 
 @Path("test/")
 @Controller
@@ -33,4 +35,8 @@ public class TestController {
     return type.name();
   }
 
+  @Post("/strBody")
+  String strBody(@BodyString String body, Context ctx) {
+    return body;
+  }
 }
