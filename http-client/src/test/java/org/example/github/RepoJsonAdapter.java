@@ -46,8 +46,7 @@ public class RepoJsonAdapter extends JsonAdapter<Repo> implements ViewBuilderAwa
 
   @Override
   public void toJson(JsonWriter writer, Repo repo) {
-    writer.beginObject();
-    writer.names(names);
+    writer.beginObject(names);
     writer.name(0);
     plongJsonAdapter.toJson(writer, repo.id);
     writer.name(1);
@@ -60,7 +59,7 @@ public class RepoJsonAdapter extends JsonAdapter<Repo> implements ViewBuilderAwa
     Repo _$repo = new Repo();
 
     // read json
-    reader.beginObject();
+    reader.beginObject(names);
     while (reader.hasNextField()) {
       String fieldName = reader.nextField();
       switch (fieldName) {
