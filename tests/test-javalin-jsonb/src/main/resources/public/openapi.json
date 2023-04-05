@@ -1158,10 +1158,8 @@
 						"content" : {
 							"image/png" : {
 								"schema" : {
-									"type" : "array",
-									"items" : {
-										"$ref" : "#/components/schemas/byte"
-									}
+									"type" : "string",
+									"format" : "byte"
 								}
 							}
 						}
@@ -1178,12 +1176,10 @@
 				"description" : "",
 				"requestBody" : {
 					"content" : {
-						"application/json" : {
+						"application/text" : {
 							"schema" : {
-								"type" : "array",
-								"items" : {
-									"$ref" : "#/components/schemas/byte"
-								}
+								"type" : "string",
+								"format" : "byte"
 							}
 						}
 					},
@@ -1553,9 +1549,10 @@
 				"description" : "",
 				"requestBody" : {
 					"content" : {
-						"application/json" : {
+						"application/bson" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/InputStream"
+								"type" : "string",
+								"format" : "byte"
 							}
 						}
 					},
@@ -1840,6 +1837,37 @@
 				}
 			}
 		},
+		"/test/strBody" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/text" : {
+							"schema" : {
+								"type" : "string"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/test/withMatrixParam/{type-1_segment}/{range_segment}" : {
 			"get" : {
 				"tags" : [
@@ -1988,9 +2016,6 @@
 					}
 				}
 			},
-			"InputStream" : {
-				"type" : "object"
-			},
 			"MyForm" : {
 				"type" : "object",
 				"properties" : {
@@ -2017,9 +2042,6 @@
 						"type" : "string"
 					}
 				}
-			},
-			"byte" : {
-				"type" : "object"
 			}
 		},
 		"securitySchemes" : {
