@@ -29,6 +29,9 @@ class JexAdapter implements PlatformAdapter {
 
   @Override
   public String bodyAsClass(UType uType) {
+    if ("java.lang.String".equals(uType.full())) {
+      return "ctx.body()";
+    }
     return "ctx.bodyAsClass(" + uType.mainType() + ".class)";
   }
 

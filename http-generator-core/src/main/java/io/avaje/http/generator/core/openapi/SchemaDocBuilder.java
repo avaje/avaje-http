@@ -45,6 +45,7 @@ class SchemaDocBuilder {
 
   private static final String APP_FORM = "application/x-www-form-urlencoded";
   private static final String APP_JSON = "application/json";
+  private static final String APP_TXT = "application/text";
 
   private final Elements elements;
   private final Types types;
@@ -113,6 +114,9 @@ class SchemaDocBuilder {
     mt.schema(schema);
 
     String mime = asForm ? APP_FORM : APP_JSON;
+    if (schema instanceof StringSchema) {
+      mime = APP_TXT;
+    }
     body.getContent().addMediaType(mime, mt);
   }
 
