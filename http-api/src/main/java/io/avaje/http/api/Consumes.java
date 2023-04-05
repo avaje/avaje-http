@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * Specify endpoint request media type for the generated OpenAPI json.
  *
  * <p>When not specified the default MediaType is application/json, so we specify this on
- * controllers or methods where the responses return a different media type.
+ * controllers or methods where the request consumes a different media type.
  *
  * <pre>{@code
  * @Path("/customers")

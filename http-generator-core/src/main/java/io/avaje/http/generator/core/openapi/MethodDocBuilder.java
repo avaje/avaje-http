@@ -24,7 +24,7 @@ public class MethodDocBuilder {
   private final DocContext ctx;
 
   private final Operation operation = new Operation();
-  private Optional<ConsumesPrism> consumeOp;
+  private final Optional<ConsumesPrism> consumeOp;
 
   public MethodDocBuilder(MethodReader methodReader, DocContext ctx) {
     this.methodReader = methodReader;
@@ -34,9 +34,7 @@ public class MethodDocBuilder {
   }
 
   public void build() {
-
-    if (ctx.isOpenApiAvailable()
-        && methodReader.findAnnotation(HiddenPrism::getOptionalOn).isPresent()) {
+    if (ctx.isOpenApiAvailable() && methodReader.findAnnotation(HiddenPrism::getOptionalOn).isPresent()) {
       return;
     }
 

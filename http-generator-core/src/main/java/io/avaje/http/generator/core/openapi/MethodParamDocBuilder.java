@@ -28,15 +28,13 @@ public class MethodParamDocBuilder {
   private final String rawType;
   private final ParamType paramType;
   private final Element element;
-  private Optional<ConsumesPrism> consumeOp;
+  private final Optional<ConsumesPrism> consumeOp;
 
   public MethodParamDocBuilder(MethodDocBuilder methodDoc, ElementReader param) {
-
     this.ctx = methodDoc.getContext();
     this.javadoc = methodDoc.getJavadoc();
     this.operation = methodDoc.getOperation();
     this.consumeOp = methodDoc.consumeOp();
-
     this.paramType = param.paramType();
     this.paramName = param.paramName();
     this.varName = param.varName();
@@ -48,7 +46,6 @@ public class MethodParamDocBuilder {
    * Build the OpenAPI documentation for the method parameter.
    */
   public void build() {
-
     if (paramType == ParamType.FORM || paramType == ParamType.BODY) {
       addMetaRequestBody(ctx, javadoc, operation);
 
@@ -57,7 +54,7 @@ public class MethodParamDocBuilder {
       param.setName(varName);
       param.setDescription(javadoc.getParams().get(paramName));
 
-      Schema schema = ctx.toSchema(rawType, element);
+      Schema<?> schema = ctx.toSchema(rawType, element);
       if (paramType == ParamType.FORMPARAM) {
         ctx.addFormParam(operation, varName, schema);
 
@@ -70,24 +67,22 @@ public class MethodParamDocBuilder {
   }
 
   private void addMetaRequestBody(DocContext ctx, Javadoc javadoc, Operation operation) {
-
-    Schema schema = ctx.toSchema(rawType, element);
-    String description = javadoc.getParams().get(paramName);
+    final var schema = ctx.toSchema(rawType, element);
+    final var description = javadoc.getParams().get(paramName);
     var mediaType =
         consumeOp
             .map(ConsumesPrism::value)
-            .orElseGet(
-                () -> {
-                  boolean asForm = (paramType == ParamType.FORM);
-                  var mime = asForm ? APP_FORM : APP_JSON;
-
-                  if (schema instanceof StringSchema) {
-                    mime = APP_TXT;
-                  }
-                  return mime;
-                });
+            .orElseGet(() -> requestMedia(schema));
 
     ctx.addRequestBody(operation, schema, mediaType, description);
+  }
+
+  private String requestMedia(Schema<?> schema) {
+    if (schema instanceof StringSchema) {
+      return APP_TXT;
+    }
+    boolean asForm = (paramType == ParamType.FORM);
+    return asForm ? APP_FORM : APP_JSON;
   }
 
 }
