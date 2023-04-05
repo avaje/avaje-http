@@ -1,5 +1,8 @@
 package io.avaje.http.generator.core.openapi;
 
+import java.util.Optional;
+
+import io.avaje.http.generator.core.ConsumesPrism;
 import io.avaje.http.generator.core.HiddenPrism;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
@@ -21,11 +24,13 @@ public class MethodDocBuilder {
   private final DocContext ctx;
 
   private final Operation operation = new Operation();
+  private Optional<ConsumesPrism> consumeOp;
 
   public MethodDocBuilder(MethodReader methodReader, DocContext ctx) {
     this.methodReader = methodReader;
     this.ctx = ctx;
     this.javadoc = methodReader.javadoc();
+    this.consumeOp = methodReader.consumesAnnotation();
   }
 
   public void build() {
@@ -127,6 +132,10 @@ public class MethodDocBuilder {
 
   Operation getOperation() {
     return operation;
+  }
+
+  public Optional<ConsumesPrism> consumeOp() {
+    return consumeOp;
   }
 
   private boolean isEmpty(String value) {

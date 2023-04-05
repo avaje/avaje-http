@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.example.myapp.web.ServerType;
 
+import io.avaje.http.api.Consumes;
 import io.avaje.http.api.BodyString;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Default;
@@ -47,6 +48,7 @@ public class TestController2 {
   }
 
   @Get("/inputStream")
+  @Consumes("application/bson")
   String stream(InputStream stream) {
     return stream.toString();
   }

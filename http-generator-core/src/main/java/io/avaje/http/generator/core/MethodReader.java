@@ -1,8 +1,10 @@
 package io.avaje.http.generator.core;
 
-import static io.avaje.http.generator.core.ProcessingContext.*;
-import io.avaje.http.generator.core.javadoc.Javadoc;
-import io.avaje.http.generator.core.openapi.MethodDocBuilder;
+import static io.avaje.http.generator.core.ProcessingContext.doc;
+import static io.avaje.http.generator.core.ProcessingContext.docComment;
+import static io.avaje.http.generator.core.ProcessingContext.platform;
+import static io.avaje.http.generator.core.ProcessingContext.superMethods;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -19,6 +22,9 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+
+import io.avaje.http.generator.core.javadoc.Javadoc;
+import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 
 public class MethodReader {
 
@@ -32,6 +38,7 @@ public class MethodReader {
    */
   private final List<String> methodRoles;
   private final Optional<ProducesPrism> producesAnnotation;
+  private final Optional<ConsumesPrism> consumesAnnotation;
   private final List<SecurityRequirementPrism> securityRequirements;
   private final List<OpenAPIResponsePrism> apiResponses;
   private final ExecutableType actualExecutable;
@@ -52,7 +59,13 @@ public class MethodReader {
     this.actualParams = (actualExecutable == null) ? null : actualExecutable.getParameterTypes();
     this.isVoid = element.getReturnType().getKind() == TypeKind.VOID;
     this.methodRoles = Util.findRoles(element);
-    this.producesAnnotation = findAnnotation(ProducesPrism::getOptionalOn);
+    this.producesAnnotation =
+        findAnnotation(ProducesPrism::getOptionalOn)
+            .or(() -> ProducesPrism.getOptionalOn(bean.beanType()));
+    this.consumesAnnotation =
+        findAnnotation(ConsumesPrism::getOptionalOn)
+            .or(() -> ConsumesPrism.getOptionalOn(bean.beanType()));
+
     initWebMethodViaAnnotation();
 
     this.superMethods =
@@ -301,6 +314,10 @@ public class MethodReader {
 
   public String produces() {
     return producesAnnotation.map(ProducesPrism::value).orElseGet(bean::produces);
+  }
+
+  public Optional<ConsumesPrism> consumesAnnotation() {
+    return consumesAnnotation;
   }
 
   public List<SecurityRequirementPrism> securityRequirements() {

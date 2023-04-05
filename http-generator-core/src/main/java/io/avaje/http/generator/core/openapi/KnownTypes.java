@@ -1,6 +1,7 @@
 package io.avaje.http.generator.core.openapi;
 
 import java.io.File;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
@@ -46,6 +47,7 @@ class KnownTypes {
     add(new IntegerType(), Integer.class);
     add(new PLongType(), long.class);
     add(new LongType(), Long.class);
+    add(new BytesType(), byte[].class, InputStream.class);
 
     add(new PNumberType(), double.class, float.class);
     add(new NumberType(), Double.class, Float.class, BigDecimal.class, BigInteger.class);
@@ -171,6 +173,12 @@ class KnownTypes {
   private class URIType extends StringBaseType {
     private URIType() {
       super("uri");
+    }
+  }
+
+  private class BytesType extends StringBaseType {
+    private BytesType() {
+      super("byte");
     }
   }
 

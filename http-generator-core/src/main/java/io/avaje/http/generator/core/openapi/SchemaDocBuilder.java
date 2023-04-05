@@ -45,7 +45,6 @@ class SchemaDocBuilder {
 
   private static final String APP_FORM = "application/x-www-form-urlencoded";
   private static final String APP_JSON = "application/json";
-  private static final String APP_TXT = "application/text";
 
   private final Elements elements;
   private final Types types;
@@ -103,21 +102,15 @@ class SchemaDocBuilder {
     return schema;
   }
 
-  /**
-   * Add as request body.
-   */
-  void addRequestBody(Operation operation, Schema schema, boolean asForm, String description) {
+  /** Add as request body. */
+  void addRequestBody(Operation operation, Schema schema, String mediaType, String description) {
     RequestBody body = requestBody(operation);
     body.setDescription(description);
 
     MediaType mt = new MediaType();
     mt.schema(schema);
 
-    String mime = asForm ? APP_FORM : APP_JSON;
-    if (schema instanceof StringSchema) {
-      mime = APP_TXT;
-    }
-    body.getContent().addMediaType(mime, mt);
+    body.getContent().addMediaType(mediaType, mt);
   }
 
   private RequestBody requestBody(Operation operation) {
