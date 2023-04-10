@@ -8,6 +8,7 @@ import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.ProxySelector;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.concurrent.Executor;
 
 final class DHttpClientBuilder extends DBaseBuilder implements HttpClient.Builder, HttpClient.Builder.State {
@@ -58,14 +59,14 @@ final class DHttpClientBuilder extends DBaseBuilder implements HttpClient.Builde
   }
 
   @Override
-  public HttpClient.Builder requestListener(RequestListener requestListener) {
-    this.listeners.add(requestListener);
+  public HttpClient.Builder requestListener(RequestListener... requestListener) {
+    Collections.addAll(listeners, requestListener);
     return this;
   }
 
   @Override
-  public HttpClient.Builder requestIntercept(RequestIntercept requestIntercept) {
-    this.interceptors.add(requestIntercept);
+  public HttpClient.Builder requestIntercept(RequestIntercept... requestIntercept) {
+    Collections.addAll(interceptors, requestIntercept);
     return this;
   }
 

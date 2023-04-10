@@ -165,12 +165,12 @@ public interface HttpClientContext extends io.avaje.http.client.HttpClient {
      *
      * @see RequestLogger
      */
-    Builder requestListener(RequestListener requestListener);
+    Builder requestListener(RequestListener... requestListener);
 
     /**
      * Add a request interceptor. Multiple interceptors may be added.
      */
-    Builder requestIntercept(RequestIntercept requestIntercept);
+    Builder requestIntercept(RequestIntercept... requestIntercept);
 
     /**
      * Add a Authorization token provider.
