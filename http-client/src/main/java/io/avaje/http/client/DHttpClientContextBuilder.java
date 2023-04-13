@@ -1,15 +1,17 @@
 package io.avaje.http.client;
 
-import io.avaje.inject.BeanScope;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLParameters;
 import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.ProxySelector;
 import java.net.http.HttpClient;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.concurrent.Executor;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+
+import io.avaje.inject.BeanScope;
 
 final class DHttpClientContextBuilder extends DBaseBuilder implements HttpClientContext.Builder, HttpClientContext.Builder.State {
 
@@ -59,14 +61,14 @@ final class DHttpClientContextBuilder extends DBaseBuilder implements HttpClient
   }
 
   @Override
-  public HttpClientContext.Builder requestListener(RequestListener requestListener) {
-    this.listeners.add(requestListener);
+  public HttpClientContext.Builder requestListener(RequestListener... requestListener) {
+    Collections.addAll(listeners, requestListener);
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder requestIntercept(RequestIntercept requestIntercept) {
-    this.interceptors.add(requestIntercept);
+  public HttpClientContext.Builder requestIntercept(RequestIntercept... requestIntercept) {
+    Collections.addAll(interceptors, requestIntercept);
     return this;
   }
 
