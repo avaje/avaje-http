@@ -99,6 +99,7 @@ class ControllerMethodWriter {
       }
     }
 
+    writer.append("    ");
     if (!method.isVoid()) {
       writer.append("var result = ");
     } else if (missingServerResponse(params)) {

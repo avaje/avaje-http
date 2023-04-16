@@ -138,6 +138,19 @@
           </tiles>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>io.avaje</groupId>
+        <artifactId>avaje-inject-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>provides</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 

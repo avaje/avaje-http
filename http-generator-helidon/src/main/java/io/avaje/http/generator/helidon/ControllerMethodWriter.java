@@ -60,7 +60,7 @@ class ControllerMethodWriter {
     }
 
     final List<MethodParam> params = method.params();
-    for (MethodParam param : params) {
+    for (final MethodParam param : params) {
       param.writeCtxGet(writer, segments);
     }
 
@@ -71,6 +71,7 @@ class ControllerMethodWriter {
       }
     }
 
+    writer.append("    ");
     if (!method.isVoid()) {
       writer.append("res.send(");
     }

@@ -393,7 +393,7 @@ public class MethodReader {
   }
 
   public String bodyType() {
-    for (MethodParam param : params) {
+    for (final MethodParam param : params) {
       if (param.isBody()) {
         return param.shortType();
       }
@@ -433,6 +433,6 @@ public class MethodReader {
       writer.append("resolver.supplyWith");
     }
 
-    writer.append("(() -> %s, () -> ", reqName);
+    writer.append("(%s, () -> ", reqName);
   }
 }

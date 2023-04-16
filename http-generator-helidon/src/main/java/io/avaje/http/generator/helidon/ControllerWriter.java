@@ -85,7 +85,7 @@ class ControllerWriter extends BaseControllerWriter {
     }
     
     if (instrumentContext) {
-      writer.append(", ServerContextResolver resolver").eol();
+      writer.append(", RequestContextResolver resolver").eol();
     }
     
     writer.append(") {").eol();
