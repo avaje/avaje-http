@@ -5,6 +5,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Map;
 
 /**
  * Common controller writer.
