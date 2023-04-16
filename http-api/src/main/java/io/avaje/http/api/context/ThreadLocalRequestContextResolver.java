@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-public final class ThreadLocalResolver implements RequestContextResolver {
+public final class ThreadLocalRequestContextResolver implements RequestContextResolver {
 
   private static final ThreadLocal<Object> REQUEST = new ThreadLocal<>();
 

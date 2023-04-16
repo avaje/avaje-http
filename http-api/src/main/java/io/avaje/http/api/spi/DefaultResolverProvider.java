@@ -1,7 +1,7 @@
 package io.avaje.http.api.spi;
 
 import io.avaje.http.api.context.RequestContextResolver;
-import io.avaje.http.api.context.ThreadLocalResolver;
+import io.avaje.http.api.context.ThreadLocalRequestContextResolver;
 import io.avaje.inject.BeanScopeBuilder;
 import io.avaje.inject.spi.Plugin;
 
@@ -15,6 +15,6 @@ public final class DefaultResolverProvider implements Plugin {
 
   @Override
   public void apply(BeanScopeBuilder builder) {
-    builder.provideDefault(null, RequestContextResolver.class, ThreadLocalResolver::new);
+    builder.provideDefault(null, RequestContextResolver.class, ThreadLocalRequestContextResolver::new);
   }
 }
