@@ -23,9 +23,9 @@ class ControllerWriter extends BaseControllerWriter {
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
 
-  ControllerWriter(ControllerReader reader, boolean jsonB) throws IOException {
+  ControllerWriter(ControllerReader reader, boolean jsonb) throws IOException {
     super(reader);
-    this.useJsonB = jsonB;
+    this.useJsonB = jsonb;
 
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
@@ -104,7 +104,7 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append(", Validator validator");
     }
     if (useJsonB) {
-      writer.append(", Jsonb jsonB");
+      writer.append(", Jsonb jsonb");
     }
     if (instrumentContext) {
       writer.append(", RequestContextResolver resolver");
