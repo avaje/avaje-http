@@ -16,9 +16,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
       ...
  *  }
  */
-@Target(value=METHOD)
-@Retention(value=RUNTIME)
-@HttpMethod(value="POST")
+@Target(METHOD)
+@Retention(RUNTIME)
+@HttpMethod("POST")
 public @interface Post {
+
+  /** Specify the path. */
   String value() default "";
+
+  boolean instrumentRequestContext() default false;
 }

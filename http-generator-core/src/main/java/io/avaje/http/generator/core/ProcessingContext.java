@@ -40,6 +40,7 @@ public class ProcessingContext {
     private final boolean useComponent;
     private final boolean useJavax;
     private final String diAnnotation;
+    private final boolean instrumentAllMethods;
 
     Ctx(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
       readAdapter = adapter;
@@ -55,6 +56,7 @@ public class ProcessingContext {
 
       final var options = env.getOptions();
       final var singletonOverride = options.get("useSingleton");
+      this.instrumentAllMethods = Boolean.parseBoolean(options.get("instrumentRequests"));
       if (singletonOverride != null) {
         useComponent = !Boolean.parseBoolean(singletonOverride);
       } else {
@@ -64,7 +66,7 @@ public class ProcessingContext {
 
       final var javax = elementUtils.getTypeElement(Constants.SINGLETON_JAVAX) != null;
       final var jakarta = elementUtils.getTypeElement(Constants.SINGLETON_JAKARTA) != null;
-      final var override = env.getOptions().get("useJavax");
+      final var override = options.get("useJavax");
       if (override != null || (javax && jakarta)) {
         useJavax = Boolean.parseBoolean(override);
       } else {
@@ -161,5 +163,9 @@ public class ProcessingContext {
 
   public static String diAnnotation() {
     return CTX.get().diAnnotation;
+  }
+
+  public static boolean instrumentAllWebMethods() {
+    return CTX.get().instrumentAllMethods;
   }
 }

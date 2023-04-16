@@ -1,6 +1,7 @@
 package io.avaje.http.generator.javalin;
 
 import static io.avaje.http.generator.core.ProcessingContext.diAnnotation;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ class ControllerWriter extends BaseControllerWriter {
   ControllerWriter(ControllerReader reader, boolean jsonB) throws IOException {
     super(reader);
     this.useJsonB = jsonB;
+
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
@@ -87,7 +89,11 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append("  private final Validator validator;").eol();
     }
 
-    for (UType type : jsonTypes.values()) {
+    if (instrumentContext) {
+      writer.append("  private final ServerContextResolver resolver;").eol();
+    }
+
+    for (final UType type : jsonTypes.values()) {
       final var typeString = PrimitiveUtil.wrap(type.shortType()).replace(",", ", ");
       writer.append("  private final JsonType<%s> %sJsonType;", typeString, type.shortName()).eol();
     }
@@ -100,13 +106,19 @@ class ControllerWriter extends BaseControllerWriter {
     if (useJsonB) {
       writer.append(", Jsonb jsonB");
     }
+    if (instrumentContext) {
+      writer.append(", ServerContextResolver resolver");
+    }
     writer.append(") {").eol();
     writer.append("    this.%s = %s;", controllerName, controllerName).eol();
     if (reader.isIncludeValidator()) {
       writer.append("    this.validator = validator;").eol();
     }
+    if (instrumentContext) {
+      writer.append("    this.resolver = resolver;").eol();
+    }
     if (useJsonB) {
-      for (UType type : jsonTypes.values()) {
+      for (final UType type : jsonTypes.values()) {
         JsonBUtil.writeJsonbType(type, writer);
       }
     }

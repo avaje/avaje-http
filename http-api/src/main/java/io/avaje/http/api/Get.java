@@ -49,9 +49,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * }</pre>
  */
-@Target(value=METHOD)
-@Retention(value=RUNTIME)
-@HttpMethod(value="GET")
+@Target(METHOD)
+@Retention(RUNTIME)
+@HttpMethod("GET")
 public @interface Get {
+
+  /** Specify the path. */
   String value() default "";
+
+  boolean instrumentRequestContext() default false;
 }

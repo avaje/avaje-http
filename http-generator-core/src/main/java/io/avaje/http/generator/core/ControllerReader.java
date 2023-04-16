@@ -44,6 +44,7 @@ public final class ControllerReader {
    */
   private boolean requestScope;
   private boolean docHidden;
+  private final boolean hasInstrument;
 
   public ControllerReader(TypeElement beanType) {
     this.beanType = beanType;
@@ -56,6 +57,11 @@ public final class ControllerReader {
     this.hasValid = initHasValid();
     this.producesPrism = initProduces();
     this.apiResponses = buildApiResponses();
+    hasInstrument =
+        instrumentAllWebMethods()
+            || findAnnotation(ControllerPrism::getOptionalOn)
+                .map(ControllerPrism::instrumentRequestContext)
+                .orElse(false);
   }
 
   private List<OpenAPIResponsePrism> buildApiResponses() {
@@ -299,7 +305,7 @@ public final class ControllerReader {
   }
 
   public void addImportTypes(Set<String> types) {
-    for (String type : types) {
+    for (final String type : types) {
       addImportType(type);
     }
   }
@@ -314,5 +320,9 @@ public final class ControllerReader {
 
   public Set<String> importTypes() {
     return importTypes;
+  }
+
+  public boolean hasInstrument() {
+    return hasInstrument;
   }
 }

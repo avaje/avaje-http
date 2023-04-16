@@ -11,9 +11,8 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-@SupportedOptions({"useJavax", "useSingleton"})
+@SupportedOptions({"useJavax", "useSingleton", "instrumentRequests"})
 public abstract class BaseProcessor extends AbstractProcessor {
-
 
   @Override
   public SourceVersion getSupportedSourceVersion() {

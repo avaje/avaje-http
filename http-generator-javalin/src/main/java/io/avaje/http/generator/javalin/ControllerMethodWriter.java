@@ -1,6 +1,7 @@
 package io.avaje.http.generator.javalin;
 
 import static io.avaje.http.generator.core.ProcessingContext.platform;
+
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
@@ -19,12 +20,14 @@ class ControllerMethodWriter {
   private final Append writer;
   private final WebMethod webMethod;
   private final boolean useJsonB;
+  private final boolean instrumentContext;
 
   ControllerMethodWriter(MethodReader method, Append writer, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
     this.useJsonB = useJsonB;
+    this.instrumentContext = method.instrumentContext();
   }
 
   void write(boolean requestScoped) {
@@ -55,6 +58,11 @@ class ControllerMethodWriter {
       writer.append("var result = ");
     }
 
+    if(instrumentContext) {
+
+      method.writeContext(writer, "ctx");
+    }
+
     if (requestScoped) {
       writer.append("factory.create(ctx).");
     } else {
@@ -68,7 +76,13 @@ class ControllerMethodWriter {
       params.get(i).buildParamName(writer);
     }
 
+    if (instrumentContext) {
+
+      writer.append(")");
+    }
+
     writer.append(");").eol();
+
     if (!method.isVoid()) {
       writeContextReturn();
       writer.eol();
@@ -92,7 +106,7 @@ class ControllerMethodWriter {
   private void writeContextReturn() {
     // Support for CompletableFuture's.
     final UType type = UType.parse(method.returnType());
-    if (type.mainType().equals("java.util.concurrent.CompletableFuture")) {
+    if ("java.util.concurrent.CompletableFuture".equals(type.mainType())) {
       if (!type.isGeneric()) {
         throw new IllegalStateException("CompletableFuture must be generic type (e.g. CompletableFuture<String>, CompletableFuture<Void>).");
       }
@@ -117,7 +131,7 @@ class ControllerMethodWriter {
     if (produces == null || MediaType.APPLICATION_JSON.getValue().equalsIgnoreCase(produces)) {
       if (useJsonB) {
         var uType = UType.parse(method.returnType());
-        if (uType.mainType().equals("java.util.concurrent.CompletableFuture")) {
+        if ("java.util.concurrent.CompletableFuture".equals(uType.mainType())) {
           uType = uType.paramRaw();
         }
 

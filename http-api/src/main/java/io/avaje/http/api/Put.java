@@ -9,9 +9,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Marks a method that handles HTTP PUT requests.
  */
-@Target(value=METHOD)
-@Retention(value=RUNTIME)
-@HttpMethod(value="PUT")
+@Target(METHOD)
+@Retention(RUNTIME)
+@HttpMethod("PUT")
 public @interface Put {
+
+  /** Specify the path. */
   String value() default "";
+
+  boolean instrumentRequestContext() default false;
 }
