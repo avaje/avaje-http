@@ -90,7 +90,7 @@ class ControllerWriter extends BaseControllerWriter {
     }
 
     if (instrumentContext) {
-      writer.append("  private final ServerContextResolver resolver;").eol();
+      writer.append("  private final RequestContextResolver resolver;").eol();
     }
 
     for (final UType type : jsonTypes.values()) {
@@ -107,7 +107,7 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append(", Jsonb jsonB");
     }
     if (instrumentContext) {
-      writer.append(", ServerContextResolver resolver");
+      writer.append(", RequestContextResolver resolver");
     }
     writer.append(") {").eol();
     writer.append("    this.%s = %s;", controllerName, controllerName).eol();

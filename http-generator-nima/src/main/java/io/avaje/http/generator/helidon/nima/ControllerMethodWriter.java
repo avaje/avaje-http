@@ -23,12 +23,14 @@ class ControllerMethodWriter {
   private final Append writer;
   private final WebMethod webMethod;
   private final boolean useJsonB;
+  private final boolean instrumentContext;
 
   ControllerMethodWriter(MethodReader method, Append writer, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
     this.useJsonB = useJsonB;
+    this.instrumentContext = method.instrumentContext();
   }
 
   void writeRule() {
@@ -89,18 +91,24 @@ class ControllerMethodWriter {
     for (final MethodParam param : params) {
       param.writeCtxGet(writer, segments);
     }
-    writer.append("    ");
+
+    if (method.includeValidate()) {
+      for (final MethodParam param : params) {
+        writer.append("    ");
+        param.writeValidate(writer);
+      }
+    }
+
     if (!method.isVoid()) {
       writer.append("var result = ");
     } else if (missingServerResponse(params)) {
       throw new IllegalStateException("Void controller methods must have a ServerResponse parameter");
     }
 
-    if (method.includeValidate()) {
-      for (final MethodParam param : params) {
-        param.writeValidate(writer);
-      }
+    if (instrumentContext) {
+      method.writeContext(writer, "req");
     }
+
     if (requestScoped) {
       writer.append("factory.create(req, res).");
     } else {
@@ -112,6 +120,9 @@ class ControllerMethodWriter {
         writer.append(", ");
       }
       params.get(i).buildParamName(writer);
+    }
+    if (instrumentContext) {
+      writer.append(")");
     }
     writer.append(");").eol();
     if (!method.isVoid()) {

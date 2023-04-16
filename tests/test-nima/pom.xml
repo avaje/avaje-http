@@ -12,8 +12,8 @@
   <artifactId>test-nima</artifactId>
 
   <properties>
-    <maven.compiler.source>19</maven.compiler.source>
-    <maven.compiler.target>19</maven.compiler.target>
+    <maven.compiler.source>20</maven.compiler.source>
+    <maven.compiler.target>20</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -32,12 +32,12 @@
     <dependency>
       <groupId>io.helidon.nima.webserver</groupId>
       <artifactId>helidon-nima-webserver</artifactId>
-      <version>4.0.0-ALPHA4</version>
+      <version>4.0.0-ALPHA6</version>
     </dependency>
     <dependency>
       <groupId>io.helidon.nima.http.media</groupId>
       <artifactId>helidon-nima-http-media-jsonb</artifactId>
-      <version>4.0.0-ALPHA4</version>
+      <version>4.0.0-ALPHA6</version>
     </dependency>
 
     <!--    <dependency>-->
@@ -59,7 +59,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.10.1</version>
         <configuration>
-          <release>19</release>
+          <release>20</release>
           <annotationProcessorPaths>
             <path>
               <groupId>io.avaje</groupId>

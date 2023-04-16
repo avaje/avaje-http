@@ -59,7 +59,6 @@ class ControllerMethodWriter {
     }
 
     if(instrumentContext) {
-
       method.writeContext(writer, "ctx");
     }
 

@@ -1,6 +1,7 @@
 package io.avaje.http.generator.helidon;
 
 import static io.avaje.http.generator.core.ProcessingContext.platform;
+
 import java.util.List;
 
 import io.avaje.http.generator.core.Append;
@@ -18,11 +19,13 @@ class ControllerMethodWriter {
   private final MethodReader method;
   private final Append writer;
   private final WebMethod webMethod;
+  private final boolean instrumentContext;
 
   ControllerMethodWriter(MethodReader method, Append writer) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
+    this.instrumentContext = method.instrumentContext();
   }
 
   void writeRule() {
@@ -60,16 +63,22 @@ class ControllerMethodWriter {
     for (MethodParam param : params) {
       param.writeCtxGet(writer, segments);
     }
-    writer.append("    ");
+
+    if (method.includeValidate()) {
+      for (final MethodParam param : params) {
+        writer.append("    ");
+        param.writeValidate(writer);
+      }
+    }
+
     if (!method.isVoid()) {
       writer.append("res.send(");
     }
 
-    if (method.includeValidate()) {
-      for (MethodParam param : params) {
-        param.writeValidate(writer);
-      }
+    if(instrumentContext) {
+      method.writeContext(writer, "req");
     }
+
     if (requestScoped) {
       writer.append("factory.create(req, res).");
     } else {
@@ -84,6 +93,9 @@ class ControllerMethodWriter {
     }
     writer.append(")");
     if (!method.isVoid()) {
+      writer.append(")");
+    }
+    if (instrumentContext) {
       writer.append(")");
     }
     writer.append(";").eol();

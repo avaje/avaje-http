@@ -107,6 +107,7 @@ public class MethodReader {
         return a.getElementValues().values().stream().anyMatch(v -> v.getValue().equals(true));
       }
     }
+    return false;
   }
 
   private Javadoc buildJavadoc(ExecutableElement element) {

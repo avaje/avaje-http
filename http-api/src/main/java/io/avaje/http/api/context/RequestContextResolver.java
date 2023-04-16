@@ -9,7 +9,7 @@ import java.util.function.Supplier;
  * of the current request if it is present. The Default implementation uses ThreadLocal. If you are
  * able, you should provide an implementation using ScopedValues.
  */
-public interface HttpRequestContextResolver {
+public interface RequestContextResolver {
 
   /**
    * Wraps the execution of the given callable in request context processing.
@@ -20,7 +20,7 @@ public interface HttpRequestContextResolver {
    * @return The return value of the callable
    * @throws Exception if the callable throws an exception
    */
-  <T> T callWith(RequestContext<?> ctx, Callable<T> callable) throws Exception;
+  <T> T callWith(Object ctx, Callable<T> callable) throws Exception;
 
   /**
    * Wraps the execution of the given supplier in request context processing.
@@ -30,7 +30,7 @@ public interface HttpRequestContextResolver {
    * @param <T> The return type of the supplier
    * @return The return value of the supplier
    */
-  <T> T supplyWith(RequestContext<?> ctx, Supplier<T> supplier);
+  <T> T supplyWith(Object ctx, Supplier<T> supplier);
 
   /**
    * Wraps the execution of the given runnable in request context processing.
@@ -38,7 +38,7 @@ public interface HttpRequestContextResolver {
    * @param ctx The request context
    * @param runnable The runnable
    */
-  void runWith(RequestContext<?> request, Runnable runnable);
+  void runWith(Object request, Runnable runnable);
 
   /**
    * Retrieve the current server request context.

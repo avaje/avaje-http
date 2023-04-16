@@ -19,11 +19,13 @@ class ControllerMethodWriter {
   private final MethodReader method;
   private final Append writer;
   private final WebMethod webMethod;
+  private boolean instrumentContext;
 
   ControllerMethodWriter(MethodReader method, Append writer) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
+    this.instrumentContext = method.instrumentContext();
   }
 
   void write(boolean requestScoped) {
@@ -52,7 +54,9 @@ class ControllerMethodWriter {
     if (!method.isVoid()) {
       writeContextReturn();
     }
-
+    if (instrumentContext) {
+      method.writeContext(writer, "ctx");
+    }
     if (requestScoped) {
       writer.append("factory.create(ctx).");
     } else {
@@ -67,6 +71,9 @@ class ControllerMethodWriter {
     }
     writer.append(")");
     if (!method.isVoid()) {
+      writer.append(")");
+    }
+    if (instrumentContext) {
       writer.append(")");
     }
     writer.append(";").eol();

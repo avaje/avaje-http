@@ -13,6 +13,7 @@ import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
 import io.avaje.http.api.QueryParam;
+import io.avaje.http.api.Valid;
 import io.helidon.common.http.HttpMediaType;
 import io.helidon.nima.webserver.http.ServerRequest;
 import io.helidon.nima.webserver.http.ServerResponse;
@@ -129,6 +130,7 @@ public class HelloController {
   //   -d "name=FormBeanJimmy&email=jim@foo&url=notaurl"
   @Form
   @Post("formBean")
+  @Valid
   String formBean(MyForm form) {
     return form.name + "|" + form.email + "|" + form.url;
   }

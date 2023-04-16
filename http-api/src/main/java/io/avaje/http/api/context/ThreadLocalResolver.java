@@ -4,12 +4,12 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-public final class ThreadLocalResolver implements HttpRequestContextResolver {
+public final class ThreadLocalResolver implements RequestContextResolver {
 
-  private static final ThreadLocal<RequestContext<?>> REQUEST = new ThreadLocal<>();
+  private static final ThreadLocal<Object> REQUEST = new ThreadLocal<>();
 
   @Override
-  public <T> T callWith(RequestContext<?> request, Callable<T> callable) throws Exception {
+  public <T> T callWith(Object request, Callable<T> callable) throws Exception {
     try {
       set(request);
       return callable.call();
@@ -19,7 +19,7 @@ public final class ThreadLocalResolver implements HttpRequestContextResolver {
   }
 
   @Override
-  public <T> T supplyWith(RequestContext<?> request, Supplier<T> supplier) {
+  public <T> T supplyWith(Object request, Supplier<T> supplier) {
     try {
       set(request);
       return supplier.get();
@@ -29,7 +29,7 @@ public final class ThreadLocalResolver implements HttpRequestContextResolver {
   }
 
   @Override
-  public void runWith(RequestContext<?> request, Runnable runnable) {
+  public void runWith(Object request, Runnable runnable) {
     try {
       set(request);
       runnable.run();
@@ -38,7 +38,7 @@ public final class ThreadLocalResolver implements HttpRequestContextResolver {
     }
   }
 
-  private void set(RequestContext<?> request) {
+  private void set(Object request) {
     if (request == null) {
       REQUEST.remove();
     } else {
@@ -49,6 +49,6 @@ public final class ThreadLocalResolver implements HttpRequestContextResolver {
   @Override
   @SuppressWarnings({"unchecked"})
   public <T> Optional<T> currentRequest() {
-    return (Optional<T>) Optional.ofNullable(REQUEST.get()).map(RequestContext::getRequest);
+    return (Optional<T>) Optional.ofNullable(REQUEST.get());
   }
 }

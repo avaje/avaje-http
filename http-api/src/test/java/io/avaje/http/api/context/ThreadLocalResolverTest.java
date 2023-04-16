@@ -6,13 +6,13 @@ import org.junit.jupiter.api.Test;
 
 class ThreadLocalResolverTest {
 
-  HttpRequestContextResolver resolver = new ThreadLocalResolver();
+  RequestContextResolver resolver = new ThreadLocalResolver();
 
   @Test
   void testCallWith() throws Exception {
 
     resolver.callWith(
-        () -> "context",
+        "context",
         () -> {
           assertThat(resolver.<String>currentRequest().isPresent()).isTrue();
           return 1234;
@@ -25,7 +25,7 @@ class ThreadLocalResolverTest {
   void testSupplyWith() {
 
     resolver.supplyWith(
-        () -> "context",
+        "context",
         () -> {
           assertThat(resolver.currentRequest().isPresent()).isTrue();
           return 1234;
@@ -38,7 +38,7 @@ class ThreadLocalResolverTest {
   void testRunWith() throws Exception {
 
     resolver.runWith(
-        () -> "context",
+        "context",
         () -> {
           assertThat(resolver.currentRequest().isPresent()).isTrue();
         });

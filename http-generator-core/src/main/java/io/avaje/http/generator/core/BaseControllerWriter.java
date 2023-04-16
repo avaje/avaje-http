@@ -37,7 +37,7 @@ public abstract class BaseControllerWriter {
     initWriter();
     this.instrumentContext = reader.methods().stream().anyMatch(MethodReader::instrumentContext);
     if (instrumentContext) {
-      reader.addImportType("io.avaje.http.api.context.HttpRequestContextResolver");
+      reader.addImportType("io.avaje.http.api.context.RequestContextResolver");
     }
   }
 

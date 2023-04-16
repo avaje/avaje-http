@@ -24,6 +24,6 @@ public @interface Controller {
   /** Specify the path mapping request to the controller. */
   String value() default "";
 
-  /** Specify if the http request context should be instrumented via HttpRequestContextResolver */
+  /** Specify if the http request context should be instrumented via RequestContextResolver */
   boolean instrumentRequestContext() default false;
 }
