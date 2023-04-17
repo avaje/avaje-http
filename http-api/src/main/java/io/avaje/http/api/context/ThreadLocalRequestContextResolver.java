@@ -10,8 +10,9 @@ public final class ThreadLocalRequestContextResolver implements RequestContextRe
 
   @Override
   public <T> T callWith(ServerContext request, Callable<T> callable) throws Exception {
+    throwIfSet();
     try {
-      set(request);
+      REQUEST.set(request);
       return callable.call();
     } finally {
       REQUEST.remove();
@@ -20,8 +21,9 @@ public final class ThreadLocalRequestContextResolver implements RequestContextRe
 
   @Override
   public <T> T supplyWith(ServerContext request, Supplier<T> supplier) {
+    throwIfSet();
     try {
-      set(request);
+      REQUEST.set(request);
       return supplier.get();
     } finally {
       REQUEST.remove();
@@ -30,24 +32,23 @@ public final class ThreadLocalRequestContextResolver implements RequestContextRe
 
   @Override
   public void runWith(ServerContext request, Runnable runnable) {
+    throwIfSet();
     try {
-      set(request);
+      REQUEST.set(request);
       runnable.run();
     } finally {
       REQUEST.remove();
     }
   }
 
-  private void set(ServerContext request) {
-    if (request == null) {
-      REQUEST.remove();
-    } else {
-      REQUEST.set(request);
-    }
-  }
-
   @Override
   public Optional<ServerContext> currentRequest() {
     return Optional.ofNullable(REQUEST.get());
+  }
+
+  private void throwIfSet() {
+    if (REQUEST.get() != null) {
+      throw new IllegalStateException("Rebinding the ServerContext is not permitted");
+    }
   }
 }
