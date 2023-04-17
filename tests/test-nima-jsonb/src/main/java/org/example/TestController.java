@@ -13,12 +13,9 @@ import io.avaje.http.api.Get;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.QueryParam;
-import io.avaje.http.api.Validator;
-import io.avaje.inject.InjectModule;
 
 @Path("test/")
 @Controller
-@InjectModule(requires = Validator.class)
 public class TestController {
 
   @Get("/paramMulti")
