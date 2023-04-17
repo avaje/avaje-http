@@ -55,7 +55,7 @@ class ControllerMethodWriter {
       writeContextReturn();
     }
     if (instrumentContext) {
-      method.writeContext(writer, "ctx");
+        method.writeContext(writer, "ctx", "ctx");
     }
     if (requestScoped) {
       writer.append("factory.create(ctx).");

@@ -14,39 +14,41 @@ class ThreadLocalRequestContextResolverTest {
   void testCallWith() throws Exception {
 
     resolver.callWith(
-        "context",
+        new ServerContext("request", "response"),
         () -> {
-          assertThat(resolver.<String>currentRequest().isPresent()).isTrue();
+          assertThat(resolver.currentRequest().isPresent()).isTrue();
           return 1234;
         });
 
-    assertThat(resolver.<String>currentRequest().isPresent()).isFalse();
+    assertThat(resolver.currentRequest().isPresent()).isFalse();
   }
 
   @Test
   void testFuture() throws Exception {
 
-    resolver.callWith(
-        "context",
-        () -> {
-          assertThat(resolver.<String>currentRequest().isPresent()).isTrue();
+    resolver
+        .callWith(
+            new ServerContext("request", "response"),
+            () -> {
+              assertThat(resolver.currentRequest().isPresent()).isTrue();
 
-          return CompletableFuture.supplyAsync(
-              () -> {
-                assertThat(resolver.<String>currentRequest().isPresent()).isFalse();
+              return CompletableFuture.supplyAsync(
+                  () -> {
+                    assertThat(resolver.currentRequest().isPresent()).isFalse();
 
-                return "d";
-              });
-        }).join();
+                    return "d";
+                  });
+            })
+        .join();
 
-    assertThat(resolver.<String>currentRequest().isPresent()).isFalse();
+    assertThat(resolver.currentRequest().isPresent()).isFalse();
   }
 
   @Test
   void testSupplyWith() {
 
     resolver.supplyWith(
-        "context",
+        new ServerContext("request", "response"),
         () -> {
           assertThat(resolver.currentRequest().isPresent()).isTrue();
           return 1234;
@@ -59,7 +61,7 @@ class ThreadLocalRequestContextResolverTest {
   void testRunWith() throws Exception {
 
     resolver.runWith(
-        "context",
+        new ServerContext("request", "response"),
         () -> {
           assertThat(resolver.currentRequest().isPresent()).isTrue();
         });

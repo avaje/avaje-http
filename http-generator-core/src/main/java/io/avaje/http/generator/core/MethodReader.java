@@ -418,7 +418,7 @@ public class MethodReader {
     return instrumentContext;
   }
 
-  public void writeContext(Append writer, String reqName) {
+  public void writeContext(Append writer, String reqName,String resName) {
 
     if (isVoid) {
 
@@ -433,6 +433,6 @@ public class MethodReader {
       writer.append("resolver.supplyWith");
     }
 
-    writer.append("(%s, () -> ", reqName);
+    writer.append("(new ServerContext(%s, %s), () -> ", reqName, resName);
   }
 }

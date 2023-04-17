@@ -107,7 +107,7 @@ class ControllerMethodWriter {
     }
 
     if (instrumentContext) {
-      method.writeContext(writer, "req");
+      method.writeContext(writer, "req", "res");
     }
 
     if (requestScoped) {

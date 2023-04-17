@@ -58,8 +58,8 @@ class ControllerMethodWriter {
       writer.append("var result = ");
     }
 
-    if(instrumentContext) {
-      method.writeContext(writer, "ctx");
+    if (instrumentContext) {
+      method.writeContext(writer, "ctx", "ctx");
     }
 
     if (requestScoped) {

@@ -76,8 +76,8 @@ class ControllerMethodWriter {
       writer.append("res.send(");
     }
 
-    if(instrumentContext) {
-      method.writeContext(writer, "req");
+    if (instrumentContext) {
+      method.writeContext(writer, "req", "res");
     }
 
     if (requestScoped) {

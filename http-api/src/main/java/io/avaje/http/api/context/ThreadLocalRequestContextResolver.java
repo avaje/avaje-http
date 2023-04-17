@@ -6,10 +6,10 @@ import java.util.function.Supplier;
 
 public final class ThreadLocalRequestContextResolver implements RequestContextResolver {
 
-  private static final ThreadLocal<Object> REQUEST = new ThreadLocal<>();
+  private static final ThreadLocal<ServerContext> REQUEST = new ThreadLocal<>();
 
   @Override
-  public <T> T callWith(Object request, Callable<T> callable) throws Exception {
+  public <T> T callWith(ServerContext request, Callable<T> callable) throws Exception {
     try {
       set(request);
       return callable.call();
@@ -19,7 +19,7 @@ public final class ThreadLocalRequestContextResolver implements RequestContextRe
   }
 
   @Override
-  public <T> T supplyWith(Object request, Supplier<T> supplier) {
+  public <T> T supplyWith(ServerContext request, Supplier<T> supplier) {
     try {
       set(request);
       return supplier.get();
@@ -29,7 +29,7 @@ public final class ThreadLocalRequestContextResolver implements RequestContextRe
   }
 
   @Override
-  public void runWith(Object request, Runnable runnable) {
+  public void runWith(ServerContext request, Runnable runnable) {
     try {
       set(request);
       runnable.run();
@@ -38,7 +38,7 @@ public final class ThreadLocalRequestContextResolver implements RequestContextRe
     }
   }
 
-  private void set(Object request) {
+  private void set(ServerContext request) {
     if (request == null) {
       REQUEST.remove();
     } else {
@@ -47,8 +47,7 @@ public final class ThreadLocalRequestContextResolver implements RequestContextRe
   }
 
   @Override
-  @SuppressWarnings({"unchecked"})
-  public <T> Optional<T> currentRequest() {
-    return (Optional<T>) Optional.ofNullable(REQUEST.get());
+  public Optional<ServerContext> currentRequest() {
+    return Optional.ofNullable(REQUEST.get());
   }
 }
