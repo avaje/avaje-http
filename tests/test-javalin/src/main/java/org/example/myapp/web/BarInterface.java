@@ -20,6 +20,6 @@ public interface BarInterface {
   List<Bar> findByCode(String code);
 
   @Produces(MediaType.TEXT_PLAIN)
-  @Get
+  @Get(instrumentRequestContext = true)
   String barMessage();
 }

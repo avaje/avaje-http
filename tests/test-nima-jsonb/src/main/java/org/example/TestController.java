@@ -54,10 +54,11 @@ public class TestController {
     return type.name();
   }
 
-  @Get("/inputStream")
+  @Get(value =  "/inputStream", instrumentRequestContext = true)
   String stream(InputStream stream) {
     return stream.toString();
   }
+
 
   @Post("/strBody")
   String strBody(@BodyString String body) {

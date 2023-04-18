@@ -1,11 +1,18 @@
 package io.avaje.http.generator.helidon.nima;
 
 import static io.avaje.http.generator.core.ProcessingContext.diAnnotation;
-import io.avaje.http.generator.core.*;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
+import io.avaje.http.generator.core.BaseControllerWriter;
+import io.avaje.http.generator.core.Constants;
+import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.JsonBUtil;
+import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.PrimitiveUtil;
+import io.avaje.http.generator.core.UType;
 
 /**
  * Write Helidon specific web route adapter (a Helidon Service).
@@ -16,9 +23,9 @@ class ControllerWriter extends BaseControllerWriter {
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
 
-  ControllerWriter(ControllerReader reader, boolean jsonB) throws IOException {
+  ControllerWriter(ControllerReader reader, boolean jsonb) throws IOException {
     super(reader);
-    this.useJsonB = jsonB;
+    this.useJsonB = jsonb;
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
@@ -92,6 +99,11 @@ class ControllerWriter extends BaseControllerWriter {
     if (reader.isIncludeValidator()) {
       writer.append("  private final Validator validator;").eol();
     }
+
+    if (instrumentContext) {
+      writer.append("  private final RequestContextResolver resolver;").eol();
+    }
+
     for (final UType type : jsonTypes.values()) {
       final var typeString = PrimitiveUtil.wrap(type.shortType()).replace(",", ", ");
       writer.append("  private final JsonType<%s> %sJsonType;", typeString, type.shortName()).eol();
@@ -103,13 +115,21 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append(", Validator validator");
     }
     if (useJsonB) {
-      writer.append(", Jsonb jsonB");
+      writer.append(", Jsonb jsonb");
     }
+    if (instrumentContext) {
+      writer.append(", RequestContextResolver resolver");
+    }
+
     writer.append(") {").eol();
     writer.append("    this.%s = %s;", controllerName, controllerName).eol();
     if (reader.isIncludeValidator()) {
       writer.append("    this.validator = validator;").eol();
     }
+    if (instrumentContext) {
+      writer.append("    this.resolver = resolver;").eol();
+    }
+
     if (useJsonB) {
       for (final UType type : jsonTypes.values()) {
         JsonBUtil.writeJsonbType(type, writer);

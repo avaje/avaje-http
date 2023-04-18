@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.example.myapp.web.ServerType;
 
-import io.avaje.http.api.Consumes;
 import io.avaje.http.api.BodyString;
+import io.avaje.http.api.Consumes;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Default;
 import io.avaje.http.api.Form;
@@ -16,19 +16,20 @@ import io.avaje.http.api.Get;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.QueryParam;
+import io.javalin.http.Context;
 
 @Path("test/")
 @Controller
 public class TestController2 {
 
   @Form
-  @Get("/enumForm")
-  String enumForm(String s, ServerType type) {
-    return type.name();
+  @Get(value = "/enumForm", instrumentRequestContext = true)
+  void enumForm(String s, ServerType type, Context ctx) {
+    ctx.result(s);
   }
 
-  @Get("/enumFormParam")
-  String enumFormParam(@FormParam String s, @FormParam ServerType type) {
+  @Get(value = "/enumFormParam", instrumentRequestContext = true)
+  String enumFormParam(@FormParam String s, @FormParam ServerType type) throws Exception {
     return type.name();
   }
 
@@ -58,7 +59,7 @@ public class TestController2 {
     return array.toString();
   }
 
-  @Post("/strBody")
+  @Post(value = "/strBody", instrumentRequestContext = true)
   String strBody(@BodyString String body) {
     return body;
   }

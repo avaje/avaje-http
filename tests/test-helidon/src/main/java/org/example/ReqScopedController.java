@@ -6,10 +6,9 @@ import io.avaje.http.api.Path;
 import io.avaje.http.api.Produces;
 import io.helidon.webserver.ServerRequest;
 import io.helidon.webserver.ServerResponse;
-
 import jakarta.inject.Inject;
 
-@Controller
+@Controller(instrumentRequestContext = true)
 @Path("/req-scoped")
 public class ReqScopedController {
 

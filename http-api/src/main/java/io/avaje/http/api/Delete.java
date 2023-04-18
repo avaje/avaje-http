@@ -19,13 +19,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * }</pre>
  */
-@Target(value=METHOD)
-@Retention(value=RUNTIME)
-@HttpMethod(value="DELETE")
+@Target(METHOD)
+@Retention(RUNTIME)
+@HttpMethod("DELETE")
 public @interface Delete {
 
-  /**
-   * Specify the path.
-   */
+  /** Specify the path. */
   String value() default "";
+
+  boolean instrumentRequestContext() default false;
 }

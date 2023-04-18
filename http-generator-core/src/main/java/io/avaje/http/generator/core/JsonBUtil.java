@@ -58,7 +58,7 @@ public class JsonBUtil {
   }
 
   public static void writeJsonbType(UType type, Append writer) {
-    writer.append("    this.%sJsonType = jsonB.type(", type.shortName());
+    writer.append("    this.%sJsonType = jsonb.type(", type.shortName());
     if (!type.isGeneric()) {
       writer.append("%s.class)", Util.shortName(PrimitiveUtil.wrap(type.full())));
     } else {

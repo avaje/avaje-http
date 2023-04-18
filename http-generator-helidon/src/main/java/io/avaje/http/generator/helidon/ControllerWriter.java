@@ -74,16 +74,27 @@ class ControllerWriter extends BaseControllerWriter {
     if (reader.isIncludeValidator()) {
       writer.append("  private final Validator validator;").eol();
     }
+    if (instrumentContext) {
+      writer.append("  private final RequestContextResolver resolver;").eol();
+    }
     writer.eol();
 
     writer.append("  public %s$Route(%s %s", shortName, controllerType, controllerName);
     if (reader.isIncludeValidator()) {
       writer.append(", Validator validator");
     }
+    
+    if (instrumentContext) {
+      writer.append(", RequestContextResolver resolver").eol();
+    }
+    
     writer.append(") {").eol();
     writer.append("    this.%s = %s;", controllerName, controllerName).eol();
     if (reader.isIncludeValidator()) {
       writer.append("    this.validator = validator;").eol();
+    }
+    if (instrumentContext) {
+      writer.append("    this.resolver = resolver;").eol();
     }
     writer.append("  }").eol().eol();
   }

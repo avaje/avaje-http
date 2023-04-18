@@ -12,7 +12,7 @@ import io.avaje.http.api.QueryParam;
 import io.avaje.jex.Context;
 
 @Path("test/")
-@Controller
+@Controller(instrumentRequestContext = true)
 public class TestController {
 
   @Get("/paramMulti")

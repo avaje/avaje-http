@@ -51,6 +51,8 @@ public class MethodReader {
   private WebMethod webMethod;
   private String webMethodPath;
   private boolean formMarker;
+  private final boolean instrumentContext;
+  private final boolean hasThrows;
 
   MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable) {
     this.bean = bean;
@@ -71,7 +73,7 @@ public class MethodReader {
     this.superMethods =
         superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
     superMethods.forEach(m -> methodRoles.addAll(Util.findRoles(m)));
-
+    this.hasThrows = !element.getThrownTypes().isEmpty();
     this.securityRequirements = readSecurityRequirements();
     this.apiResponses = buildApiResponses();
     this.javadoc = buildJavadoc(element);
@@ -83,11 +85,29 @@ public class MethodReader {
         });
     if (isWebMethod()) {
       this.hasValid = initValid();
+      this.instrumentContext = initResolver();
       this.pathSegments = PathSegments.parse(Util.combinePath(bean.path(), webMethodPath));
     } else {
       this.hasValid = false;
       this.pathSegments = null;
+      this.instrumentContext = false;
     }
+  }
+
+  private boolean initResolver() {
+    return bean.hasInstrument()
+        || hasInstrument(element)
+        || superMethods.stream().anyMatch(this::hasInstrument);
+  }
+
+  private boolean hasInstrument(Element e) {
+    for (final var a : e.getAnnotationMirrors()) {
+      if (HttpMethodPrism.isPresent(a.getAnnotationType().asElement())) {
+
+        return a.getElementValues().values().stream().anyMatch(v -> v.getValue().equals(true));
+      }
+    }
+    return false;
   }
 
   private Javadoc buildJavadoc(ExecutableElement element) {
@@ -373,7 +393,7 @@ public class MethodReader {
   }
 
   public String bodyType() {
-    for (MethodParam param : params) {
+    for (final MethodParam param : params) {
       if (param.isBody()) {
         return param.shortType();
       }
@@ -382,7 +402,7 @@ public class MethodReader {
   }
 
   public String bodyName() {
-    for (MethodParam param : params) {
+    for (final MethodParam param : params) {
       if (param.isBody()) {
         return param.name();
       }
@@ -392,5 +412,27 @@ public class MethodReader {
 
   public Optional<RequestTimeoutPrism> timeout() {
     return timeout;
+  }
+
+  public boolean instrumentContext() {
+    return instrumentContext;
+  }
+
+  public void writeContext(Append writer, String reqName,String resName) {
+
+    if (isVoid) {
+
+      writer.append("resolver.runWith");
+
+    } else if (hasThrows) {
+
+      writer.append("resolver.callWith");
+
+    } else {
+
+      writer.append("resolver.supplyWith");
+    }
+
+    writer.append("(new ServerContext(%s, %s), () -> ", reqName, resName);
   }
 }

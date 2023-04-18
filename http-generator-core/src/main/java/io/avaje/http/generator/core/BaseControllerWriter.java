@@ -5,6 +5,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Map;
 
 /**
  * Common controller writer.
@@ -18,6 +19,7 @@ public abstract class BaseControllerWriter {
   protected final String packageName;
   protected final boolean router;
   protected Append writer;
+  protected boolean instrumentContext;
 
   protected BaseControllerWriter(ControllerReader reader) throws IOException {
     this(reader, "$Route");
@@ -26,13 +28,18 @@ public abstract class BaseControllerWriter {
   protected BaseControllerWriter(ControllerReader reader, String suffix) throws IOException {
     this.reader = reader;
     this.router = "$Route".equals(suffix);
-    TypeElement origin = reader.beanType();
+    final TypeElement origin = reader.beanType();
     this.originName = origin.getQualifiedName().toString();
     this.shortName = origin.getSimpleName().toString();
     this.packageName = initPackageName(originName);
     this.fullName = packageName + "." + shortName + suffix;
 
     initWriter();
+    this.instrumentContext = reader.methods().stream().anyMatch(MethodReader::instrumentContext);
+    if (instrumentContext) {
+      reader.addImportType("io.avaje.http.api.context.RequestContextResolver");
+      reader.addImportType("io.avaje.http.api.context.ServerContext");
+    }
   }
 
   protected boolean isRequestScoped() {
@@ -40,7 +47,7 @@ public abstract class BaseControllerWriter {
   }
 
   protected String initPackageName(String originName) {
-    int dp = originName.lastIndexOf('.');
+    final int dp = originName.lastIndexOf('.');
     return dp > -1 ? originName.substring(0, dp) : null;
   }
 
