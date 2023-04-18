@@ -66,6 +66,11 @@ public interface HttpClient {
   HttpClientRequest request();
 
   /**
+   * Return a UrlBuilder to use to build an URL taking into account the base URL.
+   */
+  UrlBuilder url();
+
+  /**
    * Deprecated - migrate to {@link #bodyAdapter()}.
    * <p>
    * Return the body adapter used by the client context.

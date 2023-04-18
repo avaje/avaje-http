@@ -9,12 +9,6 @@ import java.net.http.HttpResponse;
 interface SpiHttpClient {
 
   /**
-   * Return a UrlBuilder to use to build an URL taking into
-   * account the base URL.
-   */
-  UrlBuilder url();
-
-  /**
    * Return the underlying http client.
    */
   HttpClient httpClient();
