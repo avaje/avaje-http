@@ -29,7 +29,6 @@ class ControllerMethodWriter {
   }
 
   void write(boolean requestScoped) {
-
     final PathSegments segments = method.pathSegments();
     final String fullPath = segments.fullPath();
 

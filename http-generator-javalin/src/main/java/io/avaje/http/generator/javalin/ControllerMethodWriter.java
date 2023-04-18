@@ -31,7 +31,6 @@ class ControllerMethodWriter {
   }
 
   void write(boolean requestScoped) {
-
     final var segments = method.pathSegments();
     final var fullPath = segments.fullPath();
 
@@ -76,12 +75,10 @@ class ControllerMethodWriter {
     }
 
     if (instrumentContext) {
-
       writer.append(")");
     }
 
     writer.append(");").eol();
-
     if (!method.isVoid()) {
       writeContextReturn();
       writer.eol();
@@ -133,7 +130,6 @@ class ControllerMethodWriter {
         if ("java.util.concurrent.CompletableFuture".equals(uType.mainType())) {
           uType = uType.paramRaw();
         }
-
         writer.append("      %sJsonType.toJson(%s, ctx.contentType(\"application/json\").outputStream());", uType.shortName(), resultVariableName);
       } else {
         writer.append("      ctx.json(%s);", resultVariableName);

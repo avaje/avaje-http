@@ -1,14 +1,16 @@
 package io.avaje.http.api.context;
 
-/** Holder for the Server Request/Response Classes */
-public class ServerContext {
+/**
+ * Holder for the Server Request/Response instances.
+ */
+public final class ServerContext {
 
   private final Object request;
   private final Object response;
 
-  public ServerContext(Object req, Object res) {
-    request = req;
-    response = res;
+  public ServerContext(Object request, Object response) {
+    this.request = request;
+    this.response = response;
   }
 
   /**
@@ -16,6 +18,7 @@ public class ServerContext {
    *
    * @return The request
    */
+  @SuppressWarnings("unchecked")
   <T> T request() {
     return (T) request;
   }
@@ -25,6 +28,7 @@ public class ServerContext {
    *
    * @return The request
    */
+  @SuppressWarnings("unchecked")
   <T> T response() {
     return (T) response;
   }

@@ -14,9 +14,9 @@ public interface RequestContextResolver {
   /**
    * Wraps the execution of the given callable in request context processing.
    *
-   * @param ctx The request context
+   * @param ctx      The request context
    * @param callable The callable
-   * @param <T> The return type of the callable
+   * @param <T>      The return type of the callable
    * @return The return value of the callable
    * @throws Exception if the callable throws an exception
    */
@@ -25,9 +25,9 @@ public interface RequestContextResolver {
   /**
    * Wraps the execution of the given supplier in request context processing.
    *
-   * @param ctx The request context
+   * @param ctx      The request context
    * @param supplier The supplier
-   * @param <T> The return type of the supplier
+   * @param <T>      The return type of the supplier
    * @return The return value of the supplier
    */
   <T> T supplyWith(ServerContext ctx, Supplier<T> supplier);
@@ -35,10 +35,10 @@ public interface RequestContextResolver {
   /**
    * Wraps the execution of the given runnable in request context processing.
    *
-   * @param ctx The request context
+   * @param ctx      The request context
    * @param runnable The runnable
    */
-  void runWith(ServerContext request, Runnable runnable);
+  void runWith(ServerContext ctx, Runnable runnable);
 
   /**
    * Retrieve the current server context.

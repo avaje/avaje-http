@@ -70,8 +70,7 @@ public class MethodReader {
 
     initWebMethodViaAnnotation();
 
-    this.superMethods =
-        superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
+    this.superMethods = superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
     superMethods.forEach(m -> methodRoles.addAll(Util.findRoles(m)));
     this.hasThrows = !element.getThrownTypes().isEmpty();
     this.securityRequirements = readSecurityRequirements();
@@ -103,7 +102,6 @@ public class MethodReader {
   private boolean hasInstrument(Element e) {
     for (final var a : e.getAnnotationMirrors()) {
       if (HttpMethodPrism.isPresent(a.getAnnotationType().asElement())) {
-
         return a.getElementValues().values().stream().anyMatch(v -> v.getValue().equals(true));
       }
     }
@@ -143,7 +141,6 @@ public class MethodReader {
   }
 
   private void initWebMethodViaAnnotation() {
-
     if (findAnnotation(FormPrism::getOptionalOn).isPresent()) {
       this.formMarker = true;
     }
@@ -207,7 +204,6 @@ public class MethodReader {
   }
 
   private List<OpenAPIResponsePrism> buildApiResponses() {
-
     final var container =
         findAnnotation(OpenAPIResponsesPrism::getOptionalOn).stream()
             .map(OpenAPIResponsesPrism::value)
@@ -226,11 +222,8 @@ public class MethodReader {
                             .flatMap(List::stream),
                         OpenAPIResponsePrism.getAllInstancesOn(method).stream()));
 
-    final var responses =
-        Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
-
+    final var responses = Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
     responses.addAll(bean.openApiResponses());
-
     return responses;
   }
 
@@ -239,7 +232,6 @@ public class MethodReader {
   }
 
   public <A> Optional<A> findAnnotation(Function<Element, Optional<A>> prismFunc, ExecutableElement elem) {
-
     return prismFunc.apply(elem).or(() -> bean.findMethodAnnotation(prismFunc, elem));
   }
 
@@ -249,9 +241,7 @@ public class MethodReader {
     }
 
     TagPrism.getAllInstancesOn(element).forEach(t -> list.add(t.name()));
-
     final var tags = TagsPrism.getInstanceOn(element);
-
     if (tags != null) {
       for (final var tag : tags.value()) {
         list.add(tag.name());
@@ -418,21 +408,14 @@ public class MethodReader {
     return instrumentContext;
   }
 
-  public void writeContext(Append writer, String reqName,String resName) {
-
+  public void writeContext(Append writer, String reqName, String resName) {
     if (isVoid) {
-
       writer.append("resolver.runWith");
-
     } else if (hasThrows) {
-
       writer.append("resolver.callWith");
-
     } else {
-
       writer.append("resolver.supplyWith");
     }
-
     writer.append("(new ServerContext(%s, %s), () -> ", reqName, resName);
   }
 }
