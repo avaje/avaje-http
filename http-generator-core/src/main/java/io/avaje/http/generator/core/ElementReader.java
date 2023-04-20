@@ -38,6 +38,7 @@ public class ElementReader {
   private boolean isParamCollection;
   private boolean isParamMap;
   private final Set<String> imports = new HashSet<>();
+  private BeanParamReader formBeanReader;
 
   ElementReader(Element element, ParamType defaultType, boolean formMarker) {
     this(element, null, Util.typeDef(element.asType()), defaultType, formMarker);
@@ -73,6 +74,10 @@ public class ElementReader {
     } else {
       paramType = ParamType.CONTEXT;
       useValidation = false;
+    }
+    if (ParamType.FORM == paramType || ParamType.BEANPARAM == paramType) {
+      this.formBeanReader = getFormBeanReader(rawType, rawType, defaultType);
+      this.imports.addAll(formBeanReader.imports());
     }
   }
 
@@ -289,21 +294,9 @@ public class ElementReader {
   }
 
   private boolean setValue(Append writer, PathSegments segments, String shortType) {
-//    if (formMarker && impliedParamType && typeHandler == null) {
-//      if (ParamType.FORM != paramType) {
-//        throw new IllegalStateException("Don't get here?");
-//      }
-////      // @Form on method and this type is a "bean" so treat is as a form bean
-////      writeForm(writer, shortType, varName, ParamType.FORMPARAM);
-////      paramType = ParamType.FORM;
-////      return false;
-//    }
-    if (ParamType.FORM == paramType) {
-      writeForm(writer, shortType, varName, ParamType.FORMPARAM);
-      return false;
-    }
-    if (ParamType.BEANPARAM == paramType) {
-      writeForm(writer, shortType, varName, ParamType.QUERYPARAM);
+
+    if ((ParamType.FORM == paramType) || (ParamType.BEANPARAM == paramType)) {
+      formBeanReader.write(writer);
       return false;
     }
     if (impliedParamType) {
@@ -366,10 +359,10 @@ public class ElementReader {
     return true;
   }
 
-  private void writeForm(Append writer, String shortType, String varName, ParamType defaultParamType) {
-    TypeElement formBeanType = typeElement(rawType);
-    BeanParamReader form = new BeanParamReader(formBeanType, varName, shortType, defaultParamType);
-    form.write(writer);
+  private BeanParamReader getFormBeanReader(
+      String shortType, String varName, ParamType defaultParamType) {
+    final TypeElement formBeanType = typeElement(rawType);
+    return new BeanParamReader(formBeanType, varName, shortType, defaultParamType);
   }
 
   public ParamType paramType() {

@@ -19,7 +19,7 @@ public final class ServerContext {
    * @return The request
    */
   @SuppressWarnings("unchecked")
-  <T> T request() {
+  public <T> T request() {
     return (T) request;
   }
 
@@ -29,7 +29,7 @@ public final class ServerContext {
    * @return The request
    */
   @SuppressWarnings("unchecked")
-  <T> T response() {
+  public <T> T response() {
     return (T) response;
   }
 }
