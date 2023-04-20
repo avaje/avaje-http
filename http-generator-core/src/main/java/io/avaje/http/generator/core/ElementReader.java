@@ -75,9 +75,18 @@ public class ElementReader {
       useValidation = false;
     }
     if (ParamType.FORM == paramType || ParamType.BEANPARAM == paramType) {
-      this.imports.addAll(
-          new BeanParamReader(typeElement(rawType), varName, shortType, paramType).imports());
+      beanParamImports(rawType);
     }
+  }
+
+  private void beanParamImports(String rawType) {
+    typeElement(rawType).getEnclosedElements().stream()
+        .filter(e -> e.getKind() == ElementKind.FIELD)
+        .filter(f -> !IgnorePrism.isPresent(f))
+        .map(Element::asType)
+        .map(UType::parse)
+        .flatMap(u -> u.importTypes().stream())
+        .forEach(imports::add);
   }
 
   TypeHandler initTypeHandler() {
