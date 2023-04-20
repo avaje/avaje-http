@@ -76,7 +76,7 @@ public class ElementReader {
       useValidation = false;
     }
     if (ParamType.FORM == paramType || ParamType.BEANPARAM == paramType) {
-      this.formBeanReader = getFormBeanReader(rawType, rawType, defaultType);
+      this.formBeanReader = getFormBeanReader(rawType, rawType, paramType);
       this.imports.addAll(formBeanReader.imports());
     }
   }
