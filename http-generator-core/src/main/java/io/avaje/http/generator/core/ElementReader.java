@@ -74,6 +74,19 @@ public class ElementReader {
       paramType = ParamType.CONTEXT;
       useValidation = false;
     }
+    if (ParamType.FORM == paramType || ParamType.BEANPARAM == paramType) {
+      beanParamImports(rawType);
+    }
+  }
+
+  private void beanParamImports(String rawType) {
+    typeElement(rawType).getEnclosedElements().stream()
+        .filter(e -> e.getKind() == ElementKind.FIELD)
+        .filter(f -> !IgnorePrism.isPresent(f))
+        .map(Element::asType)
+        .map(UType::parse)
+        .flatMap(u -> u.importTypes().stream())
+        .forEach(imports::add);
   }
 
   TypeHandler initTypeHandler() {

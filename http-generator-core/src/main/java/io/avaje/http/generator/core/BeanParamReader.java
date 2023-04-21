@@ -14,6 +14,7 @@ public class BeanParamReader {
   private final Map<String, FieldReader> fieldMap = new LinkedHashMap<>();
   private final List<ExecutableElement> constructors = new ArrayList<>();
   private final Map<String, ExecutableElement> methodMap = new LinkedHashMap<>();
+  private final Set<String> imports = new HashSet<>();
 
   public BeanParamReader(TypeElement beanType, String beanVarName, String beanShortType, ParamType defaultParamType) {
     this.beanType = beanType;
@@ -21,6 +22,10 @@ public class BeanParamReader {
     this.beanShortType = beanShortType;
     this.defaultParamType = defaultParamType;
     read();
+  }
+
+  public Collection<String> imports() {
+    return imports;
   }
 
   private void read() {
@@ -45,6 +50,8 @@ public class BeanParamReader {
     }
     FieldReader field = new FieldReader(enclosedElement, defaultParamType);
     fieldMap.put(field.varName(), field);
+
+    imports.addAll(UType.parse(field.element.element().asType()).importTypes());
   }
 
   private void readMethod(ExecutableElement enclosedElement) {
