@@ -20,8 +20,6 @@
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-inject-plugin</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
-      <optional>true</optional>
     </dependency>
   </dependencies>
 
