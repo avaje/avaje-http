@@ -1,4 +1,4 @@
-package io.avaje.http.api.spi;
+package io.avaje.http.inject;
 
 import io.avaje.http.api.context.RequestContextResolver;
 import io.avaje.http.api.context.ThreadLocalRequestContextResolver;
