@@ -65,6 +65,26 @@ final class AnnotationUtil {
       final var type = UType.parse(element.asType());
       // Handle enum values
       sb.append(type.full() + "." + element.toString());
+
+    } else if (value.getValue() instanceof AnnotationMirror) {
+
+      final var mirror = (AnnotationMirror) value.getValue();
+
+      final String annotationName = mirror.getAnnotationType().toString();
+      sb.append(annotationName).append("(");
+      boolean first = true;
+
+      for (final Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
+          mirror.getElementValues().entrySet()) {
+        if (!first) {
+          sb.append(", ");
+        }
+        sb.append(entry.getKey().getSimpleName()).append("=");
+        writeVal(sb, entry.getValue());
+        first = false;
+      }
+
+      sb.append(")");
     } else {
       // Handle non-enum values
       sb.append(value.toString());
