@@ -100,6 +100,11 @@ public class MethodReader {
   }
 
   private boolean hasInstrument(Element e) {
+
+    if (InstrumentServerContextPrism.getOptionalOn(e).isPresent()) {
+      return true;
+    }
+
     for (final var a : e.getAnnotationMirrors()) {
       if (HttpMethodPrism.isPresent(a.getAnnotationType().asElement())) {
         return a.getElementValues().values().stream().anyMatch(v -> v.getValue().equals(true));
@@ -170,16 +175,16 @@ public class MethodReader {
   }
 
   private List<SecurityRequirementPrism> readSecurityRequirements() {
-    var list = new ArrayList<SecurityRequirementPrism>();
+    final var list = new ArrayList<SecurityRequirementPrism>();
 
     readSecurityRequirements(element, list);
-    for (ExecutableElement superMethod : superMethods) {
+    for (final ExecutableElement superMethod : superMethods) {
         readSecurityRequirements(superMethod, list);
     }
     readSecurityRequirements(bean.beanType(), list);
 
-    var map = new HashMap<String, SecurityRequirementPrism>();
-    for (SecurityRequirementPrism p : list) {
+    final var map = new HashMap<String, SecurityRequirementPrism>();
+    for (final SecurityRequirementPrism p : list) {
         if (!map.containsKey(p.name())) {
           map.put(p.name(), p);
         }
@@ -188,7 +193,7 @@ public class MethodReader {
   }
 
   private void readSecurityRequirements(Element element, List<SecurityRequirementPrism> list) {
-    Consumer<Element> f = e -> {
+    final Consumer<Element> f = e -> {
       Optional.ofNullable(SecurityRequirementsPrism.getInstanceOn(e))
         .map(SecurityRequirementsPrism::value)
         .ifPresent(list::addAll);
@@ -197,7 +202,7 @@ public class MethodReader {
     };
     f.accept(element);
 
-    for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
+    for (final AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
       // find only one level
       f.accept(annotationMirror.getAnnotationType().asElement());
     }
@@ -262,20 +267,20 @@ public class MethodReader {
     }
     // non-path parameters default to form or query parameters based on the
     // existence of @Form annotation on the method
-    ParamType defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
+    final ParamType defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
 
     final List<? extends VariableElement> parameters = element.getParameters();
     for (int i = 0; i < parameters.size(); i++) {
-      VariableElement p = parameters.get(i);
+      final VariableElement p = parameters.get(i);
       TypeMirror typeMirror;
       if (actualParams != null) {
         typeMirror = actualParams.get(i);
       } else {
         typeMirror = p.asType();
       }
-      String rawType = Util.typeDef(typeMirror);
-      UType type = Util.parse(typeMirror.toString());
-      MethodParam param = new MethodParam(p, type, rawType, defaultParamType, formMarker);
+      final String rawType = Util.typeDef(typeMirror);
+      final UType type = Util.parse(typeMirror.toString());
+      final MethodParam param = new MethodParam(p, type, rawType, defaultParamType, formMarker);
       params.add(param);
       param.addImports(bean);
     }
@@ -293,7 +298,7 @@ public class MethodReader {
   }
 
   public List<String> roles() {
-    var roles = new ArrayList<>(methodRoles);
+    final var roles = new ArrayList<>(methodRoles);
     roles.addAll(bean.roles());
     return roles;
   }
@@ -374,7 +379,7 @@ public class MethodReader {
   }
 
   public boolean isFormBody() {
-    for (MethodParam param : params) {
+    for (final MethodParam param : params) {
       if (param.isForm()) {
         return true;
       }

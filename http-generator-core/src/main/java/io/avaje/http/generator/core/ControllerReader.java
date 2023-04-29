@@ -1,6 +1,12 @@
 package io.avaje.http.generator.core;
 
-import static io.avaje.http.generator.core.ProcessingContext.*;
+import static io.avaje.http.generator.core.ProcessingContext.asElement;
+import static io.avaje.http.generator.core.ProcessingContext.asMemberOf;
+import static io.avaje.http.generator.core.ProcessingContext.instrumentAllWebMethods;
+import static io.avaje.http.generator.core.ProcessingContext.isOpenApiAvailable;
+import static io.avaje.http.generator.core.ProcessingContext.platform;
+import static io.avaje.http.generator.core.ProcessingContext.useComponent;
+import static io.avaje.http.generator.core.ProcessingContext.useJavax;
 import static java.util.function.Predicate.not;
 
 import java.util.ArrayList;
@@ -61,6 +67,9 @@ public final class ControllerReader {
         instrumentAllWebMethods()
             || findAnnotation(ControllerPrism::getOptionalOn)
                 .map(ControllerPrism::instrumentRequestContext)
+                .or(
+                    () ->
+                        findAnnotation(InstrumentServerContextPrism::getOptionalOn).map(x -> true))
                 .orElse(false);
   }
 
@@ -107,8 +116,8 @@ public final class ControllerReader {
   }
 
   private List<Element> initInterfaces() {
-    List<Element> interfaces = new ArrayList<>();
-    for (TypeMirror anInterface : beanType.getInterfaces()) {
+    final List<Element> interfaces = new ArrayList<>();
+    for (final TypeMirror anInterface : beanType.getInterfaces()) {
       final Element ifaceElement = asElement(anInterface);
       final var controller = ControllerPrism.getInstanceOn(ifaceElement);
       if (controller != null && !controller.value().isBlank()
@@ -120,8 +129,8 @@ public final class ControllerReader {
   }
 
   private List<ExecutableElement> initInterfaceMethods() {
-    List<ExecutableElement> ifaceMethods = new ArrayList<>();
-    for (Element anInterface : interfaces) {
+    final List<ExecutableElement> ifaceMethods = new ArrayList<>();
+    for (final Element anInterface : interfaces) {
       ifaceMethods.addAll(ElementFilter.methodsIn(anInterface.getEnclosedElements()));
     }
     return ifaceMethods;
@@ -204,7 +213,7 @@ public final class ControllerReader {
     if (!roles.isEmpty()) {
       platform().controllerRoles(roles, this);
     }
-    for (Element element : beanType.getEnclosedElements()) {
+    for (final Element element : beanType.getEnclosedElements()) {
       if (element.getKind() == ElementKind.METHOD) {
         readMethod((ExecutableElement) element);
       } else if (element.getKind() == ElementKind.FIELD) {
@@ -221,7 +230,7 @@ public final class ControllerReader {
   }
 
   private boolean methodHasValid() {
-    for (MethodReader method : methods) {
+    for (final MethodReader method : methods) {
       if (method.hasValid()) {
         return true;
       }
@@ -240,12 +249,12 @@ public final class ControllerReader {
    * Read methods from superclasses taking into account generics.
    */
   private void readSuper(TypeElement beanType) {
-    TypeMirror superclass = beanType.getSuperclass();
+    final TypeMirror superclass = beanType.getSuperclass();
     if (superclass.getKind() != TypeKind.NONE) {
-      DeclaredType declaredType = (DeclaredType) superclass;
+      final DeclaredType declaredType = (DeclaredType) superclass;
       final Element superElement = asElement(superclass);
       if (!"java.lang.Object".equals(superElement.toString())) {
-        for (Element element : superElement.getEnclosedElements()) {
+        for (final Element element : superElement.getEnclosedElements()) {
           if (element.getKind() == ElementKind.METHOD) {
             readMethod((ExecutableElement) element, declaredType);
           } else if (element.getKind() == ElementKind.FIELD) {
@@ -269,7 +278,7 @@ public final class ControllerReader {
       // actual taking into account generics
       actualExecutable = (ExecutableType) asMemberOf(declaredType, method);
     }
-    MethodReader methodReader = new MethodReader(this, method, actualExecutable);
+    final MethodReader methodReader = new MethodReader(this, method, actualExecutable);
     if (methodReader.isWebMethod()) {
       methodReader.read();
       methods.add(methodReader);

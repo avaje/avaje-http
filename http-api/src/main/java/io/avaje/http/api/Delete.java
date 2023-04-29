@@ -1,21 +1,20 @@
 package io.avaje.http.api;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  * Marks a method that handles HTTP DELETE requests.
  *
  * <pre>{@code
+ * @Delete("{id}")
+ * void delete(long id) {
  *
- *   @Delete("{id}")
- *   void delete(long id) {
- *
- *     ...
- *   }
+ *   ...
+ * }
  *
  * }</pre>
  */
@@ -26,6 +25,11 @@ public @interface Delete {
 
   /** Specify the path. */
   String value() default "";
-
+  /**
+   * Specify if the http request context should be instrumented via RequestContextResolver
+   *
+   * @deprecated use InstrumentServerContext annotation instead
+   */
+  @Deprecated
   boolean instrumentRequestContext() default false;
 }
