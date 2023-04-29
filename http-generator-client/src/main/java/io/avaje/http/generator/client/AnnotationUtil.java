@@ -71,7 +71,7 @@ final class AnnotationUtil {
       final var mirror = (AnnotationMirror) value.getValue();
 
       final String annotationName = mirror.getAnnotationType().toString();
-      sb.append(annotationName).append("(");
+      sb.append("@").append(annotationName).append("(");
       boolean first = true;
 
       for (final Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
