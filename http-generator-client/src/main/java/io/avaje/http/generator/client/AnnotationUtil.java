@@ -17,9 +17,8 @@ final class AnnotationUtil {
 
   public static void writeAnnotations(Append writer, Element element) {
     for (final AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
-      if (UType.parse(annotationMirror.getAnnotationType().asElement().asType())
-          .mainType()
-          .startsWith("io.avaje.http")) {
+      final var type = UType.parse(annotationMirror.getAnnotationType().asElement().asType());
+      if (type.mainType().startsWith("io.avaje.http") || type.mainType().startsWith("io.swagger")) {
         continue;
       }
       final String annotationName = annotationMirror.getAnnotationType().toString();
@@ -42,33 +41,33 @@ final class AnnotationUtil {
     }
   }
 
-  private static void writeVal(final StringBuilder sb, final AnnotationValue value) {
-
-    if (value.getValue() instanceof List) {
+  private static void writeVal(final StringBuilder sb, final AnnotationValue annotationValue) {
+final var value = annotationValue.getValue();
+    if (value instanceof List) {
       sb.append("{");
       boolean first = true;
 
-      for (final AnnotationValue annotationValue : (List<AnnotationValue>) value.getValue()) {
+      for (final AnnotationValue listValue : (List<AnnotationValue>) value) {
 
         if (!first) {
           sb.append(", ");
         }
 
-        writeVal(sb, annotationValue);
+        writeVal(sb, listValue);
         first = false;
       }
       sb.append("}");
-    } else if (value.getValue() instanceof VariableElement) {
+    } else if (value instanceof VariableElement) {
 
-      final var element = (VariableElement) value.getValue();
+      final var element = (VariableElement) value;
 
       final var type = UType.parse(element.asType());
       // Handle enum values
       sb.append(type.full() + "." + element.toString());
 
-    } else if (value.getValue() instanceof AnnotationMirror) {
+    } else if (value instanceof AnnotationMirror) {
 
-      final var mirror = (AnnotationMirror) value.getValue();
+      final var mirror = (AnnotationMirror) value;
 
       final String annotationName = mirror.getAnnotationType().toString();
       sb.append("@").append(annotationName).append("(");
@@ -87,7 +86,7 @@ final class AnnotationUtil {
       sb.append(")");
     } else {
       // Handle non-enum values
-      sb.append(value.toString());
+      sb.append(annotationValue.toString());
     }
   }
 }
