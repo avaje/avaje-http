@@ -79,6 +79,7 @@ class ClientWriter extends BaseControllerWriter {
 
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
+    AnnotationUtil.writeAnnotations(writer, reader.beanType());
     writer.append("public class %s%s implements %s {", shortName, SUFFIX, shortName).eol().eol();
 
     writer.append("  private final HttpClient client;").eol().eol();

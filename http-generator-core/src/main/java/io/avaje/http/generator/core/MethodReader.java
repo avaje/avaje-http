@@ -418,4 +418,8 @@ public class MethodReader {
     }
     writer.append("(new ServerContext(%s, %s), () -> ", reqName, resName);
   }
+
+  public ExecutableElement element() {
+    return element;
+  }
 }

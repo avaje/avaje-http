@@ -49,6 +49,7 @@ class ClientMethodWriter {
     }
     writer.append("  // %s %s", webMethod, method.webMethodPath()).eol();
     writer.append("  @Override").eol();
+    AnnotationUtil.writeAnnotations(writer, method.element());
     writer.append("  public %s%s %s(", methodGenericParams, returnType.shortType(), method.simpleName());
     int count = 0;
     for (MethodParam param : method.params()) {
