@@ -1,12 +1,10 @@
 package io.avaje.http.generator.client;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
 import io.avaje.http.generator.core.Append;
@@ -25,8 +23,7 @@ final class AnnotationUtil {
       final StringBuilder sb = new StringBuilder("@").append(annotationName).append("(");
       boolean first = true;
 
-      for (final Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
-          annotationMirror.getElementValues().entrySet()) {
+      for (final var entry : annotationMirror.getElementValues().entrySet()) {
         if (!first) {
           sb.append(", ");
         }
@@ -42,7 +39,7 @@ final class AnnotationUtil {
   }
 
   private static void writeVal(final StringBuilder sb, final AnnotationValue annotationValue) {
-final var value = annotationValue.getValue();
+    final var value = annotationValue.getValue();
     if (value instanceof List) {
       sb.append("{");
       boolean first = true;
@@ -73,8 +70,7 @@ final var value = annotationValue.getValue();
       sb.append("@").append(annotationName).append("(");
       boolean first = true;
 
-      for (final Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry :
-          mirror.getElementValues().entrySet()) {
+      for (final var entry : mirror.getElementValues().entrySet()) {
         if (!first) {
           sb.append(", ");
         }
