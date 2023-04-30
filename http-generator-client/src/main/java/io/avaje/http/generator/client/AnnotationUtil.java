@@ -40,6 +40,7 @@ final class AnnotationUtil {
 
   private static void writeVal(final StringBuilder sb, final AnnotationValue annotationValue) {
     final var value = annotationValue.getValue();
+    // handle array values
     if (value instanceof List) {
       sb.append("{");
       boolean first = true;
@@ -54,14 +55,14 @@ final class AnnotationUtil {
         first = false;
       }
       sb.append("}");
+      // Handle enum values
     } else if (value instanceof VariableElement) {
 
       final var element = (VariableElement) value;
 
       final var type = UType.parse(element.asType());
-      // Handle enum values
       sb.append(type.full() + "." + element.toString());
-
+      // handle annotation values
     } else if (value instanceof AnnotationMirror) {
 
       final var mirror = (AnnotationMirror) value;
@@ -81,7 +82,6 @@ final class AnnotationUtil {
 
       sb.append(")");
     } else {
-      // Handle non-enum values
       sb.append(annotationValue.toString());
     }
   }
