@@ -100,6 +100,13 @@ class ControllerMethodWriter {
   }
 
   private void writeContextReturn() {
+
+    if (instrumentContext) {
+      writer
+          .append("      if (ctx.resultInputStream() != null || ctx.res().isCommitted()) return;")
+          .eol();
+    }
+
     // Support for CompletableFuture's.
     final UType type = UType.parse(method.returnType());
     if ("java.util.concurrent.CompletableFuture".equals(type.mainType())) {
