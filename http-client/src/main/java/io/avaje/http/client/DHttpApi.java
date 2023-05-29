@@ -27,7 +27,7 @@ final class DHttpApi {
   @SuppressWarnings("rawtypes")
   void init() {
     for (final HttpApiProvider apiProvider : ServiceLoader.load(HttpApiProvider.class)) {
-      providerMap.put(apiProvider.type(), apiProvider);
+      addProvider(apiProvider);
     }
 
     for (final GeneratedComponent apiProvider : ServiceLoader.load(GeneratedComponent.class)) {
@@ -35,6 +35,10 @@ final class DHttpApi {
     }
 
     log.log(DEBUG, "providers for {0}", providerMap.keySet());
+  }
+
+  void addProvider(HttpApiProvider<?> apiProvider) {
+    providerMap.put(apiProvider.type(), apiProvider);
   }
 
   @SuppressWarnings("unchecked")
