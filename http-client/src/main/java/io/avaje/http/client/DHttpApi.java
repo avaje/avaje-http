@@ -20,7 +20,7 @@ final class DHttpApi {
 
   private final Map<Class<?>, HttpApiProvider<?>> providerMap = new HashMap<>();
 
-  private DHttpApi() {
+  DHttpApi() {
     init();
   }
 
