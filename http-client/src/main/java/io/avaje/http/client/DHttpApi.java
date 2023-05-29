@@ -1,6 +1,7 @@
 package io.avaje.http.client;
 
 import io.avaje.applog.AppLog;
+import io.avaje.http.client.HttpClient.GeneratedComponent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,20 +20,21 @@ final class DHttpApi {
 
   private final Map<Class<?>, HttpApiProvider<?>> providerMap = new HashMap<>();
 
-  DHttpApi() {
+  private DHttpApi() {
     init();
   }
 
   @SuppressWarnings("rawtypes")
   void init() {
-    for (HttpApiProvider apiProvider : ServiceLoader.load(HttpApiProvider.class)) {
-      addProvider(apiProvider);
+    for (final HttpApiProvider apiProvider : ServiceLoader.load(HttpApiProvider.class)) {
+      providerMap.put(apiProvider.type(), apiProvider);
     }
-    log.log(DEBUG, "providers for {0}", providerMap.keySet());
-  }
 
-  void addProvider(HttpApiProvider<?> apiProvider) {
-    providerMap.put(apiProvider.type(), apiProvider);
+    for (final GeneratedComponent apiProvider : ServiceLoader.load(GeneratedComponent.class)) {
+      apiProvider.register(providerMap);
+    }
+
+    log.log(DEBUG, "providers for {0}", providerMap.keySet());
   }
 
   @SuppressWarnings("unchecked")

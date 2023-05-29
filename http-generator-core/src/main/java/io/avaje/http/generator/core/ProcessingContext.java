@@ -108,6 +108,10 @@ public class ProcessingContext {
     return CTX.get().useComponent;
   }
 
+  public static void logError(String msg, Object... args) {
+    CTX.get().messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args));
+  }
+
   public static void logError(Element e, String msg, Object... args) {
     CTX.get().messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
@@ -120,6 +124,10 @@ public class ProcessingContext {
   /** Create a file writer for the META-INF services file. */
   public static FileObject createMetaInfWriter(String target) throws IOException {
     return CTX.get().filer.createResource(StandardLocation.CLASS_OUTPUT, "", target);
+  }
+
+  public static JavaFileObject createWriter(String cls) throws IOException {
+    return CTX.get().filer.createSourceFile(cls);
   }
 
   public static String docComment(Element param) {

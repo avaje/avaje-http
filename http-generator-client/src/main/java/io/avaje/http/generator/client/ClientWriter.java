@@ -15,7 +15,6 @@ import java.util.List;
 class ClientWriter extends BaseControllerWriter {
 
   private static final String HTTP_CLIENT = "io.avaje.http.client.HttpClient";
-  private static final String HTTP_API_PROVIDER = "io.avaje.http.client.HttpApiProvider";
 
   private static final String AT_GENERATED = "@Generated(\"avaje-http-client-generator\")";
   private static final String SUFFIX = "HttpClient";
@@ -26,7 +25,6 @@ class ClientWriter extends BaseControllerWriter {
   ClientWriter(ControllerReader reader, boolean useJsonB) throws IOException {
     super(reader, SUFFIX);
     reader.addImportType(HTTP_CLIENT);
-    reader.addImportType(HTTP_API_PROVIDER);
     this.useJsonb = useJsonB;
     readMethods();
     if (useJsonB) reader.addImportType("io.avaje.jsonb.Types");
@@ -39,7 +37,7 @@ class ClientWriter extends BaseControllerWriter {
   }
 
   private void readMethods() {
-    for (MethodReader method : reader.methods()) {
+    for (final MethodReader method : reader.methods()) {
       if (method.isWebMethod()) {
         final var methodWriter = new ClientMethodWriter(method, writer, useJsonb);
         methodWriter.addImportTypes(reader);
@@ -53,26 +51,12 @@ class ClientWriter extends BaseControllerWriter {
     writeImports();
     writeClassStart();
     writeMethods();
-    writeProvider();
     writeClassEnd();
     return fullName;
   }
 
-  private void writeProvider() {
-    writer.append("  public static class Provider implements HttpApiProvider<%s> {", shortName).eol();
-    writer.append("    @Override").eol();
-    writer.append("    public Class<%s> type() {", shortName).eol();
-    writer.append("      return %s.class;", shortName).eol();
-    writer.append("    }").eol();
-    writer.append("    @Override").eol();
-    writer.append("    public %s provide(HttpClient client) {", shortName).eol();
-    writer.append("      return new %s%s(client);", shortName, SUFFIX).eol();
-    writer.append("    }").eol();
-    writer.append("  }").eol();
-  }
-
   private void writeMethods() {
-    for (ClientMethodWriter methodWriter : methodList) {
+    for (final ClientMethodWriter methodWriter : methodList) {
       methodWriter.write();
     }
   }
