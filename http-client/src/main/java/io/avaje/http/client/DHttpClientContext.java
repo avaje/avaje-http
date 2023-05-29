@@ -246,7 +246,7 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
   }
 
   @Override
-public byte[] decodeContent(HttpResponse<byte[]> httpResponse) {
+  public byte[] decodeContent(HttpResponse<byte[]> httpResponse) {
     final String encoding = getContentEncoding(httpResponse);
     return encoding == null ? httpResponse.body() : decodeContent(encoding, httpResponse.body());
   }
