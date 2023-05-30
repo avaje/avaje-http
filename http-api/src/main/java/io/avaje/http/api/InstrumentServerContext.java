@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
  * @Get
  * @InstrumentServerContext
  * void helloWorld(long id) {
- *  Server resolver.currentRequest()
+ *  Context = resolver.currentRequest()
  *   ...
  * }
  *

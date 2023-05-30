@@ -1,14 +1,16 @@
 package io.avaje.http.client;
 
-import io.avaje.inject.BeanScope;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLParameters;
 import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.ProxySelector;
 import java.time.Duration;
+import java.util.Map;
 import java.util.concurrent.Executor;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+
+import io.avaje.inject.BeanScope;
 
 /**
  * The HTTP client context that we use to build and process requests.
@@ -355,5 +357,12 @@ public interface HttpClient {
    */
   interface Metrics extends HttpClientContext.Metrics {
 
+  }
+
+  /** Components register Generated Client interface Providers */
+  @FunctionalInterface
+  interface GeneratedComponent {
+
+    void register(Map<Class<?>, HttpApiProvider<?>> providerMap);
   }
 }

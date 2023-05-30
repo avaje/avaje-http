@@ -58,16 +58,27 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
     if (!clientInterface.isInterface()) {
       throw new IllegalArgumentException("API declarations must be interfaces.");
     }
-    HttpApiProvider<T> apiProvider = DHttpApi.get(clientInterface);
+    final HttpApiProvider<T> apiProvider = DHttpApi.get(clientInterface);
     if (apiProvider != null) {
       return apiProvider.provide(this);
     }
     try {
-      Class<?> implementationClass = implementationClass(clientInterface);
-      Constructor<?> constructor = implementationClass.getConstructor(HttpClientContext.class);
+      final Class<?> implementationClass = implementationClass(clientInterface);
+      final Constructor<?> constructor = implementationClass.getConstructor(HttpClient.class);
       return (T) constructor.newInstance(this);
-    } catch (Exception e) {
-      String cn = implementationClassName(clientInterface, "HttpClient");
+    } catch (final Exception e) {
+      return constructReflectively(clientInterface);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T> T constructReflectively(Class<T> clientInterface) {
+    try {
+      final Class<?> implementationClass = implementationClass(clientInterface);
+      final Constructor<?> constructor = implementationClass.getConstructor(HttpClientContext.class);
+      return (T) constructor.newInstance(this);
+    } catch (final Exception e) {
+      final String cn = implementationClassName(clientInterface, "HttpClient");
       throw new IllegalStateException("Failed to create http client service " + cn, e);
     }
   }
@@ -75,15 +86,15 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
   private Class<?> implementationClass(Class<?> clientInterface) throws ClassNotFoundException {
     try {
       return Class.forName(implementationClassName(clientInterface, "HttpClient"));
-    } catch (ClassNotFoundException e) {
+    } catch (final ClassNotFoundException e) {
       // try the older generated client suffix
       return Class.forName(implementationClassName(clientInterface, "$HttpClient"));
     }
   }
 
   private <T> String implementationClassName(Class<T> clientInterface, String suffix) {
-    String packageName = clientInterface.getPackageName();
-    String simpleName = clientInterface.getSimpleName();
+    final String packageName = clientInterface.getPackageName();
+    final String simpleName = clientInterface.getSimpleName();
     return packageName + ".httpclient." + simpleName + suffix;
   }
 
@@ -202,7 +213,7 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
     if (body instanceof String) {
       return new BodyContent(contentType, ((String) body).getBytes(StandardCharsets.UTF_8));
     }
-    String type = (body == null) ? "null" : body.getClass().toString();
+    final String type = (body == null) ? "null" : body.getClass().toString();
     throw new IllegalStateException("Unable to translate response body to bytes? Maybe use HttpResponse directly instead?  Response body type: " + type);
   }
 
@@ -212,7 +223,7 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
     if (body != null && body.length > 0) {
       metricResBytes.add(body.length);
     }
-    byte[] bodyBytes = decodeContent(httpResponse);
+    final byte[] bodyBytes = decodeContent(httpResponse);
     final String contentType = getContentType(httpResponse);
     return new BodyContent(contentType, bodyBytes);
   }
@@ -227,21 +238,22 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
 
   @Override
   public byte[] decodeContent(String encoding, byte[] body) {
-    if (encoding.equals("gzip")) {
+    if ("gzip".equals(encoding)) {
       return GzipUtil.gzipDecode(body);
     }
     // todo: register decoders with context and use them
     return body;
   }
 
+  @Override
   public byte[] decodeContent(HttpResponse<byte[]> httpResponse) {
-    String encoding = getContentEncoding(httpResponse);
+    final String encoding = getContentEncoding(httpResponse);
     return encoding == null ? httpResponse.body() : decodeContent(encoding, httpResponse.body());
   }
 
   String firstHeader(HttpHeaders headers, String... names) {
     final Map<String, List<String>> map = headers.map();
-    for (String key : names) {
+    for (final String key : names) {
       final List<String> values = map.get(key);
       if (values != null && !values.isEmpty()) {
         return values.get(0);
@@ -253,9 +265,9 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
   <T> HttpResponse<T> send(HttpRequest.Builder requestBuilder, HttpResponse.BodyHandler<T> bodyHandler) {
     try {
       return httpClient.send(requestBuilder.build(), bodyHandler);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new HttpException(499, e);
-    } catch (InterruptedException e) {
+    } catch (final InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new HttpException(499, e);
     }

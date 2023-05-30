@@ -10,7 +10,7 @@
   <artifactId>avaje-http-generator-core</artifactId>
 
   <properties>
-    <avaje.prisms.version>1.8</avaje.prisms.version>
+    <avaje.prisms.version>1.9</avaje.prisms.version>
   </properties>
   <dependencies>
     <dependency>

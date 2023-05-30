@@ -14,6 +14,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GithubTest {
 
+  @Test
+  void test_create() {
+    final HttpClient client = HttpClient.builder().baseUrl("https://api.github.com").build();
+
+    final Simple simple = client.create(Simple.class);
+    assertThat(simple).isNotNull();
+  }
+
   @Disabled
   @Test
   void test_with_jackson() {

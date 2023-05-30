@@ -18,5 +18,7 @@ public class Constants {
 
   static final String IMPORT_HTTP_API = "io.avaje.http.api.*";
   static final String VALIDATOR = "io.avaje.http.api.Validator";
+  public static final String META_INF_COMPONENT = "META-INF/services/io.avaje.http.client.HttpClient$GeneratedComponent";
+
 
 }
