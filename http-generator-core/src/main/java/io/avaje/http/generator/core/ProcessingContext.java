@@ -116,6 +116,13 @@ public class ProcessingContext {
     CTX.get().messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
 
+  public static void logWarn(String msg, Object... args) {
+    CTX.get().messager.printMessage(Diagnostic.Kind.WARNING, String.format(msg, args));
+  }
+
+  public static void logDebug(String msg, Object... args) {
+    CTX.get().messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
+  }
   /** Create a file writer for the given class name. */
   public static JavaFileObject createWriter(String cls, Element origin) throws IOException {
     return CTX.get().filer.createSourceFile(cls, origin);
@@ -175,5 +182,9 @@ public class ProcessingContext {
 
   public static boolean instrumentAllWebMethods() {
     return CTX.get().instrumentAllMethods;
+  }
+
+  public static Filer filer() {
+    return CTX.get().filer;
   }
 }
