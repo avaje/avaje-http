@@ -67,13 +67,11 @@ public class ClientProcessor extends AbstractProcessor {
         round.getElementsAnnotatedWith(typeElement(ClientPrism.PRISM_TYPE))) {
       writeClient(controller);
     }
-    for (final var importedElement :
-        round.getElementsAnnotatedWith(typeElement(ImportPrism.PRISM_TYPE))) {
+    for (final var importedElement : round.getElementsAnnotatedWith(typeElement(ImportPrism.PRISM_TYPE))) {
       writeForImported(importedElement);
     }
 
     writeComponent(round.processingOver());
-
     setPlatform(platform);
     return false;
   }

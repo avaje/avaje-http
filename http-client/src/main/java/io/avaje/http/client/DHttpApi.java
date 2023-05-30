@@ -29,11 +29,9 @@ final class DHttpApi {
     for (final HttpApiProvider apiProvider : ServiceLoader.load(HttpApiProvider.class)) {
       addProvider(apiProvider);
     }
-
     for (final GeneratedComponent apiProvider : ServiceLoader.load(GeneratedComponent.class)) {
       apiProvider.register(providerMap);
     }
-
     log.log(DEBUG, "providers for {0}", providerMap.keySet());
   }
 

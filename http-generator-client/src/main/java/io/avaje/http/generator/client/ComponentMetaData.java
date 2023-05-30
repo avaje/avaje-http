@@ -31,7 +31,6 @@ final class ComponentMetaData {
 
   String fullName() {
     if (fullName == null) {
-
       String topPackage = TopPackage.of(generatedClients);
       if (!topPackage.endsWith(".httpclient")) {
         topPackage += ".httpclient";
@@ -59,13 +58,11 @@ final class ComponentMetaData {
     return packageImports;
   }
 
-  public static String removeLast(String s, String search) {
-    final int pos = s.lastIndexOf(search);
-
+  public static String removeLast(String className, String search) {
+    final int pos = className.lastIndexOf(search);
     if (pos > -1) {
-      return s.substring(0, pos) + s.substring(pos + search.length());
+      return className.substring(0, pos) + className.substring(pos + search.length());
     }
-
-    return s;
+    return className;
   }
 }
