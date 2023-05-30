@@ -363,6 +363,9 @@ public interface HttpClient {
   @FunctionalInterface
   interface GeneratedComponent {
 
+    /**
+     * Register the HttpApiProviders to the given providerMap.
+     */
     void register(Map<Class<?>, HttpApiProvider<?>> providerMap);
   }
 }

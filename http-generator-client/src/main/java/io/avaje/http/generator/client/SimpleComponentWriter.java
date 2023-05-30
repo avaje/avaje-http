@@ -30,11 +30,9 @@ final class SimpleComponentWriter {
   }
 
   void init() throws IOException {
-
     if (fullName == null) {
       this.fullName = metaData.fullName();
     }
-
     if (fileObject == null) {
       fileObject = createWriter(metaData.fullName());
     }
@@ -65,12 +63,9 @@ final class SimpleComponentWriter {
     writer.append("  public void register(Map<Class<?>, HttpApiProvider<?>> providerMap) {").eol();
 
     for (final String clientFullName : metaData.all()) {
-
       final String clientShortName = Util.shortName(clientFullName);
-      final var clientInterface = removeLast(clientShortName, "HttpClient");
-      writer
-          .append("    providerMap.put(%s.class, %s::new);", clientInterface, clientShortName)
-          .eol();
+      final var clientInterface = ComponentMetaData.removeLast(clientShortName, "HttpClient");
+      writer.append("    providerMap.put(%s.class, %s::new);", clientInterface, clientShortName).eol();
     }
     writer.append("  }").eol().eol();
   }
@@ -82,15 +77,11 @@ final class SimpleComponentWriter {
   private void writeClassStart() {
     final String shortName = Util.shortName(fullName);
     writer.append(AT_GENERATED).eol();
-
     writer.append("@MetaData({");
     final List<String> all = metaData.all();
     writeMetaDataEntry(all);
     writer.append("})").eol();
-    writer
-        .append("public class %s implements HttpClient.GeneratedComponent {", shortName)
-        .eol()
-        .eol();
+    writer.append("public class %s implements HttpClient.GeneratedComponent {", shortName).eol().eol();
   }
 
   private void writeMetaDataEntry(List<String> entries) {
@@ -117,19 +108,9 @@ final class SimpleComponentWriter {
     writer.eol();
   }
 
-  public static String removeLast(String s, String search) {
-    final int pos = s.lastIndexOf(search);
-
-    if (pos > -1) {
-      return s.substring(0, pos) + s.substring(pos + search.length());
-    }
-
-    return s;
-  }
-
   private void writePackage() {
     final String packageName = TopPackage.packageOf(fullName);
-    if (packageName != null && !packageName.isEmpty()) {
+    if (!packageName.isEmpty()) {
       writer.append("package %s;", packageName).eol().eol();
     }
   }
