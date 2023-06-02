@@ -43,6 +43,11 @@ public class TestController2 {
     return type.name();
   }
 
+  @Post("/enumPath/{type}")
+  String enumQueryImplied(ServerType type) {
+    return type.name();
+  }
+
   @Get("/mapTest")
   String mapTest(Map<String, List<String>> strings) {
     return strings.toString();
