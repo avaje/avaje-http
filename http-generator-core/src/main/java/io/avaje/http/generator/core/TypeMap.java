@@ -315,7 +315,7 @@ class TypeMap {
 
     @Override
     public String asMethod() {
-      return "asEnum(" + type.shortType() + ".class, ";
+      return "(" + type.shortType() + ") asEnum(" + type.shortType() + ".class, ";
     }
   }
 
