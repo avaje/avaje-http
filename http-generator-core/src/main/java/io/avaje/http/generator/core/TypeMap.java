@@ -310,12 +310,12 @@ class TypeMap {
 
     @Override
     public String toMethod() {
-      return "(" + type.shortType() + ") asEnum(" + type.shortType() + ".class,";
+      return "(" + type.shortType() + ") asEnum(" + type.shortType() + ".class, ";
     }
 
     @Override
     public String asMethod() {
-      return "java.util.Objects.toString(";
+      return "(" + type.shortType() + ") asEnum(" + type.shortType() + ".class, ";
     }
   }
 
