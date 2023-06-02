@@ -44,7 +44,7 @@ public class TestController2 {
   }
 
   @Post("/enumPath/{type}")
-  String enumQueryImplied(ServerType type) {
+  String enumPath(ServerType type) {
     return type.name();
   }
 
