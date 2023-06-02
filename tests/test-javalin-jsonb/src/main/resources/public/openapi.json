@@ -1294,6 +1294,42 @@
 				}
 			}
 		},
+		"/test/enumPath/{type}" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "type",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string",
+							"enum" : [
+								"PROXY",
+								"HIDE_N_SEEK",
+								"FFA"
+							]
+						}
+					}
+				],
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/test/enumQuery" : {
 			"get" : {
 				"tags" : [
