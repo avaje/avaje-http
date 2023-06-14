@@ -19,11 +19,6 @@ to generate adapter code for Javalin and Helidon SE/Nima.
 ```xml
 <dependency>
   <groupId>io.avaje</groupId>
-  <artifactId>avaje-inject</artifactId>
-  <version>${avaje-inject.version}</version>
-</dependency>
-<dependency>
-  <groupId>io.avaje</groupId>
   <artifactId>avaje-http-api</artifactId>
   <version>${avaje.http.version}</version>
 </dependency>
@@ -32,12 +27,6 @@ to generate adapter code for Javalin and Helidon SE/Nima.
 
 ```xml
 <!-- Annotation processors -->
-<dependency>
-  <groupId>io.avaje</groupId>
-  <artifactId>avaje-inject-generator</artifactId>
-  <version>${avaje-inject.version}</version>
-  <scope>provided</scope>
-</dependency>
 <dependency>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-javalin-generator</artifactId>
