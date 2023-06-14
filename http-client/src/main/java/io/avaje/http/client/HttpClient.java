@@ -73,19 +73,6 @@ public interface HttpClient {
   UrlBuilder url();
 
   /**
-   * Deprecated - migrate to {@link #bodyAdapter()}.
-   * <p>
-   * Return the body adapter used by the client context.
-   * <p>
-   * This is the body adapter used to convert request and response
-   * bodies to java types. For example using Jackson with JSON payloads.
-   */
-  @Deprecated
-  default BodyAdapter converters() {
-    return bodyAdapter();
-  }
-
-  /**
    * Return the BodyAdapter that this client is using.
    */
   BodyAdapter bodyAdapter();
@@ -355,8 +342,37 @@ public interface HttpClient {
   /**
    * Statistic metrics collected to provide an overview of activity of this client.
    */
-  interface Metrics extends HttpClientContext.Metrics {
+  interface Metrics {
 
+    /**
+     * Return the total number of responses.
+     */
+    long totalCount();
+
+    /**
+     * Return the total number of error responses (status code >= 300).
+     */
+    long errorCount();
+
+    /**
+     * Return the total response bytes (excludes streaming responses).
+     */
+    long responseBytes();
+
+    /**
+     * Return the total response time in microseconds.
+     */
+    long totalMicros();
+
+    /**
+     * Return the max response time in microseconds (since the last reset).
+     */
+    long maxMicros();
+
+    /**
+     * Return the average response time in microseconds.
+     */
+    long avgMicros();
   }
 
   /** Components register Generated Client interface Providers */

@@ -119,14 +119,6 @@ public interface HttpCallResponse {
   <E> HttpCall<HttpResponse<E>> handler(HttpResponse.BodyHandler<E> bodyHandler);
 
   /**
-   * Deprecated - migrate to handler().
-   */
-  @Deprecated
-  default <E> HttpCall<HttpResponse<E>> withHandler(HttpResponse.BodyHandler<E> bodyHandler) {
-    return handler(bodyHandler);
-  }
-
-  /**
    * A bean response to execute async or sync.
    * <p>
    * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains

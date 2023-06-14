@@ -307,12 +307,4 @@ public interface HttpClientResponse {
    */
   <T> HttpResponse<T> handler(HttpResponse.BodyHandler<T> responseHandler);
 
-  /**
-   * Deprecated - migrate to handler().
-   */
-  @Deprecated
-  default <T> HttpResponse<T> withHandler(HttpResponse.BodyHandler<T> responseHandler) {
-    return handler(responseHandler);
-  }
-
 }
