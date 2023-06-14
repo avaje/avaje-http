@@ -9,8 +9,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RetryTest extends BaseWebTest {
 
 
-  HttpClientContext initClientWithRetry(MyIntercept myIntercept, RetryHandler retryHandler) {
-    return HttpClientContext.builder()
+  HttpClient initClientWithRetry(MyIntercept myIntercept, RetryHandler retryHandler) {
+    return HttpClient.builder()
       .baseUrl("http://localhost:8889")
       .bodyAdapter(new JacksonBodyAdapter())
       .retryHandler(retryHandler)
@@ -21,18 +21,18 @@ class RetryTest extends BaseWebTest {
   @Test
   void retryTest() {
     final MyIntercept myIntercept = new MyIntercept();
-    final HttpClientContext clientContext = initClientWithRetry(myIntercept, new SimpleRetryHandler(4, 1));
+    final HttpClient clientContext = initClientWithRetry(myIntercept, new SimpleRetryHandler(4, 1));
     performGetRequestAndAssert(myIntercept, clientContext);
   }
 
   @Test
   void retryWithGitterTest() {
     final MyIntercept myIntercept = new MyIntercept();
-    final HttpClientContext clientContext = initClientWithRetry(myIntercept, new SimpleRetryHandler(4, 10, 20));
+    final HttpClient clientContext = initClientWithRetry(myIntercept, new SimpleRetryHandler(4, 10, 20));
     performGetRequestAndAssert(myIntercept, clientContext);
   }
 
-  private void performGetRequestAndAssert(MyIntercept myIntercept, HttpClientContext clientContext) {
+  private void performGetRequestAndAssert(MyIntercept myIntercept, HttpClient clientContext) {
     HttpResponse<String> res = clientContext.request()
       .label("http_client_hello_retry")
       .path("hello/retry")

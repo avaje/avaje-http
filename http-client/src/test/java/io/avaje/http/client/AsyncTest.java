@@ -13,10 +13,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class AsyncTest extends BaseWebTest {
 
-  final HttpClientContext clientContext = client();
+  final HttpClient clientContext = client();
 
   @Test
-  void waitForAsync()  {
+  void waitForAsync() {
     final CompletableFuture<HttpResponse<Stream<String>>> future = clientContext.request()
       .path("hello").path("stream")
       .GET()

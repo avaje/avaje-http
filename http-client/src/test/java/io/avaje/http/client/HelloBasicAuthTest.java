@@ -9,10 +9,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class HelloBasicAuthTest extends BaseWebTest {
 
-  final HttpClientContext clientContext = client();
+  final HttpClient clientContext = client();
 
-  public static HttpClientContext client() {
-    return HttpClientContext.builder()
+  public static HttpClient client() {
+    return HttpClient.builder()
       .baseUrl(baseUrl)
       .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
       .requestIntercept(new BasicAuthIntercept("rob", "bot"))

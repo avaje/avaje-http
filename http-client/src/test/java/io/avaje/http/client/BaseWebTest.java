@@ -1,8 +1,8 @@
 package io.avaje.http.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.webserver.App;
 import io.javalin.Javalin;
+import org.example.webserver.App;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
@@ -25,8 +25,8 @@ public class BaseWebTest {
     webServer.stop();
   }
 
-  public static HttpClientContext client() {
-    return HttpClientContext.builder()
+  public static HttpClient client() {
+    return HttpClient.builder()
       .baseUrl(baseUrl)
       .connectionTimeout(Duration.ofSeconds(1))
       .requestTimeout(Duration.ofSeconds(1))

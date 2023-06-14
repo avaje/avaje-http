@@ -2,9 +2,9 @@ package io.avaje.http.client;
 
 import io.avaje.jsonb.Jsonb;
 import org.example.github.Repo;
+import org.example.github.RepoJsonAdapter;
 import org.example.github.Simple;
 import org.example.github.httpclient.Simple$HttpClient;
-import org.example.github.RepoJsonAdapter;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,7 @@ class DHttpApiTest {
   @Test
   void test_github_listRepos() {
 
-    final HttpClientContext clientContext = HttpClientContext.builder()
+    final var clientContext = HttpClient.builder()
       .baseUrl("https://api.github.com")
       .bodyAdapter(new JacksonBodyAdapter())
       .build();

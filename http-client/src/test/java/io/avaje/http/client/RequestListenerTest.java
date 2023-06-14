@@ -32,8 +32,8 @@ class RequestListenerTest extends BaseWebTest {
     }
   }
 
-  private HttpClientContext createClient(TDRequestListener tdRequestListener) {
-    return HttpClientContext.builder()
+  private HttpClient createClient(TDRequestListener tdRequestListener) {
+    return HttpClient.builder()
       .baseUrl(baseUrl)
       .requestLogging(false)
       .requestListener(new RequestLogger())
@@ -45,7 +45,7 @@ class RequestListenerTest extends BaseWebTest {
   @Test
   void get_no_request_body() {
     final TDRequestListener tdRequestListener = new TDRequestListener(false);
-    final HttpClientContext client = createClient(tdRequestListener);
+    final HttpClient client = createClient(tdRequestListener);
 
     final HttpResponse<String> hres = client.request()
       .path("hello").path("message")
@@ -58,7 +58,7 @@ class RequestListenerTest extends BaseWebTest {
   @Test
   void post() {
     final TDRequestListener tdRequestListener = new TDRequestListener(true);
-    final HttpClientContext client = createClient(tdRequestListener);
+    final HttpClient client = createClient(tdRequestListener);
 
     final HttpResponse<String> hres = client.request()
       .path("post")
