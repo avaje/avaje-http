@@ -225,14 +225,6 @@ public interface HttpAsyncResponse {
   <E> CompletableFuture<HttpResponse<E>> handler(HttpResponse.BodyHandler<E> bodyHandler);
 
   /**
-   * Deprecated - migrate to handler().
-   */
-  @Deprecated
-  default <E> CompletableFuture<HttpResponse<E>> withHandler(HttpResponse.BodyHandler<E> bodyHandler) {
-    return handler(bodyHandler);
-  }
-
-  /**
    * Process converting the response body to the given type.
    * <p>
    * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains

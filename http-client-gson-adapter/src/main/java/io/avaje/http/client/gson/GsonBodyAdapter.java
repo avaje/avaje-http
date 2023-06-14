@@ -21,7 +21,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  *
  * <pre>{@code
  *
- *   HttpClientContext.builder()
+ *   HttpClient.builder()
  *       .baseUrl(baseUrl)
  *       .requestListener(new RequestLogger())
  *       //.bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
