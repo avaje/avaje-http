@@ -1,6 +1,6 @@
 package org.example.github;
 
-import io.avaje.http.client.HttpClientContext;
+import io.avaje.http.client.HttpClient;
 import io.avaje.http.client.JacksonBodyAdapter;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ public class GithubTest {
   @Disabled
   void test() {
 
-    final HttpClientContext clientContext = HttpClientContext.builder()
+    final HttpClient clientContext = HttpClient.builder()
       .baseUrl("https://api.github.com")
       .bodyAdapter(new JacksonBodyAdapter())
       .requestLogging(false)

@@ -45,7 +45,7 @@ public class AuthTokenTest {
   @Test
   void sendEmail() {
 
-    HttpClientContext ctx = HttpClientContext.builder()
+    var ctx = HttpClient.builder()
       .baseUrl("https://foo")
       .bodyAdapter(new JacksonBodyAdapter(objectMapper))
       .authTokenProvider(new MyAuthTokenProvider())

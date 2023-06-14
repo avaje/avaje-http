@@ -1,6 +1,6 @@
 package org.example;
 
-import io.avaje.http.client.HttpClientContext;
+import io.avaje.http.client.HttpClient;
 import io.avaje.http.client.JacksonBodyAdapter;
 import org.example.server.Main;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,7 +21,7 @@ class CommonApiTest {
     final int port = new Random().nextInt(1000) + 10_000;
     Main.start(port);
 
-    final HttpClientContext clientContext = HttpClientContext.builder()
+    final HttpClient clientContext = HttpClient.builder()
       .baseUrl("http://localhost:" + port)
       .bodyAdapter(new JacksonBodyAdapter())
       .build();

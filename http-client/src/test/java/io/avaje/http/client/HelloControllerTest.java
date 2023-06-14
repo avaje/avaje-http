@@ -30,7 +30,7 @@ class HelloControllerTest extends BaseWebTest {
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
 
-  final HttpClientContext clientContext = client();
+  final HttpClient clientContext = client();
 
   @Test
   void newClientTest() {
@@ -77,7 +77,7 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(hres.statusCode()).isEqualTo(200);
     assertThat(hres.uri().toString()).isEqualTo("http://localhost:8889/hello/message?A=a&B=b");
 
-    HttpClientContext.Metrics metrics = clientContext.metrics();
+    HttpClient.Metrics metrics = clientContext.metrics();
     assertThat(metrics.totalCount()).isEqualTo(1);
     assertThat(metrics.errorCount()).isEqualTo(0);
     assertThat(metrics.responseBytes()).isGreaterThan(0);
@@ -116,7 +116,7 @@ class HelloControllerTest extends BaseWebTest {
 
     assertThat(lines).hasSize(4);
     assertThat(lines.get(0)).contains("{\"id\":1, \"name\":\"one\"}");
-    HttpClientContext.Metrics metrics = clientContext.metrics();
+    HttpClient.Metrics metrics = clientContext.metrics();
     assertThat(metrics.totalCount()).isEqualTo(1);
     assertThat(metrics.errorCount()).isEqualTo(0);
     assertThat(metrics.responseBytes()).isEqualTo(0);
@@ -281,7 +281,7 @@ class HelloControllerTest extends BaseWebTest {
 
     assertThat(httpException.statusCode()).isEqualTo(404);
     assertThat(httpException.httpResponse().statusCode()).isEqualTo(404);
-    HttpClientContext.Metrics metrics = clientContext.metrics(true);
+    HttpClient.Metrics metrics = clientContext.metrics(true);
     assertThat(metrics.totalCount()).isEqualTo(1);
     assertThat(metrics.errorCount()).isEqualTo(1);
     assertThat(metrics.responseBytes()).isEqualTo(0);
@@ -475,7 +475,7 @@ class HelloControllerTest extends BaseWebTest {
 
     assertThat(hres.statusCode()).isEqualTo(404);
     assertThat(hres.body()).contains("Not Found");
-    HttpClientContext.Metrics metrics = clientContext.metrics(true);
+    HttpClient.Metrics metrics = clientContext.metrics(true);
     assertThat(metrics.totalCount()).isEqualTo(1);
     assertThat(metrics.errorCount()).isEqualTo(1);
     assertThat(metrics.responseBytes()).isGreaterThan(0);
@@ -506,11 +506,11 @@ class HelloControllerTest extends BaseWebTest {
   void asPlainString_throwingHttpException() {
     final HttpException httpException = assertThrows(HttpException.class, () ->
       clientContext.request()
-      .path("hello/saveform3")
-      .formParam("name", "Bax")
-      .formParam("email", "notValidEmail")
-      .POST()
-      .asPlainString());
+        .path("hello/saveform3")
+        .formParam("name", "Bax")
+        .formParam("email", "notValidEmail")
+        .POST()
+        .asPlainString());
 
     assertThat(httpException.statusCode()).isEqualTo(422);
 
@@ -532,7 +532,7 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(hres.statusCode()).isEqualTo(422);
 
     // convert json error response body to a bean
-    final ErrorResponse errorResponse = clientContext.converters()
+    final ErrorResponse errorResponse = clientContext.bodyAdapter()
       .beanReader(ErrorResponse.class).readBody(hres.body());
 
     final Map<String, String> errorMap = errorResponse.getErrors();
@@ -936,7 +936,7 @@ class HelloControllerTest extends BaseWebTest {
     } catch (CompletionException e) {
       assertThat(e.getCause()).isSameAs(causeRef.get());
     }
-    HttpClientContext.Metrics metrics = clientContext.metrics(true);
+    HttpClient.Metrics metrics = clientContext.metrics(true);
     assertThat(metrics.totalCount()).isEqualTo(1);
     assertThat(metrics.errorCount()).isEqualTo(1);
     assertThat(metrics.responseBytes()).isGreaterThan(0);
@@ -981,8 +981,8 @@ class HelloControllerTest extends BaseWebTest {
 
     HelloDto dto = new HelloDto(12, "rob", "other");
 
-    final BodyWriter from = clientContext.converters().beanWriter(HelloDto.class);
-    final BodyReader<HelloDto> toDto = clientContext.converters().beanReader(HelloDto.class);
+    final BodyWriter from = clientContext.bodyAdapter().beanWriter(HelloDto.class);
+    final BodyReader<HelloDto> toDto = clientContext.bodyAdapter().beanReader(HelloDto.class);
 
     final HelloDto bean = clientContext.request()
       .path("hello")

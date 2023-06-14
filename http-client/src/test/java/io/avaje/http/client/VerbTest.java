@@ -3,7 +3,6 @@ package io.avaje.http.client;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -11,15 +10,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class VerbTest extends BaseWebTest {
 
-  private final HttpClientContext clientContext = client();
+  private final HttpClient clientContext = client();
 
   @Test
   void post() {
@@ -148,9 +145,9 @@ public class VerbTest extends BaseWebTest {
   @Test
   void delete_with_body_InputStream() {
     HttpResponse<String> res = clientContext.request()
-        .path("delete")
-        .body(() -> getClass().getResourceAsStream("/dummy.txt"))
-        .DELETE().asString();
+      .path("delete")
+      .body(() -> getClass().getResourceAsStream("/dummy.txt"))
+      .DELETE().asString();
 
     assertThat(res.body()).isEqualTo("delete body[dummyFileContent]");
   }
@@ -183,7 +180,7 @@ public class VerbTest extends BaseWebTest {
 
     HttpResponse<String> res = clientContext.request()
       .path("post")
-      .body((HttpRequest.BodyPublisher)null)
+      .body((HttpRequest.BodyPublisher) null)
       .POST().asString();
 
     assertThat(res.body()).isEqualTo("post");
