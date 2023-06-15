@@ -3,7 +3,6 @@ package io.avaje.http.client;
 import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.ProxySelector;
-import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.concurrent.Executor;
@@ -13,121 +12,121 @@ import javax.net.ssl.SSLParameters;
 
 import io.avaje.inject.BeanScope;
 
-final class DHttpClientContextBuilder extends DBaseBuilder implements HttpClientContext.Builder, HttpClientContext.Builder.State {
+final class DHttpClientContextBuilder extends DBaseBuilder implements HttpClient.Builder, HttpClient.Builder.State {
 
   DHttpClientContextBuilder() {
   }
 
   @Override
-  public HttpClientContext.Builder client(HttpClient client) {
+  public HttpClient.Builder client(java.net.http.HttpClient client) {
     this.client = client;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder baseUrl(String baseUrl) {
+  public HttpClient.Builder baseUrl(String baseUrl) {
     this.baseUrl = baseUrl;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder connectionTimeout(Duration connectionTimeout) {
+  public HttpClient.Builder connectionTimeout(Duration connectionTimeout) {
     this.connectionTimeout = connectionTimeout;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder requestTimeout(Duration requestTimeout) {
+  public HttpClient.Builder requestTimeout(Duration requestTimeout) {
     this.requestTimeout = requestTimeout;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder bodyAdapter(BodyAdapter adapter) {
+  public HttpClient.Builder bodyAdapter(BodyAdapter adapter) {
     this.bodyAdapter = adapter;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder retryHandler(RetryHandler retryHandler) {
+  public HttpClient.Builder retryHandler(RetryHandler retryHandler) {
     this.retryHandler = retryHandler;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder requestLogging(boolean requestLogging) {
+  public HttpClient.Builder requestLogging(boolean requestLogging) {
     this.requestLogging = requestLogging;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder requestListener(RequestListener... requestListener) {
+  public HttpClient.Builder requestListener(RequestListener... requestListener) {
     Collections.addAll(listeners, requestListener);
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder requestIntercept(RequestIntercept... requestIntercept) {
+  public HttpClient.Builder requestIntercept(RequestIntercept... requestIntercept) {
     Collections.addAll(interceptors, requestIntercept);
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder authTokenProvider(AuthTokenProvider authTokenProvider) {
+  public HttpClient.Builder authTokenProvider(AuthTokenProvider authTokenProvider) {
     this.authTokenProvider = authTokenProvider;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder cookieHandler(CookieHandler cookieHandler) {
+  public HttpClient.Builder cookieHandler(CookieHandler cookieHandler) {
     this.cookieHandler = cookieHandler;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder redirect(HttpClient.Redirect redirect) {
+  public HttpClient.Builder redirect(java.net.http.HttpClient.Redirect redirect) {
     this.redirect = redirect;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder version(HttpClient.Version version) {
+  public HttpClient.Builder version(java.net.http.HttpClient.Version version) {
     this.version = version;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder executor(Executor executor) {
+  public HttpClient.Builder executor(Executor executor) {
     this.executor = executor;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder proxy(ProxySelector proxySelector) {
+  public HttpClient.Builder proxy(ProxySelector proxySelector) {
     this.proxy = proxySelector;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder sslContext(SSLContext sslContext) {
+  public HttpClient.Builder sslContext(SSLContext sslContext) {
     this.sslContext = sslContext;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder sslParameters(SSLParameters sslParameters) {
+  public HttpClient.Builder sslParameters(SSLParameters sslParameters) {
     this.sslParameters = sslParameters;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder authenticator(Authenticator authenticator) {
+  public HttpClient.Builder authenticator(Authenticator authenticator) {
     this.authenticator = authenticator;
     return this;
   }
 
   @Override
-  public HttpClientContext.Builder priority(int priority) {
+  public HttpClient.Builder priority(int priority) {
     this.priority = priority;
     return this;
   }
@@ -138,13 +137,13 @@ final class DHttpClientContextBuilder extends DBaseBuilder implements HttpClient
   }
 
   @Override
-  public HttpClientContext.Builder configureWith(BeanScope beanScope) {
+  public HttpClient.Builder configureWith(BeanScope beanScope) {
     super.configureFromScope(beanScope);
     return this;
   }
 
   @Override
-  public HttpClientContext build() {
+  public HttpClient build() {
     return super.buildClient();
   }
 
@@ -159,7 +158,7 @@ final class DHttpClientContextBuilder extends DBaseBuilder implements HttpClient
   }
 
   @Override
-  public HttpClient client() {
+  public java.net.http.HttpClient client() {
     return client;
   }
 
