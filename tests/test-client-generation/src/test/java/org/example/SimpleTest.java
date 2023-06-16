@@ -35,16 +35,4 @@ class SimpleTest {
     assertThat(repos).hasSizeGreaterThan(5);
   }
 
-  public static class AP implements HttpApiProvider<GitHubUsers> {
-
-    @Override
-    public Class<GitHubUsers> type() {
-      return GitHubUsers.class;
-    }
-
-    @Override
-    public GitHubUsers provide(HttpClient client) {
-      return new GitHubUsersHttpClient(client);
-    }
-  }
 }
