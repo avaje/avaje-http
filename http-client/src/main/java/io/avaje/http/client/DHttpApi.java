@@ -9,9 +9,7 @@ import java.util.ServiceLoader;
 
 import static java.lang.System.Logger.Level.*;
 
-/**
- * Service loads the HttpApiProvider for HttpApi.
- */
+/** Service loads the HttpApiProvider for HttpApi. */
 final class DHttpApi {
 
   private static final System.Logger log = AppLog.getLogger("io.avaje.http.client");
@@ -31,6 +29,10 @@ final class DHttpApi {
     log.log(DEBUG, "providers for {0}", providerMap.keySet());
   }
 
+  <T> void addProvider(Class<T> type, HttpApiProvider<?> apiProvider) {
+    providerMap.put(type, apiProvider);
+  }
+
   @SuppressWarnings("unchecked")
   private <T> HttpApiProvider<T> lookup(Class<T> type) {
     return (HttpApiProvider<T>) providerMap.get(type);
@@ -44,16 +46,12 @@ final class DHttpApi {
     return apiProvider.provide(httpClient);
   }
 
-  /**
-   * Return the client implementation via service loading.
-   */
+  /** Return the client implementation via service loading. */
   static <T> T provide(Class<T> type, HttpClient httpClient) {
     return INSTANCE.provideFor(type, httpClient);
   }
 
-  /**
-   * Return the HttpApiProvider for the client interface type or null if not registered.
-   */
+  /** Return the HttpApiProvider for the client interface type or null if not registered. */
   static <T> HttpApiProvider<T> get(Class<T> type) {
     return INSTANCE.lookup(type);
   }

@@ -64,18 +64,4 @@ public class Simple$HttpClient implements Simple {
   public HttpResponse<Repo> getById2(String id) {
     return null;
   }
-
-  public static class Provider implements HttpApiProvider<Simple> {
-
-    @Override
-    public Class<Simple> type() {
-      return Simple.class;
-    }
-
-    @Override
-    public Simple provide(HttpClient client) {
-      return new Simple$HttpClient(client);
-    }
-  }
-
 }
