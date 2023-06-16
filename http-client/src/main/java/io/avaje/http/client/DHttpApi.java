@@ -24,19 +24,11 @@ final class DHttpApi {
     init();
   }
 
-  @SuppressWarnings("rawtypes")
   void init() {
-    for (final HttpApiProvider apiProvider : ServiceLoader.load(HttpApiProvider.class)) {
-      addProvider(apiProvider);
-    }
     for (final GeneratedComponent apiProvider : ServiceLoader.load(GeneratedComponent.class)) {
       apiProvider.register(providerMap);
     }
     log.log(DEBUG, "providers for {0}", providerMap.keySet());
-  }
-
-  void addProvider(HttpApiProvider<?> apiProvider) {
-    providerMap.put(apiProvider.type(), apiProvider);
   }
 
   @SuppressWarnings("unchecked")
@@ -44,7 +36,6 @@ final class DHttpApi {
     return (HttpApiProvider<T>) providerMap.get(type);
   }
 
-  @SuppressWarnings("unchecked")
   <T> T provideFor(Class<T> type, HttpClient httpClient) {
     final HttpApiProvider<T> apiProvider = lookup(type);
     if (apiProvider == null) {
