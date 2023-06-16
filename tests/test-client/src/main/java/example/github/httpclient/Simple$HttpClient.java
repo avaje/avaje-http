@@ -1,7 +1,9 @@
-package example.github;
+package example.github.httpclient;
 
 import java.util.List;
 
+import example.github.Repo;
+import example.github.Simple;
 import io.avaje.http.client.HttpClient;
 import io.avaje.http.client.HttpException;
 
@@ -10,7 +12,7 @@ public class Simple$HttpClient implements Simple {
 
   private final HttpClient context;
 
-  Simple$HttpClient(HttpClient context) {
+  public Simple$HttpClient(HttpClient context) {
     this.context = context;
   }
 
