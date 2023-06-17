@@ -9,7 +9,9 @@ import java.util.ServiceLoader;
 
 import static java.lang.System.Logger.Level.*;
 
-/** Service loads the HttpApiProvider for HttpApi. */
+/** 
+ * Service loads the HttpApiProvider for HttpApi. 
+ */
 final class DHttpApi {
 
   private static final System.Logger log = AppLog.getLogger("io.avaje.http.client");
