@@ -10,6 +10,8 @@ import static io.avaje.http.generator.core.ProcessingContext.useJavax;
 import static java.util.function.Predicate.not;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -35,6 +37,7 @@ public final class ControllerReader {
   private final List<ExecutableElement> interfaceMethods;
   private final List<String> roles;
   private final List<MethodReader> methods = new ArrayList<>();
+  private final Set<String> seenMethods = new HashSet<>();
   private final Set<String> staticImportTypes = new TreeSet<>();
   private final Set<String> importTypes = new TreeSet<>();
   private final List<OpenAPIResponsePrism> apiResponses;
@@ -54,7 +57,7 @@ public final class ControllerReader {
 
   public ControllerReader(TypeElement beanType) {
     this.beanType = beanType;
-    this.interfaces = initInterfaces();
+    this.interfaces = initInterfaces(beanType);
     this.interfaceMethods = initInterfaceMethods();
     this.roles = buildRoles();
     if (isOpenApiAvailable()) {
@@ -115,9 +118,9 @@ public final class ControllerReader {
     }
   }
 
-  private List<TypeElement> initInterfaces() {
+  private List<TypeElement> initInterfaces(TypeElement element) {
     final List<TypeElement> superInterfaces = new ArrayList<>();
-    for (final TypeMirror anInterface : beanType.getInterfaces()) {
+    for (final TypeMirror anInterface : element.getInterfaces()) {
       final var ifaceElement = asElement(anInterface);
       final var controller = ControllerPrism.getInstanceOn(ifaceElement);
       if (controller != null && !controller.value().isBlank()
@@ -224,7 +227,9 @@ public final class ControllerReader {
     readSuper(beanType);
 
     if (platform().getClass().getSimpleName().contains("Client")) {
-      readInterfaces();
+      for (final var superInterface : interfaces) {
+        readInterfaces(superInterface);
+      }
     }
     deriveIncludeValidation();
     addImports(withSingleton);
@@ -273,12 +278,17 @@ public final class ControllerReader {
     }
   }
 
-  /** Read methods from interfaces taking into account generics. */
-  private void readInterfaces() {
-    for (final var superInterfaces : interfaces) {
-      for (final var element : ElementFilter.methodsIn(superInterfaces.getEnclosedElements())) {
-        readMethod(element, (DeclaredType) superInterfaces.asType());
-      }
+  /**
+   * Read methods from interfaces taking into account generics.
+   *
+   * @param interfaceElement
+   */
+  private void readInterfaces(TypeElement interfaceElement) {
+    for (final var element : ElementFilter.methodsIn(interfaceElement.getEnclosedElements())) {
+      readMethod(element, (DeclaredType) interfaceElement.asType());
+    }
+    for (final var element : initInterfaces(interfaceElement)) {
+      readInterfaces(element);
     }
   }
 
@@ -293,7 +303,7 @@ public final class ControllerReader {
       actualExecutable = (ExecutableType) asMemberOf(declaredType, method);
     }
     final MethodReader methodReader = new MethodReader(this, method, actualExecutable);
-    if (methodReader.isWebMethod()) {
+    if (methodReader.isWebMethod() && seenMethods.add(method.toString())) {
       methodReader.read();
       methods.add(methodReader);
     }
