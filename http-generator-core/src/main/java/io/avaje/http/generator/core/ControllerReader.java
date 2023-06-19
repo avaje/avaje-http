@@ -31,7 +31,7 @@ import javax.lang.model.util.ElementFilter;
 public final class ControllerReader {
 
   private final TypeElement beanType;
-  private final List<Element> interfaces;
+  private final List<TypeElement> interfaces;
   private final List<ExecutableElement> interfaceMethods;
   private final List<String> roles;
   private final List<MethodReader> methods = new ArrayList<>();
@@ -115,17 +115,18 @@ public final class ControllerReader {
     }
   }
 
-  private List<Element> initInterfaces() {
-    final List<Element> interfaces = new ArrayList<>();
+  private List<TypeElement> initInterfaces() {
+    final List<TypeElement> superInterfaces = new ArrayList<>();
     for (final TypeMirror anInterface : beanType.getInterfaces()) {
-      final Element ifaceElement = asElement(anInterface);
+      final var ifaceElement = asElement(anInterface);
       final var controller = ControllerPrism.getInstanceOn(ifaceElement);
       if (controller != null && !controller.value().isBlank()
-          || PathPrism.isPresent(ifaceElement)) {
-        interfaces.add(ifaceElement);
+          || PathPrism.isPresent(ifaceElement)
+          || ClientPrism.isPresent(ifaceElement)) {
+        superInterfaces.add(ifaceElement);
       }
     }
-    return interfaces;
+    return superInterfaces;
   }
 
   private List<ExecutableElement> initInterfaceMethods() {
@@ -221,6 +222,10 @@ public final class ControllerReader {
       }
     }
     readSuper(beanType);
+
+    if (platform().getClass().getSimpleName().contains("Client")) {
+      readInterfaces();
+    }
     deriveIncludeValidation();
     addImports(withSingleton);
   }
@@ -264,6 +269,15 @@ public final class ControllerReader {
         if (superElement instanceof TypeElement) {
           readSuper((TypeElement) superElement);
         }
+      }
+    }
+  }
+
+  /** Read methods from interfaces taking into account generics. */
+  private void readInterfaces() {
+    for (final var superInterfaces : interfaces) {
+      for (final var element : ElementFilter.methodsIn(superInterfaces.getEnclosedElements())) {
+        readMethod(element, (DeclaredType) superInterfaces.asType());
       }
     }
   }
