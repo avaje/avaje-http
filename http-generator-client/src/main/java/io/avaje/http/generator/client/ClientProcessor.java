@@ -65,7 +65,9 @@ public class ClientProcessor extends AbstractProcessor {
     readModule();
     for (final Element controller :
         round.getElementsAnnotatedWith(typeElement(ClientPrism.PRISM_TYPE))) {
-      writeClient(controller);
+      if (ClientPrism.getInstanceOn(controller).generate()) {
+        writeClient(controller);
+      }
     }
     for (final var importedElement : round.getElementsAnnotatedWith(typeElement(ImportPrism.PRISM_TYPE))) {
       writeForImported(importedElement);

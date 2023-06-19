@@ -10,6 +10,8 @@ import static io.avaje.http.generator.core.ProcessingContext.useJavax;
 import static java.util.function.Predicate.not;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,10 +33,11 @@ import javax.lang.model.util.ElementFilter;
 public final class ControllerReader {
 
   private final TypeElement beanType;
-  private final List<Element> interfaces;
+  private final List<TypeElement> interfaces;
   private final List<ExecutableElement> interfaceMethods;
   private final List<String> roles;
   private final List<MethodReader> methods = new ArrayList<>();
+  private final Set<String> seenMethods = new HashSet<>();
   private final Set<String> staticImportTypes = new TreeSet<>();
   private final Set<String> importTypes = new TreeSet<>();
   private final List<OpenAPIResponsePrism> apiResponses;
@@ -54,7 +57,7 @@ public final class ControllerReader {
 
   public ControllerReader(TypeElement beanType) {
     this.beanType = beanType;
-    this.interfaces = initInterfaces();
+    this.interfaces = initInterfaces(beanType);
     this.interfaceMethods = initInterfaceMethods();
     this.roles = buildRoles();
     if (isOpenApiAvailable()) {
@@ -115,17 +118,18 @@ public final class ControllerReader {
     }
   }
 
-  private List<Element> initInterfaces() {
-    final List<Element> interfaces = new ArrayList<>();
-    for (final TypeMirror anInterface : beanType.getInterfaces()) {
-      final Element ifaceElement = asElement(anInterface);
+  private List<TypeElement> initInterfaces(TypeElement element) {
+    final List<TypeElement> superInterfaces = new ArrayList<>();
+    for (final TypeMirror anInterface : element.getInterfaces()) {
+      final var ifaceElement = asElement(anInterface);
       final var controller = ControllerPrism.getInstanceOn(ifaceElement);
       if (controller != null && !controller.value().isBlank()
-          || PathPrism.isPresent(ifaceElement)) {
-        interfaces.add(ifaceElement);
+          || PathPrism.isPresent(ifaceElement)
+          || ClientPrism.isPresent(ifaceElement)) {
+        superInterfaces.add(ifaceElement);
       }
     }
-    return interfaces;
+    return superInterfaces;
   }
 
   private List<ExecutableElement> initInterfaceMethods() {
@@ -221,6 +225,12 @@ public final class ControllerReader {
       }
     }
     readSuper(beanType);
+
+    if (platform().getClass().getSimpleName().contains("Client")) {
+      for (final var superInterface : interfaces) {
+        readInterfaces(superInterface);
+      }
+    }
     deriveIncludeValidation();
     addImports(withSingleton);
   }
@@ -268,6 +278,20 @@ public final class ControllerReader {
     }
   }
 
+  /**
+   * Read methods from interfaces taking into account generics.
+   *
+   * @param interfaceElement
+   */
+  private void readInterfaces(TypeElement interfaceElement) {
+    for (final var element : ElementFilter.methodsIn(interfaceElement.getEnclosedElements())) {
+      readMethod(element, (DeclaredType) interfaceElement.asType());
+    }
+    for (final var element : initInterfaces(interfaceElement)) {
+      readInterfaces(element);
+    }
+  }
+
   private void readMethod(ExecutableElement element) {
     readMethod(element, null);
   }
@@ -279,7 +303,7 @@ public final class ControllerReader {
       actualExecutable = (ExecutableType) asMemberOf(declaredType, method);
     }
     final MethodReader methodReader = new MethodReader(this, method, actualExecutable);
-    if (methodReader.isWebMethod()) {
+    if (methodReader.isWebMethod() && seenMethods.add(method.toString())) {
       methodReader.read();
       methods.add(methodReader);
     }

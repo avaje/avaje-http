@@ -11,31 +11,29 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Marker annotation for client.
  *
  * <pre>{@code
+ * @Client
+ * interface CustomerApi {
+ *   ...
+ *   @Get("/{id}")
+ *   Customer getById(long id);
  *
- *   @Client
- *   interface CustomerApi {
- *     ...
- *     @Get("/{id}")
- *     Customer getById(long id);
- *
- *     @Post
- *     long save(Customer customer);
- *   }
+ *   @Post
+ *   long save(Customer customer);
+ * }
  *
  * }</pre>
  *
  * <h3>Client.Import</h3>
- * <p>
- * When the client interface already exists in another module we
- * use <code>Client.Import</code> to generate the client.
- * <p>
- * Specify the <code>@Client.Import</code> on the package or class
- * to refer to the client interface we want to generate.
+ *
+ * <p>When the client interface already exists in another module we use <code>Client.Import</code>
+ * to generate the client.
+ *
+ * <p>Specify the <code>@Client.Import</code> on the package or class to refer to the client
+ * interface we want to generate.
  *
  * <pre>{@code
- *
- *   @Client.Import(types = OtherApi.class)
- *   package org.example;
+ * @Client.Import(types = OtherApi.class)
+ * package org.example;
  *
  * }</pre>
  */
@@ -43,8 +41,24 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(value = RUNTIME)
 public @interface Client {
 
+  /**
+   * Flag to set whether to generate a Client Implementation. Set false if the interface exists merely to be extended by
+   * other client interfaces
+   */
+  boolean generate() default true;
+
+  /**
+   * Specify <code>@Client.Import</code> on a package or class to refer to the client interface we
+   * want to generate.
+   *
+   * <pre>{@code
+   * @Client.Import(types = OtherApi.class)
+   * package org.example;
+   *
+   * }</pre>
+   */
   @Target(value = {TYPE, PACKAGE})
-  @Retention(value = RUNTIME)
+  @Retention(RUNTIME)
   @interface Import {
 
     /**
