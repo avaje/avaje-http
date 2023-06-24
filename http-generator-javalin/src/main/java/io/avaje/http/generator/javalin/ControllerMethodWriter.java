@@ -137,7 +137,7 @@ class ControllerMethodWriter {
         if ("java.util.concurrent.CompletableFuture".equals(uType.mainType())) {
           uType = uType.paramRaw();
         }
-        writer.append("      %sJsonType.toJson(%s, ctx.contentType(\"application/json\").outputStream());", uType.shortName(), resultVariableName);
+        writer.append("      %sJsonType.toJson(%s, ctx.contentType(\"application/json\").res().getOutputStream());", uType.shortName(), resultVariableName);
       } else {
         writer.append("      ctx.json(%s);", resultVariableName);
       }
