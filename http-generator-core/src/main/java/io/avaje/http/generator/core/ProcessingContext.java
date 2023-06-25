@@ -41,6 +41,7 @@ public class ProcessingContext {
     private final boolean useJavax;
     private final String diAnnotation;
     private final boolean instrumentAllMethods;
+    private final boolean disableDirectWrites;
 
     Ctx(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
       readAdapter = adapter;
@@ -57,6 +58,7 @@ public class ProcessingContext {
       final var options = env.getOptions();
       final var singletonOverride = options.get("useSingleton");
       this.instrumentAllMethods = Boolean.parseBoolean(options.get("instrumentRequests"));
+      this.disableDirectWrites = Boolean.parseBoolean(options.get("disableDirectWrites"));
       if (singletonOverride != null) {
         useComponent = !Boolean.parseBoolean(singletonOverride);
       } else {
@@ -182,6 +184,10 @@ public class ProcessingContext {
 
   public static boolean instrumentAllWebMethods() {
     return CTX.get().instrumentAllMethods;
+  }
+
+  public static boolean disabledDirectWrites() {
+    return CTX.get().disableDirectWrites;
   }
 
   public static Filer filer() {

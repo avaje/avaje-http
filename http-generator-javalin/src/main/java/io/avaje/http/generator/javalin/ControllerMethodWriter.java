@@ -1,6 +1,6 @@
 package io.avaje.http.generator.javalin;
 
-import static io.avaje.http.generator.core.ProcessingContext.platform;
+import static io.avaje.http.generator.core.ProcessingContext.*;
 
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.MethodParam;
@@ -26,7 +26,7 @@ class ControllerMethodWriter {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
-    this.useJsonB = useJsonB;
+    this.useJsonB = useJsonB && !disabledDirectWrites();
     this.instrumentContext = method.instrumentContext();
   }
 
@@ -134,10 +134,16 @@ class ControllerMethodWriter {
     if (produces == null || MediaType.APPLICATION_JSON.getValue().equalsIgnoreCase(produces)) {
       if (useJsonB) {
         var uType = UType.parse(method.returnType());
-        if ("java.util.concurrent.CompletableFuture".equals(uType.mainType())) {
+        final boolean isfuture = "java.util.concurrent.CompletableFuture".equals(uType.mainType());
+        if (isfuture) {
           uType = uType.paramRaw();
+          writer.append("      try {");
         }
-        writer.append("      %sJsonType.toJson(%s, ctx.contentType(\"application/json\").res().getOutputStream());", uType.shortName(), resultVariableName);
+        writer.append("      %sJsonType.toJson(%s, ctx.contentType(\"application/json\").res().getOutputStream());",
+            uType.shortName(), resultVariableName);
+        if (isfuture) {
+          writer.append("      } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }");
+        }
       } else {
         writer.append("      ctx.json(%s);", resultVariableName);
       }

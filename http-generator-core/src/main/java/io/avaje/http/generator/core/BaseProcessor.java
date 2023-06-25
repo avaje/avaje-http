@@ -11,7 +11,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-@SupportedOptions({"useJavax", "useSingleton", "instrumentRequests"})
+@SupportedOptions({"useJavax", "useSingleton", "instrumentRequests","disableDirectWrites"})
 public abstract class BaseProcessor extends AbstractProcessor {
 
   @Override

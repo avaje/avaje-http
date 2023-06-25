@@ -1,5 +1,6 @@
 package io.avaje.http.generator.helidon.nima;
 
+import static io.avaje.http.generator.core.ProcessingContext.disabledDirectWrites;
 import static io.avaje.http.generator.core.ProcessingContext.platform;
 
 import java.util.List;
@@ -140,8 +141,9 @@ class ControllerMethodWriter {
 
   private boolean producesJson() {
     return useJsonB
-      && !"byte[]".equals(method.returnType().toString())
-      && (method.produces() == null || method.produces().toLowerCase().contains("json"));
+        && !disabledDirectWrites()
+        && !"byte[]".equals(method.returnType().toString())
+        && (method.produces() == null || method.produces().toLowerCase().contains("json"));
   }
 
   private boolean missingServerResponse(List<MethodParam> params) {
