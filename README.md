@@ -293,7 +293,7 @@ public class WidgetController$Route implements HttpService {
     int id = asInt(pathParams.first("id").get());
     var result = controller.getById(id);
     res.headers().contentType(io.helidon.common.http.HttpMediaType.APPLICATION_JSON);
-    widgetJsonType.toJson(result, res.outputStream());
+    widgetJsonType.toJson(result, JsonOutput.of(res));
   }
 
   private void _getAll(ServerRequest req, ServerResponse res) {
