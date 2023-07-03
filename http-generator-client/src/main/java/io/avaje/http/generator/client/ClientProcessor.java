@@ -20,7 +20,6 @@ import javax.lang.model.element.TypeElement;
 import io.avaje.http.generator.core.ClientPrism;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ImportPrism;
-import io.avaje.http.generator.core.JsonBUtil;
 import io.avaje.http.generator.core.ProcessingContext;
 
 @SupportedAnnotationTypes({ClientPrism.PRISM_TYPE, ImportPrism.PRISM_TYPE})
@@ -28,19 +27,11 @@ public class ClientProcessor extends AbstractProcessor {
 
   private final ComponentMetaData metaData = new ComponentMetaData();
 
-  private final boolean useJsonB;
+  private boolean useJsonB;
 
   private SimpleComponentWriter componentWriter;
 
   private boolean readModuleInfo;
-
-  public ClientProcessor() {
-    useJsonB = JsonBUtil.detectJsonb();
-  }
-
-  public ClientProcessor(boolean useJsonb) {
-    useJsonB = useJsonb;
-  }
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -52,8 +43,8 @@ public class ClientProcessor extends AbstractProcessor {
     super.init(processingEnv);
     this.processingEnv = processingEnv;
     ProcessingContext.init(processingEnv, new ClientPlatformAdapter(), false);
-
     this.componentWriter = new SimpleComponentWriter(metaData);
+    useJsonB = ProcessingContext.useJsonb();
   }
 
   @Override

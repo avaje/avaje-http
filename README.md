@@ -159,7 +159,6 @@ public class WidgetController$Route implements WebRoutes {
     });
 
   }
-
 }
 ```
 
@@ -190,7 +189,6 @@ public class WidgetController$Route implements Service {
   private void _getAll(ServerRequest req, ServerResponse res) {
     res.send(controller.getAll());
   }
-
 }
 ```
 
@@ -224,7 +222,6 @@ public class WidgetController$Route implements HttpService {
     var result = controller.getAll();
     res.send(result);
   }
-
 }
 ```
 
@@ -264,7 +261,6 @@ public class WidgetController$Route implements WebRoutes {
     });
 
   }
-
 }
 ```
 
@@ -296,16 +292,15 @@ public class WidgetController$Route implements HttpService {
     var pathParams = req.path().pathParameters();
     int id = asInt(pathParams.first("id").get());
     var result = controller.getById(id);
-    res.headers().contentType(io.helidon.common.http.HttpMediaType.APPLICATION_JSON);
-    widgetJsonType.toJson(result, res.outputStream());
+    res.headers().contentType(HttpMediaType.APPLICATION_JSON);
+    widgetJsonType.toJson(result, JsonOutput.of(res));
   }
 
   private void _getAll(ServerRequest req, ServerResponse res) {
     var pathParams = req.path().pathParameters();
     var result = controller.getAll();
-    res.headers().contentType(io.helidon.common.http.HttpMediaType.APPLICATION_JSON);
-    listWidgetJsonType.toJson(result, res.outputStream());
+    res.headers().contentType(HttpMediaType.APPLICATION_JSON);
+    listWidgetJsonType.toJson(result, JsonOutput.of(res));
   }
-
 }
 ```

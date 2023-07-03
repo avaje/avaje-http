@@ -14,6 +14,8 @@ import javax.lang.model.element.TypeElement;
 @SupportedOptions({"useJavax", "useSingleton", "instrumentRequests","disableDirectWrites"})
 public abstract class BaseProcessor extends AbstractProcessor {
 
+  protected boolean useJsonB;
+
   @Override
   public SourceVersion getSupportedSourceVersion() {
     return SourceVersion.latest();
@@ -28,6 +30,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     ProcessingContext.init(processingEnv, providePlatformAdapter());
+    useJsonB = ProcessingContext.useJsonb();
   }
 
   /** Provide the platform specific adapter to use for Javalin, Helidon etc. */
@@ -44,7 +47,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
     final Set<? extends Element> controllers =
         round.getElementsAnnotatedWith(typeElement(ControllerPrism.PRISM_TYPE));
-    for (Element controller : controllers) {
+    for (final Element controller : controllers) {
       writeAdapter(controller);
     }
 
@@ -57,7 +60,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
   private void readOpenApiDefinition(RoundEnvironment round) {
     final Set<? extends Element> elements =
         round.getElementsAnnotatedWith(typeElement(OpenAPIDefinitionPrism.PRISM_TYPE));
-    for (Element element : elements) {
+    for (final Element element : elements) {
       doc().readApiDefinition(element);
     }
   }
@@ -65,24 +68,24 @@ public abstract class BaseProcessor extends AbstractProcessor {
   private void readTagDefinitions(RoundEnvironment round) {
     Set<? extends Element> elements =
         round.getElementsAnnotatedWith(typeElement(TagPrism.PRISM_TYPE));
-    for (Element element : elements) {
+    for (final Element element : elements) {
       doc().addTagDefinition(element);
     }
 
     elements = round.getElementsAnnotatedWith(typeElement(TagsPrism.PRISM_TYPE));
-    for (Element element : elements) {
+    for (final Element element : elements) {
       doc().addTagsDefinition(element);
     }
   }
 
   private void readSecuritySchemes(RoundEnvironment round) {
     Set<? extends Element> elements = round.getElementsAnnotatedWith(typeElement(SecuritySchemePrism.PRISM_TYPE));
-    for (Element element : elements) {
+    for (final Element element : elements) {
         doc().addSecurityScheme(element);
     }
 
     elements = round.getElementsAnnotatedWith(typeElement(SecuritySchemesPrism.PRISM_TYPE));
-    for (Element element : elements) {
+    for (final Element element : elements) {
         doc().addSecuritySchemes(element);
     }
   }
@@ -93,11 +96,11 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   private void writeAdapter(Element controller) {
     if (controller instanceof TypeElement) {
-      ControllerReader reader = new ControllerReader((TypeElement) controller);
+      final ControllerReader reader = new ControllerReader((TypeElement) controller);
       reader.read(true);
       try {
         writeControllerAdapter(reader);
-      } catch (Throwable e) {
+      } catch (final Throwable e) {
         e.printStackTrace();
         logError(reader.beanType(), "Failed to write $Route class " + e);
       }

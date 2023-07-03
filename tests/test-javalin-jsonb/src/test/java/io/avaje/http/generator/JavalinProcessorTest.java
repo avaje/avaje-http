@@ -51,7 +51,12 @@ class JavalinProcessorTest {
 
     final var task =
         compiler.getTask(
-            new PrintWriter(System.out), null, null, List.of("--release=11"), null, files);
+            new PrintWriter(System.out),
+            null,
+            null,
+            List.of("--release=11", "-AdisableDirectWrites=true"),
+            null,
+            files);
     task.setProcessors(List.of(new JavalinProcessor()));
 
     assertThat(task.call()).isTrue();
@@ -71,7 +76,7 @@ class JavalinProcessorTest {
     final var task =
         compiler.getTask(
             new PrintWriter(System.out), null, null, List.of("--release=11"), null, files);
-    task.setProcessors(List.of(new JavalinProcessor(true), new Processor()));
+    task.setProcessors(List.of(new JavalinProcessor(), new Processor()));
 
     assertThat(task.call()).isTrue();
     assert Files.readString(
@@ -92,10 +97,14 @@ class JavalinProcessorTest {
             new PrintWriter(System.out),
             null,
             null,
-            List.of("--release=11", "-AuseJavax=true", "-AuseSingleton=true"),
+            List.of(
+                "--release=11",
+                "-AuseJavax=true",
+                "-AuseSingleton=true",
+                "-AdisableDirectWrites=true"),
             null,
             files);
-    task.setProcessors(List.of(new JavalinProcessor(false), new Processor()));
+    task.setProcessors(List.of(new JavalinProcessor(), new Processor()));
     // we don't have javax on the cp
     assertThat(task.call()).isFalse();
 
@@ -117,10 +126,14 @@ class JavalinProcessorTest {
             new PrintWriter(System.out),
             null,
             null,
-            List.of("--release=11", "-AuseJavax=false", "-AuseSingleton=true"),
+            List.of(
+                "--release=11",
+                "-AuseJavax=false",
+                "-AuseSingleton=true",
+                "-AdisableDirectWrites=true"),
             null,
             files);
-    task.setProcessors(List.of(new JavalinProcessor(false), new Processor()));
+    task.setProcessors(List.of(new JavalinProcessor(), new Processor()));
 
     assertThat(task.call()).isTrue();
 
@@ -147,10 +160,10 @@ class JavalinProcessorTest {
             new PrintWriter(System.out),
             null,
             null,
-            List.of("--release=11"),
+            List.of("--release=11", "-AdisableDirectWrites=true"),
             null,
             openAPIController);
-    task.setProcessors(List.of(new JavalinProcessor(false), new Processor()));
+    task.setProcessors(List.of(new JavalinProcessor(), new Processor()));
 
     assertThat(task.call()).isTrue();
 
@@ -181,10 +194,10 @@ class JavalinProcessorTest {
             new PrintWriter(System.out),
             null,
             null,
-            List.of("--release=11"),
+            List.of("--release=11", "-AdisableDirectWrites=true"),
             null,
             openAPIController);
-    task.setProcessors(List.of(new JavalinProcessor(false), new Processor()));
+    task.setProcessors(List.of(new JavalinProcessor(), new Processor()));
 
     assertThat(task.call()).isTrue();
 
@@ -195,7 +208,6 @@ class JavalinProcessorTest {
 
     assert expectedOpenApiJson.equals(generatedOpenApi);
   }
-
 
   private Iterable<JavaFileObject> getSourceFiles(String source) throws Exception {
     final var compiler = ToolProvider.getSystemJavaCompiler();
