@@ -42,6 +42,7 @@ public class ProcessingContext {
     private final String diAnnotation;
     private final boolean instrumentAllMethods;
     private final boolean disableDirectWrites;
+    private final boolean useJsonb;
 
     Ctx(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
       readAdapter = adapter;
@@ -65,7 +66,7 @@ public class ProcessingContext {
         useComponent = elementUtils.getTypeElement(Constants.COMPONENT) != null;
       }
       diAnnotation = (useComponent ? "@Component" : "@Singleton");
-
+      useJsonb = elementUtils.getTypeElement("io.avaje.jsonb.Jsonb") != null;
       final var javax = elementUtils.getTypeElement(Constants.SINGLETON_JAVAX) != null;
       final var jakarta = elementUtils.getTypeElement(Constants.SINGLETON_JAKARTA) != null;
       final var override = options.get("useJavax");
@@ -184,6 +185,10 @@ public class ProcessingContext {
 
   public static boolean instrumentAllWebMethods() {
     return CTX.get().instrumentAllMethods;
+  }
+
+  public static boolean useJsonb() {
+    return CTX.get().useJsonb;
   }
 
   public static boolean disabledDirectWrites() {

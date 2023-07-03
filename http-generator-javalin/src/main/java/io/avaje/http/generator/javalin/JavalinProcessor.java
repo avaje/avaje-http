@@ -6,16 +6,6 @@ import java.io.IOException;
 
 public class JavalinProcessor extends BaseProcessor {
 
-  private final boolean useJsonB;
-
-  public JavalinProcessor() {
-    useJsonB = JsonBUtil.detectJsonb();
-  }
-
-  public JavalinProcessor(boolean useJsonb) {
-    useJsonB = useJsonb;
-  }
-
   @Override
   protected PlatformAdapter providePlatformAdapter() {
     return new JavalinAdapter(useJsonB);

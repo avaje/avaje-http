@@ -45,8 +45,8 @@ class NimaProcessorTest {
 
     final var task =
         compiler.getTask(
-            new PrintWriter(System.out), null, null, List.of("--release=19"), null, files);
-    task.setProcessors(List.of(new NimaProcessor(false)));
+            new PrintWriter(System.out), null, null, List.of("--release=20", "-AdisableDirectWrites=true"), null, files);
+    task.setProcessors(List.of(new NimaProcessor()));
 
     assertThat(task.call()).isTrue();
   }
