@@ -292,7 +292,7 @@ public class WidgetController$Route implements HttpService {
     var pathParams = req.path().pathParameters();
     int id = asInt(pathParams.first("id").get());
     var result = controller.getById(id);
-    res.headers().contentType(io.helidon.common.http.HttpMediaType.APPLICATION_JSON);
+    res.headers().contentType(HttpMediaType.APPLICATION_JSON);
     widgetJsonType.toJson(result, JsonOutput.of(res));
   }
 
