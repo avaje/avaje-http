@@ -41,7 +41,6 @@ public class Util {
   public static String typeDef(TypeMirror typeMirror) {
     if (typeMirror.getKind() == TypeKind.DECLARED) {
       DeclaredType declaredType = (DeclaredType) typeMirror;
-
       return declaredType.asElement().toString();
     } else {
       return trimAnnotations(typeMirror.toString());
@@ -50,7 +49,6 @@ public class Util {
 
   /** Trim off annotations from the raw type if present. */
   public static String trimAnnotations(String input) {
-
     input = COMMA_PATTERN.matcher(input).replaceAll(",");
 
     return cutAnnotations(input);
@@ -63,7 +61,6 @@ public class Util {
     }
 
     final Matcher matcher = WHITE_SPACE_REGEX.matcher(input);
-
     int currentIndex = 0;
     if (matcher.find()) {
       currentIndex = matcher.start();
