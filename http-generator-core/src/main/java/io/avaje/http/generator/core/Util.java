@@ -11,8 +11,16 @@ import javax.lang.model.util.SimpleAnnotationValueVisitor8;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Util {
+  // whitespace not in quotes
+  private static final Pattern WHITE_SPACE_REGEX =
+      Pattern.compile("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+  // comma not in quotes
+  private static final Pattern COMMA_PATTERN =
+      Pattern.compile(", (?=(?:[^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
 
   /**
    * Parse the raw type potentially handling generic parameters.
@@ -40,12 +48,29 @@ public class Util {
     }
   }
 
-  public static String trimAnnotations(String type) {
-    int pos = type.indexOf("@");
+  /** Trim off annotations from the raw type if present. */
+  public static String trimAnnotations(String input) {
+
+    input = COMMA_PATTERN.matcher(input).replaceAll(",");
+
+    return cutAnnotations(input);
+  }
+
+  private static String cutAnnotations(String input) {
+    final int pos = input.indexOf("@");
     if (pos == -1) {
-      return type;
+      return input;
     }
-    return type.substring(0, pos) + type.substring(type.lastIndexOf(' ') + 1);
+
+    final Matcher matcher = WHITE_SPACE_REGEX.matcher(input);
+
+    int currentIndex = 0;
+    if (matcher.find()) {
+      currentIndex = matcher.start();
+    }
+    final var result = input.substring(0, pos) + input.substring(currentIndex + 1);
+
+    return cutAnnotations(result);
   }
 
   static String trimPath(String value) {
