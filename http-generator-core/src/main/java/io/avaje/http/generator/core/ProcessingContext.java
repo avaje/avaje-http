@@ -3,7 +3,9 @@ package io.avaje.http.generator.core;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -89,10 +91,6 @@ public class ProcessingContext {
 
   public static void init(ProcessingEnvironment env, PlatformAdapter adapter) {
     init(env, adapter, true);
-  }
-
-  private static boolean isTypeAvailable(String canonicalName) {
-    return null != typeElement(canonicalName);
   }
 
   public static TypeElement typeElement(String canonicalName) {
@@ -197,5 +195,21 @@ public class ProcessingContext {
 
   public static Filer filer() {
     return CTX.get().filer;
+  }
+
+  public static boolean isAssignable2Interface(String type, String superType) {
+    return type.equals(superType)
+        || Optional.ofNullable(typeElement(type)).stream()
+            .flatMap(ProcessingContext::superTypes)
+            .anyMatch(superType::equals);
+  }
+
+  static Stream<String> superTypes(Element element) {
+    final Types types = CTX.get().typeUtils;
+    return types.directSupertypes(element.asType()).stream()
+        .filter(type -> !type.toString().contains("java.lang.Object"))
+        .map(superType -> (TypeElement) types.asElement(superType))
+        .flatMap(e -> Stream.concat(superTypes(e), Stream.of(e)))
+        .map(Object::toString);
   }
 }

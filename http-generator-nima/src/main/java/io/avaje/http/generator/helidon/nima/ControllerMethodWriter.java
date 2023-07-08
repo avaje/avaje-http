@@ -1,6 +1,6 @@
 package io.avaje.http.generator.helidon.nima;
 
-import static io.avaje.http.generator.core.ProcessingContext.disabledDirectWrites;
+import static io.avaje.http.generator.core.ProcessingContext.*;
 import static io.avaje.http.generator.core.ProcessingContext.platform;
 
 import java.util.List;
@@ -80,11 +80,11 @@ class ControllerMethodWriter {
     }
 
     final var segments = method.pathSegments();
-    if (!segments.isEmpty()) {
+    if (segments.fullPath().contains("{")) {
       writer.append("    var pathParams = req.path().pathParameters();").eol();
     }
-    final var matrixSegments = segments.matrixSegments();
-    for (final PathSegments.Segment matrixSegment : matrixSegments) {
+
+    for (final PathSegments.Segment matrixSegment : segments.matrixSegments()) {
       matrixSegment.writeCreateSegment(writer, platform());
     }
 
@@ -127,9 +127,14 @@ class ControllerMethodWriter {
       writer.append(")");
     }
     writer.append(");").eol();
+
     if (!method.isVoid()) {
       writeContextReturn();
-      if (producesJson()) {
+
+      if (isAssignable2Interface(method.returnType().toString(), "java.io.InputStream")) {
+        final var uType = UType.parse(method.returnType());
+        writer.append("    result.transferTo(res.outputStream());", uType.shortName()).eol();
+      } else if (producesJson()) {
         final var uType = UType.parse(method.returnType());
         writer.append("    %sJsonType.toJson(result, JsonOutput.of(res));", uType.shortName()).eol();
       } else {
