@@ -166,7 +166,9 @@ class ControllerMethodWriter {
       case APPLICATION_JSON -> writer.append(contentTypeString + "APPLICATION_JSON);").eol();
       case TEXT_HTML -> writer.append(contentTypeString + "TEXT_HTML);").eol();
       case TEXT_PLAIN -> writer.append(contentTypeString + "TEXT_PLAIN);").eol();
-      case UNKNOWN -> writer.append(contentTypeString + "create(\"%s\"));", produces).eol();
+      case UNKNOWN -> writer
+          .append(contentTypeString + "create(\"%s\"));", producesOp.orElse("UNKNOWN"))
+          .eol();
     }
   }
 
