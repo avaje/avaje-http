@@ -41,7 +41,7 @@ class ControllerMethodWriter {
   }
 
   void writeHandler(boolean requestScoped) {
-    writer.append("  private void _%s(ServerRequest req, ServerResponse res) {", method.simpleName()).eol();
+    writer.append("  private void _%s(ServerRequest req, ServerResponse res) throws Exception {", method.simpleName()).eol();
     final var bodyType = method.bodyType();
     if (bodyType != null) {
 

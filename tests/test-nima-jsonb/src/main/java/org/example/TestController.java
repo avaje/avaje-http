@@ -57,7 +57,7 @@ public class TestController {
 
   @InstrumentServerContext
   @Get(value =  "/inputStream")
-  InputStream stream(InputStream stream) {
+  InputStream stream(InputStream stream) throws Exception {
     return stream;
   }
 
