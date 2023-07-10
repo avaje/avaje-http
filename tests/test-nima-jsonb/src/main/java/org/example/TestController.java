@@ -57,8 +57,8 @@ public class TestController {
 
   @InstrumentServerContext
   @Get(value =  "/inputStream")
-  String stream(InputStream stream) {
-    return stream.toString();
+  InputStream stream(InputStream stream) throws Exception {
+    return stream;
   }
 
 
