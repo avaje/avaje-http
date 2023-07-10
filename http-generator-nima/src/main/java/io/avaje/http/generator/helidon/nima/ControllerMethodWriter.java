@@ -15,6 +15,8 @@ import io.avaje.http.generator.core.UType;
 import io.avaje.http.generator.core.WebMethod;
 import io.avaje.http.generator.core.openapi.MediaType;
 
+import javax.lang.model.type.TypeMirror;
+
 /**
  * Write code to register Web route for a given controller method.
  */
@@ -44,36 +46,13 @@ class ControllerMethodWriter {
     writer.append("  private void _%s(ServerRequest req, ServerResponse res) throws Exception {", method.simpleName()).eol();
     final var bodyType = method.bodyType();
     if (bodyType != null) {
-
       if ("InputStream".equals(bodyType)) {
         writer.append("    var %s = req.content().inputStream();", method.bodyName()).eol();
       } else if (useJsonB) {
-        final var fieldName =
-            method.params().stream()
-                .filter(MethodParam::isBody)
-                .findFirst()
-                .orElseThrow()
-                .utype()
-                .shortName();
+        final String fieldName = fieldNameOfBody();
         writer.append("    var %s = %sJsonType.fromJson(req.content().inputStream());", method.bodyName(), fieldName).eol();
-
       } else {
-        // use default helidon content negotiation
-        method.params().stream()
-            .filter(MethodParam::isBody)
-            .forEach(
-                param -> {
-                  final var type = param.utype();
-
-                  writer.append("    var %s = req.content()", method.bodyName());
-                  writer.append(".as(");
-                  if (type.param0() != null) {
-                    writer.append("new io.helidon.common.GenericType<%s>() {}", type.full());
-                  } else {
-                    writer.append("%s.class", type.full());
-                  }
-                  writer.append(");").eol();
-                });
+        defaultHelidonBodyContent();
       }
     } else if (usesFormParams()) {
       writer.append("    var formParams = req.content().as(Parameters.class);").eol();
@@ -130,8 +109,7 @@ class ControllerMethodWriter {
 
     if (!method.isVoid()) {
       writeContextReturn();
-
-      if (isAssignable2Interface(method.returnType().toString(), "java.io.InputStream")) {
+      if (isInputStream(method.returnType())) {
         final var uType = UType.parse(method.returnType());
         writer.append("    result.transferTo(res.outputStream());", uType.shortName()).eol();
       } else if (producesJson()) {
@@ -142,6 +120,36 @@ class ControllerMethodWriter {
       }
     }
     writer.append("  }").eol().eol();
+  }
+
+  private boolean isInputStream(TypeMirror type) {
+    return isAssignable2Interface(type.toString(), "java.io.InputStream");
+  }
+
+  private void defaultHelidonBodyContent() {
+    method.params().stream()
+        .filter(MethodParam::isBody)
+        .forEach(
+            param -> {
+              final var type = param.utype();
+              writer.append("    var %s = req.content()", method.bodyName());
+              writer.append(".as(");
+              if (type.param0() != null) {
+                writer.append("new io.helidon.common.GenericType<%s>() {}", type.full());
+              } else {
+                writer.append("%s.class", type.full());
+              }
+              writer.append(");").eol();
+            });
+  }
+
+  private String fieldNameOfBody() {
+    return method.params().stream()
+        .filter(MethodParam::isBody)
+        .findFirst()
+        .orElseThrow()
+        .utype()
+        .shortName();
   }
 
   private boolean producesJson() {
@@ -171,9 +179,7 @@ class ControllerMethodWriter {
       case APPLICATION_JSON -> writer.append(contentTypeString + "APPLICATION_JSON);").eol();
       case TEXT_HTML -> writer.append(contentTypeString + "TEXT_HTML);").eol();
       case TEXT_PLAIN -> writer.append(contentTypeString + "TEXT_PLAIN);").eol();
-      case UNKNOWN -> writer
-          .append(contentTypeString + "create(\"%s\"));", producesOp.orElse("UNKNOWN"))
-          .eol();
+      case UNKNOWN -> writer.append(contentTypeString + "create(\"%s\"));", producesOp.orElse("UNKNOWN")).eol();
     }
   }
 
