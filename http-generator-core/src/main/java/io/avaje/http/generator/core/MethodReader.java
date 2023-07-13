@@ -126,18 +126,12 @@ public class MethodReader {
   }
 
   private boolean initValid() {
-    return findAnnotation(ValidPrism::getOptionalOn).isPresent()
-        || findAnnotation(JavaxValidPrism::getOptionalOn).isPresent()
-        || findAnnotation(JakartaValidPrism::getOptionalOn).isPresent()
-        || superMethodHasValid();
+    return findAnnotation(ValidPrism::getOptionalOn).isPresent() || superMethodHasValid();
   }
 
   private boolean superMethodHasValid() {
     return superMethods.stream()
-        .anyMatch(
-            e ->
-                findAnnotation(ValidPrism::getOptionalOn).isPresent()
-                    || findAnnotation(JavaxValidPrism::getOptionalOn).isPresent());
+        .anyMatch(e -> findAnnotation(ValidPrism::getOptionalOn).isPresent());
   }
 
   @Override

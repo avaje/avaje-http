@@ -45,6 +45,7 @@ class ControllerWriter extends BaseControllerWriter {
     reader.addImportType("io.helidon.nima.webserver.http.ServerRequest");
     reader.addImportType("io.helidon.nima.webserver.http.ServerResponse");
     reader.addImportType("io.helidon.nima.webserver.http.HttpService");
+    reader.addImportType("io.helidon.common.http.Http.Header");
   }
 
   void write() {

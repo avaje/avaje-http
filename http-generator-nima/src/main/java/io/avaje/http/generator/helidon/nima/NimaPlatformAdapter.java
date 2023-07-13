@@ -71,7 +71,7 @@ class NimaPlatformAdapter implements PlatformAdapter {
         writer.append("formParams.first(\"%s\").orElse(null)", paramName);
         break;
       case HEADER:
-        writer.append("req.headers().value(io.helidon.common.http.Http.Header.create(\"%s\")).orElse(null)", paramName);
+        writer.append("req.headers().value(Header.create(\"%s\")).orElse(null)", paramName);
         break;
       case COOKIE:
         writer.append("req.headers().cookies().first(\"%s\").orElse(null)", paramName);
@@ -158,5 +158,10 @@ class NimaPlatformAdapter implements PlatformAdapter {
       default:
         throw new UnsupportedOperationException("Unsupported MultiValue Parameter");
     }
+  }
+
+  @Override
+  public void writeAcceptLanguage(Append writer) {
+    writer.append("req.headers().first(Header.create(\"%s\")).orElse(null)", Constants.ACCEPT_LANGUAGE);
   }
 }

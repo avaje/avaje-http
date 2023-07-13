@@ -180,9 +180,7 @@ public final class ControllerReader {
 
   private boolean initHasValid() {
 
-    return findAnnotation(JavaxValidPrism::getOptionalOn).isPresent()
-        || findAnnotation(JakartaValidPrism::getOptionalOn).isPresent()
-        || findAnnotation(ValidPrism::getOptionalOn).isPresent();
+    return findAnnotation(ValidPrism::getOptionalOn).isPresent();
   }
 
   String produces() {

@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
-import javax.validation.Valid;
-
 import org.example.myapp.service.MyService;
 
 import io.avaje.http.api.BeanParam;
@@ -26,6 +24,7 @@ import io.avaje.http.api.QueryParam;
 import io.javalin.http.Context;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 
 /**
  * Hello resource manager.
