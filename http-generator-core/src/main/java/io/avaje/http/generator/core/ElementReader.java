@@ -3,13 +3,16 @@ package io.avaje.http.generator.core;
 import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
 import static io.avaje.http.generator.core.ProcessingContext.platform;
 import static io.avaje.http.generator.core.ProcessingContext.typeElement;
+import static java.util.function.Predicate.not;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import javax.lang.model.element.*;
+import javax.lang.model.type.TypeMirror;
 
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 import io.avaje.http.generator.core.openapi.MethodParamDocBuilder;
@@ -38,6 +41,8 @@ public class ElementReader {
   private boolean isParamCollection;
   private boolean isParamMap;
   private final Set<String> imports = new HashSet<>();
+
+  private final List<String> validationGroups = new ArrayList<>();
 
   ElementReader(Element element, ParamType defaultType, boolean formMarker) {
     this(element, null, Util.typeDef(element.asType()), defaultType, formMarker);
@@ -70,6 +75,11 @@ public class ElementReader {
     if (!contextType) {
       readAnnotations(element, defaultType);
       useValidation = useValidation();
+      HttpValidPrism.getOptionalOn(element).map(HttpValidPrism::groups).stream()
+          .flatMap(List::stream)
+          .map(TypeMirror::toString)
+          .forEach(validationGroups::add);
+      this.imports.addAll(validationGroups);
     } else {
       paramType = ParamType.CONTEXT;
       useValidation = false;
@@ -138,10 +148,7 @@ public class ElementReader {
       return false;
     }
     final var elementType = typeElement(rawType);
-    return elementType != null
-        && (ValidPrism.isPresent(elementType)
-            || JavaxValidPrism.isPresent(elementType)
-            || JakartaValidPrism.isPresent(elementType));
+    return elementType != null && ValidPrism.isPresent(elementType);
   }
 
   private void readAnnotations(Element element, ParamType defaultType) {
@@ -276,7 +283,14 @@ public class ElementReader {
   void writeValidate(Append writer) {
     if (!contextType && typeHandler == null) {
       if (useValidation) {
-        writer.append("validator.validate(%s);", varName).eol();
+        writer.append("validator.validate(%s, ", varName);
+        platform().writeAcceptLanguage(writer);
+
+        if (!validationGroups.isEmpty()) {
+          validationGroups.forEach(g -> writer.append(", %s", Util.shortName(g)));
+        }
+
+        writer.append(");").eol();
       } else {
         writer.append("// no validation required on %s", varName).eol();
       }
@@ -290,7 +304,7 @@ public class ElementReader {
       // body passed as method parameter (Helidon)
       return;
     }
-    String shortType = handlerShortType();
+    final String shortType = handlerShortType();
     writer.append("%s  var %s = ", platform().indent(), varName);
     if (setValue(writer, segments, shortType)) {
       writer.append(";").eol();
@@ -320,12 +334,12 @@ public class ElementReader {
       return false;
     }
     if (impliedParamType) {
-      var name = matrixParamName != null ? matrixParamName : varName;
-      PathSegments.Segment segment = segments.segment(name);
+      final var name = matrixParamName != null ? matrixParamName : varName;
+      final PathSegments.Segment segment = segments.segment(name);
       if (segment != null) {
         // path or matrix parameter
-        boolean requiredParam = segment.isRequired(varName);
-        String asMethod =
+        final boolean requiredParam = segment.isRequired(varName);
+        final String asMethod =
             (typeHandler == null)
                 ? null
                 : (requiredParam) ? typeHandler.asMethod() : typeHandler.toMethod();
@@ -341,7 +355,7 @@ public class ElementReader {
       }
     }
 
-    String asMethod = (typeHandler == null) ? null : typeHandler.toMethod();
+    final String asMethod = (typeHandler == null) ? null : typeHandler.toMethod();
     if (asMethod != null) {
       writer.append(asMethod);
     }
@@ -380,8 +394,8 @@ public class ElementReader {
   }
 
   private void writeForm(Append writer, String shortType, String varName, ParamType defaultParamType) {
-    TypeElement formBeanType = typeElement(rawType);
-    BeanParamReader form = new BeanParamReader(formBeanType, varName, shortType, defaultParamType);
+    final TypeElement formBeanType = typeElement(rawType);
+    final BeanParamReader form = new BeanParamReader(formBeanType, varName, shortType, defaultParamType);
     form.write(writer);
   }
 

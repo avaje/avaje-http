@@ -3,6 +3,7 @@ package io.avaje.http.generator.helidon;
 import java.util.List;
 
 import io.avaje.http.generator.core.Append;
+import io.avaje.http.generator.core.Constants;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
@@ -167,5 +168,10 @@ class HelidonPlatformAdapter implements PlatformAdapter {
       default:
         throw new UnsupportedOperationException("Unsupported MultiValue Parameter");
     }
+  }
+  
+  @Override
+  public void writeAcceptLanguage(Append writer) {
+    writer.append("req.headers().first(\"%s\").orElse(null)", Constants.ACCEPT_LANGUAGE);
   }
 }

@@ -3,15 +3,14 @@ package org.example.myapp.web;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import io.avaje.http.api.Header;
 import io.avaje.http.api.Ignore;
 import io.avaje.http.api.QueryParam;
 import io.avaje.jsonb.Json;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Json
 @Valid

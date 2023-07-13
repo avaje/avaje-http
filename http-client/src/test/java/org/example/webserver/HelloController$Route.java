@@ -64,16 +64,16 @@ public class HelloController$Route implements WebRoutes {
 
     ApiBuilder.post("/hello", ctx -> {
       ctx.status(201);
-      HelloDto dto = ctx.bodyAsClass(HelloDto.class);
-      validator.validate(dto);
+      final HelloDto dto = ctx.bodyAsClass(HelloDto.class);
+      validator.validate(dto, "en-us");
       ctx.json(controller.post(dto));
     });
 
     ApiBuilder.post("/hello/savebean/{foo}", ctx -> {
       ctx.status(201);
-      String foo = ctx.pathParam("foo");
-      HelloDto dto = ctx.bodyAsClass(HelloDto.class);
-      validator.validate(dto);
+      final String foo = ctx.pathParam("foo");
+      final HelloDto dto = ctx.bodyAsClass(HelloDto.class);
+      validator.validate(dto, "en-us");
       controller.saveBean(foo, dto, ctx);
     });
 
@@ -86,7 +86,7 @@ public class HelloController$Route implements WebRoutes {
       helloForm.url = ctx.formParam("url");
       helloForm.startDate = toLocalDate(ctx.formParam("startDate"));
 
-      validator.validate(helloForm);
+      validator.validate(helloForm, "en-us");
       controller.saveForm(helloForm);
     });
 
@@ -107,7 +107,7 @@ public class HelloController$Route implements WebRoutes {
       helloForm.url = ctx.formParam("url");
       helloForm.startDate = toLocalDate(ctx.formParam("startDate"));
 
-      validator.validate(helloForm);
+      validator.validate(helloForm, "en-us");
       ctx.json(controller.saveForm3(helloForm));
     });
 

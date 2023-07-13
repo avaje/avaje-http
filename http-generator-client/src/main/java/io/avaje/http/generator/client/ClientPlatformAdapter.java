@@ -34,24 +34,20 @@ class ClientPlatformAdapter implements PlatformAdapter {
   public String indent() {
     return null;
   }
+  // these have no meaning for client adapters
+  @Override
+  public void controllerRoles(List<String> roles, ControllerReader controller) {}
 
   @Override
-  public void controllerRoles(List<String> roles, ControllerReader controller) {
-
-  }
+  public void methodRoles(List<String> roles, ControllerReader controller) {}
 
   @Override
-  public void methodRoles(List<String> roles, ControllerReader controller) {
-
-  }
+  public void writeReadParameter(Append writer, ParamType paramType, String paramName) {}
 
   @Override
-  public void writeReadParameter(Append writer, ParamType paramType, String paramName) {
-
-  }
+  public void writeReadParameter(
+      Append writer, ParamType paramType, String paramName, String paramDefault) {}
 
   @Override
-  public void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault) {
-
-  }
+  public void writeAcceptLanguage(Append writer) {}
 }

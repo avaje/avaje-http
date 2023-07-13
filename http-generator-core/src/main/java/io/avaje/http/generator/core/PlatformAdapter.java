@@ -48,6 +48,8 @@ public interface PlatformAdapter {
   void writeReadParameter(
       Append writer, ParamType paramType, String paramName, String paramDefault);
 
+  void writeAcceptLanguage(Append writer);
+
   default void writeReadMapParameter(Append writer, ParamType paramType) {
     throw new UnsupportedOperationException("Unsupported Map Parameter");
   }

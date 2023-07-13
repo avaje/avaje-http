@@ -3,6 +3,7 @@ package io.avaje.http.generator.javalin;
 import java.util.List;
 
 import io.avaje.http.generator.core.Append;
+import io.avaje.http.generator.core.Constants;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
@@ -107,5 +108,10 @@ class JavalinAdapter implements PlatformAdapter {
           "Only MultiValue Query Params are supported in Javalin");
     }
     writer.append("withDefault(ctx.queryParams(\"%s\"), java.util.List.of(\"%s\"))", paramName, String.join(",", paramDefault));
+  }
+
+  @Override
+  public void writeAcceptLanguage(Append writer) {
+    writer.append("ctx.header(\"%s\")", Constants.ACCEPT_LANGUAGE);
   }
 }
