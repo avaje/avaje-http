@@ -18,11 +18,11 @@ public interface Validator {
    */
   void validate(Object bean, String acceptLanguage, Class<?>... groups) throws ValidationException;
 
-  default Locale resolveLocale(String acceptLanguage, Collection<Locale> locales) {
+  default Locale resolveLocale(String acceptLanguage, Collection<Locale> acceptLocales) {
     if (acceptLanguage == null) {
       return null;
     }
     final List<LanguageRange> list = LanguageRange.parse(acceptLanguage);
-    return Locale.lookup(list, locales);
+    return Locale.lookup(list, acceptLocales);
   }
 }
