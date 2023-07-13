@@ -15,11 +15,8 @@ public class BeanValidator implements Validator {
   private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
   @Override
-  public void validate(Object bean, String acceptLanguage, Class<?>... groups)
-      throws ValidationException {
-
-    final Set<ConstraintViolation<Object>> violations =
-        factory.getValidator().validate(bean, groups);
+  public void validate(Object bean, String acceptLanguage, Class<?>... groups) throws ValidationException {
+    final Set<ConstraintViolation<Object>> violations = factory.getValidator().validate(bean, groups);
     if (!violations.isEmpty()) {
       throwExceptionWith(violations);
     }
