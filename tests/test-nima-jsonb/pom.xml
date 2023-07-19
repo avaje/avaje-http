@@ -41,12 +41,12 @@
     <dependency>
       <groupId>io.helidon.nima.webserver</groupId>
       <artifactId>helidon-nima-webserver</artifactId>
-      <version>4.0.0-ALPHA6</version>
+      <version>${nima.version}</version>
     </dependency>
     <dependency>
       <groupId>io.helidon.nima.http.media</groupId>
       <artifactId>helidon-nima-http-media-jsonb</artifactId>
-      <version>4.0.0-ALPHA6</version>
+      <version>${nima.version}</version>
     </dependency>
     <dependency>
       <groupId>io.avaje</groupId>
