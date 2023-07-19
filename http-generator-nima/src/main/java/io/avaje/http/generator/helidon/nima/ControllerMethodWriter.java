@@ -113,8 +113,12 @@ class ControllerMethodWriter {
         final var uType = UType.parse(method.returnType());
         writer.append("    result.transferTo(res.outputStream());", uType.shortName()).eol();
       } else if (producesJson()) {
-        final var uType = UType.parse(method.returnType());
-        writer.append("    %sJsonType.toJson(result, JsonOutput.of(res));", uType.shortName()).eol();
+        if (returnTypeString()) {
+          writer.append("    res.send(result); // send raw JSON").eol();
+        } else {
+          final var uType = UType.parse(method.returnType());
+          writer.append("    %sJsonType.toJson(result, JsonOutput.of(res));", uType.shortName()).eol();
+        }
       } else {
         writer.append("    res.send(result);").eol();
       }
@@ -157,6 +161,10 @@ class ControllerMethodWriter {
         && !disabledDirectWrites()
         && !"byte[]".equals(method.returnType().toString())
         && (method.produces() == null || method.produces().toLowerCase().contains("json"));
+  }
+
+  private boolean returnTypeString() {
+    return "java.lang.String".equals(method.returnType().toString());
   }
 
   private boolean missingServerResponse(List<MethodParam> params) {
