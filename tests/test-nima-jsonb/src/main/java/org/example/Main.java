@@ -24,6 +24,7 @@ public class Main {
         .addRouting(httpRouting)
         // .routing(Main::routing)
         .port(8081)
+        .build()
         .start();
 
     System.out.println("started");
