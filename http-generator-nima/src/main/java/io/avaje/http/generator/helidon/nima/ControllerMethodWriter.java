@@ -48,6 +48,8 @@ class ControllerMethodWriter {
     if (bodyType != null) {
       if ("InputStream".equals(bodyType)) {
         writer.append("    var %s = req.content().inputStream();", method.bodyName()).eol();
+      } else if ("String".equals(bodyType)) {
+        writer.append("    var %s = req.content().as(String.class);", method.bodyName()).eol();
       } else if (useJsonB) {
         final String fieldName = fieldNameOfBody();
         writer.append("    var %s = %sJsonType.fromJson(req.content().inputStream());", method.bodyName(), fieldName).eol();
