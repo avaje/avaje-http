@@ -21,7 +21,6 @@
   </properties>
 
   <modules>
-    <module>test-helidon</module>
     <module>test-javalin</module>
     <module>test-javalin-jsonb</module>
     <module>test-jex</module>
