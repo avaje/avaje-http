@@ -44,7 +44,7 @@
     <module>http-generator-javalin</module>
     <module>http-generator-jex</module>
     <module>http-generator-client</module>
-    <module>http-generator-nima</module>
+    <module>http-generator-helidon</module>
   </modules>
 
   <profiles>

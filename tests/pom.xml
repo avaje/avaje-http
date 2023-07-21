@@ -32,7 +32,7 @@
     <profile>
       <id>jdk19plus</id>
       <activation>
-        <jdk>[19,20]</jdk>
+        <jdk>[19,20,21]</jdk>
       </activation>
       <modules>
         <module>test-nima</module>
