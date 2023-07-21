@@ -9,7 +9,7 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-parent</artifactId>
-  <version>1.46-SNAPSHOT</version>
+  <version>1.46</version>
   <packaging>pom</packaging>
 
   <scm>
