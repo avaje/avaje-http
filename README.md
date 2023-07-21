@@ -94,21 +94,6 @@ Javalin.create()
         .start();
 ```
 
-### Usage with Helidon SE
-
-The annotation processor will generate controller classes implementing the Helidon Service interface, which we can use
-get all the Services and register them with Helidon `RoutingBuilder`.
-
-```java
-var routes = BeanScope.builder().build().list(Service.class);
-var routingBuilder = Routing.builder().register(routes.stream().toArray(Service[]::new));
-WebServer.builder()
-        .addMediaSupport(JacksonSupport.create())
-        .routing(routingBuilder)
-        .build()
-        .start();
-```
-
 ### Usage with Helidon Nima
 
 The annotation processor will generate controller classes implementing the Helidon HttpService interface, which we can use
@@ -158,36 +143,6 @@ public class WidgetController$Route implements WebRoutes {
       ctx.json(result);
     });
 
-  }
-}
-```
-
-### (Helidon SE) The generated WidgetController$Route.java is:
-```java
-@Generated("avaje-helidon-generator")
-@Singleton
-public class WidgetController$Route implements Service {
-
-  private final WidgetController controller;
-
-  public WidgetController$Route(WidgetController controller) {
-    this.controller = controller;
-  }
-
-  @Override
-  public void update(Routing.Rules rules) {
-
-    rules.get("/widgets/{id}", this::_getById);
-    rules.post("/widgets", this::_getAll);
-  }
-
-  private void _getById(ServerRequest req, ServerResponse res) {
-    int id = asInt(req.path().param("id"));
-    res.send(controller.getById(id));
-  }
-
-  private void _getAll(ServerRequest req, ServerResponse res) {
-    res.send(controller.getAll());
   }
 }
 ```
