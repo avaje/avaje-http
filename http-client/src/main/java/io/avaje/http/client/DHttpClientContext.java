@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 
-final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
+final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
   /**
    * HTTP Authorization header.
@@ -75,7 +75,7 @@ final class DHttpClientContext implements HttpClientContext, SpiHttpClient {
   private <T> T constructReflectively(Class<T> clientInterface) {
     try {
       final Class<?> implementationClass = implementationClass(clientInterface);
-      final Constructor<?> constructor = implementationClass.getConstructor(HttpClientContext.class);
+      final Constructor<?> constructor = implementationClass.getConstructor(HttpClient.class);
       return (T) constructor.newInstance(this);
     } catch (final Exception e) {
       final String cn = implementationClassName(clientInterface, "HttpClient");
