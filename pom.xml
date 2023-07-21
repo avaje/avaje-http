@@ -44,7 +44,6 @@
     <module>http-generator-javalin</module>
     <module>http-generator-jex</module>
     <module>http-generator-client</module>
-    <module>http-generator-helidon</module>
   </modules>
 
   <profiles>
@@ -60,6 +59,15 @@
         <module>tests</module>
       </modules>
     </profile>
+	<profile>
+		<id>jdk19plus</id>
+		<activation>
+			<jdk>[20,21]</jdk>
+		</activation>
+		<modules>
+			<module>http-generator-helidon</module>
+		</modules>
+	</profile>
 
 
     <profile>
