@@ -63,7 +63,7 @@
           <annotationProcessorPaths>
             <path>
               <groupId>io.avaje</groupId>
-              <artifactId>avaje-http-nima-generator</artifactId>
+              <artifactId>avaje-http-helidon-generator</artifactId>
               <version>${project.version}</version>
             </path>
             <path>
