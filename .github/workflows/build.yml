@@ -33,9 +33,4 @@ jobs:
         env:
           JAVA_VERSION: ${{ matrix.java_version }}
         run: |
-          if (( JAVA_VERSION < 20 ));
-          then
-             mvn clean package -pl "!:avaje-http-helidon-generator"
-          else
-             mvn clean package
-          fi
+          mvn clean package
