@@ -2,14 +2,16 @@ package org.example;
 
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Get;
+import io.avaje.http.api.InstrumentServerContext;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Produces;
 import io.helidon.webserver.ServerRequest;
 import io.helidon.webserver.ServerResponse;
 import jakarta.inject.Inject;
 
-@Controller(instrumentRequestContext = true)
+@Controller
 @Path("/req-scoped")
+@InstrumentServerContext
 public class ReqScopedController {
 
   @Inject

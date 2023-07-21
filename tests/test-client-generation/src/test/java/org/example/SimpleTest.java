@@ -2,10 +2,8 @@ package org.example;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.avaje.http.client.HttpApiProvider;
 import io.avaje.http.client.HttpClient;
 import io.avaje.http.client.JacksonBodyAdapter;
-import org.example.httpclient.GitHubUsersHttpClient;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +25,7 @@ class SimpleTest {
         .bodyAdapter(new JacksonBodyAdapter(objectMapper))
         .build();
 
-    GitHubUsers simple = client.create(GitHubUsers.class);
+    final GitHubUsers simple = client.create(GitHubUsers.class);
 
     final List<Repo> repos = simple.listRepos("rbygrave");
     System.out.println("got repos - " + repos.size());
@@ -35,16 +33,4 @@ class SimpleTest {
     assertThat(repos).hasSizeGreaterThan(5);
   }
 
-  public static class AP implements HttpApiProvider<GitHubUsers> {
-
-    @Override
-    public Class<GitHubUsers> type() {
-      return GitHubUsers.class;
-    }
-
-    @Override
-    public GitHubUsers provide(HttpClient client) {
-      return new GitHubUsersHttpClient(client);
-    }
-  }
 }

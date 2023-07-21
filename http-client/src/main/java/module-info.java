@@ -1,6 +1,5 @@
 module io.avaje.http.client {
 
-  uses io.avaje.http.client.HttpApiProvider;
   uses io.avaje.http.client.HttpClient.GeneratedComponent;
 
   requires transitive java.net.http;

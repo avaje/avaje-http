@@ -24,7 +24,7 @@ class DHttpApiTest {
       .build();
 
     DHttpApi httpApi = new DHttpApi();
-    httpApi.addProvider(new Simple$HttpClient.Provider());
+    httpApi.addProvider(Simple.class, Simple$HttpClient::new);
     final Simple simple = httpApi.provideFor(Simple.class, clientContext);
 
     final List<Repo> repos = simple.listRepos("rbygrave", "junk");
@@ -45,7 +45,7 @@ class DHttpApiTest {
       .build();
 
     DHttpApi httpApi = new DHttpApi();
-    httpApi.addProvider(new Simple$HttpClient.Provider());
+    httpApi.addProvider(Simple.class, Simple$HttpClient::new);
     final Simple simple = httpApi.provideFor(Simple.class, client);
 
     final List<Repo> repos = simple.listRepos("rbygrave", "junk");

@@ -62,13 +62,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     if (apiProvider != null) {
       return apiProvider.provide(this);
     }
-    try {
-      final Class<?> implementationClass = implementationClass(clientInterface);
-      final Constructor<?> constructor = implementationClass.getConstructor(HttpClient.class);
-      return (T) constructor.newInstance(this);
-    } catch (final Exception e) {
-      return constructReflectively(clientInterface);
-    }
+    return constructReflectively(clientInterface);
   }
 
   @SuppressWarnings("unchecked")

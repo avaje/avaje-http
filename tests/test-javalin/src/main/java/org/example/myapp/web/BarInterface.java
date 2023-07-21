@@ -1,9 +1,6 @@
 package org.example.myapp.web;
 
-import io.avaje.http.api.Get;
-import io.avaje.http.api.MediaType;
-import io.avaje.http.api.Path;
-import io.avaje.http.api.Produces;
+import io.avaje.http.api.*;
 import io.swagger.v3.oas.annotations.links.Link;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
@@ -19,7 +16,8 @@ public interface BarInterface {
   @Get("/find/:code")
   List<Bar> findByCode(String code);
 
+  @Get
   @Produces(MediaType.TEXT_PLAIN)
-  @Get(instrumentRequestContext = true)
+  @InstrumentServerContext
   String barMessage();
 }

@@ -24,11 +24,4 @@ public @interface Post {
   /** Specify the path. */
   String value() default "";
 
-  /**
-   * Specify if the http request context should be instrumented via RequestContextResolver
-   *
-   * @deprecated use InstrumentServerContext annotation instead
-   */
-  @Deprecated
-  boolean instrumentRequestContext() default false;
 }

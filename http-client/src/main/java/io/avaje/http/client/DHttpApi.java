@@ -9,8 +9,8 @@ import java.util.ServiceLoader;
 
 import static java.lang.System.Logger.Level.*;
 
-/**
- * Service loads the HttpApiProvider for HttpApi.
+/** 
+ * Service loads the HttpApiProvider for HttpApi. 
  */
 final class DHttpApi {
 
@@ -24,19 +24,15 @@ final class DHttpApi {
     init();
   }
 
-  @SuppressWarnings("rawtypes")
   void init() {
-    for (final HttpApiProvider apiProvider : ServiceLoader.load(HttpApiProvider.class)) {
-      addProvider(apiProvider);
-    }
     for (final GeneratedComponent apiProvider : ServiceLoader.load(GeneratedComponent.class)) {
       apiProvider.register(providerMap);
     }
     log.log(DEBUG, "providers for {0}", providerMap.keySet());
   }
 
-  void addProvider(HttpApiProvider<?> apiProvider) {
-    providerMap.put(apiProvider.type(), apiProvider);
+  <T> void addProvider(Class<T> type, HttpApiProvider<?> apiProvider) {
+    providerMap.put(type, apiProvider);
   }
 
   @SuppressWarnings("unchecked")
@@ -44,7 +40,6 @@ final class DHttpApi {
     return (HttpApiProvider<T>) providerMap.get(type);
   }
 
-  @SuppressWarnings("unchecked")
   <T> T provideFor(Class<T> type, HttpClient httpClient) {
     final HttpApiProvider<T> apiProvider = lookup(type);
     if (apiProvider == null) {
@@ -53,16 +48,12 @@ final class DHttpApi {
     return apiProvider.provide(httpClient);
   }
 
-  /**
-   * Return the client implementation via service loading.
-   */
+  /** Return the client implementation via service loading. */
   static <T> T provide(Class<T> type, HttpClient httpClient) {
     return INSTANCE.provideFor(type, httpClient);
   }
 
-  /**
-   * Return the HttpApiProvider for the client interface type or null if not registered.
-   */
+  /** Return the HttpApiProvider for the client interface type or null if not registered. */
   static <T> HttpApiProvider<T> get(Class<T> type) {
     return INSTANCE.lookup(type);
   }

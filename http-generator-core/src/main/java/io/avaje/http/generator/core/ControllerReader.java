@@ -68,11 +68,8 @@ public final class ControllerReader {
     this.apiResponses = buildApiResponses();
     hasInstrument =
         instrumentAllWebMethods()
-            || findAnnotation(ControllerPrism::getOptionalOn)
-                .map(ControllerPrism::instrumentRequestContext)
-                .or(
-                    () ->
-                        findAnnotation(InstrumentServerContextPrism::getOptionalOn).map(x -> true))
+            || findAnnotation(InstrumentServerContextPrism::getOptionalOn)
+                .map(x -> true)
                 .orElse(false);
   }
 
