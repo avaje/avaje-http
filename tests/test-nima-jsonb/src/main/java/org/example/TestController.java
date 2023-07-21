@@ -4,20 +4,17 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
-import io.avaje.http.api.BodyString;
-import io.avaje.http.api.Controller;
-import io.avaje.http.api.Default;
-import io.avaje.http.api.Form;
-import io.avaje.http.api.FormParam;
-import io.avaje.http.api.Get;
-import io.avaje.http.api.InstrumentServerContext;
-import io.avaje.http.api.Path;
-import io.avaje.http.api.Post;
-import io.avaje.http.api.QueryParam;
+import io.avaje.http.api.*;
 
-@Path("test/")
+@Path("test")
 @Controller
 public class TestController {
+
+  @Produces("text/plain")
+  @Get
+  String hello() {
+    return "hi";
+  }
 
   @Get("/paramMulti")
   String paramMulti(Set<String> strings) {
