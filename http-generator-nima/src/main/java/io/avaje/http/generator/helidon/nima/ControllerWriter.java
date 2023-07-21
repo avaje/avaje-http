@@ -1,6 +1,7 @@
 package io.avaje.http.generator.helidon.nima;
 
 import static io.avaje.http.generator.core.ProcessingContext.diAnnotation;
+import static io.avaje.http.generator.core.ProcessingContext.isAssignable2Interface;
 
 import java.io.IOException;
 import java.util.List;
@@ -106,8 +107,10 @@ class ControllerWriter extends BaseControllerWriter {
     }
 
     for (final UType type : jsonTypes.values()) {
-      final var typeString = PrimitiveUtil.wrap(type.shortType()).replace(",", ", ");
-      writer.append("  private final JsonType<%s> %sJsonType;", typeString, type.shortName()).eol();
+      if (!isInputStream(type.full())) {
+        final var typeString = PrimitiveUtil.wrap(type.shortType()).replace(",", ", ");
+        writer.append("  private final JsonType<%s> %sJsonType;", typeString, type.shortName()).eol();
+      }
     }
     writer.eol();
 
@@ -133,9 +136,15 @@ class ControllerWriter extends BaseControllerWriter {
 
     if (useJsonB) {
       for (final UType type : jsonTypes.values()) {
-        JsonBUtil.writeJsonbType(type, writer);
+        if (!isInputStream(type.full())) {
+          JsonBUtil.writeJsonbType(type, writer);
+        }
       }
     }
     writer.append("  }").eol().eol();
+  }
+
+  private boolean isInputStream(String type) {
+    return isAssignable2Interface(type.toString(), "java.io.InputStream");
   }
 }
