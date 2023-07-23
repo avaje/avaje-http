@@ -19,9 +19,7 @@ An enhanced wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/gr
 
 ## [HTTP Server](https://avaje.io/http/)
 
-Use jax-rs style controllers with annotations (`@Path`, `@Get` ...)
-that are lightweight by using source code generation (annotation processors)
-to generate adapter code for Javalin and Helidon SE/Nima.
+Use source code generation to adapt annotated REST controllers `@Path, @Get, @Post, etc` to Javalin, Helidon SE, and similar web routing HTTP servers.
 
 - Lightweight (65Kb library + generated source code)
 - Full use of Javalin or Helidon SE/Nima as desired
