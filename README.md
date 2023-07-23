@@ -6,14 +6,24 @@
 
 HTTP server and client libraries via code generation.
 
-## HTTP Server
+## [HTTP Client](https://avaje.io/http-client/)
 
-A jax-rs style controllers with annotations (`@Path`, `@Get` ...)
-that is lightweight by using source code generation (annotation processors)
-to generate adapter code for Javalin and Helidon SE/Nima.
+An enhanced wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/groups/net/httpclient/intro.html). Additionally, you can create Feign-style interfaces and have implementations generated via annotation processing.
 
-- Lightweight as in 65Kb library + generated source code
+- Fluid API for building URLs and payload
+- JSON marshaling using Avaje Jsonb/Jackson/Gson
+- Light Feign-style interfaces via annotation processing.
+- Request/Response Interception
+- Authorization via Basic Auth or OAuth Bearer Tokens
+- Async and sync API
+
+## [HTTP Server](https://avaje.io/http/)
+
+Use source code generation to adapt annotated REST controllers `@Path, @Get, @Post, etc` to Javalin, Helidon SE, and similar web routing HTTP servers.
+
+- Lightweight (65Kb library + generated source code)
 - Full use of Javalin or Helidon SE/Nima as desired
+- Bean Validation of request bodies supported
 
 ## Add dependencies
 ```xml
