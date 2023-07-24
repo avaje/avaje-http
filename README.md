@@ -1,6 +1,6 @@
 # [Avaje-HTTP](https://avaje.io/http/)
 [![Build](https://github.com/avaje/avaje-http/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-http/actions/workflows/build.yml)
-<img src="https://img.shields.io/maven-central/v/io.avaje/avaje-http-api.svg?label=Maven%20Central">
+[![Maven Central : avaje-inject](https://img.shields.io/maven-central/v/io.avaje/avaje-http-api.svg?label=Maven%20Central)](https://maven-badges.herokuapp.com/maven-central/io.avaje/avaje-http-api)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-inject/blob/master/LICENSE)
 [![Discord](https://img.shields.io/discord/1074074312421683250?color=%237289da&label=discord)](https://discord.gg/Qcqf9R27BR)
 
@@ -33,13 +33,13 @@ Use source code generation to adapt annotated REST controllers `@Path, @Get, @Po
   <version>${avaje.http.version}</version>
 </dependency>
 ```
-#### Add the generator module for your desired microframework as a annotation processor.
+#### Add the generator module for your desired microframework as an annotation processor.
 
 ```xml
 <!-- Annotation processors -->
 <dependency>
   <groupId>io.avaje</groupId>
-  <artifactId>avaje-http-javalin-generator</artifactId>
+  <artifactId>avaje-http-{javalin/helidon}-generator</artifactId>
   <version>${avaje-http.version}</version>
   <scope>provided</scope>
 </dependency>
