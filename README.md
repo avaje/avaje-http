@@ -8,7 +8,7 @@ HTTP server and client libraries via code generation.
 
 ## [HTTP Client](https://avaje.io/http-client/)
 
-An enhanced wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/groups/net/httpclient/intro.html). Additionally, you can create Feign-style interfaces and have implementations generated via annotation processing.
+A light (~80kb) wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/groups/net/httpclient/intro.html). Additionally, you can create Feign-style interfaces and have implementations generated via annotation processing.
 
 - Fluid API for building URLs and payload
 - JSON marshaling using Avaje Jsonb/Jackson/Gson
