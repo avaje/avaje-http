@@ -1,12 +1,11 @@
 package io.avaje.http.hibernate.validator;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import io.avaje.http.api.ValidationException;
 import io.avaje.http.api.Validator;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
 
@@ -23,13 +22,25 @@ public class BeanValidator implements Validator {
   }
 
   private void throwExceptionWith(Set<ConstraintViolation<Object>> violations) {
-    final Map<String, Object> errors = new LinkedHashMap<>();
+    List<ValidationException.Error> errors = new ArrayList<>();
+
     for (final ConstraintViolation<?> violation : violations) {
-      final var path = violation.getPropertyPath();
+      final var path = violation.getPropertyPath().toString();
+      final var field = pathToField(path);
       final var message = violation.getMessage();
-      errors.put(path.toString(), message);
+      errors.add(new ValidationException.Error(path, field, message));
     }
 
-    throw new ValidationException(422, "Request failed validation", errors);
+    var cause = new ConstraintViolationException(violations);
+    throw new ValidationException(422, "Request failed validation", cause, errors);
+  }
+
+  private String pathToField(String path) {
+    int pos = path.lastIndexOf('.');
+    if (pos == -1) {
+      return path;
+    } else {
+      return path.substring(pos + 1);
+    }
   }
 }

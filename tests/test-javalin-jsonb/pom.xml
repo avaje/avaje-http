@@ -53,7 +53,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-hibernate-validator</artifactId>
-      <version>3.3</version>
+      <version>3.5-RC1</version>
     </dependency>
 
     <dependency>
