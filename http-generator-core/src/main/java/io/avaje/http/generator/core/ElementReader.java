@@ -283,12 +283,12 @@ public class ElementReader {
   void writeValidate(Append writer) {
     if (!contextType && typeHandler == null) {
       if (useValidation) {
-        writer.append("validator.validate(%s, ", varName);
+        writer.append("var validLanguage = ");
         platform().writeAcceptLanguage(writer);
+        writer.append(";").eol();
+        writer.append("    validator.validate(%s, validLanguage", varName);
 
-        if (!validationGroups.isEmpty()) {
-          validationGroups.forEach(g -> writer.append(", %s", Util.shortName(g)));
-        }
+        validationGroups.forEach(g -> writer.append(", %s", Util.shortName(g)));
 
         writer.append(");").eol();
       } else {
