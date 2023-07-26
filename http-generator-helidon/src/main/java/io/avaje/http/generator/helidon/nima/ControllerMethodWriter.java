@@ -76,7 +76,6 @@ class ControllerMethodWriter {
 
     if (method.includeValidate()) {
       for (final MethodParam param : params) {
-        writer.append("    ");
         param.writeValidate(writer);
       }
     }
