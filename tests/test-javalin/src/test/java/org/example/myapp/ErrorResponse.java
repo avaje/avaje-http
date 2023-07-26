@@ -8,7 +8,7 @@ public class ErrorResponse {
 
   private String message;
 
-  private List<ValidationException.Error> errors = new ArrayList<>();
+  private List<ValidationException.ViolationMessage> errors = new ArrayList<>();
 
   public String getMessage() {
     return message;
@@ -18,21 +18,21 @@ public class ErrorResponse {
     this.message = message;
   }
 
-  public List<ValidationException.Error> getErrors() {
+  public List<ValidationException.ViolationMessage> getErrors() {
     return errors;
   }
 
-  public void setErrors(List<ValidationException.Error> errors) {
+  public void setErrors(List<ValidationException.ViolationMessage> errors) {
     this.errors = errors;
   }
 
   public String get(String field) {
     return errorForField(field)
-      .map(ValidationException.Error::getMessage)
+      .map(ValidationException.ViolationMessage::getMessage)
       .orElseThrow();
   }
-  public Optional<ValidationException.Error> errorForField(String field) {
-    for (ValidationException.Error error : errors) {
+  public Optional<ValidationException.ViolationMessage> errorForField(String field) {
+    for (ValidationException.ViolationMessage error : errors) {
       if (field.equals(error.getField())) {
         return Optional.of(error);
       }

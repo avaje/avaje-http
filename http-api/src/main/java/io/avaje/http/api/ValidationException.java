@@ -17,7 +17,7 @@ public class ValidationException extends IllegalArgumentException {
 
   private int status = 422;
 
-  private List<? extends Error> errors;
+  private List<? extends ViolationMessage> errors;
 
   /** Create with a message. */
   public ValidationException(String message) {
@@ -33,14 +33,14 @@ public class ValidationException extends IllegalArgumentException {
   }
 
   /** Create with a status message and errors. */
-  public ValidationException(int status, String message, List<? extends Error> errors) {
+  public ValidationException(int status, String message, List<? extends ViolationMessage> errors) {
     super(message);
     this.status = status;
     this.errors = errors;
   }
 
   /** Create with a status message and errors. */
-  public ValidationException(int status, String message, Throwable cause, List<? extends Error> errors) {
+  public ValidationException(int status, String message, Throwable cause, List<? extends ViolationMessage> errors) {
     super(message, cause);
     this.status = status;
     this.errors = errors;
@@ -57,29 +57,29 @@ public class ValidationException extends IllegalArgumentException {
   }
 
   /** Return the errors typically as a map of field to error message. */
-  public List<? extends Error> getErrors() {
+  public List<? extends ViolationMessage> getErrors() {
     return errors;
   }
 
   /** Set the errors. */
-  public void setErrors(List<? extends Error> errors) {
+  public void setErrors(List<? extends ViolationMessage> errors) {
     this.errors = errors;
   }
 
   /** Error details including the field, error message and path */
-  public static class Error {
+  public static class ViolationMessage {
 
     protected String path;
     protected String field;
     protected String message;
 
-    public Error(String path, String field, String message) {
+    public ViolationMessage(String path, String field, String message) {
       this.path = path;
       this.field = field;
       this.message = message;
     }
 
-    public Error() {
+    public ViolationMessage() {
     }
 
     /** Return the path of this error message. */
