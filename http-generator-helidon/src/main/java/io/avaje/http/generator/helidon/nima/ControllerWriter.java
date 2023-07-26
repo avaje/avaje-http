@@ -47,6 +47,9 @@ class ControllerWriter extends BaseControllerWriter {
     reader.addImportType("io.helidon.nima.webserver.http.ServerResponse");
     reader.addImportType("io.helidon.nima.webserver.http.HttpService");
     reader.addImportType("io.helidon.common.http.Http.Header");
+    if (reader.isIncludeValidator()) {
+      reader.addImportType("io.helidon.common.http.Http");
+    }
   }
 
   void write() {
@@ -96,6 +99,11 @@ class ControllerWriter extends BaseControllerWriter {
       controllerName = "factory";
       controllerType += Constants.FACTORY_SUFFIX;
     }
+
+    if (reader.isIncludeValidator()) {
+      writer.append("  private static final Http.HeaderName HEADER_ACCEPT_LANGUAGE = Header.create(\"Accept-Language\");").eol();
+    }
+
     writer.append("  private final %s %s;", controllerType, controllerName).eol();
 
     if (reader.isIncludeValidator()) {
@@ -142,6 +150,12 @@ class ControllerWriter extends BaseControllerWriter {
       }
     }
     writer.append("  }").eol().eol();
+
+    if (reader.isIncludeValidator()) {
+      writer.append("  private String language(ServerRequest req) {").eol();
+      writer.append("    return req.headers().first(HEADER_ACCEPT_LANGUAGE).orElse(null);").eol();
+      writer.append("  }").eol().eol();
+    }
   }
 
   private boolean isInputStream(String type) {

@@ -37,8 +37,7 @@ public class ValidationException extends IllegalArgumentException {
   }
 
   /** Create with a status message and errors. */
-  public ValidationException(
-      int status, String message, Throwable cause, Map<String, Object> errors) {
+  public ValidationException(int status, String message, Throwable cause, Map<String, Object> errors) {
     super(message, cause);
     this.status = status;
     this.errors = errors;

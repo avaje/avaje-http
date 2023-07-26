@@ -137,8 +137,7 @@ class NimaPlatformAdapter implements PlatformAdapter {
   }
 
   @Override
-  public void writeReadCollectionParameter(
-      Append writer, ParamType paramType, String paramName, List<String> paramDefault) {
+  public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName, List<String> paramDefault) {
     switch (paramType) {
       case QUERYPARAM:
         writer.append(
@@ -162,6 +161,6 @@ class NimaPlatformAdapter implements PlatformAdapter {
 
   @Override
   public void writeAcceptLanguage(Append writer) {
-    writer.append("req.headers().first(Header.create(\"%s\")).orElse(null)", Constants.ACCEPT_LANGUAGE);
+    writer.append("language(req)");
   }
 }
