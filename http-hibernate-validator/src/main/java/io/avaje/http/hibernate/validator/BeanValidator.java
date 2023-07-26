@@ -3,7 +3,7 @@ package io.avaje.http.hibernate.validator;
 import java.util.*;
 
 import io.avaje.http.api.ValidationException;
-import io.avaje.http.api.ValidationException.ViolationMessage;
+import io.avaje.http.api.ValidationException.Violation;
 import io.avaje.http.api.Validator;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -23,13 +23,13 @@ public class BeanValidator implements Validator {
   }
 
   private void throwExceptionWith(Set<ConstraintViolation<Object>> violations) {
-    List<ViolationMessage> errors = new ArrayList<>();
+    List<Violation> errors = new ArrayList<>();
 
     for (final ConstraintViolation<?> violation : violations) {
       final var path = violation.getPropertyPath().toString();
       final var field = pathToField(path);
       final var message = violation.getMessage();
-      errors.add(new ViolationMessage(path, field, message));
+      errors.add(new Violation(path, field, message));
     }
 
     var cause = new ConstraintViolationException(violations);

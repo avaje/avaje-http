@@ -17,7 +17,7 @@ public class ValidationException extends IllegalArgumentException {
 
   private int status = 422;
 
-  private List<? extends ViolationMessage> errors;
+  private List<? extends Violation> errors;
 
   /** Create with a message. */
   public ValidationException(String message) {
@@ -33,14 +33,14 @@ public class ValidationException extends IllegalArgumentException {
   }
 
   /** Create with a status message and errors. */
-  public ValidationException(int status, String message, List<? extends ViolationMessage> errors) {
+  public ValidationException(int status, String message, List<? extends Violation> errors) {
     super(message);
     this.status = status;
     this.errors = errors;
   }
 
   /** Create with a status message and errors. */
-  public ValidationException(int status, String message, Throwable cause, List<? extends ViolationMessage> errors) {
+  public ValidationException(int status, String message, Throwable cause, List<? extends Violation> errors) {
     super(message, cause);
     this.status = status;
     this.errors = errors;
@@ -57,29 +57,29 @@ public class ValidationException extends IllegalArgumentException {
   }
 
   /** Return the errors typically as a map of field to error message. */
-  public List<? extends ViolationMessage> getErrors() {
+  public List<? extends Violation> getErrors() {
     return errors;
   }
 
   /** Set the errors. */
-  public void setErrors(List<? extends ViolationMessage> errors) {
+  public void setErrors(List<? extends Violation> errors) {
     this.errors = errors;
   }
 
   /** Error details including the field, error message and path */
-  public static class ViolationMessage {
+  public static class Violation {
 
     protected String path;
     protected String field;
     protected String message;
 
-    public ViolationMessage(String path, String field, String message) {
+    public Violation(String path, String field, String message) {
       this.path = path;
       this.field = field;
       this.message = message;
     }
 
-    public ViolationMessage() {
+    public Violation() {
     }
 
     /** Return the path of this error message. */

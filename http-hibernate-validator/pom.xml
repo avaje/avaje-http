@@ -5,7 +5,7 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-hibernate-validator</artifactId>
-  <version>3.5-RC2</version>
+  <version>3.5-RC3</version>
 
   <parent>
     <groupId>org.avaje</groupId>
