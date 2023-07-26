@@ -288,9 +288,7 @@ public class ElementReader {
         writer.append(";").eol();
         writer.append("    validator.validate(%s, validLanguage", varName);
 
-        if (!validationGroups.isEmpty()) {
-          validationGroups.forEach(g -> writer.append(", %s", Util.shortName(g)));
-        }
+        validationGroups.forEach(g -> writer.append(", %s", Util.shortName(g)));
 
         writer.append(");").eol();
       } else {
