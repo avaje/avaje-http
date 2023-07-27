@@ -73,12 +73,14 @@ public class ValidationException extends IllegalArgumentException {
     protected String field;
     protected String message;
 
+    /** Create with path, field and message */
     public Violation(String path, String field, String message) {
       this.path = path;
       this.field = field;
       this.message = message;
     }
 
+    /** Default constructor just to help Jackson if it is used. */
     public Violation() {
     }
 
