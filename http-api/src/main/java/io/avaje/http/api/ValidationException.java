@@ -17,7 +17,7 @@ public class ValidationException extends IllegalArgumentException {
 
   private int status = 422;
 
-  private List<? extends Violation> errors;
+  private List<Violation> errors;
 
   /** Create with a message. */
   public ValidationException(String message) {
@@ -33,14 +33,14 @@ public class ValidationException extends IllegalArgumentException {
   }
 
   /** Create with a status message and errors. */
-  public ValidationException(int status, String message, List<? extends Violation> errors) {
+  public ValidationException(int status, String message, List<Violation> errors) {
     super(message);
     this.status = status;
     this.errors = errors;
   }
 
   /** Create with a status message and errors. */
-  public ValidationException(int status, String message, Throwable cause, List<? extends Violation> errors) {
+  public ValidationException(int status, String message, Throwable cause, List<Violation> errors) {
     super(message, cause);
     this.status = status;
     this.errors = errors;
@@ -57,12 +57,12 @@ public class ValidationException extends IllegalArgumentException {
   }
 
   /** Return the errors typically as a map of field to error message. */
-  public List<? extends Violation> getErrors() {
+  public List<Violation> getErrors() {
     return errors;
   }
 
   /** Set the errors. */
-  public void setErrors(List<? extends Violation> errors) {
+  public void setErrors(List<Violation> errors) {
     this.errors = errors;
   }
 
