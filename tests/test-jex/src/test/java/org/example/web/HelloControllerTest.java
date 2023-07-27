@@ -63,7 +63,7 @@ class HelloControllerTest extends BaseWebTest {
       .PUT().asString();
 
     assertThat(hres.statusCode()).isEqualTo(422);
-    assertThat(hres.body()).contains("{\"name\":\"must not be null\"}");
+    assertThat(hres.body()).contains("{\"path\":\"name\",\"field\":\"name\",\"message\":\"must not be null\"}");
   }
 
   @Test
@@ -79,6 +79,6 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(ex.statusCode()).isEqualTo(422);
 
     final ErrorResponse errBean = ex.bean(ErrorResponse.class);
-    assertThat(errBean.getErrors().get("name")).isEqualTo("must not be null");
+    assertThat(errBean.get("name")).isEqualTo("must not be null");
   }
 }

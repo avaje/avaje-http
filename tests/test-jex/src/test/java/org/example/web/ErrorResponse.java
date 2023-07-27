@@ -1,13 +1,14 @@
 package org.example.web;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import io.avaje.http.api.ValidationException;
+
+import java.util.*;
 
 public class ErrorResponse {
 
   private String message;
 
-  private Map<String,String> errors = new LinkedHashMap<>();
+  private List<ValidationException.Violation> errors = new ArrayList<>();
 
   public String getMessage() {
     return message;
@@ -17,11 +18,25 @@ public class ErrorResponse {
     this.message = message;
   }
 
-  public Map<String, String> getErrors() {
+  public List<ValidationException.Violation> getErrors() {
     return errors;
   }
 
-  public void setErrors(Map<String, String> errors) {
+  public void setErrors(List<ValidationException.Violation> errors) {
     this.errors = errors;
+  }
+
+  public String get(String field) {
+    return errorForField(field)
+      .map(ValidationException.Violation::getMessage)
+      .orElseThrow();
+  }
+  public Optional<ValidationException.Violation> errorForField(String field) {
+    for (ValidationException.Violation error : errors) {
+      if (field.equals(error.getField())) {
+        return Optional.of(error);
+      }
+    }
+    return Optional.empty();
   }
 }

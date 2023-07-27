@@ -10,7 +10,7 @@ import io.avaje.jsonb.spi.ViewBuilderAware;
 
 import java.lang.invoke.MethodHandle;
 
-public class RepoJsonAdapter extends JsonAdapter<Repo> implements ViewBuilderAware {
+public class RepoJsonAdapter implements JsonAdapter<Repo>, ViewBuilderAware {
 
   // naming convention Match
   // id [long] name:id publicField
