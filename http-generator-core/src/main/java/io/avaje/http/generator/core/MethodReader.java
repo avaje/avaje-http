@@ -48,7 +48,7 @@ public class MethodReader {
   private final List<ExecutableElement> superMethods;
   private final Optional<RequestTimeoutPrism> timeout;
 
-  private WebMethod webMethod;
+  private CoreWebMethod webMethod;
   private String webMethodPath;
   private boolean formMarker;
   private final boolean instrumentContext;
@@ -145,21 +145,21 @@ public class MethodReader {
     }
 
     findAnnotation(GetPrism::getOptionalOn)
-        .ifPresent(get -> initSetWebMethod(WebMethod.GET, get.value()));
+        .ifPresent(get -> initSetWebMethod(CoreWebMethod.GET, get.value()));
 
     findAnnotation(PutPrism::getOptionalOn)
-        .ifPresent(put -> initSetWebMethod(WebMethod.PUT, put.value()));
+        .ifPresent(put -> initSetWebMethod(CoreWebMethod.PUT, put.value()));
 
     findAnnotation(PostPrism::getOptionalOn)
-        .ifPresent(post -> initSetWebMethod(WebMethod.POST, post.value()));
+        .ifPresent(post -> initSetWebMethod(CoreWebMethod.POST, post.value()));
 
     findAnnotation(PatchPrism::getOptionalOn)
-        .ifPresent(patch -> initSetWebMethod(WebMethod.PATCH, patch.value()));
+        .ifPresent(patch -> initSetWebMethod(CoreWebMethod.PATCH, patch.value()));
     findAnnotation(DeletePrism::getOptionalOn)
-        .ifPresent(delete -> initSetWebMethod(WebMethod.DELETE, delete.value()));
+        .ifPresent(delete -> initSetWebMethod(CoreWebMethod.DELETE, delete.value()));
   }
 
-  private void initSetWebMethod(WebMethod webMethod, String value) {
+  private void initSetWebMethod(CoreWebMethod webMethod, String value) {
     this.webMethod = webMethod;
     this.webMethodPath = value;
   }
@@ -301,7 +301,7 @@ public class MethodReader {
     return webMethod != null;
   }
 
-  public WebMethod webMethod() {
+  public CoreWebMethod webMethod() {
     return webMethod;
   }
 
