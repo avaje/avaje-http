@@ -4,8 +4,7 @@ import io.avaje.http.generator.core.WebMethod;
 
 public enum JavalinWebMethod implements WebMethod {
   BEFORE(0),
-  AFTER(0),
-  EXCEPTION(500);
+  AFTER(0);
 
   private int statusCode;
 

@@ -3,6 +3,7 @@ package io.avaje.http.generator.javalin;
 import static io.avaje.http.generator.core.ProcessingContext.*;
 
 import io.avaje.http.generator.core.Append;
+import io.avaje.http.generator.core.CoreWebMethod;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.PathSegments;
@@ -19,6 +20,7 @@ class ControllerMethodWriter {
   private final WebMethod webMethod;
   private final boolean useJsonB;
   private final boolean instrumentContext;
+  private final boolean customMethod;
 
   ControllerMethodWriter(MethodReader method, Append writer, boolean useJsonB) {
     this.method = method;
@@ -26,6 +28,7 @@ class ControllerMethodWriter {
     this.webMethod = method.webMethod();
     this.useJsonB = useJsonB && !disabledDirectWrites();
     this.instrumentContext = method.instrumentContext();
+    customMethod = !(webMethod instanceof CoreWebMethod);
   }
 
   void write(boolean requestScoped) {
@@ -41,7 +44,9 @@ class ControllerMethodWriter {
       writer.append("    app.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
     }
 
-    writer.append("      ctx.status(%s);", method.statusCode()).eol();
+    if (!customMethod) {
+      writer.append("      ctx.status(%s);", method.statusCode()).eol();
+    }
 
     final var matrixSegments = segments.matrixSegments();
     for (final PathSegments.Segment matrixSegment : matrixSegments) {
@@ -61,7 +66,7 @@ class ControllerMethodWriter {
       }
     }
     writer.append("      ");
-    if (!method.isVoid()) {
+    if (!method.isVoid() && !customMethod) {
       writer.append("var result = ");
     }
 
@@ -74,6 +79,7 @@ class ControllerMethodWriter {
     } else {
       writer.append("controller.");
     }
+
     writer.append(method.simpleName()).append("(");
     for (var i = 0; i < params.size(); i++) {
       if (i > 0) {
@@ -92,7 +98,7 @@ class ControllerMethodWriter {
     }
 
     writer.append(");").eol();
-    if (!method.isVoid()) {
+    if (!method.isVoid() && !customMethod) {
       writeContextReturn();
       writer.eol();
     }
@@ -100,7 +106,7 @@ class ControllerMethodWriter {
     writer.append("    }");
 
     final var roles = method.roles();
-    if (!roles.isEmpty()) {
+    if (!roles.isEmpty() && !customMethod) {
       writer.append(", ");
       for (var i = 0; i < roles.size(); i++) {
         if (i > 0) {

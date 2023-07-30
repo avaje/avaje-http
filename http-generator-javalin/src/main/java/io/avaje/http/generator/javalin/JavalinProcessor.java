@@ -1,14 +1,16 @@
 package io.avaje.http.generator.javalin;
 
-import io.avaje.http.generator.core.*;
+import java.io.IOException;
+
+import io.avaje.http.generator.core.BaseProcessor;
+import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.PlatformAdapter;
 import io.avaje.http.javalin.After;
 import io.avaje.http.javalin.Before;
 import io.avaje.prism.GeneratePrism;
 
-import java.io.IOException;
-
-@GeneratePrism(Before.class)
-@GeneratePrism(After.class)
+@GeneratePrism(value = After.class, superClass = AbstractAfterPrism.class)
+@GeneratePrism(value = Before.class, superClass = AbstractBeforePrism.class)
 public class JavalinProcessor extends BaseProcessor {
 
   @Override

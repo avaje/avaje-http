@@ -47,7 +47,7 @@ public class MethodReader {
   private final List<ExecutableElement> superMethods;
   private final Optional<RequestTimeoutPrism> timeout;
 
-  private CoreWebMethod webMethod;
+  private WebMethod webMethod;
   private String webMethodPath;
   private boolean formMarker;
   private final boolean instrumentContext;
@@ -101,17 +101,7 @@ public class MethodReader {
   }
 
   private boolean hasInstrument(Element e) {
-
-    if (InstrumentServerContextPrism.getOptionalOn(e).isPresent()) {
-      return true;
-    }
-
-    for (final var a : e.getAnnotationMirrors()) {
-      if (HttpMethodPrism.isPresent(a.getAnnotationType().asElement())) {
-        return a.getElementValues().values().stream().anyMatch(v -> v.getValue().equals(true));
-      }
-    }
-    return false;
+    return InstrumentServerContextPrism.getOptionalOn(e).isPresent();
   }
 
   private Javadoc buildJavadoc(ExecutableElement element) {
@@ -156,14 +146,19 @@ public class MethodReader {
 
     findAnnotation(PatchPrism::getOptionalOn)
         .ifPresent(patch -> initSetWebMethod(CoreWebMethod.PATCH, patch.value()));
+
     findAnnotation(DeletePrism::getOptionalOn)
         .ifPresent(delete -> initSetWebMethod(CoreWebMethod.DELETE, delete.value()));
 
     findAnnotation(ExceptionHandlerPrism::getOptionalOn)
         .ifPresent(error -> initSetWebMethod(CoreWebMethod.ERROR, error.value()));
+
+    platform()
+        .customHandlers()
+        .forEach(f -> findAnnotation(f).ifPresent(m -> initSetWebMethod(m.webMethod(), m.value())));
   }
 
-  private void initSetWebMethod(CoreWebMethod webMethod, String value) {
+  private void initSetWebMethod(WebMethod webMethod, String value) {
     this.webMethod = webMethod;
     this.webMethodPath = value;
   }
@@ -317,7 +312,7 @@ public class MethodReader {
   /** Build the OpenAPI documentation for the method / operation. */
   public void buildApiDocumentation() {
 
-    if (!isErrorMethod()) {
+    if (!isErrorMethod() && webMethod instanceof CoreWebMethod) {
       new MethodDocBuilder(this, doc()).build();
     }
   }
@@ -333,7 +328,7 @@ public class MethodReader {
   }
 
   public boolean isErrorMethod() {
-    return webMethod == WebMethod.ERROR;
+    return webMethod == CoreWebMethod.ERROR;
   }
 
   public WebMethod webMethod() {

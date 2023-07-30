@@ -12,7 +12,6 @@
 @GeneratePrism(value = io.avaje.http.api.FormParam.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Get.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Header.class, publicAccess = true)
-@GeneratePrism(value = io.avaje.http.api.HttpMethod.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.MatrixParam.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Patch.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Path.class, publicAccess = true)
