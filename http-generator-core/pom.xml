@@ -15,6 +15,7 @@
       <artifactId>avaje-prisms</artifactId>
       <version>${avaje.prisms.version}</version>
       <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
 
     <dependency>
