@@ -1,7 +1,6 @@
 package io.avaje.http.generator.helidon.nima;
 
 import static io.avaje.http.generator.core.ProcessingContext.*;
-import static io.avaje.http.generator.core.ProcessingContext.platform;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,15 +36,39 @@ class ControllerMethodWriter {
   }
 
   void writeRule() {
-    writer.append("    routing.%s(\"%s\", this::_%s);",
-        webMethod.name().toLowerCase(), method.fullPath(), method.simpleName())
-      .eol();
+
+    if (method.isErrorMethod()) {
+      writer
+          .append(
+              "    routing.error(%s.class, this::_%s);",
+              method.exceptionShortName(), method.simpleName())
+          .eol();
+    } else {
+      writer
+          .append(
+              "    routing.%s(\"%s\", this::_%s);",
+              webMethod.name().toLowerCase(), method.fullPath(), method.simpleName())
+          .eol();
+    }
   }
 
   void writeHandler(boolean requestScoped) {
-    writer.append("  private void _%s(ServerRequest req, ServerResponse res) throws Exception {", method.simpleName()).eol();
+
+    if (method.isErrorMethod()) {
+      writer
+          .append(
+              "  private void _%s(ServerRequest req, ServerResponse res, %s ex) {",
+              method.simpleName(), method.exceptionShortName())
+          .eol();
+    } else {
+      writer
+          .append(
+              "  private void _%s(ServerRequest req, ServerResponse res) throws Exception {",
+              method.simpleName())
+          .eol();
+    }
     final var bodyType = method.bodyType();
-    if (bodyType != null) {
+    if (bodyType != null && !method.isErrorMethod()) {
       if ("InputStream".equals(bodyType)) {
         writer.append("    var %s = req.content().inputStream();", method.bodyName()).eol();
       } else if ("String".equals(bodyType)) {
@@ -71,6 +94,9 @@ class ControllerMethodWriter {
 
     final var params = method.params();
     for (final MethodParam param : params) {
+      if (isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")) {
+        continue;
+      }
       param.writeCtxGet(writer, segments);
     }
 
@@ -101,7 +127,12 @@ class ControllerMethodWriter {
       if (i > 0) {
         writer.append(", ");
       }
-      params.get(i).buildParamName(writer);
+      final var param = params.get(i);
+      if (isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")) {
+        writer.append("ex");
+      } else {
+        param.buildParamName(writer);
+      }
     }
     if (instrumentContext) {
       writer.append(")");

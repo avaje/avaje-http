@@ -1,6 +1,6 @@
 package io.avaje.http.generator.core;
 
-import static io.avaje.http.generator.core.ProcessingContext.doc;
+import static io.avaje.http.generator.core.ProcessingContext.*;
 import static io.avaje.http.generator.core.ProcessingContext.docComment;
 import static io.avaje.http.generator.core.ProcessingContext.platform;
 import static io.avaje.http.generator.core.ProcessingContext.superMethods;
@@ -33,10 +33,9 @@ public class MethodReader {
   private final boolean isVoid;
   private final List<MethodParam> params = new ArrayList<>();
   private final Javadoc javadoc;
-  /**
-   * Holds enum Roles that are required for the method.
-   */
+  /** Holds enum Roles that are required for the method. */
   private final List<String> methodRoles;
+
   private final Optional<ProducesPrism> producesAnnotation;
   private final Optional<ConsumesPrism> consumesAnnotation;
   private final List<SecurityRequirementPrism> securityRequirements;
@@ -53,6 +52,7 @@ public class MethodReader {
   private boolean formMarker;
   private final boolean instrumentContext;
   private final boolean hasThrows;
+  private String exceptionShortName;
 
   MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable) {
     this.bean = bean;
@@ -70,7 +70,8 @@ public class MethodReader {
 
     initWebMethodViaAnnotation();
 
-    this.superMethods = superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
+    this.superMethods =
+        superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
     superMethods.forEach(m -> methodRoles.addAll(Util.findRoles(m)));
     this.hasThrows = !element.getThrownTypes().isEmpty();
     this.securityRequirements = readSecurityRequirements();
@@ -157,11 +158,37 @@ public class MethodReader {
         .ifPresent(patch -> initSetWebMethod(WebMethod.PATCH, patch.value()));
     findAnnotation(DeletePrism::getOptionalOn)
         .ifPresent(delete -> initSetWebMethod(WebMethod.DELETE, delete.value()));
+
+    findAnnotation(ExceptionHandlerPrism::getOptionalOn)
+        .ifPresent(error -> initSetWebMethod(WebMethod.ERROR, error.value()));
   }
 
   private void initSetWebMethod(WebMethod webMethod, String value) {
     this.webMethod = webMethod;
     this.webMethodPath = value;
+  }
+
+  private void initSetWebMethod(WebMethod webMethod, TypeMirror value) {
+    this.webMethod = webMethod;
+    var exType = value.toString();
+    if ("io.avaje.http.api.DefaultException".equals(exType)) {
+      exType =
+          element.getParameters().stream()
+              .map(VariableElement::asType)
+              .map(UType::parse)
+              .map(UType::mainType)
+              .filter(t -> isAssignable2Interface(t, "java.lang.Throwable"))
+              .findAny()
+              .orElseGet(
+                  () -> {
+                    logError(
+                        element,
+                        "Must define a parameter that extends Throwable or define the exception type in the ExceptionHandler annotation");
+                    return "";
+                  });
+    }
+    this.exceptionShortName = Util.shortName(exType);
+    bean.addImportType(exType);
   }
 
   public Javadoc javadoc() {
@@ -173,27 +200,28 @@ public class MethodReader {
 
     readSecurityRequirements(element, list);
     for (final ExecutableElement superMethod : superMethods) {
-        readSecurityRequirements(superMethod, list);
+      readSecurityRequirements(superMethod, list);
     }
     readSecurityRequirements(bean.beanType(), list);
 
     final var map = new HashMap<String, SecurityRequirementPrism>();
     for (final SecurityRequirementPrism p : list) {
-        if (!map.containsKey(p.name())) {
-          map.put(p.name(), p);
-        }
+      if (!map.containsKey(p.name())) {
+        map.put(p.name(), p);
+      }
     }
     return List.copyOf(map.values());
   }
 
   private void readSecurityRequirements(Element element, List<SecurityRequirementPrism> list) {
-    final Consumer<Element> f = e -> {
-      Optional.ofNullable(SecurityRequirementsPrism.getInstanceOn(e))
-        .map(SecurityRequirementsPrism::value)
-        .ifPresent(list::addAll);
-      Optional.ofNullable(SecurityRequirementPrism.getAllInstancesOn(e))
-        .ifPresent(list::addAll);
-    };
+    final Consumer<Element> f =
+        e -> {
+          Optional.ofNullable(SecurityRequirementsPrism.getInstanceOn(e))
+              .map(SecurityRequirementsPrism::value)
+              .ifPresent(list::addAll);
+          Optional.ofNullable(SecurityRequirementPrism.getAllInstancesOn(e))
+              .ifPresent(list::addAll);
+        };
     f.accept(element);
 
     for (final AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
@@ -221,7 +249,8 @@ public class MethodReader {
                             .flatMap(List::stream),
                         OpenAPIResponsePrism.getAllInstancesOn(method).stream()));
 
-    final var responses = Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
+    final var responses =
+        Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
     responses.addAll(bean.openApiResponses());
     return responses;
   }
@@ -230,7 +259,8 @@ public class MethodReader {
     return findAnnotation(prismFunc, element);
   }
 
-  public <A> Optional<A> findAnnotation(Function<Element, Optional<A>> prismFunc, ExecutableElement elem) {
+  public <A> Optional<A> findAnnotation(
+      Function<Element, Optional<A>> prismFunc, ExecutableElement elem) {
     return prismFunc.apply(elem).or(() -> bean.findMethodAnnotation(prismFunc, elem));
   }
 
@@ -284,11 +314,12 @@ public class MethodReader {
     buildApiDocumentation();
   }
 
-  /**
-   * Build the OpenAPI documentation for the method / operation.
-   */
+  /** Build the OpenAPI documentation for the method / operation. */
   public void buildApiDocumentation() {
-    new MethodDocBuilder(this, doc()).build();
+
+    if (!isErrorMethod()) {
+      new MethodDocBuilder(this, doc()).build();
+    }
   }
 
   public List<String> roles() {
@@ -299,6 +330,10 @@ public class MethodReader {
 
   public boolean isWebMethod() {
     return webMethod != null;
+  }
+
+  public boolean isErrorMethod() {
+    return webMethod == WebMethod.ERROR;
   }
 
   public WebMethod webMethod() {
@@ -420,5 +455,9 @@ public class MethodReader {
 
   public ExecutableElement element() {
     return element;
+  }
+
+  public String exceptionShortName() {
+    return exceptionShortName;
   }
 }

@@ -5,7 +5,8 @@ public enum WebMethod {
   POST(201),
   PUT(200, 204),
   PATCH(200, 204),
-  DELETE(200, 204);
+  DELETE(200, 204),
+  ERROR(500);
 
   private int statusCode;
   private int voidStatusCode;

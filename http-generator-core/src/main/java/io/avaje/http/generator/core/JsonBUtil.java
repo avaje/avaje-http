@@ -1,5 +1,7 @@
 package io.avaje.http.generator.core;
 
+import static java.util.function.Predicate.not;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -19,7 +21,9 @@ public class JsonBUtil {
         .filter(m -> m.produces() == null || m.produces().toLowerCase().contains("json"))
         .forEach(
             methodReader -> {
-              addJsonBodyType(methodReader, addToMap);
+              if (!methodReader.isErrorMethod()) {
+                addJsonBodyType(methodReader, addToMap);
+              }
               if (!methodReader.isVoid()) {
                 var uType = UType.parse(methodReader.returnType());
 

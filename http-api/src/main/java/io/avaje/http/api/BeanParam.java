@@ -47,8 +47,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * }</pre>
  */
-@Target(value={PARAMETER,METHOD})
-@Retention(value=RUNTIME)
-public @interface BeanParam {
-
-}
+@Target({PARAMETER,METHOD})
+@Retention(RUNTIME)
+public @interface BeanParam {}
