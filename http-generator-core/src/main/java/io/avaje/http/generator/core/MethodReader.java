@@ -316,7 +316,10 @@ public class MethodReader {
 
   /** Build the OpenAPI documentation for the method / operation. */
   public void buildApiDocumentation() {
-    new MethodDocBuilder(this, doc()).build();
+
+    if (!isErrorMethod()) {
+      new MethodDocBuilder(this, doc()).build();
+    }
   }
 
   public List<String> roles() {

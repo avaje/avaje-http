@@ -73,7 +73,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.10.1</version>
         <configuration>
           <enablePreview>true</enablePreview>
           <release>20</release>
@@ -94,8 +93,6 @@
               <version>1.6-RC6</version>
             </path>
           </annotationProcessorPaths>
-            <source>19</source>
-            <target>19</target>
         </configuration>
       </plugin>
       <plugin>
