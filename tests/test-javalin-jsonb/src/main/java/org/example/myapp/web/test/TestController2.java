@@ -62,4 +62,21 @@ public class TestController2 {
   String strBody(@BodyString String body) {
     return body;
   }
+
+  @ExceptionHandler
+  String exception(Exception ex) {
+
+    return "";
+  }
+
+  @ExceptionHandler
+  String exceptionCtx(Exception ex, Context ctx) {
+
+    return "";
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  void exceptionVoid(Context ctx) {
+    System.err.println("do nothing lmao");
+  }
 }
