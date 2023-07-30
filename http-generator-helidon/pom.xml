@@ -24,6 +24,13 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-prisms</artifactId>
+      <version>${avaje.prisms.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 
   <build>
@@ -33,9 +40,14 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.10.1</version>
         <configuration>
-          <!-- Turn off annotation processing for building -->
-          <compilerArgument>-proc:none</compilerArgument>
-          <release>20</release>
+          <release>20</release> 
+          <annotationProcessorPaths>
+            <path>
+              <groupId>io.avaje</groupId>
+              <artifactId>avaje-prisms</artifactId>
+              <version>${avaje.prisms.version}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
     </plugins>

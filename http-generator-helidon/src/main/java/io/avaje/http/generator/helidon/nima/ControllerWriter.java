@@ -49,6 +49,13 @@ class ControllerWriter extends BaseControllerWriter {
     if (reader.isIncludeValidator()) {
       reader.addImportType("io.helidon.common.http.Http");
     }
+    if (reader.methods().stream()
+        .map(MethodReader::webMethod)
+        .anyMatch(w -> HelidonWebMethod.FILTER == w)) {
+      reader.addImportType("io.helidon.nima.webserver.http.FilterChain");
+      reader.addImportType("io.helidon.nima.webserver.http.RoutingRequest");
+      reader.addImportType("io.helidon.nima.webserver.http.RoutingResponse");
+    }
   }
 
   void write() {
