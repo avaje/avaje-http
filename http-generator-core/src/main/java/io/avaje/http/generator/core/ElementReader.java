@@ -282,19 +282,17 @@ public class ElementReader {
 
   void writeValidate(Append writer) {
     if (!contextType && typeHandler == null) {
+      final var indent = platform().indent();
       if (useValidation) {
-        writer.append("var validLanguage = ");
+        writer.append("%s  var validLanguage = ", indent);
         platform().writeAcceptLanguage(writer);
         writer.append(";").eol();
-        writer.append("    validator.validate(%s, validLanguage", varName);
-
+        writer.append("%s  validator.validate(%s, validLanguage", indent, varName);
         validationGroups.forEach(g -> writer.append(", %s", Util.shortName(g)));
-
         writer.append(");").eol();
       } else {
-        writer.append("// no validation required on %s", varName).eol();
+        writer.append("%s  // no validation required on %s", indent, varName).eol();
       }
-      writer.append("      ");
     }
   }
 

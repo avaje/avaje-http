@@ -11,9 +11,7 @@ import io.avaje.http.generator.core.Util;
 import io.avaje.http.generator.core.WebMethod;
 import io.avaje.http.generator.core.openapi.MediaType;
 
-/**
- * Write code to register Web route for a given controller method.
- */
+/** Write code to register Web route for a given controller method. */
 class ControllerMethodWriter {
 
   private final MethodReader method;
@@ -34,7 +32,15 @@ class ControllerMethodWriter {
     final var segments = method.pathSegments();
     final var fullPath = segments.fullPath();
 
-    writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
+    if (method.isErrorMethod()) {
+      writer
+          .append("    app.exception(%s.class, (ex, ctx) -> {", method.exceptionShortName())
+          .eol();
+
+    } else {
+      writer.append("    app.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
+    }
+
     writer.append("      ctx.status(%s);", method.statusCode()).eol();
 
     final var matrixSegments = segments.matrixSegments();
@@ -44,15 +50,17 @@ class ControllerMethodWriter {
 
     final var params = method.params();
     for (final MethodParam param : params) {
+      if (isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")) {
+        continue;
+      }
       param.writeCtxGet(writer, segments);
     }
-    writer.append("      ");
     if (method.includeValidate()) {
       for (final MethodParam param : params) {
         param.writeValidate(writer);
       }
     }
-
+    writer.append("      ");
     if (!method.isVoid()) {
       writer.append("var result = ");
     }
@@ -71,7 +79,12 @@ class ControllerMethodWriter {
       if (i > 0) {
         writer.append(", ");
       }
-      params.get(i).buildParamName(writer);
+      final var param = params.get(i);
+      if (isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")) {
+        writer.append("ex");
+      } else {
+        param.buildParamName(writer);
+      }
     }
 
     if (instrumentContext) {
@@ -111,7 +124,8 @@ class ControllerMethodWriter {
     final UType type = UType.parse(method.returnType());
     if ("java.util.concurrent.CompletableFuture".equals(type.mainType())) {
       if (!type.isGeneric()) {
-        throw new IllegalStateException("CompletableFuture must be generic type (e.g. CompletableFuture<String>, CompletableFuture<Void>).");
+        throw new IllegalStateException(
+            "CompletableFuture must be generic type (e.g. CompletableFuture<String>, CompletableFuture<Void>).");
       }
 
       final String futureResultVariableName = "futureResult";
@@ -135,14 +149,18 @@ class ControllerMethodWriter {
       if (useJsonB) {
         var uType = UType.parse(method.returnType());
         final boolean isfuture = "java.util.concurrent.CompletableFuture".equals(uType.mainType());
-        if (isfuture) {
-          uType = uType.paramRaw();
+        if (isfuture || method.isErrorMethod()) {
+          if (isfuture) {
+            uType = uType.paramRaw();
+          }
           writer.append("      try {");
         }
-        writer.append("      %sJsonType.toJson(%s, ctx.contentType(\"application/json\").res().getOutputStream());",
+        writer.append(
+            "      %sJsonType.toJson(%s, ctx.contentType(\"application/json\").res().getOutputStream());",
             uType.shortName(), resultVariableName);
-        if (isfuture) {
-          writer.append("      } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }");
+        if (isfuture || method.isErrorMethod()) {
+          writer.append(
+              "      } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }");
         }
       } else {
         writer.append("      ctx.json(%s);", resultVariableName);

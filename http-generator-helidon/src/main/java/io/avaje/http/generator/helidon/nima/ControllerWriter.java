@@ -41,12 +41,14 @@ class ControllerWriter extends BaseControllerWriter {
     }
     reader.addImportType("io.helidon.common.http.HttpMediaType");
     reader.addImportType("io.helidon.common.parameters.Parameters");
-    reader.addImportType("io.helidon.nima.webserver.http.HttpRules");
     reader.addImportType("io.helidon.nima.webserver.http.HttpRouting");
     reader.addImportType("io.helidon.nima.webserver.http.ServerRequest");
     reader.addImportType("io.helidon.nima.webserver.http.ServerResponse");
-    reader.addImportType("io.helidon.nima.webserver.http.HttpService");
+    reader.addImportType("io.helidon.nima.webserver.http.HttpFeature");
     reader.addImportType("io.helidon.common.http.Http.Header");
+    if (reader.isIncludeValidator()) {
+      reader.addImportType("io.helidon.common.http.Http");
+    }
   }
 
   void write() {
@@ -74,7 +76,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeRoutes(List<ControllerMethodWriter> methods) {
     writer.append("  @Override").eol();
-    writer.append("  public void routing(HttpRules rules) {").eol();
+    writer.append("  public void setup(HttpRouting.Builder routing) {").eol();
 
     for (final ControllerMethodWriter methodWriter : methods) {
       methodWriter.writeRule();
@@ -88,7 +90,7 @@ class ControllerWriter extends BaseControllerWriter {
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
     writer.append(diAnnotation()).eol();
-    writer.append("public class %s$Route implements HttpService {", shortName).eol().eol();
+    writer.append("public class %s$Route implements HttpFeature {", shortName).eol().eol();
 
     var controllerName = "controller";
     var controllerType = shortName;
@@ -96,6 +98,11 @@ class ControllerWriter extends BaseControllerWriter {
       controllerName = "factory";
       controllerType += Constants.FACTORY_SUFFIX;
     }
+
+    if (reader.isIncludeValidator()) {
+      writer.append("  private static final Http.HeaderName HEADER_ACCEPT_LANGUAGE = Header.create(\"Accept-Language\");").eol();
+    }
+
     writer.append("  private final %s %s;", controllerType, controllerName).eol();
 
     if (reader.isIncludeValidator()) {
@@ -142,6 +149,12 @@ class ControllerWriter extends BaseControllerWriter {
       }
     }
     writer.append("  }").eol().eol();
+
+    if (reader.isIncludeValidator()) {
+      writer.append("  private String language(ServerRequest req) {").eol();
+      writer.append("    return req.headers().first(HEADER_ACCEPT_LANGUAGE).orElse(null);").eol();
+      writer.append("  }").eol().eol();
+    }
   }
 
   private boolean isInputStream(String type) {

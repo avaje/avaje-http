@@ -1,6 +1,7 @@
 package io.avaje.http.api;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Exception used with Validator.
@@ -8,7 +9,7 @@ import java.util.Map;
  * <p>Typically this is used when validating a bean populated by request body content.
  *
  * <p>Generally this exception type is registered with an exception handler and configured to return
- * a 422 or 400 http status response with the errors as a map of fields to error message.
+ * a 422 or 400 http status response with the errors as a list of field error message.
  */
 public class ValidationException extends IllegalArgumentException {
 
@@ -16,29 +17,30 @@ public class ValidationException extends IllegalArgumentException {
 
   private int status = 422;
 
-  private Map<String, Object> errors;
+  private List<Violation> errors;
 
   /** Create with a message. */
   public ValidationException(String message) {
     super(message);
+    this.errors = new ArrayList<>();
   }
 
   /** Create with a status and message. */
   public ValidationException(int status, String message) {
     super(message);
     this.status = status;
+    this.errors = new ArrayList<>();
   }
 
   /** Create with a status message and errors. */
-  public ValidationException(int status, String message, Map<String, Object> errors) {
+  public ValidationException(int status, String message, List<Violation> errors) {
     super(message);
     this.status = status;
     this.errors = errors;
   }
 
   /** Create with a status message and errors. */
-  public ValidationException(
-      int status, String message, Throwable cause, Map<String, Object> errors) {
+  public ValidationException(int status, String message, Throwable cause, List<Violation> errors) {
     super(message, cause);
     this.status = status;
     this.errors = errors;
@@ -55,12 +57,61 @@ public class ValidationException extends IllegalArgumentException {
   }
 
   /** Return the errors typically as a map of field to error message. */
-  public Map<String, Object> getErrors() {
+  public List<Violation> getErrors() {
     return errors;
   }
 
   /** Set the errors. */
-  public void setErrors(Map<String, Object> errors) {
+  public void setErrors(List<Violation> errors) {
     this.errors = errors;
+  }
+
+  /** Error details including the field, error message and path */
+  public static class Violation {
+
+    protected String path;
+    protected String field;
+    protected String message;
+
+    /** Create with path, field and message */
+    public Violation(String path, String field, String message) {
+      this.path = path;
+      this.field = field;
+      this.message = message;
+    }
+
+    /** Default constructor just to help Jackson if it is used. */
+    public Violation() {
+    }
+
+    /** Return the path of this error message. */
+    public String getPath() {
+      return path;
+    }
+
+    /** Return the field for this error message. */
+    public String getField() {
+      return field;
+    }
+
+    /** Return the error message. */
+    public String getMessage() {
+      return message;
+    }
+
+    /** Set the path for this error. */
+    public void setPath(String path) {
+      this.path = path;
+    }
+
+    /** Set the field for this error. */
+    public void setField(String field) {
+      this.field = field;
+    }
+
+    /** Set the error message. */
+    public void setMessage(String message) {
+      this.message = message;
+    }
   }
 }

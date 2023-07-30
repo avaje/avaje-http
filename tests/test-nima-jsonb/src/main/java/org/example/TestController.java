@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 
 import io.avaje.http.api.*;
+import io.helidon.nima.webserver.http.ServerRequest;
+import io.helidon.nima.webserver.http.ServerResponse;
 
 @Path("test")
 @Controller
@@ -53,14 +55,30 @@ public class TestController {
   }
 
   @InstrumentServerContext
-  @Get(value =  "/inputStream")
+  @Get(value = "/inputStream")
   InputStream stream(InputStream stream) throws Exception {
     return stream;
   }
 
-
   @Post("/strBody")
   String strBody(@BodyString String body) {
     return body;
+  }
+
+  @ExceptionHandler
+  String exception(Exception ex) {
+
+    return "";
+  }
+
+  @ExceptionHandler
+  Person exceptionCtx(Exception ex, ServerRequest req, ServerResponse res) {
+
+    return new Person(0, null);
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  void exceptionVoid(ServerResponse res) {
+    System.err.println("do nothing lmao");
   }
 }

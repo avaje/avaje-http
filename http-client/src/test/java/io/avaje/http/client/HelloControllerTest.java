@@ -516,8 +516,7 @@ class HelloControllerTest extends BaseWebTest {
 
     // convert json error response body to a bean
     final ErrorResponse errorResponse = httpException.bean(ErrorResponse.class);
-    final Map<String, String> errorMap = errorResponse.getErrors();
-    assertThat(errorMap.get("email")).isEqualTo("must be a well-formed email address");
+    assertThat(errorResponse.get("email")).isEqualTo("must be a well-formed email address");
   }
 
   @Test
@@ -535,8 +534,7 @@ class HelloControllerTest extends BaseWebTest {
     final ErrorResponse errorResponse = clientContext.bodyAdapter()
       .beanReader(ErrorResponse.class).readBody(hres.body());
 
-    final Map<String, String> errorMap = errorResponse.getErrors();
-    assertThat(errorMap.get("email")).isEqualTo("must be a well-formed email address");
+    assertThat(errorResponse.get("email")).isEqualTo("must be a well-formed email address");
   }
 
   @Test
@@ -926,9 +924,8 @@ class HelloControllerTest extends BaseWebTest {
         // convert json error response body to a bean
         final ErrorResponse errorResponse = httpException.bean(ErrorResponse.class);
 
-        final Map<String, String> errorMap = errorResponse.getErrors();
-        assertThat(errorMap.get("url")).isEqualTo("must be a valid URL");
-        assertThat(errorMap.get("email")).isEqualTo("must be a well-formed email address");
+        assertThat(errorResponse.get("url")).isEqualTo("must be a valid URL");
+        assertThat(errorResponse.get("email")).isEqualTo("must be a well-formed email address");
       });
 
     try {
@@ -1129,10 +1126,8 @@ class HelloControllerTest extends BaseWebTest {
       assertEquals(422, httpResponse.statusCode());
 
       final ErrorResponse errorResponse = e.bean(ErrorResponse.class);
-
-      final Map<String, String> errorMap = errorResponse.getErrors();
-      assertThat(errorMap.get("url")).isEqualTo("must be a valid URL");
-      assertThat(errorMap.get("name")).isEqualTo("must not be null");
+      assertThat(errorResponse.get("url")).isEqualTo("must be a valid URL");
+      assertThat(errorResponse.get("name")).isEqualTo("must not be null");
     }
   }
 
@@ -1158,9 +1153,8 @@ class HelloControllerTest extends BaseWebTest {
           assertEquals(422, httpResponse.statusCode());
 
           final ErrorResponse errorResponse = cause.bean(ErrorResponse.class);
-          final Map<String, String> errorMap = errorResponse.getErrors();
-          assertThat(errorMap.get("url")).isEqualTo("must be a valid URL");
-          assertThat(errorMap.get("name")).isEqualTo("must not be null");
+          assertThat(errorResponse.get("url")).isEqualTo("must be a valid URL");
+          assertThat(errorResponse.get("name")).isEqualTo("must not be null");
         });
 
     try {
@@ -1193,9 +1187,8 @@ class HelloControllerTest extends BaseWebTest {
           assertEquals(422, httpResponse.statusCode());
 
           final ErrorResponse errorResponse = cause.bean(ErrorResponse.class);
-          final Map<String, String> errorMap = errorResponse.getErrors();
-          assertThat(errorMap.get("url")).isEqualTo("must be a valid URL");
-          assertThat(errorMap.get("name")).isEqualTo("must not be null");
+          assertThat(errorResponse.get("url")).isEqualTo("must be a valid URL");
+          assertThat(errorResponse.get("name")).isEqualTo("must not be null");
         });
 
     try {
@@ -1224,9 +1217,8 @@ class HelloControllerTest extends BaseWebTest {
       assertEquals(422, httpResponse.statusCode());
 
       final ErrorResponse errorResponse = e.bean(ErrorResponse.class);
-      final Map<String, String> errorMap = errorResponse.getErrors();
-      assertThat(errorMap.get("url")).isEqualTo("must be a valid URL");
-      assertThat(errorMap.get("name")).isEqualTo("must not be null");
+      assertThat(errorResponse.get("url")).isEqualTo("must be a valid URL");
+      assertThat(errorResponse.get("name")).isEqualTo("must not be null");
     }
   }
 
@@ -1249,9 +1241,8 @@ class HelloControllerTest extends BaseWebTest {
       assertEquals(422, httpResponse.statusCode());
 
       final ErrorResponse errorResponse = e.bean(ErrorResponse.class);
-      final Map<String, String> errorMap = errorResponse.getErrors();
-      assertThat(errorMap.get("url")).isEqualTo("must be a valid URL");
-      assertThat(errorMap.get("name")).isEqualTo("must not be null");
+      assertThat(errorResponse.get("url")).isEqualTo("must be a valid URL");
+      assertThat(errorResponse.get("name")).isEqualTo("must not be null");
 
       String rawBody = e.bodyAsString();
       assertThat(rawBody).contains("must be a valid URL");

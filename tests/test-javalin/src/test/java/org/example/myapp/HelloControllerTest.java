@@ -210,9 +210,8 @@ class HelloControllerTest extends BaseWebTest {
 
     assertNotNull(res);
     assertThat(res.getMessage()).contains("failed validation");
-    final Map<String, String> errors = res.getErrors();
-    assertThat(errors.get("url")).isEqualTo("must be a valid URL");
-    assertThat(errors.get("name")).isEqualTo("must not be null");
+    assertThat(res.get("url")).isEqualTo("must be a valid URL");
+    assertThat(res.get("name")).isEqualTo("must not be null");
 
     try {
       client.request()
@@ -230,11 +229,8 @@ class HelloControllerTest extends BaseWebTest {
       assertEquals(422, httpResponse.statusCode());
 
       final ErrorResponse errorResponse = e.bean(ErrorResponse.class);
-
-      final Map<String, String> errorMap = errorResponse.getErrors();
-      assertThat(errorMap.get("url")).isEqualTo("must be a valid URL");
-      assertThat(errorMap.get("name")).isEqualTo("must not be null");
-
+      assertThat(errorResponse.get("url")).isEqualTo("must be a valid URL");
+      assertThat(errorResponse.get("name")).isEqualTo("must not be null");
     }
   }
 
