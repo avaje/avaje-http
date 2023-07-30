@@ -37,7 +37,7 @@ class ControllerMethodWriter {
   }
 
   void writeRule() {
-    writer.append("    rules.%s(\"%s\", this::_%s);",
+    writer.append("    routing.%s(\"%s\", this::_%s);",
         webMethod.name().toLowerCase(), method.fullPath(), method.simpleName())
       .eol();
   }

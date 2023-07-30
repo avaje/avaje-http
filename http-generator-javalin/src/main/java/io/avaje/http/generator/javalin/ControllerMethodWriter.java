@@ -34,7 +34,7 @@ class ControllerMethodWriter {
     final var segments = method.pathSegments();
     final var fullPath = segments.fullPath();
 
-    writer.append("    ApiBuilder.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
+    writer.append("    app.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
     writer.append("      ctx.status(%s);", method.statusCode()).eol();
 
     final var matrixSegments = segments.matrixSegments();

@@ -19,7 +19,6 @@ import io.avaje.http.generator.core.UType;
 class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-javalin-generator\")";
-  private static final String API_BUILDER = "io.javalin.apibuilder.ApiBuilder";
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
 
@@ -32,13 +31,12 @@ class ControllerWriter extends BaseControllerWriter {
       reader.addImportType("io.avaje.jsonb.JsonType");
       reader.addImportType("io.avaje.jsonb.Types");
       this.jsonTypes = JsonBUtil.jsonTypes(reader);
-      jsonTypes.values().stream()
-          .map(UType::importTypes)
-          .forEach(reader::addImportTypes);
+      jsonTypes.values().stream().map(UType::importTypes).forEach(reader::addImportTypes);
     } else {
       this.jsonTypes = Map.of();
     }
-    reader.addImportType(API_BUILDER);
+    reader.addImportType("io.javalin.plugin.Plugin");
+    reader.addImportType("io.javalin.Javalin");
   }
 
   void write() {
@@ -51,7 +49,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeAddRoutes() {
     writer.append("  @Override").eol();
-    writer.append("  public void registerRoutes() {").eol().eol();
+    writer.append("  public void apply(Javalin app) {").eol().eol();
     for (final MethodReader method : reader.methods()) {
       if (method.isWebMethod()) {
         writeForMethod(method);
@@ -73,7 +71,7 @@ class ControllerWriter extends BaseControllerWriter {
     writer
       .append("public class ")
       .append(shortName)
-      .append("$Route implements WebRoutes {")
+      .append("$Route implements Plugin {")
       .eol()
       .eol();
 

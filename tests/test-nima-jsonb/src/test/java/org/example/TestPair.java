@@ -42,12 +42,15 @@ public class TestPair {
 
     var hc = new HelloController();
     var hello = new HelloController$Route(hc, beanValidator, jsonb);
-    hello.routing(routing);
+   
+    routing.addFeature(hello);
+    hello.setup(routing);
 
     var cr = new ThreadLocalRequestContextResolver();
     var tc = new TestController();
     TestController$Route tcr = new TestController$Route(tc, jsonb, cr);
-    tcr.routing(routing);
+
+    routing.addFeature(tcr);
     return routing;
   }
 }
