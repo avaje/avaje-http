@@ -9,8 +9,8 @@ import io.avaje.http.javalin.After;
 import io.avaje.http.javalin.Before;
 import io.avaje.prism.GeneratePrism;
 
-@GeneratePrism(value = After.class, superClass = AbstractAfterPrism.class)
-@GeneratePrism(value = Before.class, superClass = AbstractBeforePrism.class)
+@GeneratePrism(value = After.class, superClass = AbstractCustomMethodPrism.class)
+@GeneratePrism(value = Before.class, superClass = AbstractCustomMethodPrism.class)
 public class JavalinProcessor extends BaseProcessor {
 
   @Override
