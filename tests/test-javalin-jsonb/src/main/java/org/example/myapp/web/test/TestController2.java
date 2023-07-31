@@ -91,4 +91,8 @@ public class TestController2 {
   void before(String s, ServerType type, Context ctx) {
     ctx.result(s);
   }
+
+  @Filter
+  void filter(Context ctx) {
+  }
 }

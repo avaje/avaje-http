@@ -172,12 +172,4 @@ class NimaPlatformAdapter implements PlatformAdapter {
   public void writeAcceptLanguage(Append writer) {
     writer.append("language(req)");
   }
-
-  @Override
-  public List<Function<Element, Optional<CustomWebMethod>>> customHandlers() {
-
-    final Function<Element, FilterPrism> f = FilterPrism::getInstanceOn;
-
-    return List.of(f.andThen(Optional::ofNullable));
-  }
 }

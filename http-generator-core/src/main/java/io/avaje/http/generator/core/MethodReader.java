@@ -151,7 +151,10 @@ public class MethodReader {
         .ifPresent(delete -> initSetWebMethod(CoreWebMethod.DELETE, delete.value()));
 
     findAnnotation(ExceptionHandlerPrism::getOptionalOn)
-        .ifPresent(error -> initSetWebMethod(CoreWebMethod.ERROR, error.value()));
+    .ifPresent(error -> initSetWebMethod(CoreWebMethod.ERROR, error.value()));
+
+    findAnnotation(FilterPrism::getOptionalOn)
+        .ifPresent(filter -> initSetWebMethod(CoreWebMethod.FILTER, ""));
 
     platform()
         .customHandlers()
@@ -312,7 +315,9 @@ public class MethodReader {
   /** Build the OpenAPI documentation for the method / operation. */
   public void buildApiDocumentation() {
 
-    if (!isErrorMethod() && webMethod instanceof CoreWebMethod) {
+    if (!isErrorMethod()
+        && webMethod instanceof CoreWebMethod
+        && webMethod != CoreWebMethod.FILTER) {
       new MethodDocBuilder(this, doc()).build();
     }
   }

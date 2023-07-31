@@ -19,6 +19,7 @@
 @GeneratePrism(value = io.avaje.http.api.Produces.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Consumes.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Put.class, publicAccess = true)
+@GeneratePrism(value = io.avaje.http.api.Filter.class)
 @GeneratePrism(value = io.avaje.http.api.InstrumentServerContext.class)
 @GeneratePrism(value = io.avaje.http.api.ExceptionHandler.class)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.OpenAPIDefinition.class, publicAccess = true)

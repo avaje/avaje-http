@@ -1,4 +1,4 @@
-package io.avaje.http.helidon;
+package io.avaje.http.api;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as a Helidon Filter
+ * Marks a method as a Filter
  */
 @Target(METHOD)
 @Retention(SOURCE)

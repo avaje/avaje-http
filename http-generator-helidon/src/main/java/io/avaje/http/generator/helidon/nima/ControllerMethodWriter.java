@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import io.avaje.http.generator.core.Append;
+import io.avaje.http.generator.core.CoreWebMethod;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.ParamType;
@@ -34,7 +35,7 @@ class ControllerMethodWriter {
     this.webMethod = method.webMethod();
     this.useJsonB = useJsonB;
     this.instrumentContext = method.instrumentContext();
-    this.isFilter = webMethod == HelidonWebMethod.FILTER;
+    this.isFilter = webMethod == CoreWebMethod.FILTER;
     if (isFilter
         && method.params().stream().map(MethodParam::shortType).noneMatch("FilterChain"::equals)) {
 

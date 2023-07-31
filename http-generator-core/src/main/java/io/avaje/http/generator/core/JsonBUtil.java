@@ -16,6 +16,7 @@ public class JsonBUtil {
     reader.methods().stream()
         .filter(MethodReader::isWebMethod)
         .filter(m -> m.webMethod() instanceof CoreWebMethod)
+        .filter(m -> m.webMethod() != CoreWebMethod.FILTER)
         .filter(m -> !"byte[]".equals(m.returnType().toString()))
         .filter(m -> m.produces() == null || m.produces().toLowerCase().contains("json"))
         .forEach(
