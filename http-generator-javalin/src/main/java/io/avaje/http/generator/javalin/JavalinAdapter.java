@@ -1,10 +1,15 @@
 package io.avaje.http.generator.javalin;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+
+import javax.lang.model.element.Element;
 
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.Constants;
 import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.CustomWebMethod;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
 import io.avaje.http.generator.core.UType;
@@ -113,5 +118,13 @@ class JavalinAdapter implements PlatformAdapter {
   @Override
   public void writeAcceptLanguage(Append writer) {
     writer.append("ctx.header(\"%s\")", Constants.ACCEPT_LANGUAGE);
+  }
+
+  @Override
+  public List<Function<Element, Optional<CustomWebMethod>>> customHandlers() {
+    final Function<Element, AfterPrism> f = AfterPrism::getInstanceOn;
+    final Function<Element, BeforePrism> f2 = BeforePrism::getInstanceOn;
+
+    return List.of(f.andThen(Optional::ofNullable), f2.andThen(Optional::ofNullable));
   }
 }

@@ -7,4 +7,5 @@ module io.avaje.http.javalin.generator {
 
   // SHADED: All content after this line will be removed at package time
   requires transitive io.avaje.http.generator.core;
+  requires static io.avaje.prism;
 }

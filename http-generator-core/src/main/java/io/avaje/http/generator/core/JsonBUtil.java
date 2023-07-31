@@ -1,7 +1,5 @@
 package io.avaje.http.generator.core;
 
-import static java.util.function.Predicate.not;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -17,6 +15,8 @@ public class JsonBUtil {
 
     reader.methods().stream()
         .filter(MethodReader::isWebMethod)
+        .filter(m -> m.webMethod() instanceof CoreWebMethod)
+        .filter(m -> m.webMethod() != CoreWebMethod.FILTER)
         .filter(m -> !"byte[]".equals(m.returnType().toString()))
         .filter(m -> m.produces() == null || m.produces().toLowerCase().contains("json"))
         .forEach(

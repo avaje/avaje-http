@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.avaje</groupId>
@@ -54,12 +56,26 @@
       <artifactId>avaje-http-client</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-inject-generator</artifactId>
+      <version>${avaje-inject.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-jsonb-generator</artifactId>
+      <version>1.6-RC6</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-helidon-generator</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
+    
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>junit</artifactId>
@@ -76,23 +92,6 @@
         <configuration>
           <enablePreview>true</enablePreview>
           <release>20</release>
-          <annotationProcessorPaths>
-            <path>
-              <groupId>io.avaje</groupId>
-              <artifactId>avaje-http-helidon-generator</artifactId>
-              <version>${project.version}</version>
-            </path>
-            <path>
-              <groupId>io.avaje</groupId>
-              <artifactId>avaje-inject-generator</artifactId>
-              <version>${avaje-inject.version}</version>
-            </path>
-            <path>
-              <groupId>io.avaje</groupId>
-              <artifactId>avaje-jsonb-generator</artifactId>
-              <version>1.6-RC6</version>
-            </path>
-          </annotationProcessorPaths>
         </configuration>
       </plugin>
       <plugin>

@@ -3,6 +3,7 @@ package io.avaje.http.generator.core.openapi;
 import java.util.Optional;
 
 import io.avaje.http.generator.core.ConsumesPrism;
+import io.avaje.http.generator.core.CoreWebMethod;
 import io.avaje.http.generator.core.HiddenPrism;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
@@ -49,7 +50,7 @@ public class MethodDocBuilder {
     }
 
     PathItem pathItem = ctx.pathItem(methodReader.fullPath());
-    switch (methodReader.webMethod()) {
+    switch ((CoreWebMethod) methodReader.webMethod()) {
       case GET:
         pathItem.setGet(operation);
         break;

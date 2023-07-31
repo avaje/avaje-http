@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import io.avaje.http.generator.core.Append;
+import io.avaje.http.generator.core.CoreWebMethod;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.ParamType;
@@ -26,6 +27,7 @@ class ControllerMethodWriter {
   private final WebMethod webMethod;
   private final boolean useJsonB;
   private final boolean instrumentContext;
+  private final boolean isFilter;
 
   ControllerMethodWriter(MethodReader method, Append writer, boolean useJsonB) {
     this.method = method;
@@ -33,6 +35,12 @@ class ControllerMethodWriter {
     this.webMethod = method.webMethod();
     this.useJsonB = useJsonB;
     this.instrumentContext = method.instrumentContext();
+    this.isFilter = webMethod == CoreWebMethod.FILTER;
+    if (isFilter
+        && method.params().stream().map(MethodParam::shortType).noneMatch("FilterChain"::equals)) {
+
+      logError(method.element(), "Filters must contain a FilterChain Parameter");
+    }
   }
 
   void writeRule() {
@@ -43,6 +51,8 @@ class ControllerMethodWriter {
               "    routing.error(%s.class, this::_%s);",
               method.exceptionShortName(), method.simpleName())
           .eol();
+    } else if (isFilter) {
+      writer.append("    routing.addFilter(this::_%s);", method.simpleName()).eol();
     } else {
       writer
           .append(
@@ -60,6 +70,12 @@ class ControllerMethodWriter {
               "  private void _%s(ServerRequest req, ServerResponse res, %s ex) {",
               method.simpleName(), method.exceptionShortName())
           .eol();
+    } else if (isFilter) {
+      writer
+          .append(
+              "  private void _%s(FilterChain chain, RoutingRequest req, RoutingResponse res) {",
+              method.simpleName())
+          .eol();
     } else {
       writer
           .append(
@@ -68,7 +84,7 @@ class ControllerMethodWriter {
           .eol();
     }
     final var bodyType = method.bodyType();
-    if (bodyType != null && !method.isErrorMethod()) {
+    if (bodyType != null && !method.isErrorMethod() && !isFilter) {
       if ("InputStream".equals(bodyType)) {
         writer.append("    var %s = req.content().inputStream();", method.bodyName()).eol();
       } else if ("String".equals(bodyType)) {
@@ -94,7 +110,8 @@ class ControllerMethodWriter {
 
     final var params = method.params();
     for (final MethodParam param : params) {
-      if (isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")) {
+      if (isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")
+          || "FilterChain".equals(param.shortType())) {
         continue;
       }
       param.writeCtxGet(writer, segments);
@@ -110,7 +127,7 @@ class ControllerMethodWriter {
     if (!method.isVoid()) {
       writer.append("var result = ");
     } else if (missingServerResponse(params)) {
-      throw new IllegalStateException("Void controller methods must have a ServerResponse parameter");
+      logError(method.element(), "Void controller methods must have a ServerResponse parameter");
     }
 
     if (instrumentContext) {
@@ -130,6 +147,8 @@ class ControllerMethodWriter {
       final var param = params.get(i);
       if (isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")) {
         writer.append("ex");
+      } else if ("FilterChain".equals(param.shortType())) {
+        writer.append("chain");
       } else {
         param.buildParamName(writer);
       }
@@ -139,7 +158,7 @@ class ControllerMethodWriter {
     }
     writer.append(");").eol();
 
-    if (!method.isVoid()) {
+    if (!method.isVoid() && !isFilter) {
       writeContextReturn();
       if (isInputStream(method.returnType())) {
         final var uType = UType.parse(method.returnType());
@@ -200,7 +219,9 @@ class ControllerMethodWriter {
   }
 
   private boolean missingServerResponse(List<MethodParam> params) {
-    return method.isVoid() && params.stream().noneMatch(p -> "ServerResponse".equals(p.shortType()));
+    return method.isVoid()
+        && !isFilter
+        && params.stream().noneMatch(p -> "ServerResponse".equals(p.shortType()));
   }
 
   private boolean usesFormParams() {
