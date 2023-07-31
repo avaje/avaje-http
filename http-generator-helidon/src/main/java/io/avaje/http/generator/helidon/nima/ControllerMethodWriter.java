@@ -36,52 +36,34 @@ class ControllerMethodWriter {
     this.useJsonB = useJsonB;
     this.instrumentContext = method.instrumentContext();
     this.isFilter = webMethod == CoreWebMethod.FILTER;
-    if (isFilter
-        && method.params().stream().map(MethodParam::shortType).noneMatch("FilterChain"::equals)) {
+    if (isFilter) {
+      validateMethod();
+    }
+  }
 
+  private void validateMethod() {
+    if (method.params().stream().map(MethodParam::shortType).noneMatch("FilterChain"::equals)) {
       logError(method.element(), "Filters must contain a FilterChain Parameter");
     }
   }
 
   void writeRule() {
-
     if (method.isErrorMethod()) {
-      writer
-          .append(
-              "    routing.error(%s.class, this::_%s);",
-              method.exceptionShortName(), method.simpleName())
-          .eol();
+      writer.append("    routing.error(%s.class, this::_%s);", method.exceptionShortName(), method.simpleName()).eol();
     } else if (isFilter) {
       writer.append("    routing.addFilter(this::_%s);", method.simpleName()).eol();
     } else {
-      writer
-          .append(
-              "    routing.%s(\"%s\", this::_%s);",
-              webMethod.name().toLowerCase(), method.fullPath(), method.simpleName())
-          .eol();
+      writer.append("    routing.%s(\"%s\", this::_%s);", webMethod.name().toLowerCase(), method.fullPath(), method.simpleName()).eol();
     }
   }
 
   void writeHandler(boolean requestScoped) {
-
     if (method.isErrorMethod()) {
-      writer
-          .append(
-              "  private void _%s(ServerRequest req, ServerResponse res, %s ex) {",
-              method.simpleName(), method.exceptionShortName())
-          .eol();
+      writer.append("  private void _%s(ServerRequest req, ServerResponse res, %s ex) {", method.simpleName(), method.exceptionShortName()).eol();
     } else if (isFilter) {
-      writer
-          .append(
-              "  private void _%s(FilterChain chain, RoutingRequest req, RoutingResponse res) {",
-              method.simpleName())
-          .eol();
+      writer.append("  private void _%s(FilterChain chain, RoutingRequest req, RoutingResponse res) {", method.simpleName()).eol();
     } else {
-      writer
-          .append(
-              "  private void _%s(ServerRequest req, ServerResponse res) throws Exception {",
-              method.simpleName())
-          .eol();
+      writer.append("  private void _%s(ServerRequest req, ServerResponse res) throws Exception {", method.simpleName()).eol();
     }
     final var bodyType = method.bodyType();
     if (bodyType != null && !method.isErrorMethod() && !isFilter) {
@@ -110,11 +92,9 @@ class ControllerMethodWriter {
 
     final var params = method.params();
     for (final MethodParam param : params) {
-      if (isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")
-          || "FilterChain".equals(param.shortType())) {
-        continue;
+      if (!isExceptionOrFilterChain(param)) {
+        param.writeCtxGet(writer, segments);
       }
-      param.writeCtxGet(writer, segments);
     }
 
     if (method.includeValidate()) {
@@ -175,6 +155,11 @@ class ControllerMethodWriter {
       }
     }
     writer.append("  }").eol().eol();
+  }
+
+  private static boolean isExceptionOrFilterChain(MethodParam param) {
+    return isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")
+      || "FilterChain".equals(param.shortType());
   }
 
   private boolean isInputStream(TypeMirror type) {

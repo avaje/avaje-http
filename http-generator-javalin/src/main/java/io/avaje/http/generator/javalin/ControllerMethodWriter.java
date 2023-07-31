@@ -96,14 +96,10 @@ class ControllerMethodWriter {
 
   private void writeMethod(final String fullPath) {
     if (method.isErrorMethod()) {
-      writer
-          .append("    app.exception(%s.class, (ex, ctx) -> {", method.exceptionShortName())
-          .eol();
-
+      writer.append("    app.exception(%s.class, (ex, ctx) -> {", method.exceptionShortName()).eol();
     } else {
       writer.append("    app.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
     }
-
     if (!customMethod) {
       writer.append("      ctx.status(%s);", method.statusCode()).eol();
     }
@@ -117,10 +113,9 @@ class ControllerMethodWriter {
 
     final var params = method.params();
     for (final MethodParam param : params) {
-      if (isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")) {
-        continue;
+      if (!isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")) {
+        param.writeCtxGet(writer, segments);
       }
-      param.writeCtxGet(writer, segments);
     }
     if (method.includeValidate()) {
       for (final MethodParam param : params) {
@@ -131,11 +126,8 @@ class ControllerMethodWriter {
   }
 
   private void writeContextReturn() {
-
     if (instrumentContext) {
-      writer
-          .append("      if (ctx.resultInputStream() != null || ctx.res().isCommitted()) return;")
-          .eol();
+      writer.append("      if (ctx.resultInputStream() != null || ctx.res().isCommitted()) return;").eol();
     }
 
     // Support for CompletableFuture's.
@@ -173,12 +165,9 @@ class ControllerMethodWriter {
           }
           writer.append("      try {");
         }
-        writer.append(
-            "      %sJsonType.toJson(%s, ctx.contentType(\"application/json\").res().getOutputStream());",
-            uType.shortName(), resultVariableName);
+        writer.append("      %sJsonType.toJson(%s, ctx.contentType(\"application/json\").res().getOutputStream());", uType.shortName(), resultVariableName);
         if (isfuture || method.isErrorMethod()) {
-          writer.append(
-              "      } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }");
+          writer.append("      } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }");
         }
       } else {
         writer.append("      ctx.json(%s);", resultVariableName);

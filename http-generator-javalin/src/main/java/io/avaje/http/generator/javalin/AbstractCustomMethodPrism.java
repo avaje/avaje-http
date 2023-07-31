@@ -7,7 +7,6 @@ public abstract class AbstractCustomMethodPrism implements CustomWebMethod {
 
   @Override
   public WebMethod webMethod() {
-
     if (this instanceof AfterPrism) {
       return JavalinWebMethod.AFTER;
     } else {
