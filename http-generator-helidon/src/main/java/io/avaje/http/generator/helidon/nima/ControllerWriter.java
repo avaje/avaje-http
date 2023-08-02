@@ -10,6 +10,7 @@ import java.util.Map;
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
 import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.CoreWebMethod;
 import io.avaje.http.generator.core.JsonBUtil;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.PrimitiveUtil;
@@ -48,6 +49,13 @@ class ControllerWriter extends BaseControllerWriter {
     reader.addImportType("io.helidon.common.http.Http.Header");
     if (reader.isIncludeValidator()) {
       reader.addImportType("io.helidon.common.http.Http");
+    }
+    if (reader.methods().stream()
+        .map(MethodReader::webMethod)
+        .anyMatch(w -> CoreWebMethod.FILTER == w)) {
+      reader.addImportType("io.helidon.nima.webserver.http.FilterChain");
+      reader.addImportType("io.helidon.nima.webserver.http.RoutingRequest");
+      reader.addImportType("io.helidon.nima.webserver.http.RoutingResponse");
     }
   }
 

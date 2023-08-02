@@ -7,6 +7,8 @@ import java.util.Map;
 import org.example.myapp.web.ServerType;
 
 import io.avaje.http.api.*;
+import io.avaje.http.javalin.After;
+import io.avaje.http.javalin.Before;
 import io.javalin.http.Context;
 
 @Path("test/")
@@ -78,5 +80,19 @@ public class TestController2 {
   @ExceptionHandler(RuntimeException.class)
   void exceptionVoid(Context ctx) {
     System.err.println("do nothing lmao");
+  }
+
+  @After
+  void after(String s, ServerType type, Context ctx) {
+    ctx.result(s);
+  }
+
+  @Before
+  void before(String s, ServerType type, Context ctx) {
+    ctx.result(s);
+  }
+
+  @Filter
+  void filter(Context ctx) {
   }
 }

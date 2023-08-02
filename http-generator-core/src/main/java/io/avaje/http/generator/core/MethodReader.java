@@ -101,17 +101,7 @@ public class MethodReader {
   }
 
   private boolean hasInstrument(Element e) {
-
-    if (InstrumentServerContextPrism.getOptionalOn(e).isPresent()) {
-      return true;
-    }
-
-    for (final var a : e.getAnnotationMirrors()) {
-      if (HttpMethodPrism.isPresent(a.getAnnotationType().asElement())) {
-        return a.getElementValues().values().stream().anyMatch(v -> v.getValue().equals(true));
-      }
-    }
-    return false;
+    return InstrumentServerContextPrism.getOptionalOn(e).isPresent();
   }
 
   private Javadoc buildJavadoc(ExecutableElement element) {
@@ -146,21 +136,29 @@ public class MethodReader {
     }
 
     findAnnotation(GetPrism::getOptionalOn)
-        .ifPresent(get -> initSetWebMethod(WebMethod.GET, get.value()));
+        .ifPresent(get -> initSetWebMethod(CoreWebMethod.GET, get.value()));
 
     findAnnotation(PutPrism::getOptionalOn)
-        .ifPresent(put -> initSetWebMethod(WebMethod.PUT, put.value()));
+        .ifPresent(put -> initSetWebMethod(CoreWebMethod.PUT, put.value()));
 
     findAnnotation(PostPrism::getOptionalOn)
-        .ifPresent(post -> initSetWebMethod(WebMethod.POST, post.value()));
+        .ifPresent(post -> initSetWebMethod(CoreWebMethod.POST, post.value()));
 
     findAnnotation(PatchPrism::getOptionalOn)
-        .ifPresent(patch -> initSetWebMethod(WebMethod.PATCH, patch.value()));
+        .ifPresent(patch -> initSetWebMethod(CoreWebMethod.PATCH, patch.value()));
+
     findAnnotation(DeletePrism::getOptionalOn)
-        .ifPresent(delete -> initSetWebMethod(WebMethod.DELETE, delete.value()));
+        .ifPresent(delete -> initSetWebMethod(CoreWebMethod.DELETE, delete.value()));
 
     findAnnotation(ExceptionHandlerPrism::getOptionalOn)
-        .ifPresent(error -> initSetWebMethod(WebMethod.ERROR, error.value()));
+    .ifPresent(error -> initSetWebMethod(CoreWebMethod.ERROR, error.value()));
+
+    findAnnotation(FilterPrism::getOptionalOn)
+        .ifPresent(filter -> initSetWebMethod(CoreWebMethod.FILTER, ""));
+
+    platform()
+        .customHandlers()
+        .forEach(f -> findAnnotation(f).ifPresent(m -> initSetWebMethod(m.webMethod(), m.value())));
   }
 
   private void initSetWebMethod(WebMethod webMethod, String value) {
@@ -317,7 +315,9 @@ public class MethodReader {
   /** Build the OpenAPI documentation for the method / operation. */
   public void buildApiDocumentation() {
 
-    if (!isErrorMethod()) {
+    if (!isErrorMethod()
+        && webMethod instanceof CoreWebMethod
+        && webMethod != CoreWebMethod.FILTER) {
       new MethodDocBuilder(this, doc()).build();
     }
   }
@@ -333,7 +333,7 @@ public class MethodReader {
   }
 
   public boolean isErrorMethod() {
-    return webMethod == WebMethod.ERROR;
+    return webMethod == CoreWebMethod.ERROR;
   }
 
   public WebMethod webMethod() {

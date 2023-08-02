@@ -9,16 +9,13 @@
 
   <artifactId>avaje-http-generator-core</artifactId>
 
-  <properties>
-    <avaje.prisms.version>1.10</avaje.prisms.version>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-prisms</artifactId>
       <version>${avaje.prisms.version}</version>
-      <optional>true</optional>
       <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
 
     <dependency>
