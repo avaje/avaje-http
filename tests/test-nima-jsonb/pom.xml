@@ -32,7 +32,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>1.6-RC6</version>
+      <version>1.7-RC1</version>
     </dependency>
     <dependency>
       <groupId>io.avaje</groupId>
@@ -90,7 +90,7 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-jsonb-generator</artifactId>
-              <version>1.6-RC6</version>
+              <version>1.7-RC1</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
