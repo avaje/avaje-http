@@ -2,6 +2,7 @@ package org.example;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import io.avaje.http.api.BodyString;
@@ -77,6 +78,11 @@ public class TestController {
   @Post("/strBody")
   String strBody(@BodyString String body) {
     return body;
+  }
+
+  @Post("/blah")
+  Map<String, Object> strBody2() {
+    return Map.of("hi", "yo", "level", 42L);
   }
 
   @ExceptionHandler

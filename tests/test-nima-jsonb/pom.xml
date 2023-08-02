@@ -34,7 +34,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>1.6-RC6</version>
+      <version>1.7-RC1</version>
     </dependency>
     <dependency>
       <groupId>io.avaje</groupId>
@@ -59,25 +59,6 @@
 
     <dependency>
       <groupId>io.avaje</groupId>
-      <artifactId>avaje-inject-generator</artifactId>
-      <version>${avaje-inject.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.avaje</groupId>
-      <artifactId>avaje-jsonb-generator</artifactId>
-      <version>1.6-RC6</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.avaje</groupId>
-      <artifactId>avaje-http-helidon-generator</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>io.avaje</groupId>
       <artifactId>junit</artifactId>
       <version>1.1</version>
       <scope>test</scope>
@@ -92,6 +73,23 @@
         <configuration>
           <enablePreview>true</enablePreview>
           <release>20</release>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>io.avaje</groupId>
+              <artifactId>avaje-http-helidon-generator</artifactId>
+              <version>${project.version}</version>
+            </path>
+            <path>
+              <groupId>io.avaje</groupId>
+              <artifactId>avaje-inject-generator</artifactId>
+              <version>${avaje-inject.version}</version>
+            </path>
+            <path>
+              <groupId>io.avaje</groupId>
+              <artifactId>avaje-jsonb-generator</artifactId>
+              <version>1.7-RC1</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
       <plugin>
