@@ -13,8 +13,10 @@ import java.lang.annotation.Target;
  *
  *  @After
  *  void save(Customer customer) {
- * ...
+ *    ...
  *  }
+ *
+ * }</pre>
  */
 @Target(METHOD)
 @Retention(SOURCE)

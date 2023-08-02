@@ -5,6 +5,8 @@ package io.avaje.http.api;
  */
 public class InvalidTypeArgumentException extends IllegalArgumentException {
 
+  private static final long serialVersionUID = 1;
+
   /**
    * Construct with a message.
    */

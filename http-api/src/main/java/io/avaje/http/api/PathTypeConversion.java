@@ -70,6 +70,7 @@ public final class PathTypeConversion {
   }
 
   /** Convert to enum. */
+  @SuppressWarnings({"unchecked", "rawtypes"})
   public static <T> Enum asEnum(Class<T> clazz, String value) {
     checkNull(value);
     try {
