@@ -18,8 +18,8 @@ import java.lang.annotation.Target;
  *       This also serves as a mapping hint if the annotation itself does not narrow the exception
  *       types through its {@link #value()}.
  *   <li>Request and/or response objects (typically from the microframework). You may choose any
- *       specific request/response type, e.g. Javalin's {@link io.javalin.Context} or Helidon's
- *       Request/ServerResponse.
+ *       specific request/response type, e.g. Javalin's {@code io.javalin.Context} or Helidon's
+ *       ServerRequest/ServerResponse.
  * </ol>
  *
  * <p>Handler methods may be void or return an object for serialization.

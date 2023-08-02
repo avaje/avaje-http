@@ -5,6 +5,8 @@ package io.avaje.http.api;
  */
 public class InvalidPathArgumentException extends InvalidTypeArgumentException {
 
+  private static final long serialVersionUID = 1;
+
   /**
    * Construct with a message.
    */

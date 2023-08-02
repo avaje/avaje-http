@@ -106,7 +106,7 @@ public class PathSegments {
   }
 
   /**
-   * Return full path with <code>{}</code for named path params.
+   * Return full path with <code>{}</code> for named path params.
    */
   public String fullPath() {
     return fullPath("{", "}");

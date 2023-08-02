@@ -13,8 +13,9 @@ import java.lang.annotation.Target;
  *
  *  @Post
  *  void save(Customer customer) {
-      ...
+ *     ...
  *  }
+ * }</pre>
  */
 @Target(METHOD)
 @Retention(RUNTIME)

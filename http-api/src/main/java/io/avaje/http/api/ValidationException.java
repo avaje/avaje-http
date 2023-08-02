@@ -1,5 +1,6 @@
 package io.avaje.http.api;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +68,9 @@ public class ValidationException extends IllegalArgumentException {
   }
 
   /** Error details including the field, error message and path */
-  public static class Violation {
+  public static class Violation implements Serializable {
+
+    private static final long serialVersionUID = 1;
 
     protected String path;
     protected String field;

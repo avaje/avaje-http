@@ -9,6 +9,8 @@ package io.avaje.http.api;
  */
 public class RequiredArgumentException extends IllegalArgumentException {
 
+  private static final long serialVersionUID = 1;
+
   private String property;
 
   /**
