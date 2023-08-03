@@ -125,7 +125,7 @@ WebServer.builder()
 ```java
 @Generated("avaje-javalin-generator")
 @Singleton
-public class WidgetController$Route implements WebRoutes {
+public class WidgetController$Route implements Plugin {
 
   private final WidgetController controller;
 
@@ -134,16 +134,16 @@ public class WidgetController$Route implements WebRoutes {
   }
 
   @Override
-  public void registerRoutes() {
+  public void apply(Javalin app) {
 
-    ApiBuilder.get("/widgets/{id}", ctx -> {
+    app.get("/widgets/{id}", ctx -> {
       ctx.status(200);
       var id = asInt(ctx.pathParam("id"));
       var result = controller.getById(id);
       ctx.json(result);
     });
 
-    ApiBuilder.get("/widgets", ctx -> {
+    app.get("/widgets", ctx -> {
       ctx.status(200);
       var result = controller.getAll();
       ctx.json(result);
@@ -158,7 +158,7 @@ public class WidgetController$Route implements WebRoutes {
 ```java
 @Generated("avaje-helidon-nima-generator")
 @Singleton
-public class WidgetController$Route implements HttpService {
+public class WidgetController$Route implements HttpFeature {
 
   private final WidgetController controller;
   public WidgetController$Route(WidgetController controller) {
@@ -166,9 +166,9 @@ public class WidgetController$Route implements HttpService {
   }
 
   @Override
-  public void routing(HttpRules rules) throws Exception {
-    rules.get("/widgets/{id}", this::_getById);
-    rules.get("/widgets", this::_getAll);
+  public void setup(HttpRouting.Builder routing) {
+    routing.get("/widgets/{id}", this::_getById);
+    routing.get("/widgets", this::_getAll);
   }
 
   private void _getById(ServerRequest req, ServerResponse res) throws Exception {
@@ -193,7 +193,7 @@ If [Avaje-Jsonb](https://github.com/avaje/avaje-jsonb) is detected, http generat
 ```java
 @Generated("avaje-javalin-generator")
 @Component
-public class WidgetController$Route implements WebRoutes {
+public class WidgetController$Route implements Plugin {
 
   private final WidgetController controller;
   private final JsonType<List<Widget>> listWidgetJsonType;
@@ -206,16 +206,16 @@ public class WidgetController$Route implements WebRoutes {
   }
 
   @Override
-  public void registerRoutes() {
+  public void apply(Javalin app) {
 
-    ApiBuilder.get("/widgets/{id}", ctx -> {
+    app.get("/widgets/{id}", ctx -> {
       ctx.status(200);
       var id = asInt(ctx.pathParam("id"));
       var result = controller.getById(id);
       widgetJsonType.toJson(result, ctx.contentType("application/json").outputStream());
     });
 
-    ApiBuilder.get("/widgets", ctx -> {
+    app.get("/widgets", ctx -> {
       ctx.status(200);
       var result = controller.getAll();
       listWidgetJsonType.toJson(result, ctx.contentType("application/json").outputStream());
@@ -230,8 +230,7 @@ public class WidgetController$Route implements WebRoutes {
 ```java
 @Generated("avaje-helidon-nima-generator")
 @Component
-public class WidgetController$Route implements HttpService {
-
+public class WidgetController$Route implements HttpFeature {
 
   private final WidgetController controller;
   private final JsonType<Widget> widgetJsonType;
@@ -244,9 +243,9 @@ public class WidgetController$Route implements HttpService {
   }
 
   @Override
-  public void routing(HttpRules rules) {
-    rules.get("/widgets/{id}", this::_getById);
-    rules.get("/widgets", this::_getAll);
+  public void setup(HttpRouting.Builder routing) {
+    routing.get("/widgets/{id}", this::_getById);
+    routing.get("/widgets", this::_getAll);
   }
 
   private void _getById(ServerRequest req, ServerResponse res) throws Exception {
