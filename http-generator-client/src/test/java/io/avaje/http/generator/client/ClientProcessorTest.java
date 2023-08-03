@@ -25,6 +25,8 @@ import javax.tools.ToolProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import io.avaje.http.client.HttpClient;
+
 class ClientProcessorTest {
 
   @AfterEach
@@ -38,6 +40,7 @@ class ClientProcessorTest {
           .sorted(Comparator.reverseOrder())
           .map(Path::toFile)
           .forEach(File::delete);
+
     } catch (final Exception e) {
     }
   }

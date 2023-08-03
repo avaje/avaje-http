@@ -83,4 +83,9 @@ public class MethodParam {
   public void setResponseHandler() {
     elementParam.setResponseHandler();
   }
+
+  @Override
+  public String toString() {
+    return elementParam.toString();
+  }
 }

@@ -11,6 +11,9 @@ public interface UserClient {
   @Post("/users")
   String createUser(@BodyString String body);
 
+  @Post("/body")
+  String bodies(Body... bodies);
+
   @Get("/users/{userId}")
   String getUserById(String userId);
 }

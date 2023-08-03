@@ -328,7 +328,7 @@ public final class ControllerReader {
 
   public void addImportType(String rawType) {
     if (rawType.indexOf('.') > 0) {
-      importTypes.add(rawType);
+      importTypes.add(sanitizeImports(rawType));
     }
   }
 
@@ -352,5 +352,18 @@ public final class ControllerReader {
 
   public boolean hasInstrument() {
     return hasInstrument;
+  }
+
+  public static String sanitizeImports(String type) {
+    final int pos = type.indexOf("@");
+    if (pos == -1) {
+      return trimArrayBrackets(type);
+    }
+    final var start = pos == 0 ? type.substring(0, pos) : "";
+    return start + trimArrayBrackets(type.substring(type.lastIndexOf(' ') + 1));
+  }
+
+  private static String trimArrayBrackets(String type) {
+    return type.replaceAll("[^\\n\\r\\t $;\\w.]", "");
   }
 }
