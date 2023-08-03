@@ -45,7 +45,7 @@ Use source code generation to adapt annotated REST controllers `@Path, @Get, @Po
 </dependency>
 ```
 
-## Define a Controller (These APT processors work with both Java and Kotlin.)
+## Define a Controller (These APT processors work with Java and Kotlin.)
 ```java
 package org.example.hello;
 
@@ -74,7 +74,7 @@ public class WidgetController {
 }
 ```
 ## DI Usage
-The annotation processor will generate controller adapters that can register routes to Javalin/Helidon. The natural way to use the generated adapters is to get a DI library to find and wire them. This is what the below examples do and they use [Avaje-Inject](https://avaje.io/inject/) to do this. The AP will automatically detect the presence of avaje-inject and generate the class to use avaje-inject's `@Component` as the DI annotation.
+The annotation processor will generate controller adapters to register routes to Javalin/Helidon. The natural way to use the generated adapters is to get a DI library to find and wire them. This is what the examples below do; they use [Avaje-Inject](https://avaje.io/inject/) to do this. The AP will automatically detect the presence of avaje-inject and generate the class to use avaje-inject's `@Component` as the DI annotation.
 
 There isn't a hard requirement to use Avaje for dependency injection. In the absence of avaje-inject, the generated class will use `@jakarta.inject.Singleton` or `@javax.inject.Singleton` depending on what's on the classpath. Any DI library that can find and wire the generated @Singleton beans can be used. You can even use Dagger2 or Guice to wire the controllers if you so desire. 
 
@@ -93,15 +93,13 @@ To force the AP to generate with `@javax.inject.Singleton`(in the case where you
 
 ### Usage with Javalin
 
-The annotation processor will generate controller classes implementing the WebRoutes interface, which means we can
+The annotation processor will generate controller classes implementing the Javalin `Plugin` interface, which means we can
 get all the WebRoutes and register them with Javalin using:
 
 ```java
-List<WebRoutes> routes = BeanScope.builder().build().list(WebRoutes.class);
+List<Plugin> routes = BeanScope.builder().build().list(Plugin.class);
 
-Javalin.create()
-        .routes(() -> routes.forEach(WebRoutes::registerRoutes))
-        .start();
+Javalin.create(cfg -> routes.forEach(cfg.plugins::register));
 ```
 
 ### Usage with Helidon Nima
@@ -110,12 +108,10 @@ The annotation processor will generate controller classes implementing the Helid
 get all the services and register them with the Helidon `HttpRouting`.
 
 ```java
-List<HttpService> routes = BeanScope.builder().build().list(HttpService.class);
+List<HttpFeature> routes = BeanScope.builder().build().list(HttpFeature.class);
 final var builder = HttpRouting.builder();
 
-for (final HttpService httpService : routes) {
-   httpService.routing(builder);
-}
+routes.forEach(builder::register);
 
 WebServer.builder()
          .addRouting(builder.build())
