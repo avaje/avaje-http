@@ -3,7 +3,6 @@ package io.avaje.http.generator.core;
 import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
 import static io.avaje.http.generator.core.ProcessingContext.platform;
 import static io.avaje.http.generator.core.ProcessingContext.typeElement;
-import static java.util.function.Predicate.not;
 
 import java.util.ArrayList;
 import java.util.HashSet;
