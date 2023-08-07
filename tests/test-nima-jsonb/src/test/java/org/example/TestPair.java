@@ -42,9 +42,7 @@ public class TestPair {
 
     var hc = new HelloController();
     var hello = new HelloController$Route(hc, beanValidator, jsonb);
-   
     routing.addFeature(hello);
-    hello.setup(routing);
 
     var cr = new ThreadLocalRequestContextResolver();
     var tc = new TestController();
