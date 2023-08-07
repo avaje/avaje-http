@@ -36,7 +36,7 @@ public @interface Produces {
   String value() default MediaType.APPLICATION_JSON;
 
   /**
-   * The default status code of the generated route.
+   * The status code of the route when successful.
    *
    * <p>When not specified, the default status are as follows: <br>
    * GET(200) <br>
@@ -45,5 +45,5 @@ public @interface Produces {
    * PATCH(200, void methods 204) <br>
    * DELETE(200, void methods 204)
    */
-  int defaultStatus() default 0;
+  int statusCode() default 0;
 }

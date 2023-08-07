@@ -352,7 +352,7 @@ public class MethodReader {
   }
 
   public boolean hasProducesStatus() {
-    return producesAnnotation.map(ProducesPrism::defaultStatus).filter(s -> s > 0).isPresent();
+    return producesAnnotation.map(ProducesPrism::statusCode).filter(s -> s > 0).isPresent();
   }
 
   public String produces() {
@@ -384,7 +384,7 @@ public class MethodReader {
       return statusCode;
     }
     return producesAnnotation
-        .map(ProducesPrism::defaultStatus)
+        .map(ProducesPrism::statusCode)
         .filter(s -> s > 0)
         .orElseGet(() -> webMethod.statusCode(isVoid));
   }

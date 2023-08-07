@@ -1,6 +1,7 @@
 package org.example;
 
 import java.io.InputStream;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -80,9 +81,13 @@ public class TestController {
     return body;
   }
 
+  @Produces(statusCode=202)
   @Post("/blah")
   Map<String, Object> strBody2() {
-    return Map.of("hi", "yo", "level", 42L);
+    var map = new LinkedHashMap<String, Object>();
+    map.put("hi", "yo");
+    map.put("level", 42L);
+    return map;
   }
 
   @ExceptionHandler
