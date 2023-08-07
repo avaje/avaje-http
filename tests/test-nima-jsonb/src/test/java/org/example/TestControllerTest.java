@@ -37,9 +37,20 @@ class TestControllerTest {
       .POST()
       .asString();
 
-    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.statusCode()).isEqualTo(201);
     assertThat(res.body()).isEqualTo("{\"key\":42}");
     assertThat(res.headers().firstValue("Content-Type")).isPresent().get().isEqualTo("application/json");
     assertThat(res.headers().firstValue("Content-Length")).isPresent();
+  }
+
+  @Test
+  void ithrowRuntimeException() {
+
+    HttpResponse<String> res = client.request()
+      .path("ithrowRuntimeException")
+      .GET()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(407);
   }
 }

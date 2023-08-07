@@ -118,7 +118,7 @@ public class MethodDocBuilder {
 
       responses.addApiResponse(responseAnnotation.responseCode(), newResponse);
     }
-    if (!override2xx) responses.addApiResponse(methodReader.statusCode(), response);
+    if (!override2xx) responses.addApiResponse(String.valueOf(methodReader.statusCode()), response);
   }
 
   DocContext getContext() {

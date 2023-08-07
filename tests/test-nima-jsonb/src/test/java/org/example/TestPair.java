@@ -40,6 +40,10 @@ public class TestPair {
     var beanValidator = new BeanValidator();
     Jsonb jsonb = Jsonb.builder().build();
 
+    var ec = new ErrorController();
+    var ecRoute = new ErrorController$Route(ec, jsonb);
+    routing.addFeature(ecRoute);
+
     var hc = new HelloController();
     var hello = new HelloController$Route(hc, beanValidator, jsonb);
     routing.addFeature(hello);
