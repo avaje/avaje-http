@@ -1,28 +1,16 @@
 package org.example;
 
+import io.avaje.http.api.*;
+import io.helidon.nima.webserver.http.FilterChain;
+import io.helidon.nima.webserver.http.RoutingResponse;
+import io.helidon.nima.webserver.http.ServerRequest;
+import io.helidon.nima.webserver.http.ServerResponse;
+
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import io.avaje.http.api.BodyString;
-import io.avaje.http.api.Controller;
-import io.avaje.http.api.Default;
-import io.avaje.http.api.ExceptionHandler;
-import io.avaje.http.api.Filter;
-import io.avaje.http.api.Form;
-import io.avaje.http.api.FormParam;
-import io.avaje.http.api.Get;
-import io.avaje.http.api.InstrumentServerContext;
-import io.avaje.http.api.Path;
-import io.avaje.http.api.Post;
-import io.avaje.http.api.Produces;
-import io.avaje.http.api.QueryParam;
-import io.helidon.nima.webserver.http.FilterChain;
-import io.helidon.nima.webserver.http.RoutingResponse;
-import io.helidon.nima.webserver.http.ServerRequest;
-import io.helidon.nima.webserver.http.ServerResponse;
 
 @Path("test")
 @Controller
@@ -81,7 +69,7 @@ public class TestController {
     return body;
   }
 
-  @Produces(statusCode=202)
+  @Produces(statusCode = 202)
   @Post("/blah")
   Map<String, Object> strBody2() {
     var map = new LinkedHashMap<String, Object>();
@@ -95,14 +83,17 @@ public class TestController {
     return "Err: " + ex;
   }
 
+  @Produces(statusCode = 501)
   @ExceptionHandler
   Person exceptionCtx(Exception ex, ServerRequest req, ServerResponse res) {
+    res.header("X-Foo", "WasHere");
     return new Person(0, null);
   }
 
   @ExceptionHandler(IllegalStateException.class)
   void exceptionVoid(ServerResponse res) {
-    System.err.println("do nothing lmao");
+    res.status(503);
+    res.send("IllegalStateException");
   }
 
   @Filter

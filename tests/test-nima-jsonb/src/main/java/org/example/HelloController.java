@@ -65,6 +65,16 @@ public class HelloController {
     throw new RuntimeException("foo");
   }
 
+  @Get("/ithrowException")
+  Person ithrowException() throws Exception {
+    throw new Exception("ithrowException");
+  }
+
+  @Get("/ithrowIllegalStateException")
+  Person ithrowIllegalStateException() {
+    throw new IllegalStateException("ithrowIllegalStateException");
+  }
+
   // curl -v localhost:8081/person/jack
   @Get("person/{name}")
   Person person(String name) {
