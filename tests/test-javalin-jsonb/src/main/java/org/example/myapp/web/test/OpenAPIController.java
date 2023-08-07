@@ -84,7 +84,7 @@ public class OpenAPIController {
   }
 
   @Put("/put")
-  @Produces(value = MediaType.TEXT_PLAIN, defaultStatus = 203)
+  @Produces(value = MediaType.TEXT_PLAIN, statusCode = 203)
   @OpenAPIResponse(responseCode = "204", type = String.class)
   String testDefaultStatus(Context ctx) {
     if (ctx.contentType().equals(MediaType.APPLICATION_PDF)) {

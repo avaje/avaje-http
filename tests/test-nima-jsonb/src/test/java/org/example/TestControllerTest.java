@@ -44,6 +44,19 @@ class TestControllerTest {
   }
 
   @Test
+  void blah() {
+    HttpResponse<String> res = client.request()
+      .path("test/blah")
+      .POST()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(202);
+    assertThat(res.body()).isEqualTo("{\"hi\":\"yo\",\"level\":42}");
+    assertThat(res.headers().firstValue("Content-Type")).isPresent().get().isEqualTo("application/json");
+    assertThat(res.headers().firstValue("Content-Length")).isPresent();
+  }
+
+  @Test
   void ithrowRuntimeException() {
 
     HttpResponse<String> res = client.request()
