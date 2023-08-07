@@ -58,12 +58,32 @@ class TestControllerTest {
 
   @Test
   void ithrowRuntimeException() {
-
     HttpResponse<String> res = client.request()
       .path("ithrowRuntimeException")
       .GET()
       .asString();
 
     assertThat(res.statusCode()).isEqualTo(407);
+  }
+
+  @Test
+  void ithrowException() {
+    HttpResponse<String> res = client.request()
+      .path("ithrowException")
+      .GET()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(501);
+    assertThat(res.headers().firstValue("X-Foo").orElse("")).isEqualTo("WasHere");
+  }
+
+  @Test
+  void ithrowIllegalStateException() {
+    HttpResponse<String> res = client.request()
+      .path("ithrowIllegalStateException")
+      .GET()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(503);
   }
 }
