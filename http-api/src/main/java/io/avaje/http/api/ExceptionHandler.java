@@ -41,5 +41,5 @@ public @interface ExceptionHandler {
   /**
    * The response status code to use.
    */
-  int statusCode() default 0;
+  HttpStatus statusCode() default HttpStatus.__not_set;
 }

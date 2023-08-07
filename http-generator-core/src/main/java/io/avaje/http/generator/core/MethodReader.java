@@ -48,7 +48,7 @@ public class MethodReader {
   private final Optional<RequestTimeoutPrism> timeout;
 
   private WebMethod webMethod;
-  private int statusCode;
+  private CopyHttpStatus statusCode = CopyHttpStatus.__not_set;
   private String webMethodPath;
   private boolean formMarker;
   private final boolean instrumentContext;
@@ -169,7 +169,7 @@ public class MethodReader {
 
   private void initSetWebMethod(WebMethod webMethod, ExceptionHandlerPrism exceptionPrism) {
     this.webMethod = webMethod;
-    this.statusCode = exceptionPrism.statusCode();
+    this.statusCode = CopyHttpStatus.valueOf(exceptionPrism.statusCode());
     var exType = exceptionPrism.value().toString();
     if ("io.avaje.http.api.DefaultException".equals(exType)) {
       exType =
@@ -352,7 +352,11 @@ public class MethodReader {
   }
 
   public boolean hasProducesStatus() {
-    return producesAnnotation.map(ProducesPrism::statusCode).filter(s -> s > 0).isPresent();
+    return producesAnnotation
+      .map(ProducesPrism::statusCode)
+      .map(CopyHttpStatus::valueOf)
+      .filter(s -> s.code() > 0)
+      .isPresent();
   }
 
   public String produces() {
@@ -379,12 +383,14 @@ public class MethodReader {
   }
 
   public int statusCode() {
-    if (statusCode > 0) {
+    if (statusCode.code() > 0) {
       // using explicit status code
-      return statusCode;
+      return statusCode.code();
     }
     return producesAnnotation
         .map(ProducesPrism::statusCode)
+        .map(CopyHttpStatus::valueOf)
+        .map(CopyHttpStatus::code)
         .filter(s -> s > 0)
         .orElseGet(() -> webMethod.statusCode(isVoid));
   }

@@ -2,15 +2,7 @@ package org.example.myapp.web.test;
 
 import java.util.List;
 
-import io.avaje.http.api.Controller;
-import io.avaje.http.api.Get;
-import io.avaje.http.api.MediaType;
-import io.avaje.http.api.OpenAPIResponse;
-import io.avaje.http.api.OpenAPIResponses;
-import io.avaje.http.api.Path;
-import io.avaje.http.api.Post;
-import io.avaje.http.api.Produces;
-import io.avaje.http.api.Put;
+import io.avaje.http.api.*;
 import io.javalin.http.Context;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -84,7 +76,7 @@ public class OpenAPIController {
   }
 
   @Put("/put")
-  @Produces(value = MediaType.TEXT_PLAIN, statusCode = 203)
+  @Produces(value = MediaType.TEXT_PLAIN, statusCode = HttpStatus.NON_AUTHORITATIVE_INFORMATION_203)
   @OpenAPIResponse(responseCode = "204", type = String.class)
   String testDefaultStatus(Context ctx) {
     if (ctx.contentType().equals(MediaType.APPLICATION_PDF)) {

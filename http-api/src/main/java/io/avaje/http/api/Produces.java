@@ -45,5 +45,5 @@ public @interface Produces {
    * PATCH(200, void methods 204) <br>
    * DELETE(200, void methods 204)
    */
-  int statusCode() default 0;
+  HttpStatus statusCode() default HttpStatus.__not_set;
 }

@@ -69,7 +69,7 @@ public class TestController {
     return body;
   }
 
-  @Produces(statusCode = 202)
+  @Produces(statusCode = HttpStatus.ACCEPTED_202)
   @Post("/blah")
   Map<String, Object> strBody2() {
     var map = new LinkedHashMap<String, Object>();
@@ -83,7 +83,7 @@ public class TestController {
     return "Err: " + ex;
   }
 
-  @Produces(statusCode = 501)
+  @Produces(statusCode = HttpStatus.NOT_IMPLEMENTED_501)
   @ExceptionHandler
   Person exceptionCtx(Exception ex, ServerRequest req, ServerResponse res) {
     res.header("X-Foo", "WasHere");
