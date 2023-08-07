@@ -92,11 +92,10 @@ public class TestController {
 
   @ExceptionHandler
   Person exceptionCtx(Exception ex, ServerRequest req, ServerResponse res) {
-
     return new Person(0, null);
   }
 
-  @ExceptionHandler(RuntimeException.class)
+  @ExceptionHandler(IllegalStateException.class)
   void exceptionVoid(ServerResponse res) {
     System.err.println("do nothing lmao");
   }

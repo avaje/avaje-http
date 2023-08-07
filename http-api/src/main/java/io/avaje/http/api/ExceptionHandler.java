@@ -37,4 +37,9 @@ public @interface ExceptionHandler {
    * the method argument list.
    */
   Class<? extends Exception> value() default DefaultException.class;
+
+  /**
+   * The response status code to use.
+   */
+  int statusCode() default 0;
 }

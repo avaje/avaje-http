@@ -214,6 +214,10 @@ class ControllerMethodWriter {
   }
 
   private void writeContextReturn() {
+    int statusCode = method.statusCode();
+    if (statusCode > 0) {
+      writer.append("    res.status(%d);", statusCode).eol();
+    }
     final var producesOp = Optional.ofNullable(method.produces());
     if (producesOp.isEmpty() && !useJsonB) {
       return;

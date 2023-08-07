@@ -48,6 +48,7 @@ public class MethodReader {
   private final Optional<RequestTimeoutPrism> timeout;
 
   private WebMethod webMethod;
+  private int statusCode;
   private String webMethodPath;
   private boolean formMarker;
   private final boolean instrumentContext;
@@ -151,7 +152,7 @@ public class MethodReader {
         .ifPresent(delete -> initSetWebMethod(CoreWebMethod.DELETE, delete.value()));
 
     findAnnotation(ExceptionHandlerPrism::getOptionalOn)
-    .ifPresent(error -> initSetWebMethod(CoreWebMethod.ERROR, error.value()));
+    .ifPresent(error -> initSetWebMethod(CoreWebMethod.ERROR, error));
 
     findAnnotation(FilterPrism::getOptionalOn)
         .ifPresent(filter -> initSetWebMethod(CoreWebMethod.FILTER, ""));
@@ -166,9 +167,10 @@ public class MethodReader {
     this.webMethodPath = value;
   }
 
-  private void initSetWebMethod(WebMethod webMethod, TypeMirror value) {
+  private void initSetWebMethod(WebMethod webMethod, ExceptionHandlerPrism exceptionPrism) {
     this.webMethod = webMethod;
-    var exType = value.toString();
+    this.statusCode = exceptionPrism.statusCode();
+    var exType = exceptionPrism.value().toString();
     if ("io.avaje.http.api.DefaultException".equals(exType)) {
       exType =
           element.getParameters().stream()
@@ -247,8 +249,7 @@ public class MethodReader {
                             .flatMap(List::stream),
                         OpenAPIResponsePrism.getAllInstancesOn(method).stream()));
 
-    final var responses =
-        Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
+    final var responses = Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
     responses.addAll(bean.openApiResponses());
     return responses;
   }
@@ -257,8 +258,7 @@ public class MethodReader {
     return findAnnotation(prismFunc, element);
   }
 
-  public <A> Optional<A> findAnnotation(
-      Function<Element, Optional<A>> prismFunc, ExecutableElement elem) {
+  public <A> Optional<A> findAnnotation(Function<Element, Optional<A>> prismFunc, ExecutableElement elem) {
     return prismFunc.apply(elem).or(() -> bean.findMethodAnnotation(prismFunc, elem));
   }
 
@@ -314,7 +314,6 @@ public class MethodReader {
 
   /** Build the OpenAPI documentation for the method / operation. */
   public void buildApiDocumentation() {
-
     if (!isErrorMethod()
         && webMethod instanceof CoreWebMethod
         && webMethod != CoreWebMethod.FILTER) {
@@ -379,12 +378,15 @@ public class MethodReader {
     return element.getReturnType();
   }
 
-  public String statusCode() {
+  public int statusCode() {
+    if (statusCode > 0) {
+      // using explicit status code
+      return statusCode;
+    }
     return producesAnnotation
         .map(ProducesPrism::defaultStatus)
         .filter(s -> s > 0)
-        .orElseGet(() -> webMethod.statusCode(isVoid))
-        .toString();
+        .orElseGet(() -> webMethod.statusCode(isVoid));
   }
 
   public PathSegments pathSegments() {

@@ -13,7 +13,7 @@ import java.util.Map;
 @Controller
 final class ErrorController {
 
-  @ExceptionHandler
+  @ExceptionHandler(statusCode = 407)
   Map<String, Object> runEx(RuntimeException ex, ServerRequest req, ServerResponse res) {
     return Map.of("err", "" + ex);
   }

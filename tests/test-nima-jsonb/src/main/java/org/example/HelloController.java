@@ -41,7 +41,6 @@ public class HelloController {
 
   @Get("/helidon")
   void testHelidon(ServerRequest req, ServerResponse res) {
-
     res.headers().contentType(HttpMediaType.TEXT_PLAIN);
     res.send("success path:" + req.path());
   }
@@ -59,6 +58,11 @@ public class HelloController {
   @Get("/param")
   String testParam(@QueryParam String param) {
     return param;
+  }
+
+  @Get("/ithrowRuntimeException")
+  Person ithrowRuntime() {
+    throw new RuntimeException("foo");
   }
 
   // curl -v localhost:8081/person/jack
