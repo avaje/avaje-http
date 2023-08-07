@@ -44,6 +44,7 @@
     <module>http-generator-javalin</module>
     <module>http-generator-jex</module>
     <module>http-generator-client</module>
+    <module>tests</module>
   </modules>
 
   <profiles>
@@ -51,10 +52,7 @@
       <id>central</id>
     </profile>
     <profile>
-      <id>default</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
+      <id>test</id>
       <modules>
         <module>tests</module>
       </modules>

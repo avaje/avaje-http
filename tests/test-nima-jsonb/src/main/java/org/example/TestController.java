@@ -86,9 +86,8 @@ public class TestController {
   }
 
   @ExceptionHandler
-  String exception(Exception ex) {
-
-    return "";
+  String exception(IllegalArgumentException ex) {
+    return "Err: " + ex;
   }
 
   @ExceptionHandler
@@ -105,5 +104,6 @@ public class TestController {
   @Filter
   void filter(FilterChain chain, RoutingResponse res) {
     System.err.println("do nothing lmao");
+    chain.proceed();
   }
 }
