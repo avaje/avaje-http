@@ -132,12 +132,12 @@ class ControllerMethodWriter {
     if (instrumentContext) {
       writer.append("      if (ctx.resultInputStream() != null || ctx.res().isCommitted()) return;").eol();
     }
-
     // Support for CompletableFuture's.
     final UType type = UType.parse(method.returnType());
     if ("java.util.concurrent.CompletableFuture".equals(type.mainType())) {
       if (!type.isGeneric()) {
-        throw new IllegalStateException(
+        logError(
+            method.element(),
             "CompletableFuture must be generic type (e.g. CompletableFuture<String>, CompletableFuture<Void>).");
       }
 

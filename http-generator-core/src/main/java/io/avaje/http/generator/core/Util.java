@@ -21,6 +21,7 @@ public class Util {
   // comma not in quotes
   private static final Pattern COMMA_PATTERN =
       Pattern.compile(", (?=(?:[^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
+  private static final Pattern PARENTHESIS_CONTENT = Pattern.compile("\\((.*?)\\)");
 
   /**
    * Parse the raw type potentially handling generic parameters.
@@ -223,6 +224,19 @@ public class Util {
       return UType.VOID;
     }
     return parse(returnType.toString());
+  }
+
+  public static boolean isVarArg(VariableElement element, int position) {
+    var methodString = Util.trimAnnotations(element.getEnclosingElement().toString());
+    var typeString = Util.trimAnnotations(element.asType().toString()).replace("[]", "");
+    Matcher matcher = PARENTHESIS_CONTENT.matcher(methodString);
+
+    if (matcher.find()) {
+      var param = matcher.group(1).split(",")[position];
+
+      return param.replace("[]", "").contains(typeString) && param.endsWith("...");
+    }
+    return false;
   }
 
   private static class RoleReader extends SimpleAnnotationValueVisitor8<List<String>, Object> {

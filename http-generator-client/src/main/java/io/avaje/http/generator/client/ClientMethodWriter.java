@@ -4,6 +4,8 @@ import static io.avaje.http.generator.core.ProcessingContext.*;
 import io.avaje.http.generator.core.*;
 
 import javax.lang.model.element.TypeElement;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,15 +54,22 @@ class ClientMethodWriter {
     AnnotationUtil.writeAnnotations(writer, method.element());
     writer.append("  public %s%s %s(", methodGenericParams, returnType.shortType(), method.simpleName());
     int count = 0;
-    for (MethodParam param : method.params()) {
+    List<MethodParam> params = method.params();
+    for (int i = 0; i < params.size(); i++) {
+      MethodParam param = params.get(i);
       if (count++ > 0) {
         writer.append(", ");
       }
-      var paramType =
+      final var isVarArg = Util.isVarArg(param.element(), i);
+
+      final var paramType =
           "java.util.function.Supplier<?extendsjava.io.InputStream>".equals(param.utype().full())
               ? "Supplier<? extends InputStream>"
               : param.utype().shortType();
-      writer.append(paramType).append(" ");
+
+      final var finalType =
+          isVarArg ? paramType.substring(0, paramType.length() - 2) + "..." : paramType;
+      writer.append(finalType).append(" ");
       writer.append(param.name());
     }
     writer.append(") {").eol();
