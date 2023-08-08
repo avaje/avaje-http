@@ -1,7 +1,7 @@
 {
 	"openapi" : "3.0.1",
 	"info" : {
-		"title" : "Example service showing off the Path extension method of controller",
+		"title" : "Example service",
 		"description" : "Example Javalin controllers with Java and Maven",
 		"version" : ""
 	},
@@ -341,6 +341,27 @@
 									"items" : {
 										"$ref" : "#/components/schemas/HelloDto"
 									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/controlStatusCode" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
 								}
 							}
 						}

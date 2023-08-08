@@ -226,9 +226,9 @@ class ControllerMethodWriter {
     final var produces = producesOp.map(MediaType::parse).orElse(MediaType.APPLICATION_JSON);
     final var contentTypeString = "    res.headers().contentType(HttpMediaType.";
     switch (produces) {
-      case APPLICATION_JSON -> writer.append(contentTypeString + "APPLICATION_JSON);").eol();
-      case TEXT_HTML -> writer.append(contentTypeString + "TEXT_HTML);").eol();
-      case TEXT_PLAIN -> writer.append(contentTypeString + "TEXT_PLAIN);").eol();
+      case APPLICATION_JSON -> writer.append(contentTypeString).append("APPLICATION_JSON);").eol();
+      case TEXT_HTML -> writer.append(contentTypeString).append("TEXT_HTML);").eol();
+      case TEXT_PLAIN -> writer.append(contentTypeString).append("TEXT_PLAIN);").eol();
       case UNKNOWN -> writer.append(contentTypeString + "create(\"%s\"));", producesOp.orElse("UNKNOWN")).eol();
     }
   }

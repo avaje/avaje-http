@@ -78,6 +78,13 @@ public class TestController {
     return map;
   }
 
+  @Produces(statusCode = -1) // Can use -1 to programmatically set the ServerResponse statusCode
+  @Post("/strBody3")
+  Map<String, Object> strBody3(ServerResponse res) {
+    res.status(200);
+    return Map.of("hi", "strBody3");
+  }
+
   @ExceptionHandler
   String exception(IllegalArgumentException ex) {
     return "Err: " + ex;

@@ -44,6 +44,20 @@ class TestControllerTest {
   }
 
   @Test
+  void strBody3() {
+    HttpResponse<String> res = client.request()
+      .path("test/strBody3")
+      .body("{\"key\":42}")
+      .POST()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("{\"hi\":\"strBody3\"}");
+    assertThat(res.headers().firstValue("Content-Type")).isPresent().get().isEqualTo("application/json");
+    assertThat(res.headers().firstValue("Content-Length")).isPresent();
+  }
+
+  @Test
   void blah() {
     HttpResponse<String> res = client.request()
       .path("test/blah")

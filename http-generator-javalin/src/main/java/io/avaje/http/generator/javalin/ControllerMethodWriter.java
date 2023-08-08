@@ -101,7 +101,10 @@ class ControllerMethodWriter {
       writer.append("    app.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
     }
     if (!customMethod) {
-      writer.append("      ctx.status(%d);", method.statusCode()).eol();
+      int statusCode = method.statusCode();
+      if (statusCode > 0) {
+        writer.append("      ctx.status(%d);", statusCode).eol();
+      }
     }
   }
 
