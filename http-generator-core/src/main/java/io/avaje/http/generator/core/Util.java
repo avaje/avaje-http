@@ -236,7 +236,7 @@ public class Util {
       var params = matcher.group(1);
 
       return Arrays.stream(params.split(","))
-          .filter(s -> s.contains(typeString))
+          .filter(s -> s.replace("[]", "").contains(typeString))
           .anyMatch(s -> s.endsWith("..."));
     }
     return false;
