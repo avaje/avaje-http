@@ -22,6 +22,8 @@ import io.avaje.http.generator.core.UType;
 class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-helidon-generator\")";
+  private static final String IMPORT_HTTP_STATUS = "import static io.helidon.common.http.Http.Status.*;";
+
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
 
@@ -65,6 +67,14 @@ class ControllerWriter extends BaseControllerWriter {
     writeClassStart();
     writeAddRoutes();
     writeClassEnd();
+  }
+
+  @Override
+  protected void writeImports() {
+    if (router) {
+      writer.append(IMPORT_HTTP_STATUS).eol();
+    }
+    super.writeImports();
   }
 
   private List<ControllerMethodWriter> writerMethods() {
