@@ -33,7 +33,10 @@ class ControllerMethodWriter {
     final String fullPath = segments.fullPath();
 
     writer.append("    routing.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
-    writer.append("      ctx.status(%d);", method.statusCode()).eol();
+    int statusCode = method.statusCode();
+    if (statusCode > 0) {
+      writer.append("      ctx.status(%d);", statusCode).eol();
+    }
 
     List<PathSegments.Segment> matrixSegments = segments.matrixSegments();
     for (PathSegments.Segment matrixSegment : matrixSegments) {

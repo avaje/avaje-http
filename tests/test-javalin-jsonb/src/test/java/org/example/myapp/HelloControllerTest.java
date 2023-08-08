@@ -321,4 +321,16 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(hres.statusCode()).isEqualTo(200);
     assertEquals("got name:one splat0:a/b splat1:x/y/z", hres.body());
   }
+
+  @Test
+  void get_controlStatusCode_expect201() {
+    final HttpResponse<String> hres = client.request()
+      .path("hello/controlStatusCode")
+      .GET()
+      .asString();
+
+    assertThat(hres.statusCode()).isEqualTo(201);
+    assertEquals("controlStatusCode", hres.body());
+  }
+
 }

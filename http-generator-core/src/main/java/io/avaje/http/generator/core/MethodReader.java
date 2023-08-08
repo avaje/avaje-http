@@ -379,13 +379,13 @@ public class MethodReader {
   }
 
   public int statusCode() {
-    if (statusCode > 0) {
+    if (statusCode != 0) {
       // using explicit status code
       return statusCode;
     }
     return producesAnnotation
         .map(ProducesPrism::statusCode)
-        .filter(s -> s > 0)
+        .filter(s -> s != 0)
         .orElseGet(() -> webMethod.statusCode(isVoid));
   }
 

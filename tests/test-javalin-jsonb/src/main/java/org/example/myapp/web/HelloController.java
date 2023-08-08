@@ -175,4 +175,11 @@ class HelloController {
   String slashAccepting(String name, String nam0, String nam1) {
     return "got name:" + name + " splat0:" + nam0 + " splat1:" + nam1;
   }
+
+  @Produces(value = "text/plain")
+  @Get("controlStatusCode")
+  String controlStatusCode(Context ctx) {
+    ctx.status(201);
+    return "controlStatusCode";
+  }
 }
