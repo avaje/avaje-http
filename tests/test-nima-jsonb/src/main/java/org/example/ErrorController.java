@@ -15,7 +15,7 @@ final class ErrorController {
 
   @ExceptionHandler(statusCode = 407)
   Map<String, Object> runEx(RuntimeException ex, ServerRequest req, ServerResponse res) {
-    return Map.of("err", "" + ex);
+    return Map.of("err", String.valueOf(ex));
   }
 
 }

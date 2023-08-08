@@ -2,7 +2,9 @@ package io.avaje.http.generator.helidon.nima;
 
 import static io.avaje.http.generator.core.ProcessingContext.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import io.avaje.http.generator.core.Append;
@@ -20,7 +22,44 @@ import javax.lang.model.type.TypeMirror;
 /**
  * Write code to register Web route for a given controller method.
  */
-class ControllerMethodWriter {
+final class ControllerMethodWriter {
+
+  private static final Map<Integer,String> statusMap = new HashMap<>();
+  static {
+    statusMap.put(200, "OK_200");
+    statusMap.put(201, "CREATED_201");
+    statusMap.put(202, "ACCEPTED_202");
+    statusMap.put(204, "NO_CONTENT_204");
+    statusMap.put(205, "RESET_CONTENT_205");
+    statusMap.put(206, "PARTIAL_CONTENT_206");
+
+    statusMap.put(400, "BAD_REQUEST_400");
+    statusMap.put(401, "UNAUTHORIZED_401");
+    statusMap.put(402, "PAYMENT_REQUIRED_402");
+    statusMap.put(403, "FORBIDDEN_403");
+    statusMap.put(404, "NOT_FOUND_404");
+    statusMap.put(405, "METHOD_NOT_ALLOWED_405");
+    statusMap.put(406, "NOT_ACCEPTABLE_406");
+    statusMap.put(407, "PROXY_AUTHENTICATION_REQUIRED_407");
+    statusMap.put(408, "REQUEST_TIMEOUT_408");
+    statusMap.put(409, "CONFLICT_409");
+    statusMap.put(410, "GONE_410");
+    statusMap.put(411, "LENGTH_REQUIRED_411");
+    statusMap.put(412, "PRECONDITION_FAILED_412");
+    statusMap.put(413, "REQUEST_ENTITY_TOO_LARGE_413");
+    statusMap.put(414, "REQUEST_URI_TOO_LONG_414");
+    statusMap.put(415, "UNSUPPORTED_MEDIA_TYPE_415");
+    statusMap.put(416, "REQUESTED_RANGE_NOT_SATISFIABLE_416");
+    statusMap.put(417, "EXPECTATION_FAILED_417");
+    statusMap.put(418, "I_AM_A_TEAPOT_418");
+
+    statusMap.put(500, "INTERNAL_SERVER_ERROR_500");
+    statusMap.put(501, "NOT_IMPLEMENTED_501");
+    statusMap.put(502, "BAD_GATEWAY_502");
+    statusMap.put(503, "SERVICE_UNAVAILABLE_503");
+    statusMap.put(504, "GATEWAY_TIMEOUT_504");
+    statusMap.put(505, "HTTP_VERSION_NOT_SUPPORTED_505");
+  }
 
   private final MethodReader method;
   private final Append writer;
@@ -216,7 +255,7 @@ class ControllerMethodWriter {
   private void writeContextReturn() {
     int statusCode = method.statusCode();
     if (statusCode > 0) {
-      writer.append("    res.status(%d);", statusCode).eol();
+      writer.append("    res.status(%s);", lookupStatusCode(statusCode)).eol();
     }
     final var producesOp = Optional.ofNullable(method.produces());
     if (producesOp.isEmpty() && !useJsonB) {
@@ -231,6 +270,10 @@ class ControllerMethodWriter {
       case TEXT_PLAIN -> writer.append(contentTypeString).append("TEXT_PLAIN);").eol();
       case UNKNOWN -> writer.append(contentTypeString + "create(\"%s\"));", producesOp.orElse("UNKNOWN")).eol();
     }
+  }
+
+  private String lookupStatusCode(int statusCode) {
+    return statusMap.getOrDefault(statusCode, String.valueOf(statusCode));
   }
 
   public void buildApiDocumentation() {
