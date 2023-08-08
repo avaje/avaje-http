@@ -9,6 +9,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleAnnotationValueVisitor8;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -225,6 +226,22 @@ public class Util {
     return parse(returnType.toString());
   }
 
+  public static boolean isVarArg(VariableElement element) {
+    var methodString = Util.trimAnnotations(element.getEnclosingElement().toString());
+    var typeString = Util.trimAnnotations(element.asType().toString()).replace("[]", "");
+    Pattern pattern = Pattern.compile("\\((.*?)\\)");
+    Matcher matcher = pattern.matcher(methodString);
+
+    if (matcher.find()) {
+      var params = matcher.group(1);
+
+      return Arrays.stream(params.split(","))
+          .filter(s -> s.contains(typeString))
+          .anyMatch(s -> s.endsWith("..."));
+    }
+    return false;
+  }
+  
   private static class RoleReader extends SimpleAnnotationValueVisitor8<List<String>, Object> {
 
     private final List<String> fullRoles = new ArrayList<>();

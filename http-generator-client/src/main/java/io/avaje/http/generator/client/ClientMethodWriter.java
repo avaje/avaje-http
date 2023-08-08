@@ -56,11 +56,16 @@ class ClientMethodWriter {
       if (count++ > 0) {
         writer.append(", ");
       }
-      var paramType =
+      final var isVarArg = Util.isVarArg(param.element());
+
+      final var paramType =
           "java.util.function.Supplier<?extendsjava.io.InputStream>".equals(param.utype().full())
               ? "Supplier<? extends InputStream>"
               : param.utype().shortType();
-      writer.append(paramType).append(" ");
+
+      final var finalType =
+          isVarArg ? paramType.substring(0, paramType.length() - 2) + "..." : paramType;
+      writer.append(finalType).append(" ");
       writer.append(param.name());
     }
     writer.append(") {").eol();

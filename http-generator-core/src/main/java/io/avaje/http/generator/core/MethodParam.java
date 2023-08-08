@@ -2,6 +2,7 @@ package io.avaje.http.generator.core;
 
 import static io.avaje.http.generator.core.ProcessingContext.asElement;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.VariableElement;
 
@@ -82,6 +83,10 @@ public class MethodParam {
 
   public void setResponseHandler() {
     elementParam.setResponseHandler();
+  }
+
+  public VariableElement element() {
+    return (VariableElement) elementParam.element();
   }
 
   @Override
