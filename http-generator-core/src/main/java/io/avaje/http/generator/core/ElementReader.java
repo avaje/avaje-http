@@ -283,10 +283,8 @@ public class ElementReader {
     if (!contextType && typeHandler == null) {
       final var indent = platform().indent();
       if (useValidation) {
-        writer.append("%s  var validLanguage = ", indent);
+        writer.append("%s  validator.validate(%s, ", indent, varName);
         platform().writeAcceptLanguage(writer);
-        writer.append(";").eol();
-        writer.append("%s  validator.validate(%s, validLanguage", indent, varName);
         validationGroups.forEach(g -> writer.append(", %s", Util.shortName(g)));
         writer.append(");").eol();
       } else {

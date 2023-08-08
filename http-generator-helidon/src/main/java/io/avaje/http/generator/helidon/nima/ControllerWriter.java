@@ -21,7 +21,7 @@ import io.avaje.http.generator.core.UType;
  */
 class ControllerWriter extends BaseControllerWriter {
 
-  private static final String AT_GENERATED = "@Generated(\"avaje-helidon-nima-generator\")";
+  private static final String AT_GENERATED = "@Generated(\"avaje-helidon-generator\")";
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
 
