@@ -226,13 +226,13 @@ public class Util {
     return parse(returnType.toString());
   }
 
-  public static boolean isVarArg(VariableElement element, int order) {
+  public static boolean isVarArg(VariableElement element, int position) {
     var methodString = Util.trimAnnotations(element.getEnclosingElement().toString());
     var typeString = Util.trimAnnotations(element.asType().toString()).replace("[]", "");
     Matcher matcher = PARENTHESIS_CONTENT.matcher(methodString);
 
     if (matcher.find()) {
-      var param = matcher.group(1).split(",")[order];
+      var param = matcher.group(1).split(",")[position];
 
       return param.replace("[]", "").contains(typeString) && param.endsWith("...");
     }
