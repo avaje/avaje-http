@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>2.0-RC3</version>
+    <version>2.0-RC4</version>
   </parent>
 
   <artifactId>avaje-http-client-gson</artifactId>
@@ -20,7 +20,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client</artifactId>
-      <version>2.0-RC3</version>
+      <version>2.0-RC4</version>
       <scope>provided</scope>
     </dependency>
 
