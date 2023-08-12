@@ -49,12 +49,12 @@ public class ValidationException extends IllegalArgumentException {
   }
 
   /** Return the suggested HTTP status to use in the response. */
-  public int status() {
+  public int getStatus() {
     return status;
   }
 
   /** Return the errors typically as a map of field to error message. */
-  public List<Violation> errors() {
+  public List<Violation> getErrors() {
     return errors;
   }
 
@@ -79,17 +79,17 @@ public class ValidationException extends IllegalArgumentException {
     }
 
     /** Return the path of this error message. */
-    public String path() {
+    public String getPath() {
       return path;
     }
 
     /** Return the field for this error message. */
-    public String field() {
+    public String getField() {
       return field;
     }
 
     /** Return the error message. */
-    public String message() {
+    public String getMessage() {
       return message;
     }
   }
