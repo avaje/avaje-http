@@ -27,6 +27,18 @@ public class TestController {
     return strings.toString();
   }
 
+  @Form
+  @Get("/formMulti")
+  String formMulti(Set<String> strings) {
+    return strings.toString();
+  }
+
+  @Form
+  @Get("/formMap")
+  String formMap(Map<String, List<String>> strings) {
+    return strings.toString();
+  }
+
   @Get("/BoxCollection")
   String boxed(@QueryParam List<Long> l) {
     return l.toString();
