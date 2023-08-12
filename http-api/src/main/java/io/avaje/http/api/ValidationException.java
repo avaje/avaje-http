@@ -16,14 +16,15 @@ public class ValidationException extends IllegalArgumentException {
 
   private static final long serialVersionUID = 1L;
 
-  private int status = 422;
+  private final int status;
 
-  private List<Violation> errors;
+  private final List<Violation> errors;
 
   /** Create with a message. */
   public ValidationException(String message) {
     super(message);
     this.errors = new ArrayList<>();
+    status = 422;
   }
 
   /** Create with a status and message. */
@@ -48,23 +49,13 @@ public class ValidationException extends IllegalArgumentException {
   }
 
   /** Return the suggested HTTP status to use in the response. */
-  public int getStatus() {
+  public int status() {
     return status;
   }
 
-  /** Set the suggested HTTP status to use in the response. */
-  public void setStatus(int status) {
-    this.status = status;
-  }
-
   /** Return the errors typically as a map of field to error message. */
-  public List<Violation> getErrors() {
+  public List<Violation> errors() {
     return errors;
-  }
-
-  /** Set the errors. */
-  public void setErrors(List<Violation> errors) {
-    this.errors = errors;
   }
 
   /** Error details including the field, error message and path */
@@ -88,33 +79,18 @@ public class ValidationException extends IllegalArgumentException {
     }
 
     /** Return the path of this error message. */
-    public String getPath() {
+    public String path() {
       return path;
     }
 
     /** Return the field for this error message. */
-    public String getField() {
+    public String field() {
       return field;
     }
 
     /** Return the error message. */
-    public String getMessage() {
+    public String message() {
       return message;
-    }
-
-    /** Set the path for this error. */
-    public void setPath(String path) {
-      this.path = path;
-    }
-
-    /** Set the field for this error. */
-    public void setField(String field) {
-      this.field = field;
-    }
-
-    /** Set the error message. */
-    public void setMessage(String message) {
-      this.message = message;
     }
   }
 }
