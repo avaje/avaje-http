@@ -24,7 +24,7 @@ public class ValidationException extends IllegalArgumentException {
   public ValidationException(String message) {
     super(message);
     this.errors = new ArrayList<>();
-    status = 422;
+    this.status = 422;
   }
 
   /** Create with a status and message. */
@@ -63,9 +63,9 @@ public class ValidationException extends IllegalArgumentException {
 
     private static final long serialVersionUID = 1;
 
-    protected String path;
-    protected String field;
-    protected String message;
+    protected final String path;
+    protected final String field;
+    protected final String message;
 
     /** Create with path, field and message */
     public Violation(String path, String field, String message) {
@@ -74,22 +74,18 @@ public class ValidationException extends IllegalArgumentException {
       this.message = message;
     }
 
-    /** Default constructor just to help Jackson if it is used. */
-    public Violation() {
-    }
-
     /** Return the path of this error message. */
-    public String getPath() {
+    public String path() {
       return path;
     }
 
     /** Return the field for this error message. */
-    public String getField() {
+    public String field() {
       return field;
     }
 
     /** Return the error message. */
-    public String getMessage() {
+    public String message() {
       return message;
     }
   }

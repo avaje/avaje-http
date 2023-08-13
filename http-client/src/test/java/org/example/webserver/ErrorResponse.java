@@ -28,12 +28,12 @@ public class ErrorResponse {
 
   public String get(String field) {
     return errorForField(field)
-      .map(ValidationException.Violation::getMessage)
+      .map(ValidationException.Violation::message)
       .orElseThrow();
   }
   public Optional<ValidationException.Violation> errorForField(String field) {
     for (ValidationException.Violation error : errors) {
-      if (field.equals(error.getField())) {
+      if (field.equals(error.field())) {
         return Optional.of(error);
       }
     }
