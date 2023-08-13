@@ -12,17 +12,12 @@ import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.CustomWebMethod;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
+import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.UType;
 
 class JavalinAdapter implements PlatformAdapter {
 
   static final String JAVALIN3_CONTEXT = "io.javalin.http.Context";
-
-  private final boolean useJsonB;
-
-  JavalinAdapter(boolean useJsonB) {
-    this.useJsonB = useJsonB;
-  }
 
   @Override
   public boolean isContextType(String rawType) {
@@ -48,7 +43,7 @@ class JavalinAdapter implements PlatformAdapter {
     } else if ("byte[]".equals(type.full())) {
       return "ctx.bodyAsBytes()";
     } else {
-      if (useJsonB) {
+      if (ProcessingContext.useJsonb()) {
         return type.shortName() + "JsonType.fromJson(ctx.bodyInputStream())";
       }
       return "ctx.<" + type.mainType() + ">bodyStreamAsClass(" + type.mainType() + ".class)";

@@ -5,6 +5,7 @@ import java.io.IOException;
 import io.avaje.http.generator.core.BaseProcessor;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.PlatformAdapter;
+import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.javalin.After;
 import io.avaje.http.javalin.Before;
 import io.avaje.prism.GeneratePrism;
@@ -15,11 +16,11 @@ public class JavalinProcessor extends BaseProcessor {
 
   @Override
   protected PlatformAdapter providePlatformAdapter() {
-    return new JavalinAdapter(useJsonB);
+    return new JavalinAdapter();
   }
 
   @Override
   public void writeControllerAdapter(ControllerReader reader) throws IOException {
-    new ControllerWriter(reader, useJsonB).write();
+    new ControllerWriter(reader, ProcessingContext.useJsonb()).write();
   }
 }

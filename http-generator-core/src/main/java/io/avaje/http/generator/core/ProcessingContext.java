@@ -44,7 +44,6 @@ public class ProcessingContext {
     private final String diAnnotation;
     private final boolean instrumentAllMethods;
     private final boolean disableDirectWrites;
-    private final boolean useJsonb;
 
     Ctx(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
       readAdapter = adapter;
@@ -68,7 +67,7 @@ public class ProcessingContext {
         useComponent = elementUtils.getTypeElement(Constants.COMPONENT) != null;
       }
       diAnnotation = (useComponent ? "@Component" : "@Singleton");
-      useJsonb = elementUtils.getTypeElement("io.avaje.jsonb.Jsonb") != null;
+
       final var javax = elementUtils.getTypeElement(Constants.SINGLETON_JAVAX) != null;
       final var jakarta = elementUtils.getTypeElement(Constants.SINGLETON_JAKARTA) != null;
       final var override = options.get("useJavax");
@@ -186,7 +185,12 @@ public class ProcessingContext {
   }
 
   public static boolean useJsonb() {
-    return CTX.get().useJsonb;
+    try {
+      return CTX.get().elementUtils.getTypeElement("io.avaje.jsonb.Jsonb") != null
+          || Class.forName("io.avaje.jsonb.Jsonb") != null;
+    } catch (final ClassNotFoundException e) {
+      return false;
+    }
   }
 
   public static boolean disabledDirectWrites() {
