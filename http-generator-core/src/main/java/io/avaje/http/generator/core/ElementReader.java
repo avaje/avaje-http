@@ -3,6 +3,7 @@ package io.avaje.http.generator.core;
 import static io.avaje.http.generator.core.ParamType.RESPONSE_HANDLER;
 import static io.avaje.http.generator.core.ProcessingContext.platform;
 import static io.avaje.http.generator.core.ProcessingContext.typeElement;
+import static io.avaje.http.generator.core.ProcessingContext.logError;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -307,19 +308,15 @@ public class ElementReader {
   }
 
   void setValue(Append writer) {
-    setValue(writer, PathSegments.EMPTY, handlerShortType());
+    try {
+      setValue(writer, PathSegments.EMPTY, handlerShortType());
+    } catch (final UnsupportedOperationException e) {
+      logError(element, e.getMessage());
+    }
   }
 
   private boolean setValue(Append writer, PathSegments segments, String shortType) {
-//    if (formMarker && impliedParamType && typeHandler == null) {
-//      if (ParamType.FORM != paramType) {
-//        throw new IllegalStateException("Don't get here?");
-//      }
-////      // @Form on method and this type is a "bean" so treat is as a form bean
-////      writeForm(writer, shortType, varName, ParamType.FORMPARAM);
-////      paramType = ParamType.FORM;
-////      return false;
-//    }
+
     if (ParamType.FORM == paramType) {
       writeForm(writer, shortType, varName, ParamType.FORMPARAM);
       return false;

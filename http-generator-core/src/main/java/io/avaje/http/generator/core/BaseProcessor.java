@@ -14,8 +14,6 @@ import javax.lang.model.element.TypeElement;
 @SupportedOptions({"useJavax", "useSingleton", "instrumentRequests","disableDirectWrites"})
 public abstract class BaseProcessor extends AbstractProcessor {
 
-  protected boolean useJsonB;
-
   @Override
   public SourceVersion getSupportedSourceVersion() {
     return SourceVersion.latest();
@@ -30,7 +28,6 @@ public abstract class BaseProcessor extends AbstractProcessor {
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     ProcessingContext.init(processingEnv, providePlatformAdapter());
-    useJsonB = ProcessingContext.useJsonb();
   }
 
   /** Provide the platform specific adapter to use for Javalin, Helidon etc. */
@@ -38,6 +35,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+
 
     if (isOpenApiAvailable()) {
       readOpenApiDefinition(round);

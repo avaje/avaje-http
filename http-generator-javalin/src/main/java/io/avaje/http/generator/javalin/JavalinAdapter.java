@@ -12,17 +12,12 @@ import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.CustomWebMethod;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
+import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.UType;
 
 class JavalinAdapter implements PlatformAdapter {
 
   static final String JAVALIN3_CONTEXT = "io.javalin.http.Context";
-
-  private final boolean useJsonB;
-
-  JavalinAdapter(boolean useJsonB) {
-    this.useJsonB = useJsonB;
-  }
 
   @Override
   public boolean isContextType(String rawType) {
@@ -48,7 +43,7 @@ class JavalinAdapter implements PlatformAdapter {
     } else if ("byte[]".equals(type.full())) {
       return "ctx.bodyAsBytes()";
     } else {
-      if (useJsonB) {
+      if (ProcessingContext.useJsonb()) {
         return type.shortName() + "JsonType.fromJson(ctx.bodyInputStream())";
       }
       return "ctx.<" + type.mainType() + ">bodyStreamAsClass(" + type.mainType() + ".class)";
@@ -89,30 +84,55 @@ class JavalinAdapter implements PlatformAdapter {
 
   @Override
   public void writeReadMapParameter(Append writer, ParamType paramType) {
-    if (paramType != ParamType.QUERYPARAM) {
-      throw new UnsupportedOperationException(
-          "Only Query Params have Map<String, List<String>> supported in Javalin");
+
+    switch (paramType) {
+      case QUERYPARAM:
+        writer.append("ctx.queryParamMap()");
+        break;
+      case FORM:
+      case FORMPARAM:
+        writer.append("ctx.formParamMap()");
+        break;
+      default:
+        throw new UnsupportedOperationException(
+            "Only Query/Form Params have Map<String, List<String>> supported in Javalin");
     }
-    writer.append("ctx.queryParamMap()");
   }
 
   @Override
   public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
-    if (paramType != ParamType.QUERYPARAM) {
-      throw new UnsupportedOperationException(
-          "Only MultiValue Query Params are supported in Javalin");
+    switch (paramType) {
+      case QUERYPARAM:
+        writer.append("ctx.queryParams(\"%s\")", paramName);
+        break;
+      case FORMPARAM:
+        writer.append("ctx.formParams(\"%s\")", paramName);
+        break;
+      default:
+        throw new UnsupportedOperationException(
+            "Only MultiValue Form/Query Params are supported in Javalin");
     }
-    writer.append("ctx.queryParams(\"%s\")", paramName);
   }
 
   @Override
   public void writeReadCollectionParameter(
       Append writer, ParamType paramType, String paramName, List<String> paramDefault) {
-    if (paramType != ParamType.QUERYPARAM) {
-      throw new UnsupportedOperationException(
-          "Only MultiValue Query Params are supported in Javalin");
+
+    switch (paramType) {
+      case QUERYPARAM:
+        writer.append(
+            "withDefault(ctx.queryParams(\"%s\"), java.util.List.of(\"%s\"))",
+            paramName, String.join(",", paramDefault));
+        break;
+      case FORMPARAM:
+        writer.append(
+            "withDefault(ctx.formParams(\"%s\"), java.util.List.of(\"%s\"))",
+            paramName, String.join(",", paramDefault));
+        break;
+      default:
+        throw new UnsupportedOperationException(
+            "Only MultiValue Form/Query Params are supported in Javalin");
     }
-    writer.append("withDefault(ctx.queryParams(\"%s\"), java.util.List.of(\"%s\"))", paramName, String.join(",", paramDefault));
   }
 
   @Override

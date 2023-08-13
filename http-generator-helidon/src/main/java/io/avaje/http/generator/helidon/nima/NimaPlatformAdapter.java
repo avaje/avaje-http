@@ -1,14 +1,9 @@
 package io.avaje.http.generator.helidon.nima;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
-import javax.lang.model.element.Element;
 
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.ControllerReader;
-import io.avaje.http.generator.core.CustomWebMethod;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
 import io.avaje.http.generator.core.UType;
@@ -21,7 +16,9 @@ class NimaPlatformAdapter implements PlatformAdapter {
 
   @Override
   public boolean isContextType(String rawType) {
-    return NIMA_REQ.equals(rawType) || NIMA_RES.equals(rawType) || HELIDON_FORMPARAMS.equals(rawType);
+    return NIMA_REQ.equals(rawType)
+        || NIMA_RES.equals(rawType)
+        || HELIDON_FORMPARAMS.equals(rawType);
   }
 
   @Override
@@ -70,101 +67,94 @@ class NimaPlatformAdapter implements PlatformAdapter {
   @Override
   public void writeReadParameter(Append writer, ParamType paramType, String paramName) {
     switch (paramType) {
-      case PATHPARAM:
-        writer.append("pathParams.first(\"%s\").get()", paramName);
-        break;
-      case QUERYPARAM:
-        writer.append("req.query().first(\"%s\").orElse(null)", paramName);
-        break;
-      case FORMPARAM:
-        writer.append("formParams.first(\"%s\").orElse(null)", paramName);
-        break;
-      case HEADER:
-        writer.append("req.headers().value(Header.create(\"%s\")).orElse(null)", paramName);
-        break;
-      case COOKIE:
-        writer.append("req.headers().cookies().first(\"%s\").orElse(null)", paramName);
-        break;
-      case BODY, BEANPARAM, FORM:
-      default:
-        writer.append("null // TODO req.%s().param(\"%s\")", paramType.type(), paramName);
+      case PATHPARAM -> writer.append("pathParams.first(\"%s\").get()", paramName);
+
+      case QUERYPARAM -> writer.append("req.query().first(\"%s\").orElse(null)", paramName);
+
+      case FORMPARAM -> writer.append("formParams.first(\"%s\").orElse(null)", paramName);
+
+      case HEADER -> writer.append(
+          "req.headers().value(Header.create(\"%s\")).orElse(null)", paramName);
+
+      case COOKIE -> writer.append("req.headers().cookies().first(\"%s\").orElse(null)", paramName);
+
+      default -> writer.append("null // TODO req.%s().param(\"%s\")", paramType.type(), paramName);
     }
   }
 
   @Override
-  public void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault) {
+  public void writeReadParameter(
+      Append writer, ParamType paramType, String paramName, String paramDefault) {
     switch (paramType) {
-      case PATHPARAM:
-        writer.append("pathParams.first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
-        break;
-      case QUERYPARAM:
-        writer.append("req.query().first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
-        break;
-      case FORMPARAM:
-        writer.append("formParams.first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
-        break;
-      case HEADER:
-        writer.append("req.headers().value(Http.Header.create(\"%s\").orElse(\"%s\")", paramName, paramDefault);
-        break;
-      case COOKIE:
-        writer.append("req.headers().cookies().first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
-        break;
-      default:
-        writer.append("null // TODO req.%s().param(\"%s\")", paramType.type(), paramName);
+      case PATHPARAM -> writer.append(
+          "pathParams.first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+
+      case QUERYPARAM -> writer.append(
+          "req.query().first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+
+      case FORMPARAM -> writer.append(
+          "formParams.first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+
+      case HEADER -> writer.append(
+          "req.headers().value(Http.Header.create(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+
+      case COOKIE -> writer.append(
+          "req.headers().cookies().first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+
+      default -> writer.append("null // TODO req.%s().param(\"%s\")", paramType.type(), paramName);
     }
   }
 
   @Override
   public void writeReadMapParameter(Append writer, ParamType paramType) {
     switch (paramType) {
-      case QUERYPARAM:
-        writer.append("req.query().toMap()");
-        break;
-      case COOKIE:
-        writer.append("req.headers().cookies().toMap()");
-        break;
-      default:
-        throw new UnsupportedOperationException("Unsupported Map Parameter");
+      case QUERYPARAM -> writer.append("req.query().toMap()");
+      case FORM, FORMPARAM -> writer.append("formParams.toMap()");
+      case COOKIE -> writer.append("req.headers().cookies().toMap()");
+      default -> throw new UnsupportedOperationException(
+          "Only Form/Query/Cookie Multi-Value Maps are supported");
     }
   }
 
   @Override
   public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
     switch (paramType) {
-      case QUERYPARAM:
-        writer.append("req.query().all(\"%s\")", paramName);
-        break;
-      case HEADER:
-        writer.append("req.headers().all(\"%s\", () -> java.util.List.of())", paramName);
-        break;
-      case COOKIE:
-        writer.append("req.headers().cookies().all(\"%s\", () -> java.util.List.of())", paramName);
-        break;
-      default:
-        throw new UnsupportedOperationException("Unsupported MultiValue Parameter");
+      case QUERYPARAM -> writer.append("req.query().all(\"%s\")", paramName);
+      case FORMPARAM -> writer.append("formParams.all(\"%s\")", paramName);
+
+      case HEADER -> writer.append(
+          "req.headers().all(\"%s\", () -> java.util.List.of())", paramName);
+
+      case COOKIE -> writer.append(
+          "req.headers().cookies().all(\"%s\", () -> java.util.List.of())", paramName);
+
+      default -> throw new UnsupportedOperationException(
+          "Only (Form/Query/Header/Cookie) List Parameters are supported for Helidon");
     }
   }
 
   @Override
-  public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName, List<String> paramDefault) {
+  public void writeReadCollectionParameter(
+      Append writer, ParamType paramType, String paramName, List<String> paramDefault) {
     switch (paramType) {
-      case QUERYPARAM:
-        writer.append(
-            "req.query().all(\"%s\", () -> java.util.List.of(\"%s\"))",
-            paramName, String.join(",", paramDefault));
-        break;
-      case HEADER:
-        writer.append(
-            "req.headers().all(\"%s\", () -> java.util.List.of(\"%s\"))",
-            paramName, String.join(",", paramDefault));
-        break;
-      case COOKIE:
-        writer.append(
-            "req.headers().cookies().all(\"%s\", () -> java.util.List.of(\"%s\"))",
-            paramName, String.join(",", paramDefault));
-        break;
-      default:
-        throw new UnsupportedOperationException("Unsupported MultiValue Parameter");
+      case QUERYPARAM -> writer.append(
+          "req.query().all(\"%s\", () -> java.util.List.of(\"%s\"))",
+          paramName, String.join(",", paramDefault));
+
+      case FORMPARAM -> writer.append(
+          "formParams.all(\"%s\", () -> java.util.List.of(\"%s\"))",
+          paramName, String.join(",", paramDefault));
+
+      case HEADER -> writer.append(
+          "req.headers().all(\"%s\", () -> java.util.List.of(\"%s\"))",
+          paramName, String.join(",", paramDefault));
+
+      case COOKIE -> writer.append(
+          "req.headers().cookies().all(\"%s\", () -> java.util.List.of(\"%s\"))",
+          paramName, String.join(",", paramDefault));
+
+      default -> throw new UnsupportedOperationException(
+          "Only (Form/Query/Header/Cookie) List Parameters are supported for Helidon");
     }
   }
 

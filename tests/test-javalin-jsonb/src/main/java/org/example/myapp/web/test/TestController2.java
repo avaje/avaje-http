@@ -3,6 +3,7 @@ package org.example.myapp.web.test;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.example.myapp.web.ServerType;
 
@@ -94,5 +95,17 @@ public class TestController2 {
 
   @Filter
   void filter(Context ctx) {
+  }
+
+  @Form
+  @Get("/formMulti")
+  String formMulti(Set<String> strings) {
+    return strings.toString();
+  }
+
+  @Form
+  @Get("/formMap")
+  String formMap(Map<String, List<String>> strings) {
+    return strings.toString();
   }
 }
