@@ -8,8 +8,8 @@ import java.util.Set;
 import org.example.myapp.web.ServerType;
 
 import io.avaje.http.api.*;
-import io.avaje.http.javalin.After;
-import io.avaje.http.javalin.Before;
+import io.avaje.http.api.javalin.After;
+import io.avaje.http.api.javalin.Before;
 import io.javalin.http.Context;
 
 @Path("test/")

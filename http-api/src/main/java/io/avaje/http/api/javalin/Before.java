@@ -1,4 +1,4 @@
-package io.avaje.http.javalin;
+package io.avaje.http.api.javalin;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
