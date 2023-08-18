@@ -99,7 +99,7 @@ get all the WebRoutes and register them with Javalin using:
 ```java
 List<Plugin> routes = BeanScope.builder().build().list(Plugin.class);
 
-Javalin.create(cfg -> routes.forEach(cfg.plugins::register));
+Javalin.create(cfg -> routes.forEach(cfg.plugins::register)).start();
 ```
 
 ### Usage with Helidon Nima
