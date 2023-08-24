@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
         @Info(
             title = "Example service showing off the Path extension method of controller",
             description = ""))
-@OpenAPIResponse(responseCode = "403", description = "Not Authorized")
+@OpenAPIResponse(responseCode = 403, description = "Not Authorized")
 public interface HealthController {
   /**
    * Standard Get
@@ -29,6 +29,6 @@ public interface HealthController {
   @Get("/health")
   @Produces(MediaType.TEXT_PLAIN)
   @Tag(name = "tag1", description = "it's somethin")
-  @OpenAPIResponse(responseCode = "500", type = ErrorResponse.class)
+  @OpenAPIResponse(responseCode = 500, type = ErrorResponse.class)
   String health();
 }
