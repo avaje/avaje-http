@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -55,11 +56,14 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private long startAsyncNanos;
   private String label;
   private Map<String, Object> customAttributes;
+  protected Function<HttpException, RuntimeException> errorMapper;
+  protected boolean isRetry;
 
   DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
     this.context = context;
     this.requestTimeout = requestTimeout;
     this.url = context.url();
+    this.errorMapper = context.errorMapper();
   }
 
   @Override
@@ -334,6 +338,12 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return this;
   }
 
+  @Override
+  public HttpClientRequest errorMapper(Function<HttpException, RuntimeException> errorMapper) {
+    this.errorMapper = errorMapper;
+    return this;
+  }
+
   private HttpRequest.BodyPublisher body() {
     if (body != null) {
       return body;
@@ -545,13 +555,20 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return response;
   }
 
-  /**
-   * Prepare and send the request but not performing afterResponse() handling.
-   */
+  /** Prepare and send the request but not performing afterResponse() handling. */
   private <T> HttpResponse<T> sendWith(HttpResponse.BodyHandler<T> responseHandler) {
     context.beforeRequest(this);
     addHeaders();
-    final HttpResponse<T> response = performSend(responseHandler);
+    final HttpResponse<T> response;
+    if (errorMapper != null) {
+      try {
+        response = performSend(responseHandler);
+      } catch (final HttpException e) {
+        throw errorMapper.apply(e);
+      }
+    } else {
+      response = performSend(responseHandler);
+    }
     httpResponse = response;
     return response;
   }
@@ -565,12 +582,26 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     }
   }
 
-  protected <T> CompletableFuture<HttpResponse<T>> performSendAsync(boolean loggable, HttpResponse.BodyHandler<T> responseHandler) {
+  protected <T> CompletableFuture<HttpResponse<T>> performSendAsync(
+      boolean loggable, HttpResponse.BodyHandler<T> responseHandler) {
     loggableResponseBody = loggable;
     context.beforeRequest(this);
     addHeaders();
     startAsyncNanos = System.nanoTime();
-    return context.sendAsync(httpRequest, responseHandler);
+    var resultFuture = context.sendAsync(httpRequest, responseHandler);
+
+    if (errorMapper != null && !isRetry) {
+        resultFuture =
+            resultFuture.handle(
+                (r, e) -> {
+                  if (e != null && e.getCause() instanceof HttpException) {
+                    throw errorMapper.apply((HttpException) e.getCause());
+                  }
+                  return r;
+                });
+      }
+
+    return resultFuture;
   }
 
   protected HttpResponse<Void> asyncVoid(HttpResponse<byte[]> response) {

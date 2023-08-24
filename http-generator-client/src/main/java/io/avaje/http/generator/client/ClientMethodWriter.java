@@ -4,6 +4,8 @@ import static io.avaje.http.generator.core.ProcessingContext.*;
 import io.avaje.http.generator.core.*;
 
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 
 import java.util.List;
 import java.util.Optional;
@@ -104,6 +106,7 @@ class ClientMethodWriter {
     writeFormParams(pathSegments);
     timeout.ifPresent(this::writeTimeout);
     writeBody();
+    writeErrorMapper();
     writeEnd();
   }
 
@@ -275,6 +278,28 @@ private void writeEnd() {
         return;
       }
     }
+  }
+
+  private void writeErrorMapper() {
+    method.throwsList().stream()
+        .map(ProcessingContext::asElement)
+        .filter(
+            e ->
+                isAssignable2Interface(
+                    e.getQualifiedName().toString(), "java.lang.RuntimeException"))
+        .filter(
+            e ->
+                ElementFilter.constructorsIn(e.getEnclosedElements()).stream()
+                    .filter(c -> c.getParameters().size() == 1)
+                    .map(c -> c.getParameters().get(0).asType().toString())
+                    .map(Util::trimAnnotations)
+                    .anyMatch("io.avaje.http.client.HttpException"::equals))
+        .findFirst()
+        .ifPresent(
+            exception ->
+                writer
+                    .append("      .errorMapper(%s::new)", exception.getQualifiedName().toString())
+                    .eol());
   }
 
   /**

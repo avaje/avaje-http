@@ -10,6 +10,7 @@ import java.net.ProxySelector;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.concurrent.Executor;
+import java.util.function.Function;
 
 final class DHttpClientBuilder extends DBaseBuilder implements HttpClient.Builder, HttpClient.Builder.State {
 
@@ -49,6 +50,12 @@ final class DHttpClientBuilder extends DBaseBuilder implements HttpClient.Builde
   @Override
   public HttpClient.Builder retryHandler(RetryHandler retryHandler) {
     this.retryHandler = retryHandler;
+    return this;
+  }
+
+  @Override
+  public HttpClient.Builder globalErrorMapper(Function<HttpException, RuntimeException> handler) {
+    this.errorHandler = handler;
     return this;
   }
 

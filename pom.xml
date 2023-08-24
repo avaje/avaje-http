@@ -21,7 +21,7 @@
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
     <swagger.version>2.2.8</swagger.version>
     <jackson.version>2.14.2</jackson.version>
-    <avaje.prisms.version>1.10</avaje.prisms.version>
+    <avaje.prisms.version>1.12</avaje.prisms.version>
     <module-info.shade>${project.build.directory}${file.separator}module-info.shade</module-info.shade>
   </properties>
 
@@ -32,7 +32,6 @@
       <version>1.1</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <modules>
