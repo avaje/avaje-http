@@ -2,6 +2,7 @@ package io.avaje.http.client;
 
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 /**
  * HTTP Exception with support for converting the error response body into a bean.
@@ -149,6 +150,20 @@ public class HttpException extends RuntimeException {
    */
   public HttpResponse<?> httpResponse() {
     return httpResponse;
+  }
+
+  /**
+   * Return the response Content-Type header.
+   */
+  public Optional<String> contentType() {
+    return httpResponse.headers().firstValue("Content-Type");
+  }
+
+  /**
+   * Return true if the Content-Type is text/plain.
+   */
+  public boolean isPlainText() {
+    return "text/plain".equals(contentType().orElse(null));
   }
 
 }

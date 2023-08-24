@@ -15,6 +15,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
@@ -200,7 +202,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   }
 
   @SuppressWarnings("unchecked")
-  public BodyContent readErrorContent(boolean responseAsBytes, HttpResponse<?> httpResponse) {
+  BodyContent readErrorContent(boolean responseAsBytes, HttpResponse<?> httpResponse) {
     if (responseAsBytes) {
       return readContent((HttpResponse<byte[]>) httpResponse);
     }
@@ -208,6 +210,13 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     final Object body = httpResponse.body();
     if (body instanceof String) {
       return new BodyContent(contentType, ((String) body).getBytes(StandardCharsets.UTF_8));
+    }
+    if (body instanceof Stream) {
+      var sb = new StringBuilder(50);
+      for (Object line : ((Stream<Object>) body).collect(Collectors.toList())) {
+        sb.append(line);
+      }
+      return new BodyContent(contentType, sb.toString().getBytes(StandardCharsets.UTF_8));
     }
     final String type = (body == null) ? "null" : body.getClass().toString();
     throw new IllegalStateException("Unable to translate response body to bytes? Maybe use HttpResponse directly instead?  Response body type: " + type);
