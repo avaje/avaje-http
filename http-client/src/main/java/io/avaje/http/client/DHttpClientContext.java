@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
+import java.util.function.Function;
 
 final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
@@ -39,13 +40,24 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   private final LongAdder metricResBytes = new LongAdder();
   private final LongAdder metricResMicros = new LongAdder();
   private final LongAccumulator metricResMaxMicros = new LongAccumulator(Math::max, 0);
+  private final Function<HttpException, RuntimeException> errorHandler;
 
-  DHttpClientContext(java.net.http.HttpClient httpClient, String baseUrl, Duration requestTimeout, BodyAdapter bodyAdapter, RetryHandler retryHandler, RequestListener requestListener, AuthTokenProvider authTokenProvider, RequestIntercept intercept) {
+  DHttpClientContext(
+      java.net.http.HttpClient httpClient,
+      String baseUrl,
+      Duration requestTimeout,
+      BodyAdapter bodyAdapter,
+      RetryHandler retryHandler,
+      Function<HttpException, RuntimeException> errorHandler,
+      RequestListener requestListener,
+      AuthTokenProvider authTokenProvider,
+      RequestIntercept intercept) {
     this.httpClient = httpClient;
     this.baseUrl = baseUrl;
     this.requestTimeout = requestTimeout;
     this.bodyAdapter = bodyAdapter;
     this.retryHandler = retryHandler;
+    this.errorHandler = errorHandler;
     this.requestListener = requestListener;
     this.authTokenProvider = authTokenProvider;
     this.withAuthToken = authTokenProvider != null;
@@ -53,7 +65,6 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public <T> T create(Class<T> clientInterface) {
     if (!clientInterface.isInterface()) {
       throw new IllegalArgumentException("API declarations must be interfaces.");
@@ -107,6 +118,10 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   @Override
   public UrlBuilder url() {
     return new UrlBuilder(baseUrl);
+  }
+
+  public Function<HttpException, RuntimeException> errorMapper() {
+    return errorHandler;
   }
 
   @Override
@@ -184,19 +199,6 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     }
   }
 
-  @Override
-  public void checkResponse(HttpResponse<?> response) {
-    if (response.statusCode() >= 300) {
-      throw new HttpException(response, this);
-    }
-  }
-
-  void checkMaybeThrow(HttpResponse<byte[]> response) {
-    if (response.statusCode() >= 300) {
-      throw new HttpException(this, response);
-    }
-  }
-
   @SuppressWarnings("unchecked")
   public BodyContent readErrorContent(boolean responseAsBytes, HttpResponse<?> httpResponse) {
     if (responseAsBytes) {
@@ -259,16 +261,28 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   <T> HttpResponse<T> send(HttpRequest.Builder requestBuilder, HttpResponse.BodyHandler<T> bodyHandler) {
     try {
       return httpClient.send(requestBuilder.build(), bodyHandler);
-    } catch (final IOException e) {
-      throw new HttpException(499, e);
     } catch (final InterruptedException e) {
       Thread.currentThread().interrupt();
+      throw new HttpException(499, e);
+    } catch (final Exception e) {
       throw new HttpException(499, e);
     }
   }
 
-  <T> CompletableFuture<HttpResponse<T>> sendAsync(HttpRequest.Builder requestBuilder, HttpResponse.BodyHandler<T> bodyHandler) {
-    return httpClient.sendAsync(requestBuilder.build(), bodyHandler);
+  <T> CompletableFuture<HttpResponse<T>> sendAsync(
+      HttpRequest.Builder requestBuilder, HttpResponse.BodyHandler<T> bodyHandler) {
+    return httpClient
+        .sendAsync(requestBuilder.build(), bodyHandler)
+        .handle(
+            (r, e) -> {
+              if (e != null) {
+                if (e.getCause() instanceof InterruptedException) {
+                  Thread.currentThread().interrupt();
+                }
+                throw new HttpException(499, e.getCause());
+              }
+              return r;
+            });
   }
 
   <T> BodyContent write(T bean, Class<?> type, String contentType) {

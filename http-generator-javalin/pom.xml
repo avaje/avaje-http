@@ -23,6 +23,7 @@
       <version>${avaje.prisms.version}</version>
       <scope>provided</scope>
     </dependency>
+    
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
@@ -30,27 +31,5 @@
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>
-
   </dependencies>
-
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-  		  <annotationProcessorPaths>
-            <path>
-              <groupId>io.avaje</groupId>
-              <artifactId>avaje-prisms</artifactId>
-              <version>${avaje.prisms.version}</version>
-            </path>
-          </annotationProcessorPaths>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-
 </project>

@@ -54,6 +54,7 @@ public class MethodReader {
   private final boolean instrumentContext;
   private final boolean hasThrows;
   private String exceptionShortName;
+  private final List<? extends TypeMirror> throwsList;
 
   MethodReader(ControllerReader bean, ExecutableElement element, ExecutableType actualExecutable) {
     this.bean = bean;
@@ -74,7 +75,8 @@ public class MethodReader {
     this.superMethods =
         superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
     superMethods.forEach(m -> methodRoles.addAll(Util.findRoles(m)));
-    this.hasThrows = !element.getThrownTypes().isEmpty();
+    this.throwsList = element.getThrownTypes();
+    this.hasThrows = !throwsList.isEmpty();
     this.securityRequirements = readSecurityRequirements();
     this.apiResponses = buildApiResponses();
     this.javadoc = buildJavadoc(element);
@@ -461,5 +463,9 @@ public class MethodReader {
 
   public String exceptionShortName() {
     return exceptionShortName;
+  }
+
+  public List<? extends TypeMirror> throwsList() {
+    return throwsList;
   }
 }

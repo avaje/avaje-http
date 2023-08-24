@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -388,6 +389,8 @@ public interface HttpClientRequest {
    */
   HttpClientRequest body(HttpRequest.BodyPublisher body);
 
+  HttpClientRequest errorMapper(Function<HttpException, RuntimeException> errorMapper);
+
   /**
    * Execute the request as a GET.
    */
@@ -429,4 +432,5 @@ public interface HttpClientRequest {
    * This is useful for use in {@link RequestIntercept#afterResponse(HttpResponse, HttpClientRequest)}
    */
   long responseTimeMicros();
+
 }

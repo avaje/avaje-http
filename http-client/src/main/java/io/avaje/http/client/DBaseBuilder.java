@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
+import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,6 +28,7 @@ abstract class DBaseBuilder {
   Duration requestTimeout = Duration.ofSeconds(20);
   BodyAdapter bodyAdapter;
   RetryHandler retryHandler;
+  Function<HttpException, RuntimeException> errorHandler;
   AuthTokenProvider authTokenProvider;
 
   CookieHandler cookieHandler = new CookieManager();
@@ -167,7 +169,15 @@ abstract class DBaseBuilder {
     if (bodyAdapter == null) {
       bodyAdapter = defaultBodyAdapter();
     }
-    return new DHttpClientContext(client, baseUrl, requestTimeout, bodyAdapter, retryHandler, buildListener(), authTokenProvider, buildIntercept());
+    return new DHttpClientContext(
+        client,
+        baseUrl,
+        requestTimeout,
+        bodyAdapter,
+        retryHandler,
+        errorHandler,
+        buildListener(),
+        authTokenProvider,
+        buildIntercept());
   }
-
 }

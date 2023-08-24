@@ -9,4 +9,7 @@ public interface ApiClient {
 
   @Get("/inputstream")
   String apiCall(@Header("Accept") String accept);
+
+  @Get("/mapped")
+  String mapped(@Header("Accept") String accept) throws MappedException;
 }

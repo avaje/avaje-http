@@ -6,6 +6,7 @@ import java.net.ProxySelector;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.function.Function;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
@@ -118,6 +119,13 @@ public interface HttpClient {
      * Note that the base url can be replaced via {@link HttpClientRequest#url(String)}.
      */
     Builder baseUrl(String baseUrl);
+
+    /**
+     * Set the base URL to use for requests created from the context.
+     * <p>
+     * Note that the base url can be replaced via {@link HttpClientRequest#url(String)}.
+     */
+    Builder globalErrorMapper(Function<HttpException, RuntimeException> handler);
 
     /**
      * Set the connection timeout to use.

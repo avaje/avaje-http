@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -55,11 +56,14 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private long startAsyncNanos;
   private String label;
   private Map<String, Object> customAttributes;
+  protected Function<HttpException, RuntimeException> errorMapper;
+  protected boolean isRetry;
 
   DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
     this.context = context;
     this.requestTimeout = requestTimeout;
     this.url = context.url();
+    this.errorMapper = context.errorMapper();
   }
 
   @Override
@@ -334,6 +338,12 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return this;
   }
 
+  @Override
+  public HttpClientRequest errorMapper(Function<HttpException, RuntimeException> errorMapper) {
+    this.errorMapper = errorMapper;
+    return this;
+  }
+
   private HttpRequest.BodyPublisher body() {
     if (body != null) {
       return body;
@@ -446,11 +456,27 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return this;
   }
 
+  private RuntimeException mapException(HttpException e) {
+    return errorMapper == null ? e : errorMapper.apply(e);
+  }
+
+  private void checkResponse(HttpResponse<?> response) {
+    if (response.statusCode() >= 300) {
+      throw mapException(new HttpException(response, context));
+    }
+  }
+
+  private void checkMaybeThrow(HttpResponse<byte[]> response) {
+    if (response.statusCode() >= 300) {
+      throw mapException(new HttpException(context, response));
+    }
+  }
+
   private void readResponseContent() {
     final HttpResponse<byte[]> response = sendWith(HttpResponse.BodyHandlers.ofByteArray());
     encodedResponseBody = context.readContent(response);
     context.afterResponse(this);
-    context.checkMaybeThrow(response);
+    checkMaybeThrow(response);
   }
 
   @Override
@@ -532,9 +558,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private <T> Stream<T> stream(BodyReader<T> bodyReader) {
     final HttpResponse<Stream<String>> res = handler(HttpResponse.BodyHandlers.ofLines());
     this.httpResponse = res;
-    if (res.statusCode() >= 300) {
-      throw new HttpException(res, context);
-    }
+    checkResponse(res);
     return res.body().map(bodyReader::readBody);
   }
 
@@ -545,15 +569,17 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return response;
   }
 
-  /**
-   * Prepare and send the request but not performing afterResponse() handling.
-   */
+  /** Prepare and send the request but not performing afterResponse() handling. */
   private <T> HttpResponse<T> sendWith(HttpResponse.BodyHandler<T> responseHandler) {
     context.beforeRequest(this);
     addHeaders();
-    final HttpResponse<T> response = performSend(responseHandler);
-    httpResponse = response;
-    return response;
+    try {
+      HttpResponse<T> res = performSend(responseHandler);
+      httpResponse = res;
+      return res;
+    } catch (final HttpException e) {
+      throw errorMapper == null ? e: errorMapper.apply(e);
+    }
   }
 
   protected <T> HttpResponse<T> performSend(HttpResponse.BodyHandler<T> responseHandler) {
@@ -565,12 +591,26 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     }
   }
 
-  protected <T> CompletableFuture<HttpResponse<T>> performSendAsync(boolean loggable, HttpResponse.BodyHandler<T> responseHandler) {
+  protected <T> CompletableFuture<HttpResponse<T>> performSendAsync(
+      boolean loggable, HttpResponse.BodyHandler<T> responseHandler) {
     loggableResponseBody = loggable;
     context.beforeRequest(this);
     addHeaders();
     startAsyncNanos = System.nanoTime();
-    return context.sendAsync(httpRequest, responseHandler);
+    var resultFuture = context.sendAsync(httpRequest, responseHandler);
+
+    if (errorMapper != null && !isRetry) {
+        resultFuture =
+            resultFuture.handle(
+                (r, e) -> {
+                  if (e != null && e.getCause() instanceof HttpException) {
+                    throw errorMapper.apply((HttpException) e.getCause());
+                  }
+                  return r;
+                });
+      }
+
+    return resultFuture;
   }
 
   protected HttpResponse<Void> asyncVoid(HttpResponse<byte[]> response) {
@@ -602,9 +642,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     context.afterResponse(this);
-    if (response.statusCode() >= 300) {
-      throw new HttpException(response, context);
-    }
+    checkResponse(response);
     final BodyReader<E> bodyReader = context.beanReader(type);
     return new HttpWrapperResponse<>(response.body().map(bodyReader::readBody), httpResponse);
   }
@@ -613,9 +651,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     context.afterResponse(this);
-    if (response.statusCode() >= 300) {
-      throw new HttpException(response, context);
-    }
+    checkResponse(response);
     final BodyReader<E> bodyReader = context.beanReader(type);
     return new HttpWrapperResponse<>(response.body().map(bodyReader::readBody), httpResponse);
   }
@@ -625,7 +661,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     httpResponse = response;
     encodedResponseBody = context.readContent(response);
     context.afterResponse(this);
-    context.checkMaybeThrow(response);
+    checkMaybeThrow(response);
   }
 
   protected <E> HttpResponse<E> afterAsync(HttpResponse<E> response) {
@@ -660,7 +696,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   public HttpResponse<String> asPlainString() {
     loggableResponseBody = true;
     final HttpResponse<String> hres = addMetrics(handler(HttpResponse.BodyHandlers.ofString()));
-    context.checkResponse(hres);
+    checkResponse(hres);
     return hres;
   }
 
