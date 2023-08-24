@@ -121,11 +121,16 @@ public interface HttpClient {
     Builder baseUrl(String baseUrl);
 
     /**
-     * Set the base URL to use for requests created from the context.
-     * <p>
-     * Note that the base url can be replaced via {@link HttpClientRequest#url(String)}.
+     * Set the default mapper to be used to transform {@link HttpException} into a different kind of
+     * exception. Individual requests can override with their own mapper.
+     *
+     * <p>When set, all {@link HttpException} that are thrown by this client will be caught and
+     * rethrown with the given function by default.
+     *
+     * @param errorMapper The function to map the httpException
+     * @return The request being built
      */
-    Builder globalErrorMapper(Function<HttpException, RuntimeException> handler);
+    Builder globalErrorMapper(Function<HttpException, RuntimeException> errorMapper);
 
     /**
      * Set the connection timeout to use.

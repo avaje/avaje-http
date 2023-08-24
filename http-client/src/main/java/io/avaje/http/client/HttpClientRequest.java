@@ -389,6 +389,15 @@ public interface HttpClientRequest {
    */
   HttpClientRequest body(HttpRequest.BodyPublisher body);
 
+  /**
+   * Set the mapper used to transform {@link HttpException} into a different kind of exception.
+   *
+   * <p>When set, all {@link HttpException} that are thrown by this request will be caught and
+   * transformed into more specific exception with the given function by default.
+   *
+   * @param errorMapper function to map the httpException
+   * @return The request being built
+   */
   HttpClientRequest errorMapper(Function<HttpException, RuntimeException> errorMapper);
 
   /**
