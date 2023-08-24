@@ -80,8 +80,9 @@ final class DHttpClientRequestWithRetry extends DHttpClientRequest {
         .handle(
             (res, ex) -> {
               if (ex != null && ex.getCause() instanceof HttpException) {
-                if (!retryHandler.isExceptionRetry(retryCount, (HttpException) ex.getCause()))
+                if (!retryHandler.isExceptionRetry(retryCount, (HttpException) ex.getCause())) {
                   return CompletableFuture.<HttpResponse<T>>failedFuture(ex.getCause());
+                }
                 retryCount++;
                 return asyncwithRetry(loggable, responseHandler);
               }
