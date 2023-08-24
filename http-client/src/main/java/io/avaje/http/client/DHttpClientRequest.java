@@ -542,9 +542,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private <T> Stream<T> stream(BodyReader<T> bodyReader) {
     final HttpResponse<Stream<String>> res = handler(HttpResponse.BodyHandlers.ofLines());
     this.httpResponse = res;
-    if (res.statusCode() >= 300) {
-      throw new HttpException(res, context);
-    }
+    context.checkResponse(res);
     return res.body().map(bodyReader::readBody);
   }
 
@@ -559,18 +557,13 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private <T> HttpResponse<T> sendWith(HttpResponse.BodyHandler<T> responseHandler) {
     context.beforeRequest(this);
     addHeaders();
-    final HttpResponse<T> response;
-    if (errorMapper != null) {
-      try {
-        response = performSend(responseHandler);
-      } catch (final HttpException e) {
-        throw errorMapper.apply(e);
-      }
-    } else {
-      response = performSend(responseHandler);
+    try {
+      HttpResponse<T> res = performSend(responseHandler);
+      httpResponse = res;
+      return res;
+    } catch (final HttpException e) {
+      throw errorMapper == null ? e: errorMapper.apply(e);
     }
-    httpResponse = response;
-    return response;
   }
 
   protected <T> HttpResponse<T> performSend(HttpResponse.BodyHandler<T> responseHandler) {
@@ -633,9 +626,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     context.afterResponse(this);
-    if (response.statusCode() >= 300) {
-      throw new HttpException(response, context);
-    }
+    context.checkResponse(response);
     final BodyReader<E> bodyReader = context.beanReader(type);
     return new HttpWrapperResponse<>(response.body().map(bodyReader::readBody), httpResponse);
   }
@@ -644,9 +635,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     context.afterResponse(this);
-    if (response.statusCode() >= 300) {
-      throw new HttpException(response, context);
-    }
+    context.checkResponse(response);
     final BodyReader<E> bodyReader = context.beanReader(type);
     return new HttpWrapperResponse<>(response.body().map(bodyReader::readBody), httpResponse);
   }
