@@ -286,6 +286,12 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(metrics.errorCount()).isEqualTo(1);
     assertThat(metrics.responseBytes()).isEqualTo(0);
     assertThat(metrics.totalMicros()).isGreaterThan(0);
+
+    assertThat(httpException.bodyAsString()).isEqualTo("Not Found");
+    assertThat(httpException.isPlainText()).isTrue();
+    assertThat(httpException.contentType())
+      .isPresent()
+      .get().isEqualTo("text/plain");
   }
 
   @Test
@@ -799,6 +805,20 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void get_bean_404() {
+    try {
+      clientContext.request()
+        .path("does-not-exist")
+        .GET()
+        .bean(HelloDto.class);
+    } catch (HttpException e) {
+      assertThat(e.statusCode()).isEqualTo(404);
+      assertThat(e.contentType()).isPresent().get().isEqualTo("text/plain");
+      assertThat(e.bodyAsString()).isEqualTo("Not Found");
+    }
+  }
+
+  @Test
   void get_withPathParamAndQueryParam_returningBean() {
 
     final HelloDto dto = clientContext.request()
@@ -1242,6 +1262,12 @@ class HelloControllerTest extends BaseWebTest {
       final HttpResponse<?> httpResponse = e.httpResponse();
       assertNotNull(httpResponse);
       assertEquals(422, httpResponse.statusCode());
+
+      assertThat(e.contentType())
+        .isPresent()
+        .get().isEqualTo("application/json");
+
+      assertThat(e.isPlainText()).isFalse();
 
       final ErrorResponse errorResponse = e.bean(ErrorResponse.class);
       assertThat(errorResponse.get("url")).isEqualTo("must be a valid URL");
