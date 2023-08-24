@@ -38,10 +38,4 @@ interface SpiHttpClient {
    */
   byte[] decodeContent(String encoding, byte[] content);
 
-  /**
-   * Check the response status code and throw HttpException if the status
-   * code is in the error range.
-   */
-  void checkResponse(HttpResponse<?> response);
-
 }

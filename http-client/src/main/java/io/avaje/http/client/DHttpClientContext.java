@@ -199,19 +199,6 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     }
   }
 
-  @Override
-  public void checkResponse(HttpResponse<?> response) {
-    if (response.statusCode() >= 300) {
-      throw new HttpException(response, this);
-    }
-  }
-
-  void checkMaybeThrow(HttpResponse<byte[]> response) {
-    if (response.statusCode() >= 300) {
-      throw new HttpException(this, response);
-    }
-  }
-
   @SuppressWarnings("unchecked")
   public BodyContent readErrorContent(boolean responseAsBytes, HttpResponse<?> httpResponse) {
     if (responseAsBytes) {

@@ -456,11 +456,27 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return this;
   }
 
+  private RuntimeException mapException(HttpException e) {
+    return errorMapper == null ? e : errorMapper.apply(e);
+  }
+
+  private void checkResponse(HttpResponse<?> response) {
+    if (response.statusCode() >= 300) {
+      throw mapException(new HttpException(response, context));
+    }
+  }
+
+  private void checkMaybeThrow(HttpResponse<byte[]> response) {
+    if (response.statusCode() >= 300) {
+      throw mapException(new HttpException(context, response));
+    }
+  }
+
   private void readResponseContent() {
     final HttpResponse<byte[]> response = sendWith(HttpResponse.BodyHandlers.ofByteArray());
     encodedResponseBody = context.readContent(response);
     context.afterResponse(this);
-    context.checkMaybeThrow(response);
+    checkMaybeThrow(response);
   }
 
   @Override
@@ -542,7 +558,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private <T> Stream<T> stream(BodyReader<T> bodyReader) {
     final HttpResponse<Stream<String>> res = handler(HttpResponse.BodyHandlers.ofLines());
     this.httpResponse = res;
-    context.checkResponse(res);
+    checkResponse(res);
     return res.body().map(bodyReader::readBody);
   }
 
@@ -626,7 +642,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     context.afterResponse(this);
-    context.checkResponse(response);
+    checkResponse(response);
     final BodyReader<E> bodyReader = context.beanReader(type);
     return new HttpWrapperResponse<>(response.body().map(bodyReader::readBody), httpResponse);
   }
@@ -635,7 +651,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     context.afterResponse(this);
-    context.checkResponse(response);
+    checkResponse(response);
     final BodyReader<E> bodyReader = context.beanReader(type);
     return new HttpWrapperResponse<>(response.body().map(bodyReader::readBody), httpResponse);
   }
@@ -645,7 +661,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     httpResponse = response;
     encodedResponseBody = context.readContent(response);
     context.afterResponse(this);
-    context.checkMaybeThrow(response);
+    checkMaybeThrow(response);
   }
 
   protected <E> HttpResponse<E> afterAsync(HttpResponse<E> response) {
@@ -680,7 +696,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   public HttpResponse<String> asPlainString() {
     loggableResponseBody = true;
     final HttpResponse<String> hres = addMetrics(handler(HttpResponse.BodyHandlers.ofString()));
-    context.checkResponse(hres);
+    checkResponse(hres);
     return hres;
   }
 
