@@ -1539,6 +1539,66 @@
 				}
 			}
 		},
+		"/test/formMap" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/formMulti" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"type" : "object",
+								"properties" : {
+									"strings" : {
+										"type" : "array",
+										"items" : {
+											"type" : "string"
+										}
+									}
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/test/header" : {
 			"get" : {
 				"tags" : [
