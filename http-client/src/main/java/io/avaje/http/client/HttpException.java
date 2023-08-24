@@ -46,6 +46,7 @@ public class HttpException extends RuntimeException {
   private final boolean responseAsBytes;
   private final DHttpClientContext context;
   private final HttpResponse<?> httpResponse;
+  private BodyContent body;
 
   /**
    * Create with status code and message.
@@ -96,6 +97,13 @@ public class HttpException extends RuntimeException {
     this.responseAsBytes = true;
   }
 
+  private BodyContent readBody() {
+    if (body == null) {
+      body = context.readErrorContent(responseAsBytes, httpResponse);
+    }
+    return body;
+  }
+
   /**
    * Return the response body content as a bean, or else null if body content doesn't exist.
    *
@@ -106,8 +114,7 @@ public class HttpException extends RuntimeException {
     if (httpResponse == null) {
       return null;
     }
-    final BodyContent body = context.readErrorContent(responseAsBytes, httpResponse);
-    return context.readBean(cls, body);
+    return context.readBean(cls, readBody());
   }
 
   /**
@@ -117,8 +124,7 @@ public class HttpException extends RuntimeException {
     if (httpResponse == null) {
       return null;
     }
-    final BodyContent body = context.readErrorContent(responseAsBytes, httpResponse);
-    return new String(body.content(), StandardCharsets.UTF_8);
+    return new String(readBody().content(), StandardCharsets.UTF_8);
   }
 
   /**
@@ -128,8 +134,7 @@ public class HttpException extends RuntimeException {
     if (httpResponse == null) {
       return null;
     }
-    final BodyContent body = context.readErrorContent(responseAsBytes, httpResponse);
-    return body.content();
+    return readBody().content();
   }
 
   /**
