@@ -26,7 +26,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
             description = "Example Javalin controllers with Java and Maven"))
 @Controller
 @Path("openapi/")
-@SecurityScheme(type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.QUERY, name = "JWT", paramName = "access_token", description = "JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.")
+@SecurityScheme(
+    type = SecuritySchemeType.APIKEY,
+    in = SecuritySchemeIn.QUERY,
+    name = "JWT",
+    paramName = "access_token",
+    description =
+        "JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.")
 public class OpenAPIController {
 
   /**
@@ -38,7 +44,7 @@ public class OpenAPIController {
    */
   @Get("/get")
   @Produces(MediaType.TEXT_PLAIN)
-  @OpenAPIResponse(responseCode = "200", type = String.class)
+  @OpenAPIResponse(responseCode = 200, type = String.class)
   void ctxEndpoint(Context ctx) {
     ctx.contentType(MediaType.TEXT_PLAIN).result("healthlmao");
   }
@@ -51,13 +57,13 @@ public class OpenAPIController {
    */
   @Post("/post")
   @Tag(name = "tag1", description = "this is added to openapi tags")
-  @OpenAPIResponse(responseCode = "200", description = "overrides @return javadoc description")
-  @OpenAPIResponse(responseCode = "201")
+  @OpenAPIResponse(responseCode = 200, description = "overrides @return javadoc description")
+  @OpenAPIResponse(responseCode = 201)
   @OpenAPIResponse(
-      responseCode = "400",
+      responseCode = 400,
       description = "User not found (Will not have an associated response schema)")
   @OpenAPIResponse(
-      responseCode = "500",
+      responseCode = 500,
       description = "Some other Error (Will have this error class as the response class)",
       type = ErrorResponse.class)
   Person testPost(Person b) {
@@ -73,9 +79,9 @@ public class OpenAPIController {
   @Deprecated
   @Post("/post1")
   @OpenAPIResponses({
-    @OpenAPIResponse(responseCode = "400", description = "User not found"),
+    @OpenAPIResponse(responseCode = 400, description = "User not found"),
     @OpenAPIResponse(
-        responseCode = "500",
+        responseCode = 500,
         description = "Some other Error",
         type = ErrorResponse.class)
   })
@@ -85,7 +91,7 @@ public class OpenAPIController {
 
   @Put("/put")
   @Produces(value = MediaType.TEXT_PLAIN, statusCode = 203)
-  @OpenAPIResponse(responseCode = "204", type = String.class)
+  @OpenAPIResponse(responseCode = 204, type = String.class)
   String testDefaultStatus(Context ctx) {
     if (ctx.contentType().equals(MediaType.APPLICATION_PDF)) {
       ctx.status(204);
