@@ -49,7 +49,7 @@ public class MethodDocBuilder {
       operation.setDeprecated(true);
     }
 
-    PathItem pathItem = ctx.pathItem(methodReader.fullPath());
+    final PathItem pathItem = ctx.pathItem(methodReader.fullPath());
     switch ((CoreWebMethod) methodReader.webMethod()) {
       case GET:
         pathItem.setGet(operation);
@@ -68,20 +68,20 @@ public class MethodDocBuilder {
         break;
     }
 
-    var securityRequirements = methodReader.securityRequirements();
-    for (SecurityRequirementPrism p : securityRequirements) {
-        var o = new SecurityRequirement().addList(p.name(), p.scopes());
+    final var securityRequirements = methodReader.securityRequirements();
+    for (final SecurityRequirementPrism p : securityRequirements) {
+        final var o = new SecurityRequirement().addList(p.name(), p.scopes());
         operation.addSecurityItem(o);
     }
 
-    for (MethodParam param : methodReader.params()) {
+    for (final MethodParam param : methodReader.params()) {
       param.buildApiDocumentation(this);
     }
 
-    ApiResponses responses = new ApiResponses();
+    final ApiResponses responses = new ApiResponses();
     operation.setResponses(responses);
 
-    ApiResponse response = new ApiResponse();
+    final ApiResponse response = new ApiResponse();
     response.setDescription(javadoc.getReturnDescription());
 
     final var produces = methodReader.produces();
@@ -106,7 +106,7 @@ public class MethodDocBuilder {
       }
 
       // if user wants to define their own 2xx status code
-      if (responseAnnotation.responseCode().startsWith("2")) {
+      if (responseAnnotation.responseCode().toString().startsWith("2")) {
         newResponse.setContent(response.getContent());
         override2xx = !hasProducesStatus;
       }
@@ -116,7 +116,7 @@ public class MethodDocBuilder {
         newResponse.setContent(ctx.createContent(returnType, contentMediaType));
       }
 
-      responses.addApiResponse(responseAnnotation.responseCode(), newResponse);
+      responses.addApiResponse(responseAnnotation.responseCode().toString(), newResponse);
     }
     if (!override2xx) responses.addApiResponse(String.valueOf(methodReader.statusCode()), response);
   }

@@ -42,7 +42,7 @@ import java.lang.annotation.Target;
 public @interface OpenAPIResponse {
 
   /** the http status code of this response */
-  String responseCode();
+  int responseCode();
 
   /**
    * The description of the return value. By default uses the @return javadoc of the method as the
