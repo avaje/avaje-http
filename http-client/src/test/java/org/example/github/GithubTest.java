@@ -14,7 +14,6 @@ import java.util.concurrent.CompletionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.extractProperty;
 
 public class GithubTest {
 
@@ -84,9 +83,7 @@ public class GithubTest {
             () ->
                 clientContext
                     .request()
-                    .path("users")
-                    .path("rbygrave")
-                    .path("repos")
+                    .path("junk")
                     .errorMapper(e -> new IllegalArgumentException())
                     .GET()
                     .async()
@@ -94,6 +91,19 @@ public class GithubTest {
                     .join())
         .isInstanceOf(CompletionException.class)
         .hasCauseInstanceOf(IllegalArgumentException.class);
+
+    // global error mapper used
+    assertThatThrownBy(
+      () ->
+        clientContext
+          .request()
+          .path("junk")
+          .GET()
+          .async()
+          .asString()
+          .join())
+      .isInstanceOf(CompletionException.class)
+      .hasCauseInstanceOf(IllegalStateException.class);
   }
 
   @Test
