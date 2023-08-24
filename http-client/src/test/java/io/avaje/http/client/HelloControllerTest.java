@@ -517,6 +517,9 @@ class HelloControllerTest extends BaseWebTest {
     // convert json error response body to a bean
     final ErrorResponse errorResponse = httpException.bean(ErrorResponse.class);
     assertThat(errorResponse.get("email")).isEqualTo("must be a well-formed email address");
+
+    String responseBodyString = httpException.bodyAsString();
+    assertThat(responseBodyString).startsWith("{\"message\":\"Request failed validation\",\"errors\":");
   }
 
   @Test
@@ -1249,6 +1252,7 @@ class HelloControllerTest extends BaseWebTest {
 
       final byte[] rawBytes = e.bodyAsBytes();
       assertThat(rawBytes).isNotNull();
+      assertThat(new String(rawBytes, 0, rawBytes.length, StandardCharsets.UTF_8)).contains("must be a valid URL");
     }
   }
 
