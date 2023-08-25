@@ -12,12 +12,6 @@ class DHttpClientContextTest {
   private final DHttpClientContext context = new DHttpClientContext(null, null, null, null, null, null, null, null, null);
 
   @Test
-  void create() {
-    BasicClientInterface client = context.create(BasicClientInterface.class);
-    assertThat(client).isNotNull();
-  }
-
-  @Test
   void gzip_gzipDecode() {
 
     final byte[] asBytes = GzipUtil.gzip("HelloThere");

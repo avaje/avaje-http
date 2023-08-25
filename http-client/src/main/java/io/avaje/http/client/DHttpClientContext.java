@@ -1,7 +1,5 @@
 package io.avaje.http.client;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
@@ -68,41 +66,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
   @Override
   public <T> T create(Class<T> clientInterface) {
-    if (!clientInterface.isInterface()) {
-      throw new IllegalArgumentException("API declarations must be interfaces.");
-    }
-    final HttpApiProvider<T> apiProvider = DHttpApi.get(clientInterface);
-    if (apiProvider != null) {
-      return apiProvider.provide(this);
-    }
-    return constructReflectively(clientInterface);
-  }
-
-  @SuppressWarnings("unchecked")
-  private <T> T constructReflectively(Class<T> clientInterface) {
-    try {
-      final Class<?> implementationClass = implementationClass(clientInterface);
-      final Constructor<?> constructor = implementationClass.getConstructor(HttpClient.class);
-      return (T) constructor.newInstance(this);
-    } catch (final Exception e) {
-      final String cn = implementationClassName(clientInterface, "HttpClient");
-      throw new IllegalStateException("Failed to create http client service " + cn, e);
-    }
-  }
-
-  private Class<?> implementationClass(Class<?> clientInterface) throws ClassNotFoundException {
-    try {
-      return Class.forName(implementationClassName(clientInterface, "HttpClient"));
-    } catch (final ClassNotFoundException e) {
-      // try the older generated client suffix
-      return Class.forName(implementationClassName(clientInterface, "$HttpClient"));
-    }
-  }
-
-  private <T> String implementationClassName(Class<T> clientInterface, String suffix) {
-    final String packageName = clientInterface.getPackageName();
-    final String simpleName = clientInterface.getSimpleName();
-    return packageName + ".httpclient." + simpleName + suffix;
+    return DHttpApi.get(clientInterface, this);
   }
 
   @Override
