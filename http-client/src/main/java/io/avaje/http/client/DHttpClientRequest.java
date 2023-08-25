@@ -600,15 +600,15 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     var resultFuture = context.sendAsync(httpRequest, responseHandler);
 
     if (errorMapper != null && !isRetry) {
-        resultFuture =
-            resultFuture.handle(
-                (r, e) -> {
-                  if (e != null && e.getCause() instanceof HttpException) {
-                    throw errorMapper.apply((HttpException) e.getCause());
-                  }
-                  return r;
-                });
-      }
+      resultFuture =
+          resultFuture.handle(
+              (r, e) -> {
+                if (e != null && e.getCause() instanceof HttpException) {
+                  throw errorMapper.apply((HttpException) e.getCause());
+                }
+                return r;
+              });
+    }
 
     return resultFuture;
   }
@@ -803,8 +803,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     public String requestBody() {
       if (suppressLogging) {
         return "<suppressed request body>";
-      }
-      if (encodedRequestBody != null) {
+      } else if (encodedRequestBody != null) {
         return new String(encodedRequestBody.content(), StandardCharsets.UTF_8);
       } else if (bodyFormEncoded) {
         return buildEncodedFormContent();
@@ -812,8 +811,9 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
         return rawRequestBody;
       } else if (body != null) {
         return body.toString();
+      } else {
+        return null;
       }
-      return null;
     }
 
     @Override
@@ -824,8 +824,8 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
       if (encodedResponseBody != null) {
         return context.maxResponseBody(new String(encodedResponseBody.content(), StandardCharsets.UTF_8));
       } else if (httpResponse != null && loggableResponseBody) {
-        final Object body = httpResponse.body();
-        return (body == null) ? null : context.maxResponseBody(body.toString());
+        final var responseBody = httpResponse.body();
+        return (responseBody == null) ? null : context.maxResponseBody(responseBody.toString());
       }
       return null;
     }
@@ -841,7 +841,6 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
       this.body = null;
     }
 
-    @SuppressWarnings({"raw"})
     HttpWrapperResponse(B body, HttpResponse<?> orig) {
       this.orig = orig;
       this.body = body;

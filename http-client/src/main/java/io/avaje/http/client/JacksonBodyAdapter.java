@@ -51,7 +51,7 @@ public final class JacksonBodyAdapter implements BodyAdapter {
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyWriter<T> beanWriter(Class<?> cls) {
-    return (BodyWriter<T>)beanWriterCache.computeIfAbsent(cls, aClass -> {
+    return (BodyWriter<T>) beanWriterCache.computeIfAbsent(cls, aClass -> {
       try {
         return new JWriter<>(mapper.writerFor(cls));
       } catch (Exception e) {

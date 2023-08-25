@@ -4,7 +4,7 @@ import io.avaje.http.client.HttpClient;
 import io.avaje.http.client.HttpException;
 import io.avaje.http.client.JacksonBodyAdapter;
 import io.avaje.http.client.RetryHandler;
-
+import org.example.github.httpclient.Simple$HttpClient;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +29,7 @@ public class GithubTest {
             .build();
 
     // will not work under module classpath without registering the HttpApiProvider
-    final Simple simple = clientContext.create(Simple.class);
+    final Simple simple = new Simple$HttpClient(clientContext);
 
     final List<Repo> repos = simple.listRepos("rbygrave", "junk");
     assertThat(repos).isNotEmpty();
@@ -62,7 +62,7 @@ public class GithubTest {
             .build();
 
     // will not work under module classpath without registering the HttpApiProvider
-    final Simple simple = clientContext.create(Simple.class);
+    final Simple simple = new Simple$HttpClient(clientContext);
 
     assertThatThrownBy(() -> simple.listRepos("rbygrave", "junk"))
         .isInstanceOf(IllegalStateException.class);
@@ -118,8 +118,8 @@ public class GithubTest {
             .requestLogging(false)
             .build();
 
-    // will not work under module classpath without registering the HttpApiProvider
-    final Simple simple = clientContext.create(Simple.class);
+
+    final Simple simple = new Simple$HttpClient(clientContext);
 
     assertThatThrownBy(() -> simple.listRepos("rbygrave", "junk"))
         .isInstanceOf(IllegalStateException.class);

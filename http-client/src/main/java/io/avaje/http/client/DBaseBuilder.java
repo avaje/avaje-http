@@ -16,12 +16,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
+import java.net.http.HttpClient;
 
 import static java.util.Objects.requireNonNull;
 
 abstract class DBaseBuilder {
 
-  java.net.http.HttpClient client;
+  HttpClient client;
   String baseUrl;
   boolean requestLogging = true;
   Duration connectionTimeout = Duration.ofSeconds(20);
@@ -32,8 +33,8 @@ abstract class DBaseBuilder {
   AuthTokenProvider authTokenProvider;
 
   CookieHandler cookieHandler = new CookieManager();
-  java.net.http.HttpClient.Redirect redirect = java.net.http.HttpClient.Redirect.NORMAL;
-  java.net.http.HttpClient.Version version;
+  HttpClient.Redirect redirect = HttpClient.Redirect.NORMAL;
+  HttpClient.Version version;
   Executor executor;
   ProxySelector proxy;
   SSLContext sslContext;
@@ -94,10 +95,11 @@ abstract class DBaseBuilder {
     }
   }
 
-  private java.net.http.HttpClient defaultClient() {
-    final var builder = java.net.http.HttpClient.newBuilder()
-      .followRedirects(redirect)
-      .connectTimeout(connectionTimeout);
+  private HttpClient defaultClient() {
+    final var builder =
+        HttpClient.newBuilder()
+            .followRedirects(redirect)
+            .connectTimeout(connectionTimeout);
     if (cookieHandler != null) {
       builder.cookieHandler(cookieHandler);
     }
@@ -125,18 +127,14 @@ abstract class DBaseBuilder {
     return builder.build();
   }
 
-  /**
-   * Create a reasonable default BodyAdapter if avaje-jsonb or Jackson are present.
-   */
+  /** Create a reasonable default BodyAdapter if avaje-jsonb or Jackson are present. */
   private BodyAdapter defaultBodyAdapter() {
-    try {
-      return detectJsonb() ? new JsonbBodyAdapter()
-        : detectJackson() ? new JacksonBodyAdapter()
-        : null;
-    } catch (IllegalAccessError e) {
-      // not in module path
-      return null;
+    if (detectJsonb()) {
+      bodyAdapter = new JsonbBodyAdapter();
+    } else if (detectJackson()) {
+      bodyAdapter = new JacksonBodyAdapter();
     }
+    return bodyAdapter;
   }
 
   private boolean detectJsonb() {
@@ -151,7 +149,7 @@ abstract class DBaseBuilder {
     try {
       Class.forName(className);
       return true;
-    } catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException | IllegalAccessError e) {
       return false;
     }
   }
@@ -163,7 +161,7 @@ abstract class DBaseBuilder {
       client = defaultClient();
     }
     if (requestLogging) {
-      // register the builtin request/response logging
+      // register the built-in request/response logging
       this.listeners.add(new RequestLogger());
     }
     if (bodyAdapter == null) {
