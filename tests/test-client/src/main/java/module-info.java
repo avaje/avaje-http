@@ -5,4 +5,6 @@ open module test {
   requires com.google.gson;
 
   exports example.github;
+
+  provides io.avaje.http.client.HttpClient.GeneratedComponent with example.github.httpclient.GeneratedHttpComponent;
 }
