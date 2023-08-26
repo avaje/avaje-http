@@ -6,6 +6,7 @@ import static io.avaje.http.generator.core.ProcessingContext.setPlatform;
 import static io.avaje.http.generator.core.ProcessingContext.typeElement;
 
 import java.io.IOException;
+import java.security.Identity;
 import java.util.Objects;
 import java.util.Set;
 
@@ -105,7 +106,9 @@ public class ClientProcessor extends AbstractProcessor {
 
   private void initialiseComponent() {
     metaData.initialiseFullName();
-    ProcessingContext.validateModule(metaData.fullName());
+    if (!metaData.all().isEmpty()) {
+      ProcessingContext.validateModule(metaData.fullName());
+    }
     try {
       componentWriter.init();
     } catch (final IOException e) {
