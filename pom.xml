@@ -36,6 +36,7 @@
 
   <modules>
     <module>http-api</module>
+    <module>http-api-javalin</module>
     <module>http-client</module>
     <module>http-client-gson-adapter</module>
     <module>http-inject-plugin</module>

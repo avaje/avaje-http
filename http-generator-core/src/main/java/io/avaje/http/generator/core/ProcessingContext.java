@@ -129,6 +129,10 @@ public class ProcessingContext {
     CTX.get().messager.printMessage(Diagnostic.Kind.WARNING, String.format(msg, args));
   }
 
+  public static void logWarn(Element e, String msg, Object... args) {
+    CTX.get().messager.printMessage(Diagnostic.Kind.WARNING, String.format(msg, args), e);
+  }
+
   public static void logDebug(String msg, Object... args) {
     CTX.get().messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
   }
@@ -253,7 +257,18 @@ public class ProcessingContext {
         try (var inputStream = new URI(resource).toURL().openStream();
             var reader = new BufferedReader(new InputStreamReader(inputStream))) {
 
-          var noProvides = reader.lines().noneMatch(s -> s.contains(fqn));
+          var noProvides =
+              reader
+                  .lines()
+                  .map(
+                      s -> {
+                        if (s.contains("io.avaje.http.api.javalin") && !s.contains("static")) {
+                          logWarn(
+                              "io.avaje.http.api.javalin only contains SOURCE retention annotations. It should added as `requires static`");
+                        }
+                        return s;
+                      })
+                  .noneMatch(s -> s.contains(fqn));
           if (noProvides) {
             logError(
                 module,
