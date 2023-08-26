@@ -227,7 +227,6 @@ public class ProcessingContext {
   }
 
   public static void findModule(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-
     if (CTX.get().module == null) {
       CTX.get().module =
           annotations.stream()
@@ -255,7 +254,6 @@ public class ProcessingContext {
             var reader = new BufferedReader(new InputStreamReader(inputStream))) {
 
           var noProvides = reader.lines().noneMatch(s -> s.contains(fqn));
-
           if (noProvides) {
             logError(
                 module,

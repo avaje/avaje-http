@@ -6,7 +6,6 @@ import static io.avaje.http.generator.core.ProcessingContext.setPlatform;
 import static io.avaje.http.generator.core.ProcessingContext.typeElement;
 
 import java.io.IOException;
-import java.security.Identity;
 import java.util.Objects;
 import java.util.Set;
 
@@ -50,15 +49,13 @@ public class ClientProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
-
-	ProcessingContext.findModule(annotations, round);
-	final var platform = platform();
+    ProcessingContext.findModule(annotations, round);
+    final var platform = platform();
     if (!(platform instanceof ClientPlatformAdapter)) {
       setPlatform(new ClientPlatformAdapter());
     }
     readModule();
-    for (final Element controller :
-        round.getElementsAnnotatedWith(typeElement(ClientPrism.PRISM_TYPE))) {
+    for (final Element controller : round.getElementsAnnotatedWith(typeElement(ClientPrism.PRISM_TYPE))) {
       if (ClientPrism.getInstanceOn(controller).generate()) {
         writeClient(controller);
       }
@@ -71,6 +68,7 @@ public class ClientProcessor extends AbstractProcessor {
     setPlatform(platform);
     return false;
   }
+
   /** Read the existing metadata from the generated component (if exists). */
   private void readModule() {
     if (readModuleInfo) {
