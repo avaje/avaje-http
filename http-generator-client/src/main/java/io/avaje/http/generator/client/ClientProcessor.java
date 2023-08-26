@@ -49,7 +49,9 @@ public class ClientProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
-    final var platform = platform();
+
+	ProcessingContext.findModule(annotations, round);
+	final var platform = platform();
     if (!(platform instanceof ClientPlatformAdapter)) {
       setPlatform(new ClientPlatformAdapter());
     }
@@ -90,7 +92,7 @@ public class ClientProcessor extends AbstractProcessor {
       reader.read(false);
       try {
         metaData.add(writeClientAdapter(reader));
-      } catch (final Throwable e) {
+      } catch (final Exception e) {
         e.printStackTrace();
         logError(reader.beanType(), "Failed to write client class " + e);
       }
@@ -103,6 +105,7 @@ public class ClientProcessor extends AbstractProcessor {
 
   private void initialiseComponent() {
     metaData.initialiseFullName();
+    ProcessingContext.validateModule(metaData.fullName());
     try {
       componentWriter.init();
     } catch (final IOException e) {
