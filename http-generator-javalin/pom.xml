@@ -26,10 +26,8 @@
     
     <dependency>
       <groupId>io.avaje</groupId>
-      <artifactId>avaje-http-api</artifactId>
+      <artifactId>avaje-http-api-javalin</artifactId>
       <version>${project.version}</version>
-      <optional>true</optional>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
