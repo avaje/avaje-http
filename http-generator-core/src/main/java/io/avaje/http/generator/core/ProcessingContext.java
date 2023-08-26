@@ -257,7 +257,7 @@ public class ProcessingContext {
           if (noProvides) {
             logError(
                 module,
-                "Missing \"provides io.avaje.http.client.HttpClient.GeneratedComponent with %s;\"",
+                "Missing `provides io.avaje.http.client.HttpClient.GeneratedComponent with %s;`",
                 fqn);
           }
         }
