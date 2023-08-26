@@ -247,34 +247,33 @@ public class ProcessingContext {
     if (module != null && !CTX.get().validated && !module.isUnnamed()) {
 
       CTX.get().validated = true;
-      try {
-        var resource =
-            CTX.get()
-                .filer
-                .getResource(StandardLocation.SOURCE_PATH, "", "module-info.java")
-                .toUri()
-                .toString();
-        try (var inputStream = new URI(resource).toURL().openStream();
-            var reader = new BufferedReader(new InputStreamReader(inputStream))) {
 
-          var noProvides =
-              reader
-                  .lines()
-                  .map(
-                      s -> {
-                        if (s.contains("io.avaje.http.api.javalin") && !s.contains("static")) {
-                          logWarn(
-                              "io.avaje.http.api.javalin only contains SOURCE retention annotations. It should added as `requires static`");
-                        }
-                        return s;
-                      })
-                  .noneMatch(s -> s.contains(fqn));
-          if (noProvides) {
-            logError(
-                module,
-                "Missing `provides io.avaje.http.client.HttpClient.GeneratedComponent with %s;`",
-                fqn);
-          }
+      try (var inputStream =
+              CTX.get()
+                  .filer
+                  .getResource(StandardLocation.SOURCE_PATH, "", "module-info.java")
+                  .toUri()
+                  .toURL()
+                  .openStream();
+          var reader = new BufferedReader(new InputStreamReader(inputStream))) {
+
+        var noProvides =
+            reader
+                .lines()
+                .map(
+                    s -> {
+                      if (s.contains("io.avaje.http.api.javalin") && !s.contains("static")) {
+                        logWarn(
+                            "io.avaje.http.api.javalin only contains SOURCE retention annotations. It should added as `requires static`");
+                      }
+                      return s;
+                    })
+                .noneMatch(s -> s.contains(fqn));
+        if (noProvides) {
+          logError(
+              module,
+              "Missing `provides io.avaje.http.client.HttpClient.GeneratedComponent with %s;`",
+              fqn);
         }
       } catch (Exception e) {
         // can't read module
