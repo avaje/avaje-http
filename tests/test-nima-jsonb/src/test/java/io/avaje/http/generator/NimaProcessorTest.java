@@ -21,7 +21,7 @@ import javax.tools.ToolProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import io.avaje.http.generator.helidon.nima.NimaProcessor;
+import io.avaje.http.generator.helidon.nima.HelidonProcessor;
 
 class NimaProcessorTest {
 
@@ -46,7 +46,7 @@ class NimaProcessorTest {
     final var task =
         compiler.getTask(
             new PrintWriter(System.out), null, null, List.of("--release=20", "-AdisableDirectWrites=true"), null, files);
-    task.setProcessors(List.of(new NimaProcessor()));
+    task.setProcessors(List.of(new HelidonProcessor()));
 
     assertThat(task.call()).isTrue();
   }
@@ -62,7 +62,7 @@ class NimaProcessorTest {
     final var task =
         compiler.getTask(
             new PrintWriter(System.out), null, null, List.of("--release=19"), null, files);
-    task.setProcessors(List.of(new NimaProcessor()));
+    task.setProcessors(List.of(new HelidonProcessor()));
 
     assertThat(task.call()).isTrue();
   }

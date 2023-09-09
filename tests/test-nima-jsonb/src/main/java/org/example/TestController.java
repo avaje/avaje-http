@@ -1,10 +1,10 @@
 package org.example;
 
 import io.avaje.http.api.*;
-import io.helidon.nima.webserver.http.FilterChain;
-import io.helidon.nima.webserver.http.RoutingResponse;
-import io.helidon.nima.webserver.http.ServerRequest;
-import io.helidon.nima.webserver.http.ServerResponse;
+import io.helidon.webserver.http.FilterChain;
+import io.helidon.webserver.http.RoutingResponse;
+import io.helidon.webserver.http.ServerRequest;
+import io.helidon.webserver.http.ServerResponse;
 
 import java.io.InputStream;
 import java.util.LinkedHashMap;

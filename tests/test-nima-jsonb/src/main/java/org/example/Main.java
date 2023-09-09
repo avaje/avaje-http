@@ -4,10 +4,9 @@ import java.util.List;
 
 import io.avaje.inject.BeanScope;
 import io.avaje.jsonb.Jsonb;
-import io.helidon.nima.webserver.WebServer;
-import io.helidon.nima.webserver.http.HttpFeature;
-import io.helidon.nima.webserver.http.HttpRouting;
-import io.helidon.nima.webserver.http.HttpService;
+import io.helidon.webserver.WebServer;
+import io.helidon.webserver.http.HttpFeature;
+import io.helidon.webserver.http.HttpRouting;
 
 public class Main {
 

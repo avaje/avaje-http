@@ -10,8 +10,8 @@ import io.avaje.http.generator.core.UType;
 
 class NimaPlatformAdapter implements PlatformAdapter {
 
-  static final String NIMA_REQ = "io.helidon.nima.webserver.http.ServerRequest";
-  static final String NIMA_RES = "io.helidon.nima.webserver.http.ServerResponse";
+  static final String NIMA_REQ = "io.helidon.webserver.http.ServerRequest";
+  static final String NIMA_RES = "io.helidon.webserver.http.ServerResponse";
   static final String HELIDON_FORMPARAMS = "io.helidon.common.parameters.Parameters";
 
   @Override
@@ -74,7 +74,7 @@ class NimaPlatformAdapter implements PlatformAdapter {
       case FORMPARAM -> writer.append("formParams.first(\"%s\").orElse(null)", paramName);
 
       case HEADER -> writer.append(
-          "req.headers().value(Header.create(\"%s\")).orElse(null)", paramName);
+          "req.headers().value(HeaderNames.create(\"%s\")).orElse(null)", paramName);
 
       case COOKIE -> writer.append("req.headers().cookies().first(\"%s\").orElse(null)", paramName);
 

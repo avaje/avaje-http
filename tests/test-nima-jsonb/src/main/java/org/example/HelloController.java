@@ -14,9 +14,9 @@ import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
 import io.avaje.http.api.QueryParam;
 import io.avaje.http.api.Valid;
-import io.helidon.common.http.HttpMediaType;
-import io.helidon.nima.webserver.http.ServerRequest;
-import io.helidon.nima.webserver.http.ServerResponse;
+import io.helidon.common.media.type.MediaTypes;
+import io.helidon.webserver.http.ServerRequest;
+import io.helidon.webserver.http.ServerResponse;
 
 @Controller
 public class HelloController {
@@ -41,7 +41,7 @@ public class HelloController {
 
   @Get("/helidon")
   void testHelidon(ServerRequest req, ServerResponse res) {
-    res.headers().contentType(HttpMediaType.TEXT_PLAIN);
+    res.headers().contentType(MediaTypes.TEXT_PLAIN);
     res.send("success path:" + req.path());
   }
 

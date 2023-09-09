@@ -2,8 +2,8 @@ package org.example;
 
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.ExceptionHandler;
-import io.helidon.nima.webserver.http.ServerRequest;
-import io.helidon.nima.webserver.http.ServerResponse;
+import io.helidon.webserver.http.ServerRequest;
+import io.helidon.webserver.http.ServerResponse;
 
 import java.util.Map;
 

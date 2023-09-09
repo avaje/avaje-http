@@ -16,8 +16,8 @@
     <assertj.version>3.24.1</assertj.version>
     <jackson.version>2.14.1</jackson.version>
     <jex.version>2.5</jex.version>
-    <avaje-inject.version>9.0</avaje-inject.version>
-    <nima.version>4.0.0-M1</nima.version>
+    <avaje-inject.version>9.5</avaje-inject.version>
+    <nima.version>4.0.0-M2</nima.version>
   </properties>
 
   <modules>
@@ -30,9 +30,9 @@
 
   <profiles>
     <profile>
-      <id>jdk19plus</id>
+      <id>jdk20plus</id>
       <activation>
-        <jdk>[19,20,21]</jdk>
+        <jdk>21</jdk>
       </activation>
       <modules>
         <module>test-nima</module>

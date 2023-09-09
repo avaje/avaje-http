@@ -4,8 +4,8 @@ import io.avaje.http.api.context.ThreadLocalRequestContextResolver;
 import io.avaje.http.client.HttpClient;
 import io.avaje.http.hibernate.validator.BeanValidator;
 import io.avaje.jsonb.Jsonb;
-import io.helidon.nima.webserver.WebServer;
-import io.helidon.nima.webserver.http.HttpRouting;
+import io.helidon.webserver.WebServer;
+import io.helidon.webserver.http.HttpRouting;
 
 public class TestPair {
 
