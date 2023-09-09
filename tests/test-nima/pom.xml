@@ -39,6 +39,12 @@
       <artifactId>helidon-http-media-jsonb</artifactId>
       <version>${nima.version}</version>
     </dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-helidon-generator</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
