@@ -3,29 +3,20 @@ package org.example;
 import java.util.List;
 
 import io.avaje.inject.BeanScope;
-import io.helidon.nima.webserver.WebServer;
-import io.helidon.nima.webserver.http.HttpRouting;
-import io.helidon.nima.webserver.http.HttpService;
+import io.helidon.webserver.WebServer;
+import io.helidon.webserver.http.HttpFeature;
+import io.helidon.webserver.http.HttpRouting;
 
 public class Main {
 
   public static void main(String[] args) {
 
-    final var scope = BeanScope.builder().build();
-    final List<HttpService> list = scope.list(HttpService.class);
+    List<HttpFeature> routes = BeanScope.builder().build().list(HttpFeature.class);
     final var builder = HttpRouting.builder();
-    for (final HttpService httpService : list) {
-      httpService.routing(builder);
-    }
-    final var httpRouting = builder.build();
 
+    routes.forEach(builder::addFeature);
 
-    WebServer.builder()
-      .addRouting(httpRouting)
-      //.routing(Main::routing)
-      .port(8081)
-      .build()
-      .start();
+    WebServer.builder().addRouting(builder.build()).build().start();
 
     System.out.println("started");
   }

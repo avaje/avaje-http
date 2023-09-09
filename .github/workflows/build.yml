@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java_version: [17, 20]
+        java_version: [17, 21-ea]
         os: [ubuntu-latest]
 
     steps:

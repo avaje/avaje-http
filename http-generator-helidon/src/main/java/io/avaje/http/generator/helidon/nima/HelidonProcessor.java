@@ -9,7 +9,7 @@ import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.prism.AnnotationProcessor;
 
 @AnnotationProcessor
-public class NimaProcessor extends BaseProcessor {
+public class HelidonProcessor extends BaseProcessor {
 
   @Override
   protected PlatformAdapter providePlatformAdapter() {

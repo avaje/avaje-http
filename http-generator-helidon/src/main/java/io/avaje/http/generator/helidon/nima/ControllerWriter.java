@@ -22,7 +22,7 @@ import io.avaje.http.generator.core.UType;
 class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-helidon-generator\")";
-  private static final String IMPORT_HTTP_STATUS = "import static io.helidon.common.http.Http.Status.*;";
+  private static final String IMPORT_HTTP_STATUS = "import static io.helidon.http.Http.Status.*;";
 
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
@@ -42,22 +42,22 @@ class ControllerWriter extends BaseControllerWriter {
     } else {
       this.jsonTypes = Map.of();
     }
-    reader.addImportType("io.helidon.common.http.HttpMediaType");
+    reader.addImportType("io.helidon.common.media.type.MediaTypes");
     reader.addImportType("io.helidon.common.parameters.Parameters");
-    reader.addImportType("io.helidon.nima.webserver.http.HttpRouting");
-    reader.addImportType("io.helidon.nima.webserver.http.ServerRequest");
-    reader.addImportType("io.helidon.nima.webserver.http.ServerResponse");
-    reader.addImportType("io.helidon.nima.webserver.http.HttpFeature");
-    reader.addImportType("io.helidon.common.http.Http.Header");
+    reader.addImportType("io.helidon.webserver.http.HttpRouting");
+    reader.addImportType("io.helidon.webserver.http.ServerRequest");
+    reader.addImportType("io.helidon.webserver.http.ServerResponse");
+    reader.addImportType("io.helidon.webserver.http.HttpFeature");
+    reader.addImportType("io.helidon.http.Http.HeaderNames");
     if (reader.isIncludeValidator()) {
-      reader.addImportType("io.helidon.common.http.Http");
+      reader.addImportType("io.helidon.http.Http");
     }
     if (reader.methods().stream()
         .map(MethodReader::webMethod)
         .anyMatch(w -> CoreWebMethod.FILTER == w)) {
-      reader.addImportType("io.helidon.nima.webserver.http.FilterChain");
-      reader.addImportType("io.helidon.nima.webserver.http.RoutingRequest");
-      reader.addImportType("io.helidon.nima.webserver.http.RoutingResponse");
+      reader.addImportType("io.helidon.webserver.http.FilterChain");
+      reader.addImportType("io.helidon.webserver.http.RoutingRequest");
+      reader.addImportType("io.helidon.webserver.http.RoutingResponse");
     }
   }
 
@@ -118,7 +118,7 @@ class ControllerWriter extends BaseControllerWriter {
     }
 
     if (reader.isIncludeValidator()) {
-      writer.append("  private static final Http.HeaderName HEADER_ACCEPT_LANGUAGE = Header.create(\"Accept-Language\");").eol();
+      writer.append("  private static final Http.HeaderName HEADER_ACCEPT_LANGUAGE = HeaderNames.create(\"Accept-Language\");").eol();
     }
 
     writer.append("  private final %s %s;", controllerType, controllerName).eol();

@@ -10,9 +10,9 @@
   <artifactId>avaje-http-helidon-generator</artifactId>
 
   <properties>
-    <java.release>20</java.release>
-    <maven.compiler.source>20</maven.compiler.source>
-    <maven.compiler.target>20</maven.compiler.target>
+    <java.release>21</java.release>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.trget>21</maven.compiler.trget>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 

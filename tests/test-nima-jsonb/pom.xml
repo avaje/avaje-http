@@ -12,9 +12,9 @@
   <artifactId>test-nima-jsonb</artifactId>
 
   <properties>
-    <java.release>20</java.release>
-    <maven.compiler.source>20</maven.compiler.source>
-    <maven.compiler.target>20</maven.compiler.target>
+    <java.release>21</java.release>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.useModulePath>false</surefire.useModulePath>
   </properties>
@@ -34,7 +34,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>1.7-RC1</version>
+      <version>1.8-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>io.avaje</groupId>
@@ -42,13 +42,13 @@
       <version>3.3</version>
     </dependency>
     <dependency>
-      <groupId>io.helidon.nima.webserver</groupId>
-      <artifactId>helidon-nima-webserver</artifactId>
+      <groupId>io.helidon.webserver</groupId>
+      <artifactId>helidon-webserver</artifactId>
       <version>${nima.version}</version>
     </dependency>
     <dependency>
-      <groupId>io.helidon.nima.http.media</groupId>
-      <artifactId>helidon-nima-http-media-jsonb</artifactId>
+      <groupId>io.helidon.http.media</groupId>
+      <artifactId>helidon-http-media-jsonb</artifactId>
       <version>${nima.version}</version>
     </dependency>
     <dependency>
@@ -78,8 +78,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <enablePreview>true</enablePreview>
-          <release>20</release>
+          <release>21</release>
           <annotationProcessorPaths>
             <path>
               <groupId>io.avaje</groupId>
@@ -103,9 +102,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.0.0</version>
-        <configuration>
-          <argLine>--enable-preview</argLine>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>io.repaint.maven</groupId>

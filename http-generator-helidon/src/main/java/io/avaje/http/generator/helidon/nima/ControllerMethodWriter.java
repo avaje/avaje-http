@@ -263,7 +263,7 @@ final class ControllerMethodWriter {
     }
 
     final var produces = producesOp.map(MediaType::parse).orElse(MediaType.APPLICATION_JSON);
-    final var contentTypeString = "    res.headers().contentType(HttpMediaType.";
+    final var contentTypeString = "    res.headers().contentType(MediaTypes.";
     switch (produces) {
       case APPLICATION_JSON -> writer.append(contentTypeString).append("APPLICATION_JSON);").eol();
       case TEXT_HTML -> writer.append(contentTypeString).append("TEXT_HTML);").eol();

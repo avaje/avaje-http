@@ -76,9 +76,9 @@ public class WidgetController {
 ## DI Usage
 The annotation processor will generate controller adapters to register routes to Javalin/Helidon. The natural way to use the generated adapters is to get a DI library to find and wire them. This is what the examples below do; they use [Avaje-Inject](https://avaje.io/inject/) to do this. The AP will automatically detect the presence of avaje-inject and generate the class to use avaje-inject's `@Component` as the DI annotation.
 
-There isn't a hard requirement to use Avaje for dependency injection. In the absence of avaje-inject, the generated class will use `@jakarta.inject.Singleton` or `@javax.inject.Singleton` depending on what's on the classpath. Any DI library that can find and wire the generated @Singleton beans can be used. You can even use Dagger2 or Guice to wire the controllers if you so desire. 
+There isn't a hard requirement to use Avaje for dependency injection. In the absence of avaje-inject, the generated class will use `@jakarta.inject.Singleton` or `@javax.inject.Singleton` depending on what's on the classpath. Any DI library that can find and wire the generated @Singleton beans can be used. You can even use Dagger2 or Guice to wire the controllers if you so desire.
 
-To force the AP to generate with `@javax.inject.Singleton`(in the case where you have both jakarta and javax on the classpath), use the compiler arg `-AuseJavax=true` 
+To force the AP to generate with `@javax.inject.Singleton`(in the case where you have both jakarta and javax on the classpath), use the compiler arg `-AuseJavax=true`
 ```xml
 <plugin>
   <groupId>org.apache.maven.plugins</groupId>
@@ -111,7 +111,7 @@ get all the services and register them with the Helidon `HttpRouting`.
 List<HttpFeature> routes = BeanScope.builder().build().list(HttpFeature.class);
 final var builder = HttpRouting.builder();
 
-routes.forEach(builder::register);
+routes.forEach(builder::addFeature);
 
 WebServer.builder()
          .addRouting(builder.build())
