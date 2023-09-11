@@ -32,7 +32,6 @@
 @GeneratePrism(value = io.avaje.http.api.OpenAPIResponse.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.OpenAPIResponses.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.Hidden.class, publicAccess = true)
-@GeneratePrism(value = org.jetbrains.annotations.NotNull.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Client.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Client.Import.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.RequestTimeout.class, publicAccess = true)
