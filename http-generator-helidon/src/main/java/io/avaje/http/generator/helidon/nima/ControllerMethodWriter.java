@@ -103,7 +103,12 @@ final class ControllerMethodWriter {
       writer.append("  private void _%s(FilterChain chain, RoutingRequest req, RoutingResponse res) {", method.simpleName()).eol();
     } else {
       writer.append("  private void _%s(ServerRequest req, ServerResponse res) throws Exception {", method.simpleName()).eol();
+      int statusCode = method.statusCode();
+      if (statusCode > 0) {
+        writer.append("    res.status(%s);", lookupStatusCode(statusCode)).eol();
+      }
     }
+
     final var bodyType = method.bodyType();
     if (bodyType != null && !method.isErrorMethod() && !isFilter) {
       if ("InputStream".equals(bodyType)) {
@@ -253,10 +258,6 @@ final class ControllerMethodWriter {
   }
 
   private void writeContextReturn() {
-    int statusCode = method.statusCode();
-    if (statusCode > 0) {
-      writer.append("    res.status(%s);", lookupStatusCode(statusCode)).eol();
-    }
     final var producesOp = Optional.ofNullable(method.produces());
     if (producesOp.isEmpty() && !useJsonB) {
       return;
