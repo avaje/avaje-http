@@ -103,6 +103,9 @@ final class ControllerMethodWriter {
       writer.append("  private void _%s(FilterChain chain, RoutingRequest req, RoutingResponse res) {", method.simpleName()).eol();
     } else {
       writer.append("  private void _%s(ServerRequest req, ServerResponse res) throws Exception {", method.simpleName()).eol();
+    }
+
+    if (!isFilter) {
       int statusCode = method.statusCode();
       if (statusCode > 0) {
         writer.append("    res.status(%s);", lookupStatusCode(statusCode)).eol();
