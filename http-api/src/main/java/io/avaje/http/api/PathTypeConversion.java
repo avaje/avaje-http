@@ -2,6 +2,7 @@ package io.avaje.http.api;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -129,6 +130,18 @@ public final class PathTypeConversion {
    */
   public static boolean asBool(String value) {
     return asBoolean(value);
+  }
+
+  /**
+   * Convert to BigInteger (not nullable).
+   */
+  public static BigInteger asBigInteger(String value) {
+    checkNull(value);
+    try {
+      return new BigInteger(value);
+    } catch (RuntimeException e) {
+      throw new InvalidPathArgumentException(e);
+    }
   }
 
   /**

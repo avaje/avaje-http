@@ -34,6 +34,7 @@ class TypeMap {
 
     add(new UuidHandler());
     add(new BigDecimalHandler());
+    add(new BigDecimalHandler());
     add(new LocalDateHandler());
     add(new LocalTimeHandler());
     add(new LocalDateTimeHandler());
@@ -266,6 +267,12 @@ class TypeMap {
   static class BigDecimalHandler extends ObjectHandler {
     BigDecimalHandler() {
       super("java.math.BigDecimal", "BigDecimal");
+    }
+  }
+
+  static class BigIntegerHandler extends ObjectHandler {
+    BigIntegerHandler() {
+      super("java.math.BigInteger", "BigInteger");
     }
   }
 
