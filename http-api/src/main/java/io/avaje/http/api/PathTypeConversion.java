@@ -310,6 +310,20 @@ public final class PathTypeConversion {
   }
 
   /**
+   * Convert to BigInteger (allowing nulls).
+   */
+  public static BigInteger toBigInteger(String value) {
+    if (isNullOrEmpty(value)) {
+      return null;
+    }
+    try {
+      return new BigInteger(value);
+    } catch (Exception e) {
+      throw new InvalidTypeArgumentException(e);
+    }
+  }
+
+  /**
    * Convert to Boolean (allowing nulls).
    */
   public static Boolean toBoolean(String value) {
