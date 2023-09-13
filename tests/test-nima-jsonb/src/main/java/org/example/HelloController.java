@@ -1,5 +1,6 @@
 package org.example;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -149,8 +150,8 @@ public class HelloController {
     return form.name + "|" + form.email + "|" + form.url;
   }
 
-//  @Get("/bigInt/{val}")
-//  String testBigInt(BigInteger val) {
-//    return "hi|" + val;
-//  }
+  @Get("/bigInt/{val}")
+  String testBigInt(BigInteger val, BigInteger someQueryParam) {
+    return "hi|" + val;
+  }
 }
