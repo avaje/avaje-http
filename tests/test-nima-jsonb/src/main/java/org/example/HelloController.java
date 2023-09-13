@@ -148,4 +148,9 @@ public class HelloController {
   String formBean(MyForm form) {
     return form.name + "|" + form.email + "|" + form.url;
   }
+
+//  @Get("/bigInt/{val}")
+//  String testBigInt(BigInteger val) {
+//    return "hi|" + val;
+//  }
 }

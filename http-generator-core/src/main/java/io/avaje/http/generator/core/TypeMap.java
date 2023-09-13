@@ -34,7 +34,7 @@ class TypeMap {
 
     add(new UuidHandler());
     add(new BigDecimalHandler());
-    add(new BigDecimalHandler());
+    add(new BigIntegerHandler());
     add(new LocalDateHandler());
     add(new LocalTimeHandler());
     add(new LocalDateTimeHandler());

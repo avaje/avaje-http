@@ -53,4 +53,20 @@ class TypeMapTest {
     assertThat(handler.asMethod()).isEqualTo("asFloat(");
     assertFalse(handler.isPrimitive());
   }
+
+  @Test
+  void get_BigDecimal() {
+    TypeHandler handler = TypeMap.get("java.math.BigDecimal");
+    assertThat(handler).isInstanceOf(TypeMap.BigDecimalHandler.class);
+    assertThat(handler.asMethod()).isEqualTo("asBigDecimal(");
+    assertFalse(handler.isPrimitive());
+  }
+
+  @Test
+  void get_BigInt() {
+    TypeHandler handler = TypeMap.get("java.math.BigInteger");
+    assertThat(handler).isInstanceOf(TypeMap.BigIntegerHandler.class);
+    assertThat(handler.asMethod()).isEqualTo("asBigInteger(");
+    assertFalse(handler.isPrimitive());
+  }
 }
