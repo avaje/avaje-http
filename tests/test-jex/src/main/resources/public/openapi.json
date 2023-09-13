@@ -48,6 +48,37 @@
 				}
 			}
 		},
+		"/bigInt/{val}" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "val",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "number"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/other/{name}" : {
 			"get" : {
 				"tags" : [

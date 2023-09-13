@@ -9,6 +9,8 @@ import io.avaje.http.api.Put;
 import io.avaje.http.api.Valid;
 import io.avaje.jex.Context;
 
+import java.math.BigInteger;
+
 // @Roles(AppRoles.BASIC_USER)
 @Controller
 @Path("/")
@@ -57,5 +59,10 @@ public class HelloController {
   @Put
   void put(HelloDto dto) {
     dto.hashCode();
+  }
+
+  @Get("/bigInt/{val}")
+  String testBigInt(BigInteger val) {
+    return "hi|" + val;
   }
 }
