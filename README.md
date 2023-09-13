@@ -74,9 +74,9 @@ public class WidgetController {
 }
 ```
 ## DI Usage
-The annotation processor will generate controller adapters to register routes to Javalin/Helidon. The natural way to use the generated adapters is to get a DI library to find and wire them. This is what the examples below do; they use [Avaje-Inject](https://avaje.io/inject/) to do this. The AP will automatically detect the presence of avaje-inject and generate the class to use avaje-inject's `@Component` as the DI annotation.
+The annotation processor will generate controller adapters to register routes to Javalin/Helidon. The natural way to use the generated adapters is to get a DI library to find and wire them. The AP will automatically detect the presence of avaje-inject and generate the class to use avaje-inject's `@Component` as the DI annotation.
 
-There isn't a hard requirement to use Avaje for dependency injection. In the absence of avaje-inject, the generated class will use `@jakarta.inject.Singleton` or `@javax.inject.Singleton` depending on what's on the classpath. Any DI library that can find and wire the generated @Singleton beans can be used. You can even use Dagger2 or Guice to wire the controllers if you so desire.
+There isn't a hard requirement to use [Avaje](https://avaje.io/inject/) for dependency injection. In the absence of avaje-inject, the generated class will use `@jakarta.inject.Singleton` or `@javax.inject.Singleton` depending on what's on the classpath. Any DI library that can find and wire the generated @Singleton beans can be used. You can even use Dagger2 or Guice to wire the controllers if you so desire.
 
 To force the AP to generate with `@javax.inject.Singleton`(in the case where you have both jakarta and javax on the classpath), use the compiler arg `-AuseJavax=true`
 ```xml
@@ -93,22 +93,20 @@ To force the AP to generate with `@javax.inject.Singleton`(in the case where you
 
 ### Usage with Javalin
 
-The annotation processor will generate controller classes implementing the Javalin `Plugin` interface, which means we can
-get all the WebRoutes and register them with Javalin using:
+The annotation processor will generate controller classes implementing the Javalin `Plugin` interface, which means we can register them with Javalin using:
 
 ```java
-List<Plugin> routes = BeanScope.builder().build().list(Plugin.class);
+List<Plugin> routes = ...; //retrieve using a DI framework
 
 Javalin.create(cfg -> routes.forEach(cfg.plugins::register)).start();
 ```
 
-### Usage with Helidon Nima
+### Usage with Helidon SE (4.x)
 
-The annotation processor will generate controller classes implementing the Helidon HttpService interface, which we can use
-get all the services and register them with the Helidon `HttpRouting`.
+The annotation processor will generate controller classes implementing the Helidon HttpFeature interface, which we can register with the Helidon `HttpRouting`.
 
 ```java
-List<HttpFeature> routes = BeanScope.builder().build().list(HttpFeature.class);
+List<HttpFeature> routes = ... //retrieve using a DI framework
 final var builder = HttpRouting.builder();
 
 routes.forEach(builder::addFeature);
@@ -153,14 +151,15 @@ public class WidgetController$Route implements Plugin {
 }
 ```
 
-### (Helidon Nima) The generated WidgetController$Route.java is:
+### (Helidon SE) The generated WidgetController$Route.java is:
 
 ```java
-@Generated("avaje-helidon-nima-generator")
-@Singleton
+@Generated("avaje-helidon-generator")
+@Component
 public class WidgetController$Route implements HttpFeature {
 
   private final WidgetController controller;
+
   public WidgetController$Route(WidgetController controller) {
     this.controller = controller;
   }
@@ -172,17 +171,19 @@ public class WidgetController$Route implements HttpFeature {
   }
 
   private void _getById(ServerRequest req, ServerResponse res) throws Exception {
+    res.status(OK_200);
     var pathParams = req.path().pathParameters();
-    int id = asInt(pathParams.first("id").get());
+    var id = asInt(pathParams.first("id").get());
     var result = controller.getById(id);
     res.send(result);
   }
 
-  private void _getAll(ServerRequest req, ServerResponse res) {
-    var pathParams = req.path().pathParameters();
+  private void _getAll(ServerRequest req, ServerResponse res) throws Exception {
+    res.status(OK_200);
     var result = controller.getAll();
     res.send(result);
   }
+
 }
 ```
 
@@ -225,21 +226,21 @@ public class WidgetController$Route implements Plugin {
 }
 ```
 
-### (Helidon Nima) The generated WidgetController$Route.java is:
+### (Helidon SE) The generated WidgetController$Route.java is:
 
 ```java
-@Generated("avaje-helidon-nima-generator")
+@Generated("avaje-helidon-generator")
 @Component
 public class WidgetController$Route implements HttpFeature {
 
   private final WidgetController controller;
-  private final JsonType<Widget> widgetJsonType;
-  private final JsonType<List<Widget>> listWidgetJsonType;
+  private final JsonType<WidgetController.Widget> widgetController$WidgetJsonType;
+  private final JsonType<List<WidgetController.Widget>> listWidgetController$WidgetJsonType;
 
-  public WidgetController$Route(WidgetController controller, Jsonb jsonB) {
+  public WidgetController$Route(WidgetController controller, Jsonb jsonb) {
     this.controller = controller;
-    this.widgetJsonType = jsonB.type(Widget.class);
-    this.listWidgetJsonType = jsonB.type(Widget.class).list();
+    this.widgetController$WidgetJsonType = jsonb.type(WidgetController.Widget.class);
+    this.listWidgetController$WidgetJsonType = jsonb.type(WidgetController.Widget.class).list();
   }
 
   @Override
@@ -249,18 +250,20 @@ public class WidgetController$Route implements HttpFeature {
   }
 
   private void _getById(ServerRequest req, ServerResponse res) throws Exception {
+    res.status(OK_200);
     var pathParams = req.path().pathParameters();
-    int id = asInt(pathParams.first("id").get());
+    var id = asInt(pathParams.first("id").get());
     var result = controller.getById(id);
-    res.headers().contentType(HttpMediaType.APPLICATION_JSON);
-    widgetJsonType.toJson(result, JsonOutput.of(res));
+    res.headers().contentType(MediaTypes.APPLICATION_JSON);
+    widgetController$WidgetJsonType.toJson(result, JsonOutput.of(res));
   }
 
   private void _getAll(ServerRequest req, ServerResponse res) throws Exception {
-    var pathParams = req.path().pathParameters();
+    res.status(OK_200);
     var result = controller.getAll();
-    res.headers().contentType(HttpMediaType.APPLICATION_JSON);
-    listWidgetJsonType.toJson(result, JsonOutput.of(res));
+    res.headers().contentType(MediaTypes.APPLICATION_JSON);
+    listWidgetController$WidgetJsonType.toJson(result, JsonOutput.of(res));
   }
+
 }
 ```
