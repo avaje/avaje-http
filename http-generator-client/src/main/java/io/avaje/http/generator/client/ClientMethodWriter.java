@@ -4,7 +4,6 @@ import static io.avaje.http.generator.core.ProcessingContext.*;
 import io.avaje.http.generator.core.*;
 
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 import java.util.List;
@@ -42,6 +41,10 @@ class ClientMethodWriter {
 
   void addImportTypes(ControllerReader reader) {
     reader.addImportTypes(returnType.importTypes());
+    method.throwsList().stream()
+        .map(UType::parse)
+        .map(UType::importTypes)
+        .forEach(reader::addImportTypes);
     for (final MethodParam param : method.params()) {
       reader.addImportTypes(param.utype().importTypes());
     }
@@ -295,10 +298,13 @@ private void writeEnd() {
                     .map(Util::trimAnnotations)
                     .anyMatch("io.avaje.http.client.HttpException"::equals))
         .findFirst()
+        .map(TypeElement::getQualifiedName)
+        .map(Object::toString)
+        .map(Util::shortName)
         .ifPresent(
             exception ->
                 writer
-                    .append("      .errorMapper(%s::new)", exception.getQualifiedName().toString())
+                    .append("      .errorMapper(%s::new)", exception)
                     .eol());
   }
 
