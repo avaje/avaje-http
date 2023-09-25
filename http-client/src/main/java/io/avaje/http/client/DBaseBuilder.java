@@ -10,13 +10,13 @@ import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.ProxySelector;
+import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
-import java.net.http.HttpClient;
 
 import static java.util.Objects.requireNonNull;
 
@@ -97,9 +97,9 @@ abstract class DBaseBuilder {
 
   private HttpClient defaultClient() {
     final var builder =
-        HttpClient.newBuilder()
-            .followRedirects(redirect)
-            .connectTimeout(connectionTimeout);
+      HttpClient.newBuilder()
+        .followRedirects(redirect)
+        .connectTimeout(connectionTimeout);
     if (cookieHandler != null) {
       builder.cookieHandler(cookieHandler);
     }
@@ -127,7 +127,9 @@ abstract class DBaseBuilder {
     return builder.build();
   }
 
-  /** Create a reasonable default BodyAdapter if avaje-jsonb or Jackson are present. */
+  /**
+   * Create a reasonable default BodyAdapter if avaje-jsonb or Jackson are present.
+   */
   private BodyAdapter defaultBodyAdapter() {
     if (detectJsonb()) {
       bodyAdapter = new JsonbBodyAdapter();
@@ -157,9 +159,7 @@ abstract class DBaseBuilder {
   DHttpClientContext buildClient() {
     requireNonNull(baseUrl, "baseUrl is not specified");
     requireNonNull(requestTimeout, "requestTimeout is not specified");
-    if (client == null) {
-      client = defaultClient();
-    }
+    final var httpClient = client != null ? client : defaultClient();
     if (requestLogging) {
       // register the built-in request/response logging
       this.listeners.add(new RequestLogger());
@@ -168,14 +168,14 @@ abstract class DBaseBuilder {
       bodyAdapter = defaultBodyAdapter();
     }
     return new DHttpClientContext(
-        client,
-        baseUrl,
-        requestTimeout,
-        bodyAdapter,
-        retryHandler,
-        errorHandler,
-        buildListener(),
-        authTokenProvider,
-        buildIntercept());
+      httpClient,
+      baseUrl,
+      requestTimeout,
+      bodyAdapter,
+      retryHandler,
+      errorHandler,
+      buildListener(),
+      authTokenProvider,
+      buildIntercept());
   }
 }
