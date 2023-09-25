@@ -5,10 +5,7 @@ import static io.avaje.http.generator.core.ProcessingContext.docComment;
 import static io.avaje.http.generator.core.ProcessingContext.platform;
 import static io.avaje.http.generator.core.ProcessingContext.superMethods;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -467,5 +464,49 @@ public class MethodReader {
 
   public List<? extends TypeMirror> throwsList() {
     return throwsList;
+  }
+
+  /**
+   * Check if all the argument names have been lost which occurs if the
+   * imported API was previously compiled. All the argument names are
+   * arg0, arg1, arg2 etc.
+   */
+  public void checkArgumentNames() {
+    if (!params.isEmpty() && pathSegments != null) {
+      if (allArgParamNames()) {
+        final var namedSegments = namedSegments();
+        if (params.size() >= namedSegments.size()) {
+          // path params, take the names from the segments
+          for (int i = 0; i < namedSegments.size(); i++) {
+            MethodParam pathParam = params.get(i);
+            pathParam.overrideVarName(namedSegments.get(i).name(), ParamType.PATHPARAM);
+          }
+          // QueryParam and Headers which now require explicit names
+          for (int i = namedSegments.size(); i < params.size(); i++) {
+            MethodParam param = params.get(i);
+            param.overrideVarName(i);
+          }
+        }
+      }
+    }
+  }
+
+  private List<PathSegments.Segment> namedSegments() {
+    final var namedSegments = new ArrayList<PathSegments.Segment>();
+    for (PathSegments.Segment segment : pathSegments.segments()) {
+      if (!segment.isLiteral()) {
+        namedSegments.add(segment);
+      }
+    }
+    return namedSegments;
+  }
+
+  private boolean allArgParamNames() {
+    for (int i = 0; i < params.size(); i++) {
+      if (!params.get(i).name().equals("arg" + i)) {
+        return false;
+      }
+    }
+    return true;
   }
 }

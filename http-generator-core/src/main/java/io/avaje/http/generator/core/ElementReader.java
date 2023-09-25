@@ -24,13 +24,14 @@ public class ElementReader {
   private final String rawType;
   private final String shortType;
   private final TypeHandler typeHandler;
-  private final String varName;
   private final String snakeName;
   private final boolean formMarker;
   private final boolean contextType;
   private final boolean useValidation;
   private final boolean specialParam;
 
+  private boolean overrideVarNameError;
+  private String varName;
   private String paramName;
   private ParamType paramType;
   private String matrixParamName;
@@ -100,11 +101,8 @@ public class ElementReader {
   }
 
   TypeHandler initTypeHandler() {
-
     if (specialParam) {
-
-      final var typeOp =
-          Optional.ofNullable(type).or(() -> Optional.of(UType.parse(element.asType())));
+      final var typeOp = Optional.ofNullable(type).or(() -> Optional.of(UType.parse(element.asType())));
 
       final var mainTypeEnum =
           typeOp
@@ -135,7 +133,6 @@ public class ElementReader {
         return TypeMap.collectionHandler(typeOp.orElseThrow(), isEnumCollection);
       } else if (isMap) {
         this.isParamMap = true;
-
         return new TypeMap.StringHandler();
       }
     }
@@ -152,7 +149,6 @@ public class ElementReader {
   }
 
   private void readAnnotations(Element element, ParamType defaultType) {
-
     notNullKotlin = NotNullPrism.getInstanceOn(element) != null;
 
     final var defaultVal = DefaultPrism.getInstanceOn(element);
@@ -202,8 +198,7 @@ public class ElementReader {
       return;
     }
 
-    if ("java.lang.String".equals(element.asType().toString())
-        && BodyStringPrism.isPresent(element)) {
+    if ("java.lang.String".equals(element.asType().toString()) && BodyStringPrism.isPresent(element)) {
       this.paramType = ParamType.BODY;
       return;
     }
@@ -235,6 +230,24 @@ public class ElementReader {
     return varName;
   }
 
+  public boolean overrideVarNameError() {
+    return overrideVarNameError;
+  }
+
+  public void overrideVarName(String name, ParamType paramType) {
+    this.varName = name;
+    this.paramType = paramType;
+  }
+
+  public void overrideVarName(int position) {
+    if (paramName.equals("arg" + position)) {
+      overrideVarNameError = true;
+      // varName += " /** @QueryParam(name=...) required  */ ";
+    } else {
+      varName = paramName;
+    }
+  }
+
   private boolean hasParamDefault() {
     return paramDefault != null && !paramDefault.isEmpty();
   }
@@ -256,7 +269,6 @@ public class ElementReader {
   }
 
   void addImports(ControllerReader bean) {
-
     bean.addImportTypes(imports);
   }
 
@@ -295,8 +307,7 @@ public class ElementReader {
   }
 
   void writeCtxGet(Append writer, PathSegments segments) {
-    if (isPlatformContext()
-        || (paramType == ParamType.BODY && platform().isBodyMethodParam())) {
+    if (isPlatformContext() || (paramType == ParamType.BODY && platform().isBodyMethodParam())) {
       // body passed as method parameter (Helidon)
       return;
     }
@@ -316,7 +327,6 @@ public class ElementReader {
   }
 
   private boolean setValue(Append writer, PathSegments segments, String shortType) {
-
     if (ParamType.FORM == paramType) {
       writeForm(writer, shortType, varName, ParamType.FORMPARAM);
       return false;
@@ -367,13 +377,11 @@ public class ElementReader {
     } else if (hasParamDefault()) {
       platform().writeReadParameter(writer, paramType, paramName, paramDefault.get(0));
     } else {
-      final var checkNull =
-          notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
+      final var checkNull = notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
       if (checkNull) {
         writer.append("checkNull(");
       }
       platform().writeReadParameter(writer, paramType, paramName);
-      // writer.append("%s(\"%s\")", paramType, paramName);
       if (checkNull) {
         writer.append(", \"%s\")", paramName);
       }

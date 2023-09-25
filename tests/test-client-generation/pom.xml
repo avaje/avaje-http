@@ -11,6 +11,8 @@
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <surefire.useModulePath>false</surefire.useModulePath>
   </properties>
 
   <dependencies>
@@ -96,7 +98,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.10.1</version>
+        <version>3.11.0</version>
         <configuration>
           <annotationProcessorPaths>
             <path>
