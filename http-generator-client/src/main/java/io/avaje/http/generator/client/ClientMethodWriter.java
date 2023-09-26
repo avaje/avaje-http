@@ -217,12 +217,17 @@ private void writeEnd() {
         }
         if (param.overrideVarNameError()) {
           clientImportError = true;
-          writer.append(" // !Error!");
+          writer.append(" // !Error! with %s", param.name());
         }
         writer.eol();
       }
     }
     if (clientImportError) {
+      writer.append("   ; !Error!").eol();
+      writer.eol();
+      writer.append("   // Explicit @QueryParam(\"...\") required with @Client.Import").eol();
+      writer.append("   // Refer to: https://avaje.io/http/client/import#error").eol();
+      writer.eol();
       logError(
           "Explicit @QueryParam/@Header annotations required when using @Client.Import on an interface that has already been compiled.",
           method.element());
