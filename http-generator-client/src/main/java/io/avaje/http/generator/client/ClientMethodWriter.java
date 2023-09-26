@@ -54,6 +54,7 @@ class ClientMethodWriter {
     for (MethodParam param : method.params()) {
       checkBodyHandler(param);
     }
+    method.checkArgumentNames();
     writer.append("  // %s %s", webMethod, method.webMethodPath()).eol();
     writer.append("  @Override").eol();
     AnnotationUtil.writeAnnotations(writer, method.element());
@@ -72,8 +73,10 @@ class ClientMethodWriter {
               ? "Supplier<? extends InputStream>"
               : param.utype().shortType();
 
-      final var finalType =
-          isVarArg ? paramType.substring(0, paramType.length() - 2) + "..." : paramType;
+      if (param.overrideVarNameError()) {
+        writer.append("/** !Error! */ ");
+      }
+      final var finalType = isVarArg ? paramType.substring(0, paramType.length() - 2) + "..." : paramType;
       writer.append(finalType).append(" ");
       writer.append(param.name());
     }
@@ -203,15 +206,33 @@ private void writeEnd() {
   }
 
   private void writeQueryParams(PathSegments pathSegments) {
+    boolean clientImportError = false;
     for (final MethodParam param : method.params()) {
       final ParamType paramType = param.paramType();
       if (paramType == ParamType.QUERYPARAM && pathSegments.segment(param.paramName()) == null) {
         if (isMap(param)) {
-          writer.append("      .queryParam(%s)", param.name()).eol();
+          writer.append("      .queryParam(%s)", param.name());
         } else {
-          writer.append("      .queryParam(\"%s\", %s)", param.paramName(), param.name()).eol();
+          writer.append("      .queryParam(\"%s\", %s)", param.paramName(), param.name());
         }
+        if (param.overrideVarNameError()) {
+          clientImportError = true;
+          writer.append(" // !Error!");
+        }
+        writer.eol();
       }
+    }
+    if (clientImportError) {
+      writer.eol();
+      writer.append("   ; !Error! // Explicit @QueryParam(\"...\") required with @Client.Import").eol();
+      writer.append("   // generation when using @Client.Import on on interface that has already been compiled.").eol();
+      writer.append("   // We effectively lose the method argument names, they become arg0, arg1, arg2, arg3 etc.").eol();
+      writer.append("   // We need to use explicit @QueryParam(\"...\") on the interface method parameters").eol();
+      writer.append("   // to explicitly name the query parameters and header parameters etc and can no").eol();
+      writer.append("   // longer rely on the implied names [when the interface type has already been compiled].").eol();
+      writer.append("   //").eol();
+      writer.append("   // Refer to: https://avaje.io/http/client/import#error").eol();
+      writer.eol();
     }
   }
 

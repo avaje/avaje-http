@@ -1,5 +1,6 @@
 package org.example;
 
+import io.avaje.http.api.Client;
 import io.avaje.http.client.HttpClient;
 import io.avaje.http.client.JacksonBodyAdapter;
 import org.example.server.Main;
@@ -11,6 +12,7 @@ import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Client.Import(types = CommonApi.class)
 class CommonApiTest {
 
   static CommonApi client;

@@ -2,7 +2,6 @@ package io.avaje.http.generator.core;
 
 import static io.avaje.http.generator.core.ProcessingContext.asElement;
 
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.VariableElement;
 
@@ -67,6 +66,18 @@ public class MethodParam {
 
   public String name() {
     return elementParam.varName();
+  }
+
+  public boolean overrideVarNameError() {
+    return elementParam.overrideVarNameError();
+  }
+
+  public void overrideVarName(String name, ParamType paramType) {
+    elementParam.overrideVarName(name, paramType);
+  }
+
+  public void overrideVarName(int position) {
+    elementParam.overrideVarName(position);
   }
 
   public String paramName() {

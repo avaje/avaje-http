@@ -83,8 +83,7 @@ class NimaPlatformAdapter implements PlatformAdapter {
   }
 
   @Override
-  public void writeReadParameter(
-      Append writer, ParamType paramType, String paramName, String paramDefault) {
+  public void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault) {
     switch (paramType) {
       case PATHPARAM -> writer.append(
           "pathParams.first(\"%s\").orElse(\"%s\")", paramName, paramDefault);

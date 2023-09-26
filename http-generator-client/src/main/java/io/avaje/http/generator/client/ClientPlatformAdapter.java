@@ -45,8 +45,7 @@ class ClientPlatformAdapter implements PlatformAdapter {
   public void writeReadParameter(Append writer, ParamType paramType, String paramName) {}
 
   @Override
-  public void writeReadParameter(
-      Append writer, ParamType paramType, String paramName, String paramDefault) {}
+  public void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault) {}
 
   @Override
   public void writeAcceptLanguage(Append writer) {}

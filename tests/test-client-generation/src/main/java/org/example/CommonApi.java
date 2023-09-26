@@ -3,6 +3,7 @@ package org.example;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Produces;
+import io.avaje.http.api.QueryParam;
 
 import java.time.LocalDate;
 
@@ -19,6 +20,6 @@ public interface CommonApi {
 
   @Produces("text/plain")
   @Get("{id}/{name}")
-  String p2(long id, String name, LocalDate after, Boolean more);
+  String p2(long id, String name, @QueryParam("after") LocalDate after, @QueryParam("more") Boolean more);
 
 }
