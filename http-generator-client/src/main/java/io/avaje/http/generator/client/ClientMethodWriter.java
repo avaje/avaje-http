@@ -224,7 +224,7 @@ private void writeEnd() {
     }
     if (clientImportError) {
       logError(
-          "Explicit @QueryParam(\\\"...\\\") required when using @Client.Import on an interface that has already been compiled.",
+          "Explicit @QueryParam/@Header annotations required when using @Client.Import on an interface that has already been compiled.",
           method.element());
     }
   }
