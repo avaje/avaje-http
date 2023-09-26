@@ -223,16 +223,9 @@ private void writeEnd() {
       }
     }
     if (clientImportError) {
-      writer.eol();
-      writer.append("   ; !Error! // Explicit @QueryParam(\"...\") required with @Client.Import").eol();
-      writer.append("   // generation when using @Client.Import on on interface that has already been compiled.").eol();
-      writer.append("   // We effectively lose the method argument names, they become arg0, arg1, arg2, arg3 etc.").eol();
-      writer.append("   // We need to use explicit @QueryParam(\"...\") on the interface method parameters").eol();
-      writer.append("   // to explicitly name the query parameters and header parameters etc and can no").eol();
-      writer.append("   // longer rely on the implied names [when the interface type has already been compiled].").eol();
-      writer.append("   //").eol();
-      writer.append("   // Refer to: https://avaje.io/http/client/import#error").eol();
-      writer.eol();
+      logError(
+          "Explicit @QueryParam(\\\"...\\\") required when using @Client.Import on an interface that has already been compiled.",
+          method.element());
     }
   }
 
