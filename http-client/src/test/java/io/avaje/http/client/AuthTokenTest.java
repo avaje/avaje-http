@@ -45,7 +45,7 @@ public class AuthTokenTest {
   @Test
   void sendEmail() {
 
-    var ctx = HttpClient.builder()
+    var client = HttpClient.builder()
       .baseUrl("https://foo")
       .bodyAdapter(new JacksonBodyAdapter(objectMapper))
       .authTokenProvider(new MyAuthTokenProvider())
@@ -53,14 +53,14 @@ public class AuthTokenTest {
 
     String path = "bar";
 
-    HttpResponse<String> res = ctx.request()
+    HttpResponse<String> res = client.request()
       .path(path)
       .header("Content-Type", "application/json")
       //.body(payload)
       .POST()
       .asString();
 
-    HttpResponse<String> res2 = ctx.request()
+    HttpResponse<String> res2 = client.request()
       .path(path)
       .header("Content-Type", "application/json")
       //.body(payload)

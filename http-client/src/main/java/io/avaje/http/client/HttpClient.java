@@ -93,6 +93,12 @@ public interface HttpClient {
   HttpClient.Metrics metrics(boolean reset);
 
   /**
+   * Return a Builder that has the configuration of this client such
+   * as request interceptors, global error handler etc.
+   */
+  Builder toBuilder();
+
+  /**
    * Builds the HttpClient.
    *
    * <pre>{@code
@@ -160,7 +166,7 @@ public interface HttpClient {
     /**
      * Disable or enable built in request and response logging.
      * <p>
-     * By default request logging is enabled. Set this to false to stop
+     * By default, request logging is enabled. Set this too false to stop
      * the default {@link RequestLogger} being registered to log request
      * and response headers and bodies etc.
      * <p>

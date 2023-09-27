@@ -31,8 +31,9 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   private final RequestListener requestListener;
   private final RequestIntercept requestIntercept;
   private final RetryHandler retryHandler;
-  private final boolean withAuthToken;
+  private final Function<HttpException, RuntimeException> errorHandler;
   private final AuthTokenProvider authTokenProvider;
+  private final boolean withAuthToken;
   private final AtomicReference<AuthToken> tokenRef = new AtomicReference<>();
 
   private final LongAdder metricResTotal = new LongAdder();
@@ -40,7 +41,6 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   private final LongAdder metricResBytes = new LongAdder();
   private final LongAdder metricResMicros = new LongAdder();
   private final LongAccumulator metricResMaxMicros = new LongAccumulator(Math::max, 0);
-  private final Function<HttpException, RuntimeException> errorHandler;
 
   DHttpClientContext(
       java.net.http.HttpClient httpClient,
@@ -62,6 +62,19 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     this.authTokenProvider = authTokenProvider;
     this.withAuthToken = authTokenProvider != null;
     this.requestIntercept = intercept;
+  }
+
+  @Override
+  public Builder toBuilder() {
+    return HttpClient.builder()
+      .baseUrl(baseUrl)
+      .requestTimeout(requestTimeout)
+      .bodyAdapter(bodyAdapter)
+      .requestListener(requestListener)
+      .requestIntercept(requestIntercept)
+      .retryHandler(retryHandler)
+      .authTokenProvider(authTokenProvider)
+      .globalErrorMapper(errorHandler);
   }
 
   @Override
