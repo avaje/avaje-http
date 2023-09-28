@@ -22,7 +22,7 @@ import io.avaje.http.generator.core.UType;
 class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-helidon-generator\")";
-  private static final String IMPORT_HTTP_STATUS = "import static io.helidon.http.Http.Status.*;";
+  private static final String IMPORT_HTTP_STATUS = "import static io.helidon.http.Status.*;";
 
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
@@ -48,9 +48,9 @@ class ControllerWriter extends BaseControllerWriter {
     reader.addImportType("io.helidon.webserver.http.ServerRequest");
     reader.addImportType("io.helidon.webserver.http.ServerResponse");
     reader.addImportType("io.helidon.webserver.http.HttpFeature");
-    reader.addImportType("io.helidon.http.Http.HeaderNames");
+    reader.addImportType("io.helidon.http.HeaderNames");
     if (reader.isIncludeValidator()) {
-      reader.addImportType("io.helidon.http.Http");
+      reader.addImportType("io.helidon.http.HeaderName");
     }
     if (reader.methods().stream()
         .map(MethodReader::webMethod)
@@ -118,7 +118,7 @@ class ControllerWriter extends BaseControllerWriter {
     }
 
     if (reader.isIncludeValidator()) {
-      writer.append("  private static final Http.HeaderName HEADER_ACCEPT_LANGUAGE = HeaderNames.create(\"Accept-Language\");").eol();
+      writer.append("  private static final HeaderName HEADER_ACCEPT_LANGUAGE = HeaderNames.create(\"Accept-Language\");").eol();
     }
 
     writer.append("  private final %s %s;", controllerType, controllerName).eol();
