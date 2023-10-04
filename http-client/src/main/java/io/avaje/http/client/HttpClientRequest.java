@@ -180,22 +180,11 @@ public interface HttpClientRequest {
   HttpClientRequest url(String url);
 
   /**
-   * Set the URL to use replacing the base URL.
-   * <pre>{code
+   * The URL for this request including the query parameters.
    *
-   *  HttpResponse<String> res = client.request()
-   *       .url("http://127.0.0.1:8889")
-   *       .path("hello")
-   *       .GET()
-   *       .asString();
-   *
-   * }</pre>
-   *
-   * @param url The url effectively replacing the base url.
-   * @return The request being built
-   * @see HttpClient.Builder#baseUrl(String)
+   * @return The url for this request
    */
-  UrlBuilder url();
+  String url();
 
   /**
    * Add a path segment to the URL.
