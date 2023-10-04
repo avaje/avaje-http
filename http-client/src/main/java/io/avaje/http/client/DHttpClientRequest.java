@@ -448,7 +448,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-public HttpClientResponse GET() {
+  public HttpClientResponse GET() {
     httpRequest = newGet(url.build());
     return this;
   }
