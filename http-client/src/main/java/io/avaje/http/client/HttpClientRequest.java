@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -146,6 +147,13 @@ public interface HttpClientRequest {
   List<String> header(String name);
 
   /**
+   * Return the header values that have been set for this request.
+   *
+   * @return The headers values or an empty map if no headers have been specified yet.
+   */
+  Map<String, List<String>> headers();
+
+  /**
    * Set if body content should be gzip encoded.
    *
    * @param gzip Set true to gzip encode the body content.
@@ -170,6 +178,24 @@ public interface HttpClientRequest {
    * @see HttpClient.Builder#baseUrl(String)
    */
   HttpClientRequest url(String url);
+
+  /**
+   * Set the URL to use replacing the base URL.
+   * <pre>{code
+   *
+   *  HttpResponse<String> res = client.request()
+   *       .url("http://127.0.0.1:8889")
+   *       .path("hello")
+   *       .GET()
+   *       .asString();
+   *
+   * }</pre>
+   *
+   * @param url The url effectively replacing the base url.
+   * @return The request being built
+   * @see HttpClient.Builder#baseUrl(String)
+   */
+  UrlBuilder url();
 
   /**
    * Add a path segment to the URL.
@@ -388,6 +414,13 @@ public interface HttpClientRequest {
    * @return The request being built
    */
   HttpClientRequest body(HttpRequest.BodyPublisher body);
+
+  /**
+   * Get the body content for this request if available. Will return an empty optional for streaming calls
+   *
+   * @return The request body
+   */
+  Optional<BodyContent> bodyContent();
 
   /**
    * Set the mapper used to transform {@link HttpException} into a different kind of exception.

@@ -26,6 +26,9 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   private static final String CONTENT_TYPE = "Content-Type";
   private static final String CONTENT_ENCODING = "Content-Encoding";
+  private static final String VERB_GET = "GET";
+  private static final String VERB_POST = "POST";
+  private static final String VERB_PUT = "PUT";
   private static final String VERB_DELETE = "DELETE";
   private static final String VERB_HEAD = "HEAD";
   private static final String VERB_PATCH = "PATCH";
@@ -58,12 +61,27 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private Map<String, Object> customAttributes;
   protected Function<HttpException, RuntimeException> errorMapper;
   protected boolean isRetry;
+  private String method;
 
   DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
     this.context = context;
     this.requestTimeout = requestTimeout;
     this.url = context.url();
     this.errorMapper = context.errorMapper();
+  }
+
+  public String method() {
+    return method;
+  }
+
+  @Override
+  public UrlBuilder url() {
+    return url;
+  }
+
+  @Override
+  public Optional<BodyContent> bodyContent() {
+    return Optional.ofNullable(encodedRequestBody);
   }
 
   @Override
@@ -164,10 +182,18 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   @Override
   public List<String> header(String name) {
     if (headers == null) {
-      return Collections.emptyList();
+      return List.of();
     }
     final List<String> values = headers.get(name);
-    return values == null ? Collections.emptyList() : values;
+    return values == null ? List.of() : values;
+  }
+
+  @Override
+  public Map<String, List<String>> headers() {
+    if (headers == null) {
+      return Map.of();
+    }
+    return headers;
   }
 
   @Override
@@ -421,7 +447,8 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return this;
   }
 
-  public HttpClientResponse GET() {
+  @Override
+public HttpClientResponse GET() {
     httpRequest = newGet(url.build());
     return this;
   }
@@ -731,14 +758,17 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   private HttpRequest.Builder newGet(String url) {
+    this.method = VERB_GET;
     return newReq(url).GET();
   }
 
   private HttpRequest.Builder newPost(String url, HttpRequest.BodyPublisher body) {
+    this.method = VERB_POST;
     return newReq(url).POST(body);
   }
 
   private HttpRequest.Builder newPut(String url, HttpRequest.BodyPublisher body) {
+    this.method = VERB_PUT;
     return newReq(url).PUT(body);
   }
 
@@ -759,6 +789,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     if (body == null) {
       throw new IllegalArgumentException("body is null but required for " + method + " to " + url);
     }
+    this.method = method;
     return HttpRequest.newBuilder()
       .uri(URI.create(url))
       .timeout(requestTimeout)
@@ -777,7 +808,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return skipAuthToken;
   }
 
-  private class ListenerEvent implements RequestListener.Event {
+private class ListenerEvent implements RequestListener.Event {
 
     @Override
     public long responseTimeMicros() {
