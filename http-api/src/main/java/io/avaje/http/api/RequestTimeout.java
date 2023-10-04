@@ -23,7 +23,10 @@ import java.time.temporal.ChronoUnit;
 @Target(METHOD)
 @Retention(RUNTIME)
 public @interface RequestTimeout {
+
+  /** How long the timeout should be */
   long value();
 
+  /** Unit of time of the timeout value */
   ChronoUnit chronoUnit() default ChronoUnit.MILLIS;
 }

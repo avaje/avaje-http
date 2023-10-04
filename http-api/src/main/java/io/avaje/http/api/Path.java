@@ -3,6 +3,8 @@ package io.avaje.http.api;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import static java.lang.annotation.ElementType.MODULE;
+import static java.lang.annotation.ElementType.PACKAGE;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -26,8 +28,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * include a path as well.
  * </p>
  */
-@Target(value=TYPE)
-@Retention(value=RUNTIME)
+@Target({TYPE, PACKAGE, MODULE})
+@Retention(RUNTIME)
 public @interface Path {
   String value();
 }

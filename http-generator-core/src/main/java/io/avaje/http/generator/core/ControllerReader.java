@@ -152,7 +152,7 @@ public final class ControllerReader {
   }
 
   <A> Optional<A> findMethodAnnotation(Function<Element, Optional<A>> func, ExecutableElement element) {
-    for (final ExecutableElement interfaceMethod : interfaceMethods) {
+    for (final var interfaceMethod : interfaceMethods) {
       if (matchMethod(interfaceMethod, element)) {
         final var annotation = func.apply(interfaceMethod);
         if (annotation.isPresent()) {
@@ -318,8 +318,8 @@ public final class ControllerReader {
 
   public String path() {
 
-    return findAnnotation(ControllerPrism::getOptionalOn)
-        .map(ControllerPrism::value)
+    return findAnnotation(WebAPIPrism::getOptionalOn)
+        .map(WebAPIPrism::value)
         .filter(not(String::isBlank))
         .or(() -> findAnnotation(PathPrism::getOptionalOn).map(PathPrism::value))
         .map(Util::trimPath)

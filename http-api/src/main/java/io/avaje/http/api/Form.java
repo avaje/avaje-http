@@ -66,8 +66,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * }</pre>
  */
-@Target(value={PARAMETER,METHOD})
-@Retention(value=RUNTIME)
+@Target({PARAMETER,METHOD})
+@Retention(RUNTIME)
 public @interface Form {
 
 }

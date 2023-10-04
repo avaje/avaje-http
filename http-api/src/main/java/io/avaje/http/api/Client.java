@@ -22,24 +22,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * }
  *
  * }</pre>
- *
- * <h3>Client.Import</h3>
- *
- * <p>When the client interface already exists in another module we use <code>Client.Import</code>
- * to generate the client.
- *
- * <p>Specify the <code>@Client.Import</code> on the package or class to refer to the client
- * interface we want to generate.
- *
- * <pre>{@code
- * @Client.Import(types = OtherApi.class)
- * package org.example;
- *
- * }</pre>
  */
-@Target(value = TYPE)
-@Retention(value = RUNTIME)
+@Target(TYPE)
+@Retention(RUNTIME)
 public @interface Client {
+
+  /** Specify the path mapping request to the controller. */
+  String value() default "";
 
   /**
    * Flag to set whether to generate a Client Implementation. Set false if the interface exists merely to be extended by
@@ -57,7 +46,7 @@ public @interface Client {
    *
    * }</pre>
    */
-  @Target(value = {TYPE, PACKAGE})
+  @Target({TYPE, PACKAGE})
   @Retention(RUNTIME)
   @interface Import {
 
