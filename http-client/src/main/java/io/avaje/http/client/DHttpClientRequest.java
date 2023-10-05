@@ -70,6 +70,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     this.errorMapper = context.errorMapper();
   }
 
+  @Override
   public String method() {
     return method;
   }
@@ -808,7 +809,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return skipAuthToken;
   }
 
-private class ListenerEvent implements RequestListener.Event {
+  private class ListenerEvent implements RequestListener.Event {
 
     @Override
     public long responseTimeMicros() {

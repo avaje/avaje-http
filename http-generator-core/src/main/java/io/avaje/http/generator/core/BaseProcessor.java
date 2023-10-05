@@ -25,9 +25,9 @@ import javax.lang.model.util.ElementFilter;
 @SupportedOptions({"useJavax", "useSingleton", "instrumentRequests","disableDirectWrites"})
 public abstract class BaseProcessor extends AbstractProcessor {
 
-  String contextPathString;
+  protected String contextPathString;
 
-  Map<String, String> packagePaths= new HashMap<>();
+  protected Map<String, String> packagePaths = new HashMap<>();
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -50,7 +50,6 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
-
     var pathElements = round.getElementsAnnotatedWith(typeElement(PathPrism.PRISM_TYPE));
 
     if (contextPathString == null) {
@@ -74,9 +73,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
       readSecuritySchemes(round);
     }
 
-    final Set<? extends Element> controllers =
-        round.getElementsAnnotatedWith(typeElement(ControllerPrism.PRISM_TYPE));
-    for (final Element controller : controllers) {
+    for (final Element controller : round.getElementsAnnotatedWith(typeElement(ControllerPrism.PRISM_TYPE))) {
       writeAdapter(controller);
     }
 
@@ -87,35 +84,26 @@ public abstract class BaseProcessor extends AbstractProcessor {
   }
 
   private void readOpenApiDefinition(RoundEnvironment round) {
-    final Set<? extends Element> elements =
-        round.getElementsAnnotatedWith(typeElement(OpenAPIDefinitionPrism.PRISM_TYPE));
-    for (final Element element : elements) {
+    for (final Element element : round.getElementsAnnotatedWith(typeElement(OpenAPIDefinitionPrism.PRISM_TYPE))) {
       doc().readApiDefinition(element);
     }
   }
 
   private void readTagDefinitions(RoundEnvironment round) {
-    Set<? extends Element> elements =
-        round.getElementsAnnotatedWith(typeElement(TagPrism.PRISM_TYPE));
-    for (final Element element : elements) {
+    for (final Element element : round.getElementsAnnotatedWith(typeElement(TagPrism.PRISM_TYPE))) {
       doc().addTagDefinition(element);
     }
-
-    elements = round.getElementsAnnotatedWith(typeElement(TagsPrism.PRISM_TYPE));
-    for (final Element element : elements) {
+    for (final Element element : round.getElementsAnnotatedWith(typeElement(TagsPrism.PRISM_TYPE))) {
       doc().addTagsDefinition(element);
     }
   }
 
   private void readSecuritySchemes(RoundEnvironment round) {
-    Set<? extends Element> elements = round.getElementsAnnotatedWith(typeElement(SecuritySchemePrism.PRISM_TYPE));
-    for (final Element element : elements) {
-        doc().addSecurityScheme(element);
+    for (final Element element : round.getElementsAnnotatedWith(typeElement(SecuritySchemePrism.PRISM_TYPE))) {
+      doc().addSecurityScheme(element);
     }
-
-    elements = round.getElementsAnnotatedWith(typeElement(SecuritySchemesPrism.PRISM_TYPE));
-    for (final Element element : elements) {
-        doc().addSecuritySchemes(element);
+    for (final Element element : round.getElementsAnnotatedWith(typeElement(SecuritySchemesPrism.PRISM_TYPE))) {
+      doc().addSecuritySchemes(element);
     }
   }
 
@@ -125,26 +113,24 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   private void writeAdapter(Element controller) {
     if (controller instanceof TypeElement) {
-
-      var packageFQN = elements().getPackageOf(controller).getQualifiedName().toString();
-      var contextPath =
-          Util.combinePath(
-              contextPathString,
-              packagePaths.entrySet().stream()
-                  .filter(k -> packageFQN.startsWith(k.getKey()))
-                  .map(Entry::getValue)
-                  .reduce(Util::combinePath)
-                  .orElse(null));
-
-      final ControllerReader reader = new ControllerReader((TypeElement) controller, contextPath);
+      final var packageFQN = elements().getPackageOf(controller).getQualifiedName().toString();
+      final var contextPath = Util.combinePath(contextPathString, packagePath(packageFQN));
+      final var reader = new ControllerReader((TypeElement) controller, contextPath);
       reader.read(true);
       try {
         writeControllerAdapter(reader);
       } catch (final Throwable e) {
-        e.printStackTrace();
         logError(reader.beanType(), "Failed to write $Route class " + e);
       }
     }
+  }
+
+  private String packagePath(String packageFQN) {
+    return packagePaths.entrySet().stream()
+      .filter(k -> packageFQN.startsWith(k.getKey()))
+      .map(Entry::getValue)
+      .reduce(Util::combinePath)
+      .orElse(null);
   }
 
   /**

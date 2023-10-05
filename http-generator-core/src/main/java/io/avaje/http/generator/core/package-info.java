@@ -1,12 +1,6 @@
 /** Generate the prisms to access annotation info */
-@GeneratePrism(
-    value = io.avaje.http.api.Controller.class,
-    publicAccess = true,
-    superInterfaces = WebAPIPrism.class)
-@GeneratePrism(
-    value = io.avaje.http.api.Client.class,
-    publicAccess = true,
-    superInterfaces = WebAPIPrism.class)
+@GeneratePrism(value = io.avaje.http.api.Controller.class, publicAccess = true, superInterfaces = WebAPIPrism.class)
+@GeneratePrism(value = io.avaje.http.api.Client.class, publicAccess = true, superInterfaces = WebAPIPrism.class)
 @GeneratePrism(value = io.avaje.http.api.BeanParam.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Ignore.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.QueryParam.class, publicAccess = true)
@@ -31,18 +25,10 @@
 @GeneratePrism(value = io.swagger.v3.oas.annotations.OpenAPIDefinition.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.tags.Tag.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.tags.Tags.class, publicAccess = true)
-@GeneratePrism(
-    value = io.swagger.v3.oas.annotations.security.SecurityScheme.class,
-    publicAccess = true)
-@GeneratePrism(
-    value = io.swagger.v3.oas.annotations.security.SecuritySchemes.class,
-    publicAccess = true)
-@GeneratePrism(
-    value = io.swagger.v3.oas.annotations.security.SecurityRequirement.class,
-    publicAccess = true)
-@GeneratePrism(
-    value = io.swagger.v3.oas.annotations.security.SecurityRequirements.class,
-    publicAccess = true)
+@GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecurityScheme.class, publicAccess = true)
+@GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecuritySchemes.class, publicAccess = true)
+@GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecurityRequirement.class, publicAccess = true)
+@GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecurityRequirements.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.OpenAPIResponse.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.OpenAPIResponses.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.Hidden.class, publicAccess = true)
