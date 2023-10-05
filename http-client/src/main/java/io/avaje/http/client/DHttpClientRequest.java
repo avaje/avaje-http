@@ -82,6 +82,9 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public Optional<BodyContent> bodyContent() {
+    if (rawRequestBody != null) {
+      return Optional.of(new BodyContent(null, rawRequestBody.getBytes(StandardCharsets.UTF_8)));
+    }
     return Optional.ofNullable(encodedRequestBody);
   }
 
@@ -303,7 +306,6 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public HttpClientRequest body(Object bean, String contentType) {
-
     return body(bean, bean.getClass(), contentType);
   }
 
@@ -333,7 +335,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public HttpClientRequest body(byte[] bytes) {
-    this.body = HttpRequest.BodyPublishers.ofByteArray(bytes);
+    this.encodedRequestBody = new BodyContent(null, bytes);
     return this;
   }
 
