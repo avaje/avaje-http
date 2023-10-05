@@ -41,7 +41,6 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   private BodyContent encodedRequestBody;
   private HttpRequest.BodyPublisher body;
-  private String rawRequestBody;
 
   private HttpRequest.Builder httpRequest;
 
@@ -82,9 +81,6 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public Optional<BodyContent> bodyContent() {
-    if (rawRequestBody != null) {
-      return Optional.of(new BodyContent(null, rawRequestBody.getBytes(StandardCharsets.UTF_8)));
-    }
     return Optional.ofNullable(encodedRequestBody);
   }
 
@@ -328,14 +324,14 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public HttpClientRequest body(String body) {
-    this.rawRequestBody = body;
+    this.encodedRequestBody = BodyContent.of(body);
     this.body = HttpRequest.BodyPublishers.ofString(body);
     return this;
   }
 
   @Override
   public HttpClientRequest body(byte[] bytes) {
-    this.encodedRequestBody = new BodyContent(null, bytes);
+    this.encodedRequestBody = BodyContent.of(bytes);
     return this;
   }
 
@@ -838,11 +834,9 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
       if (suppressLogging) {
         return "<suppressed request body>";
       } else if (encodedRequestBody != null) {
-        return new String(encodedRequestBody.content(), StandardCharsets.UTF_8);
+        return encodedRequestBody.contentAsUtf8();
       } else if (bodyFormEncoded) {
         return buildEncodedFormContent();
-      } else if (rawRequestBody != null) {
-        return rawRequestBody;
       } else if (body != null) {
         return body.toString();
       } else {

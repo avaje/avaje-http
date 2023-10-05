@@ -173,14 +173,14 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     final String contentType = getContentType(httpResponse);
     final Object body = httpResponse.body();
     if (body instanceof String) {
-      return new BodyContent(contentType, ((String) body).getBytes(StandardCharsets.UTF_8));
+      return BodyContent.of(contentType, (String) body);
     }
     if (body instanceof Stream) {
       var sb = new StringBuilder(50);
       for (Object line : ((Stream<Object>) body).collect(Collectors.toList())) {
         sb.append(line);
       }
-      return new BodyContent(contentType, sb.toString().getBytes(StandardCharsets.UTF_8));
+      return BodyContent.of(contentType, sb.toString());
     }
     final String type = (body == null) ? "null" : body.getClass().toString();
     throw new IllegalStateException("Unable to translate response body to bytes? Maybe use HttpResponse directly instead?  Response body type: " + type);
@@ -194,7 +194,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     }
     final byte[] bodyBytes = decodeContent(httpResponse);
     final String contentType = getContentType(httpResponse);
-    return new BodyContent(contentType, bodyBytes);
+    return BodyContent.of(contentType, bodyBytes);
   }
 
   String getContentType(HttpResponse<?> httpResponse) {
