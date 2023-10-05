@@ -1,7 +1,11 @@
 package io.avaje.http.generator.core;
 
 import static io.avaje.http.generator.core.ProcessingContext.*;
+import static java.util.stream.Collectors.toMap;
+
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -10,9 +14,14 @@ import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.ElementFilter;
 
 @SupportedOptions({"useJavax", "useSingleton", "instrumentRequests","disableDirectWrites"})
 public abstract class BaseProcessor extends AbstractProcessor {
+
+  String contextPathString;
+
+  Map<String, String> packagePaths= new HashMap<>();
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -21,7 +30,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
-    return Set.of(ControllerPrism.PRISM_TYPE, OpenAPIDefinitionPrism.PRISM_TYPE);
+    return Set.of(PathPrism.PRISM_TYPE, ControllerPrism.PRISM_TYPE, OpenAPIDefinitionPrism.PRISM_TYPE);
   }
 
   @Override
@@ -36,6 +45,22 @@ public abstract class BaseProcessor extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
 
+    var pathElements = round.getElementsAnnotatedWith(typeElement(PathPrism.PRISM_TYPE));
+
+    if (contextPathString == null) {
+      contextPathString =
+          ElementFilter.modulesIn(pathElements).stream()
+              .map(PathPrism::getInstanceOn)
+              .map(PathPrism::value)
+              .findFirst()
+              .orElse("");
+    }
+    packagePaths.putAll(
+        ElementFilter.packagesIn(pathElements).stream()
+            .collect(
+                toMap(
+                    p -> p.getQualifiedName().toString(),
+                    p -> PathPrism.getInstanceOn(p).value())));
 
     if (isOpenApiAvailable()) {
       readOpenApiDefinition(round);
@@ -94,7 +119,13 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   private void writeAdapter(Element controller) {
     if (controller instanceof TypeElement) {
-      final ControllerReader reader = new ControllerReader((TypeElement) controller);
+      var contextPath =
+          Util.combinePath(
+              contextPathString,
+              packagePaths.get(
+                  elements().getPackageOf(controller).getQualifiedName().toString()));
+
+      final ControllerReader reader = new ControllerReader((TypeElement) controller, contextPath);
       reader.read(true);
       try {
         writeControllerAdapter(reader);

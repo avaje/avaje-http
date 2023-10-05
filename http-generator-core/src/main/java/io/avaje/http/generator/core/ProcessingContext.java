@@ -287,4 +287,8 @@ public class ProcessingContext {
     }
     return getModuleElement(e.getEnclosingElement());
   }
+
+  static Elements elements() {
+    return CTX.get().elementUtils;
+  }
 }
