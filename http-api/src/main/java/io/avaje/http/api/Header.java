@@ -22,8 +22,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * }</pre>
  */
-@Target(value={PARAMETER,FIELD})
-@Retention(value=RUNTIME)
+@Target({PARAMETER,FIELD})
+@Retention(RUNTIME)
 public @interface Header {
 
   /**

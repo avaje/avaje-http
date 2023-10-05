@@ -7,8 +7,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /** Marks a method parameter to be a matrix parameter. */
-@Target(value = {PARAMETER})
-@Retention(value = RUNTIME)
+@Target({PARAMETER})
+@Retention(RUNTIME)
 public @interface MatrixParam {
 
   /**

@@ -10,8 +10,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Marks a method parameter to be a query parameter.
  */
-@Target(value={PARAMETER,FIELD})
-@Retention(value=RUNTIME)
+@Target({PARAMETER,FIELD})
+@Retention(RUNTIME)
 public @interface QueryParam {
 
   /**

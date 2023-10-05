@@ -41,6 +41,7 @@ public final class ControllerReader {
   private final Set<String> staticImportTypes = new TreeSet<>();
   private final Set<String> importTypes = new TreeSet<>();
   private final List<OpenAPIResponsePrism> apiResponses;
+  private final String contextPath;
 
   /** The producesPrism media type for the controller. Null implies JSON. */
   private final String producesPrism;
@@ -56,7 +57,12 @@ public final class ControllerReader {
   private final boolean hasInstrument;
 
   public ControllerReader(TypeElement beanType) {
+    this(beanType, "");
+  }
+
+  public ControllerReader(TypeElement beanType, String contextPath) {
     this.beanType = beanType;
+    this.contextPath=contextPath;
     this.interfaces = initInterfaces(beanType);
     this.interfaceMethods = initInterfaceMethods();
     this.roles = buildRoles();
@@ -152,7 +158,7 @@ public final class ControllerReader {
   }
 
   <A> Optional<A> findMethodAnnotation(Function<Element, Optional<A>> func, ExecutableElement element) {
-    for (final ExecutableElement interfaceMethod : interfaceMethods) {
+    for (final var interfaceMethod : interfaceMethods) {
       if (matchMethod(interfaceMethod, element)) {
         final var annotation = func.apply(interfaceMethod);
         if (annotation.isPresent()) {
@@ -318,12 +324,14 @@ public final class ControllerReader {
 
   public String path() {
 
-    return findAnnotation(ControllerPrism::getOptionalOn)
-        .map(ControllerPrism::value)
-        .filter(not(String::isBlank))
-        .or(() -> findAnnotation(PathPrism::getOptionalOn).map(PathPrism::value))
-        .map(Util::trimPath)
-        .orElse(null);
+    var path =
+        findAnnotation(WebAPIPrism::getOptionalOn)
+            .map(WebAPIPrism::value)
+            .filter(not(String::isBlank))
+            .or(() -> findAnnotation(PathPrism::getOptionalOn).map(PathPrism::value))
+            .map(Util::trimPath)
+            .orElse(null);
+    return Util.combinePath(contextPath, path);
   }
 
   public void addImportType(String rawType) {

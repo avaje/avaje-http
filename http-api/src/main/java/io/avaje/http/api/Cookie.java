@@ -14,8 +14,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * </p>
  *
  */
-@Target(value={PARAMETER, FIELD})
-@Retention(value=RUNTIME)
+@Target({PARAMETER, FIELD})
+@Retention(RUNTIME)
 public @interface Cookie {
 
   /**
