@@ -52,6 +52,6 @@ class GsonBodyAdapterTest {
   }
 
   BodyContent content(String raw) {
-    return new BodyContent("not-used", raw.getBytes());
+    return BodyContent.of(raw.getBytes());
   }
 }

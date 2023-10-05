@@ -3,6 +3,9 @@ package io.avaje.http.client;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,12 +36,17 @@ class RequestListenerTest extends BaseWebTest {
   }
 
   private HttpClient createClient(TDRequestListener tdRequestListener) {
+    return createClient(tdRequestListener, new TDReqIntercept());
+  }
+
+  private HttpClient createClient(RequestListener tdRequestListener, RequestIntercept intercept) {
     return HttpClient.builder()
       .baseUrl(baseUrl)
       .requestLogging(false)
       .requestListener(new RequestLogger())
       .bodyAdapter(new JacksonBodyAdapter())
       .requestListener(tdRequestListener)
+      .requestIntercept(intercept)
       .build();
   }
 
@@ -56,17 +64,61 @@ class RequestListenerTest extends BaseWebTest {
   }
 
   @Test
-  void post() {
-    final TDRequestListener tdRequestListener = new TDRequestListener(true);
-    final HttpClient client = createClient(tdRequestListener);
+  void post_bytes() {
+    var tdRequestListener = new TDRequestListener(true);
+    var intercept = new TDReqIntercept();
+    var httpClient = createClient(tdRequestListener, intercept);
 
-    final HttpResponse<String> hres = client.request()
+    final HttpResponse<String> hres = httpClient.request()
       .path("post")
-      .body("post-request-body")
+      .body("post-request-body".getBytes(StandardCharsets.UTF_8))
       .POST().asString();
 
     assertThat(hres.body()).contains("post");
     assertThat(hres.statusCode()).isEqualTo(200);
+
+    assertThat(intercept.method).isEqualTo("POST");
+    assertThat(intercept.url).isEqualTo("http://localhost:8889/post");
+    assertThat(intercept.bodyContent).isNotNull();
+
+    var asString = new String(intercept.bodyContent.content(), StandardCharsets.UTF_8);
+    assertThat(asString).isEqualTo("post-request-body");
   }
 
+  @Test
+  void post_string() {
+    var intercept = new TDReqIntercept();
+    var httpClient = createClient(event -> {}, intercept);
+
+    final HttpResponse<String> hres = httpClient.request()
+      .path("post")
+      .body("post-string-body")
+      .POST().asString();
+
+    assertThat(hres.body()).contains("post");
+    assertThat(hres.statusCode()).isEqualTo(200);
+
+    assertThat(intercept.method).isEqualTo("POST");
+    assertThat(intercept.url).isEqualTo("http://localhost:8889/post");
+    assertThat(intercept.bodyContent).isNotNull();
+
+    var asString = new String(intercept.bodyContent.content(), StandardCharsets.UTF_8);
+    assertThat(asString).isEqualTo("post-string-body");
+  }
+
+  static class TDReqIntercept implements RequestIntercept {
+
+    Map<String, List<String>> headers;
+    String method;
+    String url;
+    BodyContent bodyContent;
+
+    @Override
+    public void beforeRequest(HttpClientRequest request) {
+      headers = request.headers();
+      method = request.method();
+      url = request.url();
+      bodyContent = request.bodyContent().orElse(null);
+    }
+  }
 }

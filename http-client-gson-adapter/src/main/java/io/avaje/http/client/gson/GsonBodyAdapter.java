@@ -5,10 +5,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.avaje.http.client.BodyAdapter;
-import io.avaje.http.client.BodyContent;
-import io.avaje.http.client.BodyReader;
-import io.avaje.http.client.BodyWriter;
+import io.avaje.http.client.*;
 
 import java.io.*;
 import java.util.List;

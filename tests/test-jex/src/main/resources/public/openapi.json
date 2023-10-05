@@ -5,7 +5,7 @@
 		"version" : ""
 	},
 	"paths" : {
-		"/" : {
+		"" : {
 			"get" : {
 				"tags" : [
 					

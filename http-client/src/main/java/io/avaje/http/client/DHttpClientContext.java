@@ -4,7 +4,6 @@ import java.lang.reflect.Type;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +82,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
   @Override
   public UrlBuilder url() {
-    return new UrlBuilder(baseUrl);
+    return UrlBuilder.of(baseUrl);
   }
 
   public Function<HttpException, RuntimeException> errorMapper() {
@@ -170,17 +169,17 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     if (responseAsBytes) {
       return readContent((HttpResponse<byte[]>) httpResponse);
     }
-    final String contentType = getContentType(httpResponse);
+    final String contentType = contentType(httpResponse);
     final Object body = httpResponse.body();
     if (body instanceof String) {
-      return new BodyContent(contentType, ((String) body).getBytes(StandardCharsets.UTF_8));
+      return BodyContent.of(contentType, (String) body);
     }
     if (body instanceof Stream) {
       var sb = new StringBuilder(50);
       for (Object line : ((Stream<Object>) body).collect(Collectors.toList())) {
         sb.append(line);
       }
-      return new BodyContent(contentType, sb.toString().getBytes(StandardCharsets.UTF_8));
+      return BodyContent.of(contentType, sb.toString());
     }
     final String type = (body == null) ? "null" : body.getClass().toString();
     throw new IllegalStateException("Unable to translate response body to bytes? Maybe use HttpResponse directly instead?  Response body type: " + type);
@@ -193,15 +192,15 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
       metricResBytes.add(body.length);
     }
     final byte[] bodyBytes = decodeContent(httpResponse);
-    final String contentType = getContentType(httpResponse);
-    return new BodyContent(contentType, bodyBytes);
+    final String contentType = contentType(httpResponse);
+    return BodyContent.of(contentType, bodyBytes);
   }
 
-  String getContentType(HttpResponse<?> httpResponse) {
+  String contentType(HttpResponse<?> httpResponse) {
     return firstHeader(httpResponse.headers(), "Content-Type", "content-type");
   }
 
-  String getContentEncoding(HttpResponse<?> httpResponse) {
+  String contentEncoding(HttpResponse<?> httpResponse) {
     return firstHeader(httpResponse.headers(), "Content-Encoding", "content-encoding");
   }
 
@@ -216,7 +215,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
   @Override
   public byte[] decodeContent(HttpResponse<byte[]> httpResponse) {
-    final String encoding = getContentEncoding(httpResponse);
+    final String encoding = contentEncoding(httpResponse);
     return encoding == null ? httpResponse.body() : decodeContent(encoding, httpResponse.body());
   }
 

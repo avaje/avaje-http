@@ -5,40 +5,55 @@ package io.avaje.http.client;
  * <p>
  * This is not used for streaming content.
  */
-public class BodyContent {
-
-  public static final String JSON_UTF8 = "application/json; charset=UTF-8";
-
-  private final String contentType;
-
-  private final byte[] content;
+public interface BodyContent {
 
   /**
-   * Create and return as JSON body content given raw content.
+   * Create BodyContent with the given byte[] content.
    */
-  public static BodyContent asJson(byte[] content) {
-    return new BodyContent(JSON_UTF8, content);
+  static BodyContent of(byte[] content) {
+    return new DBodyContent(content);
   }
 
   /**
-   * Create with content type and content.
+   * Create BodyContent with the given string content.
    */
-  public BodyContent(String contentType, byte[] content) {
-    this.contentType = contentType;
-    this.content = content;
+  static BodyContent of(String content) {
+    return new DBodyContentS(null, content);
+  }
+
+  /**
+   * Create BodyContent with the given the content type and string content.
+   */
+  static BodyContent of(String contentType, String content) {
+    return new DBodyContentS(contentType, content);
+  }
+
+  /**
+   * Create BodyContent with the given the content type and byte[] content.
+   */
+  static BodyContent of(String contentType, byte[] content) {
+    return new DBodyContent(contentType, content);
+  }
+
+  /**
+   * Create BodyContent for JSON byte[] content.
+   */
+  static BodyContent asJson(byte[] content) {
+    return DBodyContent.asJson(content);
   }
 
   /**
    * Return the content type.
    */
-  public String contentType() {
-    return contentType;
-  }
+  String contentType();
 
   /**
-   * Return the raw content.
+   * Return the content as bytes.
    */
-  public byte[] content() {
-    return content;
-  }
+  byte[] content();
+
+  /**
+   * Return the content as UTF8 string.
+   */
+  String contentAsUtf8();
 }
