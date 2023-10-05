@@ -180,6 +180,13 @@ public interface HttpClientRequest {
   HttpClientRequest url(String url);
 
   /**
+   * The Http Verb (GET, POST, PUT etc) of this request.
+   *
+   * @return The Http Verb of this request.
+   */
+  String method();
+
+  /**
    * The URL for this request including the query parameters.
    *
    * @return The url for this request

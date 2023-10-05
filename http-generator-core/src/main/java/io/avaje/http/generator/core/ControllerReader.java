@@ -11,7 +11,6 @@ import static java.util.function.Predicate.not;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -27,6 +26,7 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+
 /**
  * Reads the type information for the Controller (bean).
  */
@@ -62,7 +62,7 @@ public final class ControllerReader {
 
   public ControllerReader(TypeElement beanType, String contextPath) {
     this.beanType = beanType;
-    this.contextPath=contextPath;
+    this.contextPath = contextPath;
     this.interfaces = initInterfaces(beanType);
     this.interfaceMethods = initInterfaceMethods();
     this.roles = buildRoles();
@@ -73,10 +73,10 @@ public final class ControllerReader {
     this.producesPrism = initProduces();
     this.apiResponses = buildApiResponses();
     hasInstrument =
-        instrumentAllWebMethods()
-            || findAnnotation(InstrumentServerContextPrism::getOptionalOn)
-                .map(x -> true)
-                .orElse(false);
+      instrumentAllWebMethods()
+        || findAnnotation(InstrumentServerContextPrism::getOptionalOn)
+        .map(x -> true)
+        .orElse(false);
   }
 
   private List<OpenAPIResponsePrism> buildApiResponses() {
@@ -89,11 +89,10 @@ public final class ControllerReader {
   }
 
   private void buildApiResponsesFor(Element element, ArrayList<OpenAPIResponsePrism> responses) {
-
     OpenAPIResponsesPrism.getOptionalOn(element).stream()
-        .map(OpenAPIResponsesPrism::value)
-        .flatMap(List::stream)
-        .forEach(responses::add);
+      .map(OpenAPIResponsesPrism::value)
+      .flatMap(List::stream)
+      .forEach(responses::add);
 
     responses.addAll(OpenAPIResponsePrism.getAllInstancesOn(element));
   }
@@ -182,7 +181,6 @@ public final class ControllerReader {
   }
 
   private boolean initHasValid() {
-
     return findAnnotation(ValidPrism::getOptionalOn).isPresent();
   }
 
@@ -263,7 +261,7 @@ public final class ControllerReader {
     final TypeMirror superclass = beanType.getSuperclass();
     if (superclass.getKind() != TypeKind.NONE) {
       final DeclaredType declaredType = (DeclaredType) superclass;
-      final Element superElement = asElement(superclass);
+      final TypeElement superElement = asElement(superclass);
       if (!"java.lang.Object".equals(superElement.toString())) {
         for (final Element element : superElement.getEnclosedElements()) {
           if (element.getKind() == ElementKind.METHOD) {
@@ -272,17 +270,13 @@ public final class ControllerReader {
             readField(element);
           }
         }
-        if (superElement instanceof TypeElement) {
-          readSuper((TypeElement) superElement);
-        }
+        readSuper(superElement);
       }
     }
   }
 
   /**
    * Read methods from interfaces taking into account generics.
-   *
-   * @param interfaceElement
    */
   private void readInterfaces(TypeElement interfaceElement) {
     for (final var element : ElementFilter.methodsIn(interfaceElement.getEnclosedElements())) {
@@ -323,14 +317,13 @@ public final class ControllerReader {
   }
 
   public String path() {
-
     var path =
-        findAnnotation(WebAPIPrism::getOptionalOn)
-            .map(WebAPIPrism::value)
-            .filter(not(String::isBlank))
-            .or(() -> findAnnotation(PathPrism::getOptionalOn).map(PathPrism::value))
-            .map(Util::trimPath)
-            .orElse(null);
+      findAnnotation(WebAPIPrism::getOptionalOn)
+        .map(WebAPIPrism::value)
+        .filter(not(String::isBlank))
+        .or(() -> findAnnotation(PathPrism::getOptionalOn).map(PathPrism::value))
+        .map(Util::trimPath)
+        .orElse(null);
     return Util.combinePath(contextPath, path);
   }
 
