@@ -1,12 +1,20 @@
 package io.avaje.http.generator.core;
 
-import static io.avaje.http.generator.core.ProcessingContext.*;
+import static io.avaje.http.generator.core.ProcessingContext.doc;
+import static io.avaje.http.generator.core.ProcessingContext.elements;
+import static io.avaje.http.generator.core.ProcessingContext.isOpenApiAvailable;
+import static io.avaje.http.generator.core.ProcessingContext.logError;
+import static io.avaje.http.generator.core.ProcessingContext.typeElement;
 import static java.util.stream.Collectors.toMap;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.Map.Entry;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -21,7 +29,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   String contextPathString;
 
-  Map<String, String> packagePaths= new HashMap<>();
+  Map<String, String> packagePaths= new TreeMap<>();
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -119,11 +127,16 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   private void writeAdapter(Element controller) {
     if (controller instanceof TypeElement) {
+
+      var packageFQN = elements().getPackageOf(controller).getQualifiedName().toString();
       var contextPath =
           Util.combinePath(
               contextPathString,
-              packagePaths.get(
-                  elements().getPackageOf(controller).getQualifiedName().toString()));
+              packagePaths.entrySet().stream()
+                  .filter(k -> packageFQN.contains(k.getKey()))
+                  .map(Entry::getValue)
+                  .reduce(Util::combinePath)
+                  .orElse(null));
 
       final ControllerReader reader = new ControllerReader((TypeElement) controller, contextPath);
       reader.read(true);
