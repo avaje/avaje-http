@@ -4,7 +4,6 @@ import java.lang.reflect.Type;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -170,7 +169,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     if (responseAsBytes) {
       return readContent((HttpResponse<byte[]>) httpResponse);
     }
-    final String contentType = getContentType(httpResponse);
+    final String contentType = contentType(httpResponse);
     final Object body = httpResponse.body();
     if (body instanceof String) {
       return BodyContent.of(contentType, (String) body);
@@ -193,15 +192,15 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
       metricResBytes.add(body.length);
     }
     final byte[] bodyBytes = decodeContent(httpResponse);
-    final String contentType = getContentType(httpResponse);
+    final String contentType = contentType(httpResponse);
     return BodyContent.of(contentType, bodyBytes);
   }
 
-  String getContentType(HttpResponse<?> httpResponse) {
+  String contentType(HttpResponse<?> httpResponse) {
     return firstHeader(httpResponse.headers(), "Content-Type", "content-type");
   }
 
-  String getContentEncoding(HttpResponse<?> httpResponse) {
+  String contentEncoding(HttpResponse<?> httpResponse) {
     return firstHeader(httpResponse.headers(), "Content-Encoding", "content-encoding");
   }
 
@@ -216,7 +215,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
   @Override
   public byte[] decodeContent(HttpResponse<byte[]> httpResponse) {
-    final String encoding = getContentEncoding(httpResponse);
+    final String encoding = contentEncoding(httpResponse);
     return encoding == null ? httpResponse.body() : decodeContent(encoding, httpResponse.body());
   }
 
