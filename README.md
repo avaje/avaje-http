@@ -33,7 +33,7 @@ Use source code generation to adapt annotated REST controllers `@Path, @Get, @Po
   <version>${avaje.http.version}</version>
 </dependency>
 ```
-#### Add the generator module for your desired microframework as an annotation processor.
+**Add the generator module for your desired microframework as an annotation processor.**
 
 ```xml
 <!-- Annotation processors -->
