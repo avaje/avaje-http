@@ -149,7 +149,7 @@ class UrlBuilderTest {
 
   @NotNull
   private UrlBuilder foo() {
-    return new UrlBuilder("https://foo");
+    return UrlBuilder.of("https://foo");
   }
 
   @Test

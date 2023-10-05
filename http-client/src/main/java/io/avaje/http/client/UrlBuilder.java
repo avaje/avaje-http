@@ -2,151 +2,89 @@ package io.avaje.http.client;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.Map;
 
 /**
  * Build a URL typically using a base url and adding path and query parameters.
  */
-public final class UrlBuilder {
-
-  private final StringBuilder buffer = new StringBuilder(100);
-
-  private boolean hasParams;
+public interface UrlBuilder {
 
   /**
-   * Create with a base url.
+   * URL encode the value.
    */
-  public UrlBuilder(String base) {
-    buffer.append(base);
+  static String enc(String val) {
+    return URLEncoder.encode(val, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Create a UrlBuilder with a base url.
+   */
+  static UrlBuilder of(String baseUrl) {
+    return new DUrlBuilder(baseUrl);
   }
 
   /**
    * Set the url. This effectively replaces a base url.
    */
-  public UrlBuilder url(String url) {
-    buffer.delete(0, buffer.length());
-    buffer.append(url);
-    return this;
-  }
+  UrlBuilder url(String url);
 
   /**
    * Add a path segment to the url.
    * <p>
    * This includes appending a "/" prefix with the path.
    */
-  public UrlBuilder path(String path) {
-    buffer.append("/").append(path);
-    return this;
-  }
+  UrlBuilder path(String path);
 
   /**
    * Add a path segment to the url.
    */
-  public UrlBuilder path(int val) {
-    return path(Integer.toString(val));
-  }
+  UrlBuilder path(int val);
 
   /**
    * Add a path segment to the url.
    */
-  public UrlBuilder path(long val) {
-    return path(Long.toString(val));
-  }
+  UrlBuilder path(long val);
 
   /**
    * Add a path segment to the url.
    */
-  public UrlBuilder path(Object val) {
-    return path(val.toString());
-  }
-
-  private void addQueryParam(String name, String safeValue) {
-    buffer.append(hasParams ? '&' : '?');
-    hasParams = true;
-    buffer.append(enc(name)).append("=").append(safeValue);
-  }
+  UrlBuilder path(Object val);
 
   /**
    * Append a query parameter.
    * <p>
    * The name and value parameters are url encoded.
    */
-  public UrlBuilder queryParam(String name, String value) {
-    if (value != null) {
-      addQueryParam(name, enc(value));
-    }
-    return this;
-  }
+  UrlBuilder queryParam(String name, String value);
 
   /**
    * Append a query parameter.
    * <p>
    * The name and value parameters are url encoded.
    */
-  public UrlBuilder queryParam(String name, Object value) {
-	  
-    if (value instanceof Collection) {
-      for (var e : (Collection) value) {
-        queryParam(name, e);
-      }
-      return this;
-    }
-    
-    if (value != null) {
-      addQueryParam(name, value.toString());
-    }
-    return this;
-  }
+  UrlBuilder queryParam(String name, Object value);
 
   /**
    * Append a query parameters.
    */
-  public UrlBuilder queryParam(Map<String, ?> params) {
-    if (params != null) {
-      for (Map.Entry<String, ?> entry : params.entrySet()) {
-        queryParam(entry.getKey(), entry.getValue());
-      }
-    }
-    return this;
-  }
+  UrlBuilder queryParam(Map<String, ?> params);
 
   /**
    * Append a matrix parameter.
    * <p>
    * The name and value parameters are url encoded.
    */
-  public UrlBuilder matrixParam(String name, String value) {
-    if (value != null) {
-      buffer.append(';').append(enc(name)).append("=").append(enc(value));
-    }
-    return this;
-  }
+  UrlBuilder matrixParam(String name, String value);
 
   /**
    * Append a matrix parameter.
    * <p>
    * The name and value parameters are url encoded.
    */
-  public UrlBuilder matrixParam(String name, Object value) {
-    if (value != null) {
-      buffer.append(';').append(enc(name)).append("=").append(enc(value.toString()));
-    }
-    return this;
-  }
-
-  /**
-   * URL encode the value.
-   */
-  public static String enc(String val) {
-    return URLEncoder.encode(val, StandardCharsets.UTF_8);
-  }
+  UrlBuilder matrixParam(String name, Object value);
 
   /**
    * Return the full URL.
    */
-  public String build() {
-    return buffer.toString();
-  }
-
+  String build();
 }

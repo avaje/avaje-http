@@ -82,7 +82,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
   @Override
   public UrlBuilder url() {
-    return new UrlBuilder(baseUrl);
+    return UrlBuilder.of(baseUrl);
   }
 
   public Function<HttpException, RuntimeException> errorMapper() {
