@@ -131,7 +131,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
           Util.combinePath(
               contextPathString,
               packagePaths.entrySet().stream()
-                  .filter(k -> packageFQN.contains(k.getKey()))
+                  .filter(k -> packageFQN.startsWith(k.getKey()))
                   .map(Entry::getValue)
                   .reduce(Util::combinePath)
                   .orElse(null));
