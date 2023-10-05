@@ -47,7 +47,6 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   private Map<String, List<String>> formParams;
   private Map<String, List<String>> headers;
-  private Map<String, List<String>> queryParams;
 
   private boolean bodyFormEncoded;
   private long responseTimeNanos;
