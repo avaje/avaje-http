@@ -16,7 +16,14 @@
       <artifactId>avaje-http-generator-core</artifactId>
       <version>${project.version}</version>
     </dependency>
-
+    
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-prisms</artifactId>
+      <version>${avaje.prisms.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    
   </dependencies>
 
 

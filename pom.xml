@@ -59,11 +59,22 @@
     <profile>
       <id>jdk19plus</id>
       <activation>
-        <jdk>[20,21]</jdk>
+        <jdk>[21,22]</jdk>
       </activation>
       <modules>
         <module>http-generator-helidon</module>
       </modules>
+        <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgs>-proc:full</compilerArgs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
     </profile>
 
     <profile>
