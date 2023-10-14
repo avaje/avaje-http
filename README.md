@@ -45,7 +45,7 @@ Use source code generation to adapt annotated REST controllers `@Path, @Get, @Po
 </dependency>
 ```
 
-### JDK 22+ note
+### JDK 22+
 
 In JDK 22+, annotation processors are disabled by default, you will need to add a flag to re-enable.
 ```xml
