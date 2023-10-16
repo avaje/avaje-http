@@ -45,6 +45,19 @@ Use source code generation to adapt annotated REST controllers `@Path, @Get, @Po
 </dependency>
 ```
 
+### JDK 22+
+
+In JDK 22+, annotation processors are disabled by default, you will need to add a flag to re-enable.
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <configuration>
+    <compilerArgument>-proc:full</compilerArgument>
+  </configuration>
+</plugin>
+```
+
 ## Define a Controller (These APT processors work with Java and Kotlin.)
 ```java
 package org.example.hello;
