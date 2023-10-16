@@ -57,9 +57,9 @@
       </modules>
     </profile>
     <profile>
-      <id>jdk19plus</id>
+      <id>jdk21plus</id>
       <activation>
-        <jdk>[20,21]</jdk>
+        <jdk>[21,22]</jdk>
       </activation>
       <modules>
         <module>http-generator-helidon</module>
