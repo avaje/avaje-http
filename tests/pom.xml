@@ -30,9 +30,9 @@
 
   <profiles>
     <profile>
-      <id>jdk20plus</id>
+      <id>jdk21plus</id>
       <activation>
-        <jdk>21</jdk>
+        <jdk>[21,22]</jdk>
       </activation>
       <modules>
         <module>test-nima</module>
