@@ -33,4 +33,4 @@ jobs:
         env:
           JAVA_VERSION: ${{ matrix.java_version }}
         run: |
-          mvn clean package -Ptest
+          mvn clean package -Ptest,jdk21plus
