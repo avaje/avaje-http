@@ -20,7 +20,7 @@ final class AnnotationUtil {
         continue;
       }
       final String annotationName = annotationMirror.getAnnotationType().toString();
-      final StringBuilder sb = new StringBuilder("@").append(annotationName).append("(");
+      final StringBuilder sb = new StringBuilder("  @").append(annotationName).append("(");
       boolean first = true;
 
       for (final var entry : annotationMirror.getElementValues().entrySet()) {
