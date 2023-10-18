@@ -20,4 +20,7 @@ public interface UserClient {
 
   @Get("/users/{userId}")
   String getUserById(String userId);
+
+  @Get("${property.path}/users/{userId}")
+  String property(String userId);
 }
