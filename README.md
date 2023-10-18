@@ -23,7 +23,7 @@ Use source code generation to adapt annotated REST controllers `@Path, @Get, @Po
 
 - Lightweight (65Kb library + generated source code)
 - Full use of Javalin or Helidon SE/Nima as desired
-- Bean Validation of request bodies supported
+- Bean Validation of request bodies supported (validation groups supported as well)
 
 ## Add dependencies
 ```xml
@@ -58,7 +58,7 @@ In JDK 22+, annotation processors are disabled by default, you will need to add 
 </plugin>
 ```
 
-## Define a Controller (These APT processors work with Java and Kotlin.)
+## Define a Controller (These APT processors work with both Java and Kotlin)
 ```java
 package org.example.hello;
 
@@ -106,7 +106,7 @@ To force the AP to generate with `@javax.inject.Singleton`(in the case where you
 
 ### Usage with Javalin
 
-The annotation processor will generate controller classes implementing the Javalin `Plugin` interface, which means we can register them with Javalin using:
+The annotation processor will generate controller classes implementing the Javalin `Plugin` interface, which we can register using:
 
 ```java
 List<Plugin> routes = ...; //retrieve using a DI framework
@@ -268,6 +268,7 @@ public class WidgetController$Route implements HttpFeature {
     var id = asInt(pathParams.first("id").get());
     var result = controller.getById(id);
     res.headers().contentType(MediaTypes.APPLICATION_JSON);
+    //jsonb has a special accommodation for helidon to improve performance
     widgetController$WidgetJsonType.toJson(result, JsonOutput.of(res));
   }
 

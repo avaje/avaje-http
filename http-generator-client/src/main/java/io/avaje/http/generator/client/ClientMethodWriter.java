@@ -2,13 +2,19 @@ package io.avaje.http.generator.client;
 
 import static io.avaje.http.generator.core.ProcessingContext.*;
 import io.avaje.http.generator.core.*;
+import io.avaje.http.generator.core.PathSegments.Segment;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +35,8 @@ class ClientMethodWriter {
   private String methodGenericParams = "";
   private final boolean useJsonb;
   private final Optional<RequestTimeoutPrism> timeout;
+  private final boolean useConfig;
+  private final Map<String, String> segmentPropertyMap;
 
   ClientMethodWriter(MethodReader method, Append writer, boolean useJsonb) {
     this.method = method;
@@ -37,6 +45,12 @@ class ClientMethodWriter {
     this.returnType = Util.parseType(method.returnType());
     this.useJsonb = useJsonb;
     this.timeout = method.timeout();
+    this.useConfig = ProcessingContext.typeElement("io.avaje.config.Config") != null;
+
+    this.segmentPropertyMap =
+        method.pathSegments().segments().stream()
+            .filter(Segment::isProperty)
+            .collect(toMap(Segment::name, s -> Util.sanitizeName(s.name()).toUpperCase()));
   }
 
   void addImportTypes(ControllerReader reader) {
@@ -45,8 +59,13 @@ class ClientMethodWriter {
         .map(UType::parse)
         .map(UType::importTypes)
         .forEach(reader::addImportTypes);
+
     for (final MethodParam param : method.params()) {
       reader.addImportTypes(param.utype().importTypes());
+    }
+
+    if (useConfig && !segmentPropertyMap.isEmpty()) {
+      reader.addImportType("io.avaje.config.Config");
     }
   }
 
@@ -55,6 +74,14 @@ class ClientMethodWriter {
       checkBodyHandler(param);
     }
     method.checkArgumentNames();
+
+    segmentPropertyMap.forEach(
+        (k, v) -> {
+          writer.append("  private static final String %s = ", v);
+          final String getProperty = useConfig ? "Config.get(" : "System.getProperty(";
+          writer.append(getProperty).append("\"%s\");", k).eol();
+        });
+
     writer.append("  // %s %s", webMethod, method.webMethodPath()).eol();
     writer.append("  @Override").eol();
     AnnotationUtil.writeAnnotations(writer, method.element());
@@ -348,9 +375,14 @@ private void writeEnd() {
     for (PathSegments.Segment segment : segments) {
       if (segment.isLiteral()) {
         writer.append(".path(\"").append(segment.literalSection()).append("\")");
+      } else if (segment.isProperty()) {
+
+        writer.append(".path(").append(segmentPropertyMap.get(segment.name())).append(")");
+
       } else {
+
         writer.append(".path(").append(segment.name()).append(")");
-        //TODO: matrix params
+        // TODO: matrix params
       }
     }
     if (!segments.isEmpty()) {

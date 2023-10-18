@@ -36,6 +36,12 @@ public class PathSegments {
             segments.add(segment);
             chunks.named(segment.path(name), section.charAt(0));
 
+          } else if (isProperty(section)) {
+            String name = section.substring(2, section.length() - 1);
+            Segment segment = createPropertySegment(name);
+            segments.add(segment);
+            chunks.named(segment.path(name), section.charAt(0));
+
           } else {
             Segment segment = createLiteralSegment(section);
             segments.add(segment);
@@ -52,8 +58,12 @@ public class PathSegments {
       || section.startsWith("<") && section.endsWith(">");
   }
 
+  private static boolean isProperty(String section) {
+    return section.startsWith("${") && section.endsWith("}");
+  }
+
   private static Segment createLiteralSegment(String section) {
-    return new Segment(section, true);
+    return new Segment(section, "literal");
   }
 
   private static Segment createSegment(String val) {
@@ -63,6 +73,11 @@ public class PathSegments {
     }
     Set<String> matrixKeys = new HashSet<>(Arrays.asList(matrixSplit).subList(1, matrixSplit.length));
     return new Segment(matrixSplit[0], matrixKeys);
+  }
+
+  private static Segment createPropertySegment(String val) {
+
+    return new Segment(val, true);
   }
 
   private final Chunks chunks;
@@ -129,7 +144,6 @@ public class PathSegments {
 
   public static class Segment {
 
-    private static final Pattern PATTERN = Pattern.compile("[^a-zA-Z0-9_]|\\s");
     private final String name;
     private final String sanitizedName;
     private final String literalSection;
@@ -144,15 +158,28 @@ public class PathSegments {
      */
     private final Set<String> matrixVarNames;
 
+    private final boolean property;
+
     /**
      * Create a normal segment.
      */
     Segment(String name) {
       this.name = name;
-      this.sanitizedName = PATTERN.matcher(name).replaceAll("_");
+      this.sanitizedName = Util.sanitizeName(name);
       this.literalSection = null;
       this.matrixKeys = null;
       this.matrixVarNames = null;
+      this.property = false;
+    }
+
+    /** Create a normal segment. */
+    Segment(String name, boolean isProperty) {
+      this.name = name;
+      this.sanitizedName = null;
+      this.literalSection = null;
+      this.matrixKeys = null;
+      this.matrixVarNames = null;
+      this.property = isProperty;
     }
 
     /**
@@ -160,10 +187,11 @@ public class PathSegments {
      */
     Segment(String name, Set<String> matrixKeys) {
       this.name = name;
-      this.sanitizedName = PATTERN.matcher(name).replaceAll("_");
+      this.sanitizedName = Util.sanitizeName(name);
       this.literalSection = null;
       this.matrixKeys = matrixKeys;
       this.matrixVarNames = new HashSet<>();
+      this.property = false;
       for (String key : matrixKeys) {
         matrixVarNames.add(combine(name, key));
       }
@@ -172,12 +200,13 @@ public class PathSegments {
     /**
      * Create a literal path segment.
      */
-    public Segment(String section, boolean literalDummy) {
+    public Segment(String section, String literalDummy) {
       this.literalSection = section;
       this.name = null;
       this.sanitizedName = null;
       this.matrixKeys = null;
       this.matrixVarNames = null;
+      this.property = false;
     }
 
     void addNames(Set<String> allNames) {
@@ -208,6 +237,10 @@ public class PathSegments {
 
     public boolean isLiteral() {
       return literalSection != null;
+    }
+
+    public boolean isProperty() {
+      return property;
     }
 
     boolean isPathParameter(String varName) {

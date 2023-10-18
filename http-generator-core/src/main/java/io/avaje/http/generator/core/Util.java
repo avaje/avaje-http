@@ -23,6 +23,8 @@ public class Util {
       Pattern.compile(", (?=(?:[^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
   private static final Pattern PARENTHESIS_CONTENT = Pattern.compile("\\((.*?)\\)");
 
+  private static final Pattern SANITIZE_PATTERN = Pattern.compile("[^a-zA-Z0-9_]|\\s");
+
   /**
    * Parse the raw type potentially handling generic parameters.
    */
@@ -46,6 +48,11 @@ public class Util {
     } else {
       return trimAnnotations(typeMirror.toString());
     }
+  }
+
+  /** Sanitize the given string such that it can be used as a method/class/field name */
+  public static String sanitizeName(String name) {
+    return SANITIZE_PATTERN.matcher(name).replaceAll("_");
   }
 
   /** Trim off annotations from the raw type if present. */
@@ -173,13 +180,11 @@ public class Util {
       if (ch == '-') {
         sb.append(ch);
         upper = true;
+      } else if (upper) {
+        sb.append(Character.toUpperCase(ch));
+        upper = false;
       } else {
-        if (upper) {
-          sb.append(Character.toUpperCase(ch));
-          upper = false;
-        } else {
-          sb.append(ch);
-        }
+        sb.append(ch);
       }
     }
     return sb.toString();
