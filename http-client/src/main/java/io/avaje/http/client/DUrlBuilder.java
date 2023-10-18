@@ -22,6 +22,9 @@ final class DUrlBuilder implements UrlBuilder {
 
   @Override
   public UrlBuilder path(String path) {
+    if (path.startsWith("http") && path.contains("://")) {
+      return url(path);
+    }
     buffer.append("/").append(path);
     return this;
   }
