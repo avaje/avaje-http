@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -47,18 +45,17 @@ class ClientMethodWriter {
     this.timeout = method.timeout();
     this.useConfig = ProcessingContext.typeElement("io.avaje.config.Config") != null;
 
-    this.segmentPropertyMap =
-        method.pathSegments().segments().stream()
-            .filter(Segment::isProperty)
-            .collect(toMap(Segment::name, s -> Util.sanitizeName(s.name()).toUpperCase()));
+    this.segmentPropertyMap = method.pathSegments().segments().stream()
+      .filter(Segment::isProperty)
+      .collect(toMap(Segment::name, s -> Util.sanitizeName(s.name()).toUpperCase()));
   }
 
   void addImportTypes(ControllerReader reader) {
     reader.addImportTypes(returnType.importTypes());
     method.throwsList().stream()
-        .map(UType::parse)
-        .map(UType::importTypes)
-        .forEach(reader::addImportTypes);
+      .map(UType::parse)
+      .map(UType::importTypes)
+      .forEach(reader::addImportTypes);
 
     for (final MethodParam param : method.params()) {
       reader.addImportTypes(param.utype().importTypes());
@@ -75,12 +72,11 @@ class ClientMethodWriter {
     }
     method.checkArgumentNames();
 
-    segmentPropertyMap.forEach(
-        (k, v) -> {
-          writer.append("  private static final String %s = ", v);
-          final String getProperty = useConfig ? "Config.get(" : "System.getProperty(";
-          writer.append(getProperty).append("\"%s\");", k).eol();
-        });
+    segmentPropertyMap.forEach((k, v) -> {
+      writer.append("  private static final String %s = ", v);
+      final String getProperty = useConfig ? "Config.get(" : "System.getProperty(";
+      writer.append(getProperty).append("\"%s\");", k).eol();
+    });
 
     writer.append("  // %s %s", webMethod, method.webMethodPath()).eol();
     writer.append("  @Override").eol();
@@ -96,9 +92,9 @@ class ClientMethodWriter {
       final var isVarArg = Util.isVarArg(param.element(), i);
 
       final var paramType =
-          "java.util.function.Supplier<?extendsjava.io.InputStream>".equals(param.utype().full())
-              ? "Supplier<? extends InputStream>"
-              : param.utype().shortType();
+        "java.util.function.Supplier<?extendsjava.io.InputStream>".equals(param.utype().full())
+          ? "Supplier<? extends InputStream>"
+          : param.utype().shortType();
 
       if (param.overrideVarNameError()) {
         writer.append("/** !Error! */ ");
@@ -144,7 +140,6 @@ class ClientMethodWriter {
   }
 
   private void writeTimeout(RequestTimeoutPrism p) {
-
     writer.append("      .requestTimeout(of(%s, %s))", p.value(), p.chronoUnit()).eol();
   }
 
@@ -220,11 +215,10 @@ private void writeEnd() {
 
   void writeGeneric(UType type) {
     if (useJsonb && type.isGeneric()) {
-      final var params =
-          type.importTypes().stream()
-                  .skip(1)
-                  .map(Util::shortName)
-                  .collect(Collectors.joining(".class, "));
+      final var params = type.importTypes().stream()
+        .skip(1)
+        .map(Util::shortName)
+        .collect(Collectors.joining(".class, "));
 
       writer.append("Types.newParameterizedType(%s.class, %s.class)", Util.shortName(type.mainType()), params);
     } else {
@@ -256,8 +250,8 @@ private void writeEnd() {
       writer.append("   // Refer to: https://avaje.io/http/client/import#error").eol();
       writer.eol();
       logError(
-          "Explicit @QueryParam/@Header annotations required when using @Client.Import on an interface that has already been compiled.",
-          method.element());
+        "Explicit @QueryParam/@Header annotations required when using @Client.Import on an interface that has already been compiled.",
+        method.element());
     }
   }
 
@@ -331,27 +325,27 @@ private void writeEnd() {
 
   private void writeErrorMapper() {
     method.throwsList().stream()
-        .map(ProcessingContext::asElement)
-        .filter(
-            e ->
-                isAssignable2Interface(
-                    e.getQualifiedName().toString(), "java.lang.RuntimeException"))
-        .filter(
-            e ->
-                ElementFilter.constructorsIn(e.getEnclosedElements()).stream()
-                    .filter(c -> c.getParameters().size() == 1)
-                    .map(c -> c.getParameters().get(0).asType().toString())
-                    .map(Util::trimAnnotations)
-                    .anyMatch("io.avaje.http.client.HttpException"::equals))
-        .findFirst()
-        .map(TypeElement::getQualifiedName)
-        .map(Object::toString)
-        .map(Util::shortName)
-        .ifPresent(
-            exception ->
-                writer
-                    .append("      .errorMapper(%s::new)", exception)
-                    .eol());
+      .map(ProcessingContext::asElement)
+      .filter(
+        e ->
+          isAssignable2Interface(
+            e.getQualifiedName().toString(), "java.lang.RuntimeException"))
+      .filter(
+        e ->
+          ElementFilter.constructorsIn(e.getEnclosedElements()).stream()
+            .filter(c -> c.getParameters().size() == 1)
+            .map(c -> c.getParameters().get(0).asType().toString())
+            .map(Util::trimAnnotations)
+            .anyMatch("io.avaje.http.client.HttpException"::equals))
+      .findFirst()
+      .map(TypeElement::getQualifiedName)
+      .map(Object::toString)
+      .map(Util::shortName)
+      .ifPresent(
+        exception ->
+          writer
+            .append("      .errorMapper(%s::new)", exception)
+            .eol());
   }
 
   /**
@@ -376,11 +370,8 @@ private void writeEnd() {
       if (segment.isLiteral()) {
         writer.append(".path(\"").append(segment.literalSection()).append("\")");
       } else if (segment.isProperty()) {
-
         writer.append(".path(").append(segmentPropertyMap.get(segment.name())).append(")");
-
       } else {
-
         writer.append(".path(").append(segment.name()).append(")");
         // TODO: matrix params
       }
