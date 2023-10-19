@@ -14,13 +14,17 @@ final class AnnotationUtil {
   private AnnotationUtil() {}
 
   public static void writeAnnotations(Append writer, Element element) {
+    writeAnnotations(writer, element, "");
+  }
+
+  public static void writeAnnotations(Append writer, Element element, String indent) {
     for (final AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
       final var type = UType.parse(annotationMirror.getAnnotationType().asElement().asType());
       if (type.mainType().startsWith("io.avaje.http") || type.mainType().startsWith("io.swagger")) {
         continue;
       }
       final String annotationName = annotationMirror.getAnnotationType().toString();
-      final StringBuilder sb = new StringBuilder("  @").append(annotationName).append("(");
+      final StringBuilder sb = new StringBuilder(indent).append("@").append(annotationName).append("(");
       boolean first = true;
 
       for (final var entry : annotationMirror.getElementValues().entrySet()) {

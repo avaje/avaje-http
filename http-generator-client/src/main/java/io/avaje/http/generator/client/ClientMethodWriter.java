@@ -72,15 +72,17 @@ class ClientMethodWriter {
     }
     method.checkArgumentNames();
 
-    segmentPropertyMap.forEach((k, v) -> {
-      writer.append("  private static final String %s = ", v);
-      final String getProperty = useConfig ? "Config.get(" : "System.getProperty(";
-      writer.append(getProperty).append("\"%s\");", k).eol();
-    });
-
     writer.append("  // %s %s", webMethod, method.webMethodPath()).eol();
+
+    segmentPropertyMap.forEach(
+        (k, v) -> {
+          writer.append("  private static final String %s = ", v);
+          final String getProperty = useConfig ? "Config.get(" : "System.getProperty(";
+          writer.append(getProperty).append("\"%s\");", k).eol();
+        });
+
     writer.append("  @Override").eol();
-    AnnotationUtil.writeAnnotations(writer, method.element());
+    AnnotationUtil.writeAnnotations(writer, method.element(),"  ");
     writer.append("  public %s%s %s(", methodGenericParams, returnType.shortType(), method.simpleName());
     int count = 0;
     List<MethodParam> params = method.params();
