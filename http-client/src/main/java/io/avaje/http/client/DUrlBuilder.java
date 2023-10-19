@@ -15,11 +15,9 @@ final class DUrlBuilder implements UrlBuilder {
 
   @Override
   public UrlBuilder url(String url) {
-
     if (url.startsWith("http") && url.contains("://")) {
       buffer.setLength(0);
     }
-
     buffer.append(url);
     return this;
   }
