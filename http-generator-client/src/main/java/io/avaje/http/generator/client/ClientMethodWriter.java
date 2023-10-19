@@ -9,6 +9,7 @@ import javax.lang.model.util.ElementFilter;
 
 import static java.util.stream.Collectors.toMap;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -366,13 +367,36 @@ private void writeEnd() {
     if (!segments.isEmpty()) {
       writer.append("      ");
     }
-    for (PathSegments.Segment segment : segments) {
+    boolean first = true;
+    Iterator<Segment> iterator = segments.iterator();
+    boolean sentinel = true;
+    boolean noSlash = false;
+    var size = segments.size();
+    while (sentinel) {
+      PathSegments.Segment segment = iterator.hasNext() ? iterator.next() : null;
+      if (segment == null) {
+        sentinel = false;
+        if (size != 0) {
+          writer.append("\")");
+        }
+        continue;
+      }
+      if (first) {
+        writer.append(".path(\"");
+        first = false;
+      }
+      if (noSlash) {
+        writer.append("/");
+      }
+      noSlash = true;
       if (segment.isLiteral()) {
-        writer.append(".path(\"").append(segment.literalSection()).append("\")");
+        writer.append(segment.literalSection());
       } else if (segment.isProperty()) {
-        writer.append(".path(").append(segmentPropertyMap.get(segment.name())).append(")");
+
+        writer.append("\" + %s + \"", segmentPropertyMap.get(segment.name()));
+
       } else {
-        writer.append(".path(").append(segment.name()).append(")");
+        writer.append(segment.name());
         // TODO: matrix params
       }
     }
