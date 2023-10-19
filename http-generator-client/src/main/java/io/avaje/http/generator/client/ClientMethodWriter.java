@@ -396,8 +396,7 @@ private void writeEnd() {
         writer.append("\" + %s + \"", segmentPropertyMap.get(segment.name()));
 
       } else {
-        writer.append(segment.name());
-        // TODO: matrix params
+        writer.append("\" + %s + \"", segment.name());
       }
     }
     if (!segments.isEmpty()) {
