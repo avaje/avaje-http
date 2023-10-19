@@ -382,7 +382,7 @@ private void writeEnd() {
         continue;
       }
       if (first) {
-        writer.append(".url(\"");
+        writer.append(".path(\"");
         first = false;
       }
       if (noSlash) {
