@@ -28,6 +28,7 @@ final class DUrlBuilder implements UrlBuilder {
   public UrlBuilder path(String path) {
     if (path.startsWith("http") && path.contains("://")) {
       buffer.setLength(0);
+      buffer.append(path);
       return this;
     }
     buffer.append("/").append(path);
