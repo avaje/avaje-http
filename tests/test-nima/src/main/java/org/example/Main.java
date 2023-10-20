@@ -16,7 +16,7 @@ public class Main {
 
     routes.forEach(builder::addFeature);
 
-    WebServer.builder().addRouting(builder.build()).build().start();
+    WebServer.builder().addRouting(builder).build().start();
 
     System.out.println("started");
   }
