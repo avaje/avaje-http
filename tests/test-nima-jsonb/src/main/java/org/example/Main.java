@@ -16,14 +16,8 @@ public class Main {
     final List<HttpFeature> list = scope.list(HttpFeature.class);
     final var builder = HttpRouting.builder();
     list.forEach(builder::addFeature);
-    final var httpRouting = builder.build();
 
-    WebServer.builder()
-        .addRouting(httpRouting)
-        // .routing(Main::routing)
-        .port(8081)
-        .build()
-        .start();
+    WebServer.builder().addRouting(builder).port(8081).build().start();
 
     System.out.println("started");
   }

@@ -15,7 +15,7 @@ public class TestPair {
 
   public TestPair() {
     this.webServer = WebServer.builder()
-      .routing(routing().build())
+      .routing(routing())
       .build();
 
     webServer.start();
