@@ -36,9 +36,10 @@ class ClientMethodWriter {
   private final Optional<RequestTimeoutPrism> timeout;
   private final boolean useConfig;
   private final Map<String, String> segmentPropertyMap;
-  private final Set<String> propertyConstants = new HashSet<>();
+  private final Set<String> propertyConstants;
 
-  ClientMethodWriter(MethodReader method, Append writer, boolean useJsonb) {
+  ClientMethodWriter(
+      MethodReader method, Append writer, boolean useJsonb, Set<String> propertyConstants) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
@@ -47,9 +48,11 @@ class ClientMethodWriter {
     this.timeout = method.timeout();
     this.useConfig = ProcessingContext.typeElement("io.avaje.config.Config") != null;
 
-    this.segmentPropertyMap = method.pathSegments().segments().stream()
-      .filter(Segment::isProperty)
-      .collect(toMap(Segment::name, s -> Util.sanitizeName(s.name()).toUpperCase()));
+    this.segmentPropertyMap =
+        method.pathSegments().segments().stream()
+            .filter(Segment::isProperty)
+            .collect(toMap(Segment::name, s -> Util.sanitizeName(s.name()).toUpperCase()));
+    this.propertyConstants = propertyConstants;
   }
 
   void addImportTypes(ControllerReader reader) {
