@@ -125,7 +125,7 @@ final var builder = HttpRouting.builder();
 routes.forEach(builder::addFeature);
 
 WebServer.builder()
-         .addRouting(builder.build())
+         .addRouting(builder)
          .build()
          .start();
 ```
