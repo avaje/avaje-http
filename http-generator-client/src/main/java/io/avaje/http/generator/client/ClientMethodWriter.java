@@ -9,6 +9,7 @@ import javax.lang.model.util.ElementFilter;
 
 import static java.util.stream.Collectors.toMap;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,6 +36,7 @@ class ClientMethodWriter {
   private final Optional<RequestTimeoutPrism> timeout;
   private final boolean useConfig;
   private final Map<String, String> segmentPropertyMap;
+  private final Set<String> propertyConstants = new HashSet<>();
 
   ClientMethodWriter(MethodReader method, Append writer, boolean useJsonb) {
     this.method = method;
@@ -76,6 +78,11 @@ class ClientMethodWriter {
 
     segmentPropertyMap.forEach(
         (k, v) -> {
+
+          if (!propertyConstants.add(v)) {
+            return;
+          }
+
           writer.append("  private static final String %s = ", v);
           final String getProperty = useConfig ? "Config.get(" : "System.getProperty(";
           writer.append(getProperty).append("\"%s\");", k).eol();
