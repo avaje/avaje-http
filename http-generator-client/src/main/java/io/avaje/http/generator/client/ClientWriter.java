@@ -3,11 +3,12 @@ package io.avaje.http.generator.client;
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.ProcessingContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Write Http client adapter.
@@ -21,6 +22,8 @@ class ClientWriter extends BaseControllerWriter {
 
   private final List<ClientMethodWriter> methodList = new ArrayList<>();
   private final boolean useJsonb;
+  private final Set<String> propertyConstants = new HashSet<>();
+
 
   ClientWriter(ControllerReader reader, boolean useJsonB) throws IOException {
     super(reader, SUFFIX);
@@ -39,7 +42,7 @@ class ClientWriter extends BaseControllerWriter {
   private void readMethods() {
     for (final MethodReader method : reader.methods()) {
       if (method.isWebMethod()) {
-        final var methodWriter = new ClientMethodWriter(method, writer, useJsonb);
+        final var methodWriter = new ClientMethodWriter(method, writer, useJsonb, propertyConstants);
         methodWriter.addImportTypes(reader);
         methodList.add(methodWriter);
       }
