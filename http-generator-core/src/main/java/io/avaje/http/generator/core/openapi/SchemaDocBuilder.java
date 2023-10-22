@@ -249,6 +249,7 @@ class SchemaDocBuilder {
       Schema<?> propSchema = toSchema(field.asType());
       if (isNotNullable(field)) {
         propSchema.setNullable(Boolean.FALSE);
+        objectSchema.addRequiredItem(field.getSimpleName().toString());
       }
       setDescription(field, propSchema);
       setLengthMinMax(field, propSchema);
