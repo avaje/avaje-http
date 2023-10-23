@@ -7,5 +7,9 @@ import io.avaje.http.api.Get;
 public interface TitanFall {
 
   @Get("/${titan}/${drop.point}")
-  Titan titanfall();
+  Titan titanFall();
+
+
+  @Get("/${titan}/copium")
+  Titan titanFall3();
 }

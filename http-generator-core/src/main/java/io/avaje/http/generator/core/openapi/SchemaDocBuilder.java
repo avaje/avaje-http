@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -249,6 +250,7 @@ class SchemaDocBuilder {
       Schema<?> propSchema = toSchema(field.asType());
       if (isNotNullable(field)) {
         propSchema.setNullable(Boolean.FALSE);
+        objectSchema.addRequiredItem(field.getSimpleName().toString());
       }
       setDescription(field, propSchema);
       setLengthMinMax(field, propSchema);
@@ -296,7 +298,10 @@ class SchemaDocBuilder {
 
   private boolean isNotNullable(Element element) {
     return element.getAnnotationMirrors().stream()
-        .anyMatch(m -> m.toString().contains("@") && m.toString().contains("NotNull"));
+      .anyMatch(m -> m.toString().contains("@") &&
+        Stream.of("NotNull", "NotEmpty", "NotBlank")
+          .anyMatch(annotation -> m.toString().contains(annotation))
+      );
   }
 
   /**
