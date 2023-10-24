@@ -1,25 +1,23 @@
 package io.avaje.http.generator.client;
 
-import static io.avaje.http.generator.core.ProcessingContext.*;
 import io.avaje.http.generator.core.*;
 import io.avaje.http.generator.core.PathSegments.Segment;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
-
-import static java.util.stream.Collectors.toMap;
-
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static io.avaje.http.generator.core.ProcessingContext.*;
+import static java.util.stream.Collectors.toMap;
+
 /**
  * Write code to register Web route for a given controller method.
  */
-class ClientMethodWriter {
+final class ClientMethodWriter {
 
   private static final KnownResponse KNOWN_RESPONSE = new KnownResponse();
   private static final String BODY_HANDLER = "java.net.http.HttpResponse.BodyHandler";
@@ -38,8 +36,7 @@ class ClientMethodWriter {
   private final Map<String, String> segmentPropertyMap;
   private final Set<String> propertyConstants;
 
-  ClientMethodWriter(
-      MethodReader method, Append writer, boolean useJsonb, Set<String> propertyConstants) {
+  ClientMethodWriter(MethodReader method, Append writer, boolean useJsonb, Set<String> propertyConstants) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
@@ -49,9 +46,9 @@ class ClientMethodWriter {
     this.useConfig = ProcessingContext.typeElement("io.avaje.config.Config") != null;
 
     this.segmentPropertyMap =
-        method.pathSegments().segments().stream()
-            .filter(Segment::isProperty)
-            .collect(toMap(Segment::name, s -> Util.sanitizeName(s.name()).toUpperCase()));
+      method.pathSegments().segments().stream()
+        .filter(Segment::isProperty)
+        .collect(toMap(Segment::name, s -> Util.sanitizeName(s.name()).toUpperCase()));
     this.propertyConstants = propertyConstants;
   }
 
@@ -152,7 +149,7 @@ class ClientMethodWriter {
     writer.append("      .requestTimeout(of(%s, %s))", p.value(), p.chronoUnit()).eol();
   }
 
-private void writeEnd() {
+  private void writeEnd() {
     final var webMethod = method.webMethod();
     writer.append("      .%s()", webMethod.name()).eol();
     if (returnType == UType.VOID) {
