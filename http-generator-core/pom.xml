@@ -47,7 +47,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>validator-constraints</artifactId>
-      <version>1.1</version>
+      <version>1.2</version>
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>
