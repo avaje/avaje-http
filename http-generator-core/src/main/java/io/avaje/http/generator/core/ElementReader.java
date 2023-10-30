@@ -76,7 +76,7 @@ public class ElementReader {
     if (!contextType) {
       readAnnotations(element, defaultType);
       useValidation = useValidation();
-      HttpValidPrism.getOptionalOn(element).map(HttpValidPrism::groups).stream()
+      HttpValidPrism.getOptionalOn(element.getEnclosingElement()).map(HttpValidPrism::groups).stream()
           .flatMap(List::stream)
           .map(TypeMirror::toString)
           .forEach(validationGroups::add);
