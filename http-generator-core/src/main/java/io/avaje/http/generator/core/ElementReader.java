@@ -240,7 +240,7 @@ public class ElementReader {
   }
 
   public void overrideVarName(int position) {
-    if (paramName.equals("arg" + position)) {
+    if (("arg" + position).equals(paramName)) {
       overrideVarNameError = true;
       // varName += " /** @QueryParam(name=...) required  */ ";
     } else {
@@ -298,7 +298,7 @@ public class ElementReader {
       if (useValidation) {
         writer.append("%s  validator.validate(%s, ", indent, varName);
         platform().writeAcceptLanguage(writer);
-        validationGroups.forEach(g -> writer.append(", %s", Util.shortName(g)));
+        validationGroups.forEach(g -> writer.append(", %s.class", Util.shortName(g)));
         writer.append(");").eol();
       } else {
         writer.append("%s  // no validation required on %s", indent, varName).eol();
