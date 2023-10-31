@@ -51,6 +51,7 @@ public class ProcessingContext {
     private final String diAnnotation;
     private final boolean instrumentAllMethods;
     private final boolean disableDirectWrites;
+    private final boolean javalin6;
     private ModuleElement module;
     private boolean validated;
 
@@ -85,6 +86,7 @@ public class ProcessingContext {
       } else {
         useJavax = (javax);
       }
+      this.javalin6 = elementUtils.getTypeElement("io.javalin.config.JavalinConfig") != null;
     }
   }
 
@@ -208,6 +210,10 @@ public class ProcessingContext {
 
   public static boolean disabledDirectWrites() {
     return CTX.get().disableDirectWrites;
+  }
+
+  public static boolean javalin6() {
+    return CTX.get().javalin6;
   }
 
   public static Filer filer() {

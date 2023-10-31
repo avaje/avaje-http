@@ -141,9 +141,15 @@ class JavalinAdapter implements PlatformAdapter {
 
   @Override
   public List<Function<Element, Optional<CustomWebMethod>>> customHandlers() {
-    final Function<Element, AfterPrism> f = AfterPrism::getInstanceOn;
-    final Function<Element, BeforePrism> f2 = BeforePrism::getInstanceOn;
+    final Function<Element, AfterPrism> after = AfterPrism::getInstanceOn;
+    final Function<Element, BeforePrism> before = BeforePrism::getInstanceOn;
+    final Function<Element, AfterMatchedPrism> afterMatched = AfterMatchedPrism::getInstanceOn;
+    final Function<Element, BeforeMatchedPrism> beforeMatched = BeforeMatchedPrism::getInstanceOn;
 
-    return List.of(f.andThen(Optional::ofNullable), f2.andThen(Optional::ofNullable));
+    return List.of(
+        after.andThen(Optional::ofNullable),
+        before.andThen(Optional::ofNullable),
+        afterMatched.andThen(Optional::ofNullable),
+        beforeMatched.andThen(Optional::ofNullable));
   }
 }

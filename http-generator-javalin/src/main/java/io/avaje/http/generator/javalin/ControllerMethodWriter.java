@@ -98,7 +98,8 @@ class ControllerMethodWriter {
     if (method.isErrorMethod()) {
       writer.append("    app.exception(%s.class, (ex, ctx) -> {", method.exceptionShortName()).eol();
     } else {
-      writer.append("    app.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
+      var methodName = webMethod.name().toLowerCase().replace("_m", "M");
+      writer.append("    app.%s(\"%s\", ctx -> {", methodName, fullPath).eol();
     }
     if (!customMethod) {
       int statusCode = method.statusCode();
