@@ -1,16 +1,29 @@
 package org.example;
 
-import io.avaje.http.api.*;
-import io.helidon.webserver.http.FilterChain;
-import io.helidon.webserver.http.RoutingResponse;
-import io.helidon.webserver.http.ServerRequest;
-import io.helidon.webserver.http.ServerResponse;
-
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import io.avaje.http.api.BodyString;
+import io.avaje.http.api.Controller;
+import io.avaje.http.api.Default;
+import io.avaje.http.api.ExceptionHandler;
+import io.avaje.http.api.Filter;
+import io.avaje.http.api.Form;
+import io.avaje.http.api.FormParam;
+import io.avaje.http.api.Get;
+import io.avaje.http.api.InstrumentServerContext;
+import io.avaje.http.api.Path;
+import io.avaje.http.api.Post;
+import io.avaje.http.api.Produces;
+import io.avaje.http.api.QueryParam;
+import io.avaje.http.api.Valid;
+import io.helidon.webserver.http.FilterChain;
+import io.helidon.webserver.http.RoutingResponse;
+import io.helidon.webserver.http.ServerRequest;
+import io.helidon.webserver.http.ServerResponse;
 
 @Path("test")
 @Controller
@@ -121,8 +134,8 @@ public class TestController {
     chain.proceed();
   }
 
-
-  @Valid(groups=MyForm.class)
+  @Form
+  @Valid(groups = MyForm.class)
   @Post("formBean2")
   String formBean(MyForm form) {
     return form.name + "|" + form.email + "|" + form.url;
