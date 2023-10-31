@@ -1,5 +1,7 @@
 package org.example;
 
+import io.avaje.http.api.Post;
+import io.avaje.http.api.Valid;
 import io.avaje.http.client.HttpClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -99,5 +101,11 @@ class TestControllerTest {
       .asString();
 
     assertThat(res.statusCode()).isEqualTo(503);
+  }
+
+  @Valid(groups=MyForm2.class)
+  @Post("formBean2")
+  String formBean(MyForm2 form) {
+    return form.name + "|" + form.email + "|" + form.url;
   }
 }

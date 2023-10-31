@@ -120,4 +120,11 @@ public class TestController {
     System.err.println("do nothing lmao");
     chain.proceed();
   }
+
+
+  @Valid(groups=MyForm.class)
+  @Post("formBean2")
+  String formBean(MyForm form) {
+    return form.name + "|" + form.email + "|" + form.url;
+  }
 }
