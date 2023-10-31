@@ -1,5 +1,6 @@
 package org.example;
 
+import io.avaje.http.api.Validator;
 import io.avaje.http.api.context.ThreadLocalRequestContextResolver;
 import io.avaje.http.client.HttpClient;
 import io.avaje.http.hibernate.validator.BeanValidator;
@@ -50,7 +51,7 @@ public class TestPair {
 
     var cr = new ThreadLocalRequestContextResolver();
     var tc = new TestController();
-    TestController$Route tcr = new TestController$Route(tc, jsonb, cr);
+    TestController$Route tcr = new TestController$Route(tc, (a,b,c)->{}, jsonb, cr);
 
     routing.addFeature(tcr);
     return routing;
