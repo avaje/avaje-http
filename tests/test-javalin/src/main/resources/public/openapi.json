@@ -872,6 +872,9 @@
 				}
 			},
 			"HelloForm" : {
+				"required" : [
+					"name"
+				],
 				"type" : "object",
 				"properties" : {
 					"name" : {
