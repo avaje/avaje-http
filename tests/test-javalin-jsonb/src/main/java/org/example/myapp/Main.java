@@ -40,8 +40,7 @@ public class Main {
 
     // All WebRoutes / Controllers ... from DI Context
     final var beanScope = BeanScope.builder().build();
-    final List<AvajeJavalinPlugin> webRoutes =
-        beanScope.list(AvajeJavalinPlugin.class);
+    final var webRoutes = beanScope.list(AvajeJavalinPlugin.class);
 
     final var app =
         Javalin.create(

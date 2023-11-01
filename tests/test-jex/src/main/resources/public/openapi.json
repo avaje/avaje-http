@@ -430,6 +430,9 @@
 	"components" : {
 		"schemas" : {
 			"HelloDto" : {
+				"required" : [
+					"name"
+				],
 				"type" : "object",
 				"properties" : {
 					"id" : {

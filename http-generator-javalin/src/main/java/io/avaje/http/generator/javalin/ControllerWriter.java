@@ -27,7 +27,6 @@ class ControllerWriter extends BaseControllerWriter {
   ControllerWriter(ControllerReader reader, boolean jsonb) throws IOException {
     super(reader);
     this.useJsonB = jsonb;
-
     if (useJsonB) {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
@@ -38,9 +37,7 @@ class ControllerWriter extends BaseControllerWriter {
       this.jsonTypes = Map.of();
     }
     reader.addImportType("io.javalin.plugin.Plugin");
-
     if (javalin6) {
-
       reader.addImportType("io.javalin.config.JavalinConfig");
       reader.addImportType("io.javalin.router.JavalinDefaultRouting");
       reader.addImportType("io.avaje.http.api.AvajeJavalinPlugin");
@@ -59,12 +56,10 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeAddRoutes() {
     writer.append("  @Override").eol();
-
     if (javalin6) {
       writer.append("  public void onStart(JavalinConfig cfg) {").eol();
       writer.append("    cfg.router.mount(this::routes);").eol();
       writer.append("  }").eol().eol();
-
       writer.append("  private void routes(JavalinDefaultRouting app) {").eol().eol();
     } else {
       writer.append("  public void apply(Javalin app) {").eol().eol();
@@ -89,11 +84,11 @@ class ControllerWriter extends BaseControllerWriter {
     writer.append(AT_GENERATED).eol();
     writer.append(diAnnotation()).eol();
     writer
-        .append("public class ")
-        .append(shortName)
-        .append(javalin6 ? "$Route extends AvajeJavalinPlugin {" : "$Route implements Plugin {")
-        .eol()
-        .eol();
+      .append("public class ")
+      .append(shortName)
+      .append(javalin6 ? "$Route extends AvajeJavalinPlugin {" : "$Route implements Plugin {")
+      .eol()
+      .eol();
 
     var controllerName = "controller";
     var controllerType = shortName;
