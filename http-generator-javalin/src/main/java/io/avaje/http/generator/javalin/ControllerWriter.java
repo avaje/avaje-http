@@ -11,6 +11,7 @@ import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.JsonBUtil;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.PrimitiveUtil;
+import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.UType;
 
 /**
@@ -21,6 +22,7 @@ class ControllerWriter extends BaseControllerWriter {
   private static final String AT_GENERATED = "@Generated(\"avaje-javalin-generator\")";
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
+  private final boolean javalin6 = ProcessingContext.javalin6();
 
   ControllerWriter(ControllerReader reader, boolean jsonb) throws IOException {
     super(reader);
@@ -36,7 +38,15 @@ class ControllerWriter extends BaseControllerWriter {
       this.jsonTypes = Map.of();
     }
     reader.addImportType("io.javalin.plugin.Plugin");
-    reader.addImportType("io.javalin.Javalin");
+
+    if (javalin6) {
+
+      reader.addImportType("io.javalin.config.JavalinConfig");
+      reader.addImportType("io.javalin.router.JavalinDefaultRouting");
+      reader.addImportType("io.avaje.http.api.AvajeJavalinPlugin");
+    } else {
+      reader.addImportType("io.javalin.Javalin");
+    }
   }
 
   void write() {
@@ -49,7 +59,17 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeAddRoutes() {
     writer.append("  @Override").eol();
-    writer.append("  public void apply(Javalin app) {").eol().eol();
+
+    if (javalin6) {
+      writer.append("  public void onStart(JavalinConfig cfg) {").eol();
+      writer.append("    cfg.router.mount(this::routes);").eol();
+      writer.append("  }").eol().eol();
+
+      writer.append("  private void routes(JavalinDefaultRouting app) {").eol().eol();
+    } else {
+      writer.append("  public void apply(Javalin app) {").eol().eol();
+    }
+
     for (final MethodReader method : reader.methods()) {
       if (method.isWebMethod()) {
         writeForMethod(method);
@@ -69,11 +89,11 @@ class ControllerWriter extends BaseControllerWriter {
     writer.append(AT_GENERATED).eol();
     writer.append(diAnnotation()).eol();
     writer
-      .append("public class ")
-      .append(shortName)
-      .append("$Route implements Plugin {")
-      .eol()
-      .eol();
+        .append("public class ")
+        .append(shortName)
+        .append(javalin6 ? "$Route extends AvajeJavalinPlugin {" : "$Route implements Plugin {")
+        .eol()
+        .eol();
 
     var controllerName = "controller";
     var controllerType = shortName;

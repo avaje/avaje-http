@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Locale.LanguageRange;
 
 /** Validator for form beans or request beans. */
+@FunctionalInterface
 public interface Validator {
 
   /**
@@ -18,11 +19,11 @@ public interface Validator {
    */
   void validate(Object bean, String acceptLanguage, Class<?>... groups) throws ValidationException;
 
-  default Locale resolveLocale(String acceptLanguage, Collection<Locale> acceptLocales) {
+  default Locale resolveLocale(String acceptLanguage, Collection<Locale> acceptedLocales) {
     if (acceptLanguage == null) {
       return null;
     }
     final List<LanguageRange> list = LanguageRange.parse(acceptLanguage);
-    return Locale.lookup(list, acceptLocales);
+    return Locale.lookup(list, acceptedLocales);
   }
 }

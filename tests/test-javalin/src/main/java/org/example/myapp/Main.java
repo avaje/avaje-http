@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.avaje.http.api.AvajeJavalinPlugin;
 import io.avaje.http.api.InvalidPathArgumentException;
 import io.avaje.http.api.InvalidTypeArgumentException;
 import io.avaje.http.api.ValidationException;
@@ -15,7 +16,6 @@ import io.avaje.inject.BeanScope;
 import io.avaje.inject.InjectModule;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
-import io.javalin.plugin.Plugin;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 
@@ -33,19 +33,19 @@ public class Main {
 
     // All WebRoutes / Controllers ... from DI Context
     final var beanScope = BeanScope.builder().build();
-    final List<Plugin> webRoutes = beanScope.list(Plugin.class);
+    final List<AvajeJavalinPlugin> webRoutes = beanScope.list(AvajeJavalinPlugin.class);
 
     final var app =
         Javalin.create(
             config -> {
               config.showJavalinBanner = false;
               config.staticFiles.add("public", Location.CLASSPATH);
-              config.accessManager(
-                  (handler, ctx, permittedRoles) -> {
-                    log.debug("allow access ...");
-                    handler.handle(ctx);
-                  });
-              webRoutes.forEach(config.plugins::register);
+//              config.accessManager(
+//                  (handler, ctx, permittedRoles) -> {
+//                    log.debug("allow access ...");
+//                    handler.handle(ctx);
+//                  });
+              webRoutes.forEach(config::registerPlugin);
             });
 
     app.exception(
