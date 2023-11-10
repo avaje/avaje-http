@@ -19,7 +19,7 @@
 
   <properties>
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
-    <swagger.version>2.2.18</swagger.version>
+    <swagger.version>2.2.19</swagger.version>
     <jackson.version>2.14.2</jackson.version>
     <avaje.prisms.version>1.16</avaje.prisms.version>
     <module-info.shade>${project.build.directory}${file.separator}module-info.shade</module-info.shade>
