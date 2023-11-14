@@ -12,9 +12,7 @@
   <artifactId>test-nima-jsonb</artifactId>
 
   <properties>
-    <java.release>21</java.release>
-    <maven.compiler.source>21</maven.compiler.source>
-    <maven.compiler.target>21</maven.compiler.target>
+    <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.useModulePath>false</surefire.useModulePath>
   </properties>
