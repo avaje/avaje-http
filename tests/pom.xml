@@ -18,6 +18,7 @@
     <jex.version>2.5</jex.version>
     <avaje-inject.version>9.9</avaje-inject.version>
     <nima.version>4.0.0</nima.version>
+    <javalin.version>6.0.0-beta.2</javalin.version>
   </properties>
 
   <modules>
