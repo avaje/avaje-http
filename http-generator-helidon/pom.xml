@@ -21,7 +21,7 @@
       <artifactId>avaje-http-generator-core</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-prisms</artifactId>
