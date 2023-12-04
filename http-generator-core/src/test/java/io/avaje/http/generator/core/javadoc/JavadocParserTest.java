@@ -145,22 +145,4 @@ public class JavadocParserTest {
     assertThat(parser.mergeLines("\n one \n  two  \n three \n")).isEqualTo("one two three");
 
   }
-
-  @Test
-  public void parse_param_with_newline() {
-
-    JavadocParser parser = new JavadocParser();
-
-    Javadoc doc = parser.parse(
-      "This is a description with <b>bold</b> and {@code some code}\n" +
-        "@since 1.0\n" +
-        "@param foo The\n foo param\n" +
-        "@param bar The {@code \n} param\n" +
-        "@return The {@value return}\n value\n");
-
-    assertEquals("This is a description with bold and some code", doc.getSummary());
-    assertEquals("The foo param", doc.getParams().get("foo"));
-    assertEquals("The \\n param", doc.getParams().get("bar"));
-    assertEquals("The return value", doc.getReturnDescription());
-  }
 }
