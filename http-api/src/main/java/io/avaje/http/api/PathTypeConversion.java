@@ -417,6 +417,19 @@ public final class PathTypeConversion {
     }
   }
 
+  /** Convert to enum. */
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  public static <T> Enum toEnum(Class<T> clazz, String value) {
+    if (isNullOrEmpty(value)) {
+      return null;
+    }
+    try {
+      return Enum.valueOf((Class<Enum>) clazz, value.toUpperCase());
+    } catch (final IllegalArgumentException e) {
+      throw new InvalidPathArgumentException(e);
+    }
+  }
+
   private static boolean isNullOrEmpty(String value) {
     return value == null || value.isEmpty();
   }
