@@ -71,13 +71,28 @@ public final class PathTypeConversion {
   }
 
   /** Convert to enum. */
-  @SuppressWarnings({"unchecked", "rawtypes"})
+  @SuppressWarnings({"rawtypes"})
   public static <T> Enum asEnum(Class<T> clazz, String value) {
     checkNull(value);
     try {
-      return Enum.valueOf((Class<Enum>) clazz, value.toUpperCase());
+      return convertEnum(clazz, value);
     } catch (final IllegalArgumentException e) {
       throw new InvalidPathArgumentException(e);
+    }
+  }
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  public static <T> Enum convertEnum(Class<T> clazz, String value) {
+    try {
+      return Enum.valueOf((Class<Enum>) clazz, value);
+    } catch (final IllegalArgumentException e) {
+      if (value != null) {
+        final String asUpper = value.toUpperCase();
+        if (!asUpper.equals(value)) {
+          return Enum.valueOf((Class<Enum>) clazz, asUpper);
+        }
+      }
+      throw e;
     }
   }
 
@@ -237,6 +252,19 @@ public final class PathTypeConversion {
       return Integer.valueOf(value);
     } catch (NumberFormatException e) {
       throw new InvalidPathArgumentException(e);
+    }
+  }
+
+  /** Convert to enum. */
+  @SuppressWarnings({"rawtypes"})
+  public static <T> Enum toEnum(Class<T> clazz, String value) {
+    if (isNullOrEmpty(value)) {
+      return null;
+    }
+    try {
+      return convertEnum(clazz, value);
+    } catch (final IllegalArgumentException e) {
+      throw new InvalidTypeArgumentException(e);
     }
   }
 

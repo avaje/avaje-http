@@ -233,6 +233,44 @@ class PathTypeConversionTest {
     assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asInteger("junk"));
   }
 
+  enum Hello {
+    ONE,
+    TWO
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  void toEnum() {
+    assertThat(PathTypeConversion.toEnum(Hello.class, "ONE")).isEqualTo(Hello.ONE);
+    assertThat(PathTypeConversion.toEnum(Hello.class, "one")).isEqualTo(Hello.ONE);
+    assertThat(PathTypeConversion.toEnum(Hello.class, "Two")).isEqualTo(Hello.TWO);
+    assertThat(PathTypeConversion.toEnum(Hello.class, "")).isNull();
+    assertThat(PathTypeConversion.toEnum(Hello.class, null)).isNull();
+  }
+
+  @Test
+  void toEnum_invalid() {
+    assertThrows(InvalidTypeArgumentException.class, () -> PathTypeConversion.toEnum(Hello.class, "DoesNotExist"));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  void asEnum() {
+    assertThat(PathTypeConversion.asEnum(Hello.class, "ONE")).isEqualTo(Hello.ONE);
+    assertThat(PathTypeConversion.asEnum(Hello.class, "One")).isEqualTo(Hello.ONE);
+    assertThat(PathTypeConversion.asEnum(Hello.class, "one")).isEqualTo(Hello.ONE);
+    assertThat(PathTypeConversion.asEnum(Hello.class, "Two")).isEqualTo(Hello.TWO);
+    assertThat(PathTypeConversion.toEnum(Hello.class, "")).isNull();
+    assertThat(PathTypeConversion.toEnum(Hello.class, null)).isNull();
+  }
+
+  @Test
+  void asEnum_invalid() {
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asEnum(Hello.class, ""));
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asEnum(Hello.class, null));
+    assertThrows(InvalidPathArgumentException.class, () -> PathTypeConversion.asEnum(Hello.class, "DoesNotExist"));
+  }
+
   @Test
   void toInteger() {
     assertThat(PathTypeConversion.toInteger("42")).isEqualTo(42);

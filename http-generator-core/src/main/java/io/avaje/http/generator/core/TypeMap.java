@@ -310,14 +310,13 @@ class TypeMap {
     private final UType type;
 
     EnumHandler(UType type) {
-
       super(type.mainType(), type.shortName());
       this.type = type;
     }
 
     @Override
     public String toMethod() {
-      return "(" + type.shortType() + ") asEnum(" + type.shortType() + ".class, ";
+      return "(" + type.shortType() + ") toEnum(" + type.shortType() + ".class, ";
     }
 
     @Override
