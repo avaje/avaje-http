@@ -19,21 +19,24 @@ class JavadocParser {
   private static final int PARAM_DESC = 7;
   private static final int RETURN_DESC = 8;
   private static final int IGNORE = 9;
+  private static final int CODE = 10;
   private static final String DEPRECATED = "deprecated";
 
   private int previousState = TEXT;
 
-  private StringBuilder currentParam = new StringBuilder();
-  private StringBuilder currentDoclet = new StringBuilder();
+  private final StringBuilder currentParam = new StringBuilder();
+  private final StringBuilder currentDoclet = new StringBuilder();
   private StringBuilder currentContent;
 
   private int state = TEXT;
 
   private String returnDesc = "";
 
-  private Map<String, String> params = new LinkedHashMap<>();
+  private final Map<String, String> params = new LinkedHashMap<>();
 
   private boolean deprecated;
+
+private boolean hasReturn;
 
   /**
    * Parse the javadoc.
@@ -48,6 +51,7 @@ class JavadocParser {
     currentContent = mainContent;
 
     for (char c : text.toCharArray()) {
+
       switch (state) {
         case RETURN_DESC:
           if (c == '\n') {
@@ -56,6 +60,11 @@ class JavadocParser {
         case PARAM_DESC:
           if (state == PARAM_DESC) {
             processSetParam();
+          }
+        case CODE:
+          if (state == CODE && c == '}') {
+            state = previousState;
+            break;
           }
         case TEXT:
           processText(c);
@@ -77,32 +86,44 @@ class JavadocParser {
       }
     }
 
-    if (state == RETURN_DESC) {
-      returnDesc = currentContent.toString();
+    if (hasReturn) {
+      returnDesc = mergeLines(currentContent.toString());
     }
 
     return splitMain(mainContent.toString().trim());
   }
 
   private void processSetParam() {
-    params.put(currentParam.toString(), currentContent.toString().trim());
+    params.put(currentParam.toString(), mergeLines(currentContent.toString().trim()));
   }
 
   private void processReturnDesc(StringBuilder mainContent) {
     state = TEXT;
     previousState = TEXT;
     returnDesc = currentContent.toString();
-    currentContent = mainContent;
+    currentContent = new StringBuilder(returnDesc);
   }
 
   private void processText(char c) {
-    if (c == '{' || c == '@') {
-      currentDoclet.delete(0, currentDoclet.length());
-      state = DOCLET_START;
-    } else if (c == '<') {
-      state = TAG_START;
-    } else if (c != '}' && c != '>') {
-      currentContent.append(c);
+    switch (c) {
+      case '{':
+      case '@':
+        currentDoclet.delete(0, currentDoclet.length());
+        state = DOCLET_START;
+        break;
+      case '<':
+        state = TAG_START;
+        break;
+      case '\n':
+        if (state == CODE) {
+          currentContent.append("\\n");
+          return;
+        }
+      default:
+        if (c != '}' && c != '>') {
+          currentContent.append(c);
+        }
+        break;
     }
   }
 
@@ -132,22 +153,21 @@ class JavadocParser {
           deprecated = true;
         }
         state = IGNORE;
-      } else {
-        if (docletName.equals("param")) {
-          currentParam.delete(0, currentParam.length());
-          state = PARAM_NAME;
-        }
-        if (docletName.equals("return")) {
-          currentContent = new StringBuilder();
-          state = RETURN_DESC;
-          previousState = RETURN_DESC;
-        }
+      } else if ("param".equals(docletName)) {
+        currentParam.delete(0, currentParam.length());
+        state = PARAM_NAME;
+      } else if ("return".equals(docletName)) {
+        currentContent = new StringBuilder();
+        state = RETURN_DESC;
+        previousState = RETURN_DESC;
+        hasReturn=true;
+      } else if ("@code".equals(docletName)) {
+        state = CODE;
       }
     } else {
       currentDoclet.append(c);
     }
   }
-
 
   private Javadoc splitMain(String mainText) {
 
