@@ -10,7 +10,6 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
@@ -32,6 +31,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 
 /** Context for building the OpenAPI documentation. */
@@ -65,9 +65,13 @@ public class DocContext {
   }
 
   private OpenAPI initOpenAPI() {
-
     OpenAPI openAPI = new OpenAPI();
     openAPI.setPaths(new Paths());
+
+    Server server = new Server();
+    server.setUrl("localhost:8080");
+    server.setDescription("local testing");
+    openAPI.addServersItem(server);
 
     Info info = new Info();
     info.setTitle("");
@@ -110,7 +114,6 @@ public class DocContext {
    * Return the OpenAPI adding the paths and schemas.
    */
   private OpenAPI getApiForWriting() {
-
     Paths paths = openAPI.getPaths();
     if (paths == null) {
       paths = new Paths();
@@ -148,30 +151,29 @@ public class DocContext {
 
   public void addTagsDefinition(Element element) {
     final var tags = TagsPrism.getInstanceOn(element);
-    if (tags == null) return;
-
+    if (tags == null) {
+      return;
+    }
     for(var tag : tags.value()){
       openAPI.addTagsItem(createTagItem(tag));
     }
   }
 
   public void addTagDefinition(Element element) {
-
     for (var tag : TagPrism.getAllInstancesOn(element)) {
       openAPI.addTagsItem(createTagItem(tag));
     }
   }
 
   public void addSecurityScheme(Element element) {
-
     this.addSecuritySchemes(SecuritySchemePrism.getAllInstancesOn(element));
   }
 
   public void addSecuritySchemes(Element element) {
     var schemes = SecuritySchemesPrism.getInstanceOn(element);
     if (schemes == null) {
-        return;
-      }
+      return;
+    }
     this.addSecuritySchemes(schemes.value());
   }
 
@@ -196,7 +198,6 @@ public class DocContext {
   }
 
   public void readApiDefinition(Element element) {
-
     final var openApi = OpenAPIDefinitionPrism.getInstanceOn(element);
     final var info = openApi.info();
     if (!info.title().isEmpty()) {
@@ -217,7 +218,6 @@ public class DocContext {
 
     } catch (final Exception e) {
       logError(null, "Error writing openapi file" + e.getMessage());
-      e.printStackTrace();
     }
   }
 

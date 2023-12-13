@@ -5,6 +5,12 @@
 		"description" : "Example Javalin controllers with Java and Maven",
 		"version" : ""
 	},
+	"servers" : [
+		{
+			"url" : "localhost:8080",
+			"description" : "local testing"
+		}
+	],
 	"paths" : {
 		"/bars" : {
 			"get" : {
@@ -781,7 +787,7 @@
 				],
 				"responses" : {
 					"200" : {
-						"description" : "The Hello DTO given the id and name.",
+						"description" : "Return the Hello DTO.",
 						"content" : {
 							"application/json" : {
 								"schema" : {
