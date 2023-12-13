@@ -4,6 +4,12 @@
 		"title" : "Example service showing off the Path extension method of controller",
 		"version" : ""
 	},
+  "servers" : [
+    {
+      "url" : "localhost:8080",
+      "description" : "local testing"
+    }
+  ],
 	"tags" : [
 		{
 			"name" : "tag1",
