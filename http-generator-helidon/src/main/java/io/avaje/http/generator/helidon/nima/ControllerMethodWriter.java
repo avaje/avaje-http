@@ -186,19 +186,30 @@ final class ControllerMethodWriter {
     writer.append(");").eol();
 
     if (!method.isVoid() && !isFilter) {
-      writeContextReturn();
+      TypeMirror typeMirror = method.returnType();
+      boolean includeNoContent = !typeMirror.getKind().isPrimitive();
+      if (includeNoContent) {
+        writer.append("    if (result == null) {").eol();
+        writer.append("      res.status(NO_CONTENT_204).send();").eol();
+        writer.append("    } else {").eol();
+      }
+      String indent = includeNoContent ? "      " : "    ";
+      writeContextReturn(indent);
       if (isInputStream(method.returnType())) {
         final var uType = UType.parse(method.returnType());
-        writer.append("    result.transferTo(res.outputStream());", uType.shortName()).eol();
+        writer.append(indent).append("result.transferTo(res.outputStream());", uType.shortName()).eol();
       } else if (producesJson()) {
         if (returnTypeString()) {
-          writer.append("    res.send(result); // send raw JSON").eol();
+          writer.append(indent).append("res.send(result); // send raw JSON").eol();
         } else {
           final var uType = UType.parse(method.returnType());
-          writer.append("    %sJsonType.toJson(result, JsonOutput.of(res));", uType.shortName()).eol();
+          writer.append(indent).append("%sJsonType.toJson(result, JsonOutput.of(res));", uType.shortName()).eol();
         }
       } else {
-        writer.append("    res.send(result);").eol();
+        writer.append(indent).append("res.send(result);").eol();
+      }
+      if (includeNoContent) {
+        writer.append("    }").eol();
       }
     }
     writer.append("  }").eol().eol();
@@ -260,14 +271,14 @@ final class ControllerMethodWriter {
     return method.params().stream().anyMatch(p -> p.isForm() || ParamType.FORMPARAM.equals(p.paramType()));
   }
 
-  private void writeContextReturn() {
+  private void writeContextReturn(String indent) {
     final var producesOp = Optional.ofNullable(method.produces());
     if (producesOp.isEmpty() && !useJsonB) {
       return;
     }
-
     final var produces = producesOp.map(MediaType::parse).orElse(MediaType.APPLICATION_JSON);
-    final var contentTypeString = "    res.headers().contentType(MediaTypes.";
+    final var contentTypeString = "res.headers().contentType(MediaTypes.";
+    writer.append(indent);
     switch (produces) {
       case APPLICATION_JSON -> writer.append(contentTypeString).append("APPLICATION_JSON);").eol();
       case TEXT_HTML -> writer.append(contentTypeString).append("TEXT_HTML);").eol();

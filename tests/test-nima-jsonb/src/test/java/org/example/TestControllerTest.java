@@ -30,6 +30,27 @@ class TestControllerTest {
   }
 
   @Test
+  void maybeNoContent() {
+    HttpResponse<String> res = client.request()
+      .path("test/maybeNoContent")
+      .queryParam("empty", false)
+      .GET()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("Hi");
+
+    HttpResponse<String> res2 = client.request()
+      .path("test/maybeNoContent")
+      .queryParam("empty", true)
+      .GET()
+      .asString();
+
+    assertThat(res2.statusCode()).isEqualTo(204);
+    assertThat(res2.body()).isEqualTo("");
+  }
+
+  @Test
   void strBody() {
     HttpResponse<String> res = client.request()
       .path("test/strBody")
