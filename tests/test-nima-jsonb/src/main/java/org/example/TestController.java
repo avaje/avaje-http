@@ -140,4 +140,9 @@ public class TestController {
   String formBean(MyForm form) {
     return form.name + "|" + form.email + "|" + form.url;
   }
+
+  @Get("maybeNoContent")
+  String maybeNoContent(Boolean empty) {
+    return Boolean.TRUE.equals(empty) ? null : "Hi";
+  }
 }
