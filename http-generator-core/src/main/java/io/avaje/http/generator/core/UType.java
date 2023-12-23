@@ -120,9 +120,7 @@ public interface UType {
 
     @Override
     public Set<String> importTypes() {
-      return rawType.startsWith("java.lang.")
-              && Character.isUpperCase(rawType.charAt(10))
-              && rawType.indexOf('.') > -1
+      return isJavaLangPackage(rawType)
           ? Set.of()
           : Collections.singleton(rawType.replace("[]", ""));
     }
@@ -141,6 +139,10 @@ public interface UType {
     public String mainType() {
       return rawType;
     }
+  }
+
+  static boolean isJavaLangPackage(String rawType) {
+    return rawType.startsWith("java.lang.") && Character.isUpperCase(rawType.charAt(10));
   }
 
   /**
