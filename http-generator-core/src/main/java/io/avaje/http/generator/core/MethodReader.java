@@ -472,20 +472,18 @@ public class MethodReader {
    * arg0, arg1, arg2 etc.
    */
   public void checkArgumentNames() {
-    if (!params.isEmpty() && pathSegments != null) {
-      if (allArgParamNames()) {
-        final var namedSegments = namedSegments();
-        if (params.size() >= namedSegments.size()) {
-          // path params, take the names from the segments
-          for (int i = 0; i < namedSegments.size(); i++) {
-            MethodParam pathParam = params.get(i);
-            pathParam.overrideVarName(namedSegments.get(i).name(), ParamType.PATHPARAM);
-          }
-          // QueryParam and Headers which now require explicit names
-          for (int i = namedSegments.size(); i < params.size(); i++) {
-            MethodParam param = params.get(i);
-            param.overrideVarName(i);
-          }
+    if (!params.isEmpty() && pathSegments != null && allArgParamNames()) {
+      final var namedSegments = namedSegments();
+      if (params.size() >= namedSegments.size()) {
+        // path params, take the names from the segments
+        for (int i = 0; i < namedSegments.size(); i++) {
+          MethodParam pathParam = params.get(i);
+          pathParam.overrideVarName(namedSegments.get(i).name(), ParamType.PATHPARAM);
+        }
+        // QueryParam and Headers which now require explicit names
+        for (int i = namedSegments.size(); i < params.size(); i++) {
+          MethodParam param = params.get(i);
+          param.overrideVarName(i);
         }
       }
     }
