@@ -120,9 +120,10 @@ public interface UType {
 
     @Override
     public Set<String> importTypes() {
-      return rawType.startsWith("java.lang.") && rawType.indexOf('.') > -1
-        ? Set.of()
-        : Collections.singleton(rawType.replace("[]", ""));
+      return (rawType.startsWith("java.lang.") && Character.isLowerCase(rawType.charAt(10)))
+              || rawType.indexOf('.') > -1
+          ? Set.of()
+          : Collections.singleton(rawType.replace("[]", ""));
     }
 
     @Override
