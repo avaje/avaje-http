@@ -86,7 +86,7 @@ public class ProcessingContext {
       } else {
         useJavax = (javax);
       }
-      this.javalin6 = elementUtils.getTypeElement("io.javalin.config.JavalinConfig") != null;
+      this.javalin6 = elementUtils.getTypeElement("io.javalin.config.RouterConfig") != null;
     }
   }
 
