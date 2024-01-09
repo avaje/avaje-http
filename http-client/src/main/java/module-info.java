@@ -3,6 +3,7 @@ module io.avaje.http.client {
   uses io.avaje.http.client.HttpClient.GeneratedComponent;
 
   requires transitive java.net.http;
+  requires transitive jdk.crypto.ec;
   requires transitive io.avaje.applog;
   requires static com.fasterxml.jackson.databind;
   requires static com.fasterxml.jackson.annotation;
