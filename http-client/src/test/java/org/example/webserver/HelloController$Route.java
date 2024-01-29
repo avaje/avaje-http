@@ -6,13 +6,14 @@ import static io.avaje.http.api.PathTypeConversion.toLocalDate;
 
 import java.time.LocalDate;
 
+import io.avaje.http.api.AvajeJavalinPlugin;
 import io.avaje.http.api.PathSegment;
 import io.avaje.http.api.Validator;
-import io.javalin.Javalin;
-import io.javalin.plugin.Plugin;
+import io.javalin.config.JavalinConfig;
+import io.javalin.router.JavalinDefaultRouting;
 
 //@Singleton
-public class HelloController$Route implements Plugin{
+public class HelloController$Route extends AvajeJavalinPlugin {
 
   private final HelloController controller;
   private final Validator validator;
@@ -22,8 +23,13 @@ public class HelloController$Route implements Plugin{
    this.validator = validator;
   }
 
+
   @Override
-  public void apply(Javalin cfg) {
+  public void onStart(JavalinConfig cfg) {
+    cfg.router.mount(this::routes);
+  }
+
+  private void routes(JavalinDefaultRouting cfg) {
 
 	  cfg.get("/hello/message", ctx -> {
       ctx.status(200);

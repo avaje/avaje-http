@@ -106,12 +106,12 @@ To force the AP to generate with `@javax.inject.Singleton`(in the case where you
 
 ### Usage with Javalin
 
-The annotation processor will generate controller classes implementing the Javalin `Plugin` interface, which we can register using:
+The annotation processor will generate controller classes implementing the `AvajeJavalinPlugin` interface, which we can register in javalin using:
 
 ```java
-List<Plugin> routes = ...; //retrieve using a DI framework
+List<AvajeJavalinPlugin> routes = ...; //retrieve using a DI framework
 
-Javalin.create(cfg -> routes.forEach(cfg.plugins::register)).start();
+Javalin.create(cfg -> routes.forEach(cfg::registerPlugin)).start();
 ```
 
 ### Usage with Helidon SE (4.x)

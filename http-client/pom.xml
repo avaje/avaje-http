@@ -73,8 +73,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
+      <version>2.1-RC3</version>
     </dependency>
 
     <dependency>
