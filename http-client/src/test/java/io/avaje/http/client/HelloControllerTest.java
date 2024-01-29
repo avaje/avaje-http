@@ -287,7 +287,7 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(metrics.responseBytes()).isEqualTo(0);
     assertThat(metrics.totalMicros()).isGreaterThan(0);
 
-    assertThat(httpException.bodyAsString()).isEqualTo("Not Found");
+    assertThat(httpException.bodyAsString()).isEqualTo("Endpoint GET /this-path-does-not-exist not found");
     assertThat(httpException.isPlainText()).isTrue();
     assertThat(httpException.contentType())
       .isPresent()
@@ -480,7 +480,7 @@ class HelloControllerTest extends BaseWebTest {
     final HttpResponse<String> hres = request.GET().asString();
 
     assertThat(hres.statusCode()).isEqualTo(404);
-    assertThat(hres.body()).contains("Not Found");
+    assertThat(hres.body()).contains("not found");
     final HttpClient.Metrics metrics = clientContext.metrics(true);
     assertThat(metrics.totalCount()).isEqualTo(1);
     assertThat(metrics.errorCount()).isEqualTo(1);
@@ -814,7 +814,7 @@ class HelloControllerTest extends BaseWebTest {
     } catch (HttpException e) {
       assertThat(e.statusCode()).isEqualTo(404);
       assertThat(e.contentType()).isPresent().get().isEqualTo("text/plain");
-      assertThat(e.bodyAsString()).isEqualTo("Not Found");
+      assertThat(e.bodyAsString()).isEqualTo("Endpoint GET /does-not-exist not found");
     }
   }
 

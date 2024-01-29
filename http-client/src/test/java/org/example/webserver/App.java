@@ -27,12 +27,7 @@ public class App {
         Javalin.create(
             config -> {
               config.showJavalinBanner = false;
-              config.accessManager(
-                  (handler, ctx, permittedRoles) -> {
-                    log.debug("allow access ...");
-                    handler.handle(ctx);
-                  });
-              config.plugins.register(bean);
+              config.registerPlugin(bean);
             });
 
     app.exception(
