@@ -66,7 +66,7 @@
     <dependency>
       <groupId>io.javalin</groupId>
       <artifactId>javalin</artifactId>
-      <version>5.6.3</version>
+      <version>6.0.0</version>
       <scope>test</scope>
     </dependency>
 
