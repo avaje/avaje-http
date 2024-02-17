@@ -145,4 +145,14 @@ public class TestController {
   String maybeNoContent(Boolean empty) {
     return Boolean.TRUE.equals(empty) ? null : "Hi";
   }
+
+  @Get("/peppermint/{patty:\\d+}")
+  String pattern(String patty) {
+    return patty.toString();
+  }
+
+  @Get("/minus/{+plus}")
+  String patternPlus(String plus) {
+    return plus.toString();
+  }
 }
