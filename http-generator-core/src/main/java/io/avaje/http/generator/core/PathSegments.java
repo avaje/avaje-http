@@ -164,7 +164,7 @@ public class PathSegments {
      * Create a normal segment.
      */
     Segment(String name) {
-      this.name = name;
+      this.name = name.startsWith("+") ? name.substring(1) : name.split(":")[0];
       this.sanitizedName = Util.sanitizeName(name);
       this.literalSection = null;
       this.matrixKeys = null;

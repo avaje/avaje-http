@@ -92,7 +92,7 @@ final class ControllerMethodWriter {
     } else if (isFilter) {
       writer.append("    routing.addFilter(this::_%s);", method.simpleName()).eol();
     } else {
-      writer.append("    routing.%s(\"%s\", this::_%s);", webMethod.name().toLowerCase(), method.fullPath(), method.simpleName()).eol();
+      writer.append("    routing.%s(\"%s\", this::_%s);", webMethod.name().toLowerCase(), method.fullPath().replace("\\", "\\\\"), method.simpleName()).eol();
     }
   }
 
