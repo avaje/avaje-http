@@ -16,7 +16,7 @@
     <assertj.version>3.25.3</assertj.version>
     <jackson.version>2.16.1</jackson.version>
     <jex.version>2.5</jex.version>
-    <avaje-inject.version>9.10</avaje-inject.version>
+    <avaje-inject.version>9.11</avaje-inject.version>
     <nima.version>4.0.5</nima.version>
     <javalin.version>6.1.0</javalin.version>
   </properties>
