@@ -24,7 +24,7 @@
     <dependency>
       <groupId>io.javalin</groupId>
       <artifactId>javalin</artifactId>
-      <version>6.1.0</version>
+      <version>6.1.1</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
