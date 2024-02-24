@@ -3,6 +3,7 @@ package io.avaje.http.client;
 import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.ProxySelector;
+import java.net.http.HttpRequest;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -69,7 +70,33 @@ public interface HttpClient {
   HttpClientRequest request();
 
   /**
-   * Return a UrlBuilder to use to build an URL taking into account the base URL.
+   * Create a new request using the provided {@link java.net.http.HttpRequest HttpRequest}
+   *
+   * @param httpRequest JDK httpRequest to construct the new request with.
+   */
+  default HttpClientRequest jdkRequest(HttpRequest httpRequest) {
+
+    var avajeRequest = request();
+
+    avajeRequest.url(httpRequest.uri().toString());
+    httpRequest.bodyPublisher().ifPresent(avajeRequest::body);
+    httpRequest.timeout().ifPresent(avajeRequest::requestTimeout);
+    avajeRequest.header(httpRequest.headers().map());
+    return avajeRequest;
+  }
+
+  /**
+   * Create a new request using the provided {@link java.net.http.HttpRequest.Builder
+   * HttpRequest.Builder}
+   *
+   * @param request A jdk httpRequest to construct the new request with.
+   */
+  default HttpClientRequest jdkRequest(HttpRequest.Builder requestBuilder) {
+    return jdkRequest(requestBuilder.build());
+  }
+
+  /**
+   * Return a UrlBuilder for building a URL with the configured base URL.
    */
   UrlBuilder url();
 
