@@ -3,6 +3,7 @@ package io.avaje.http.client;
 import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.ProxySelector;
+import java.net.http.HttpRequest;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -69,7 +70,6 @@ public interface HttpClient {
   HttpClientRequest request();
 
   /**
-   * Return a UrlBuilder to use to build an URL taking into account the base URL.
    */
   UrlBuilder url();
 
