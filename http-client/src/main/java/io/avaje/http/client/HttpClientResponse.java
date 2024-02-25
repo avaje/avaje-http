@@ -63,7 +63,7 @@ public interface HttpClientResponse {
   /**
    * Return the response with the body containing a single instance of the given type.
    * <p>
-   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * If the HTTP statusCode is not in the 2XX range, an HttpException is thrown containing
    * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
@@ -76,7 +76,7 @@ public interface HttpClientResponse {
   /**
    * Return the response with the body containing a single instance of the given type.
    * <p>
-   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * If the HTTP statusCode is not in the 2XX range, an HttpException is thrown containing
    * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
@@ -88,7 +88,7 @@ public interface HttpClientResponse {
   /**
    * Return the response with the body containing a list of the given type.
    * <p>
-   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * If the HTTP statusCode is not in the 2XX range, an HttpException is thrown containing
    * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
@@ -101,7 +101,7 @@ public interface HttpClientResponse {
   /**
    * Return the response with the body containing a list of the given type.
    * <p>
-   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * If the HTTP statusCode is not in the 2XX range, an HttpException is thrown containing
    * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
@@ -122,7 +122,7 @@ public interface HttpClientResponse {
    * may not be available at the time of the callback. As such {@link RequestLogger}
    * will not include response content when logging stream request/response
    * <p>
-   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * If the HTTP statusCode is not in the 2XX range, an HttpException is thrown containing
    * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
@@ -143,7 +143,7 @@ public interface HttpClientResponse {
    * may not be available at the time of the callback. As such {@link RequestLogger}
    * will not include response content when logging stream request/response
    * <p>
-   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * If the HTTP statusCode is not in the 2XX range, an HttpException is thrown containing
    * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
@@ -156,7 +156,7 @@ public interface HttpClientResponse {
   /**
    * Return the response as a single bean.
    * <p>
-   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * If the HTTP statusCode is not in the 2XX range, an HttpException is thrown containing
    * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
@@ -169,7 +169,7 @@ public interface HttpClientResponse {
   /**
    * Return the response as a list of beans.
    * <p>
-   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * If the HTTP statusCode is not in the 2XX range, an HttpException is thrown containing
    * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
@@ -190,7 +190,7 @@ public interface HttpClientResponse {
    * may not be available at the time of the callback. As such {@link RequestLogger}
    * will not include response content when logging stream request/response
    * <p>
-   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * If the HTTP statusCode is not in the 2XX range, an HttpException is thrown containing
    * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
@@ -203,7 +203,7 @@ public interface HttpClientResponse {
   /**
    * Return the response as a single bean.
    * <p>
-   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * If the HTTP statusCode is not in the 2XX range, an HttpException is thrown containing
    * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
@@ -215,7 +215,7 @@ public interface HttpClientResponse {
   /**
    * Return the response as a list of beans.
    * <p>
-   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * If the HTTP statusCode is not in the 2XX range, an HttpException is thrown containing
    * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
@@ -235,7 +235,7 @@ public interface HttpClientResponse {
    * may not be available at the time of the callback. As such {@link RequestLogger}
    * will not include response content when logging stream request/response
    * <p>
-   * If the HTTP statusCode is not in the 2XX range a HttpException is throw which contains
+   * If the HTTP statusCode is not in the 2XX range, an HttpException is thrown containing
    * the HttpResponse. This is the cause in the CompletionException when using an async request.
    *
    * @param type The type of the bean to convert the response content into.
