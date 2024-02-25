@@ -70,6 +70,7 @@ public interface HttpClient {
   HttpClientRequest request();
 
   /**
+   * Returns a UrlBuilder to build a URL, considering the base URL.
    */
   UrlBuilder url();
 
