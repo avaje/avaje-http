@@ -1,9 +1,12 @@
 package io.avaje.http.generator.core;
 
+import static io.avaje.jsonb.generator.APContext.filer;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -275,7 +278,7 @@ public class ProcessingContext {
                       return s;
                     })
                 .noneMatch(s -> s.contains(fqn));
-        if (noProvides) {
+        if (noProvides && !buildPluginAvailable()) {
           logError(
               module,
               "Missing `provides io.avaje.http.client.HttpClient.GeneratedComponent with %s;`",
@@ -296,5 +299,28 @@ public class ProcessingContext {
 
   static Elements elements() {
     return CTX.get().elementUtils;
+  }
+
+  private static boolean buildPluginAvailable() {
+
+    return resource("target/avaje-plugin-exists.txt", "/target/classes")
+        || resource("build/avaje-plugin-exists.txt", "/build/classes/java/main");
+  }
+
+  private static boolean resource(String relativeName, String replace) {
+    try (var inputStream =
+        new URI(
+                filer()
+                    .getResource(StandardLocation.CLASS_OUTPUT, "", relativeName)
+                    .toUri()
+                    .toString()
+                    .replace(replace, ""))
+            .toURL()
+            .openStream()) {
+
+      return inputStream.available() > 0;
+    } catch (IOException | URISyntaxException e) {
+      return false;
+    }
   }
 }
