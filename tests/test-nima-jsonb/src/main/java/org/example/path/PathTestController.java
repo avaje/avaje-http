@@ -1,5 +1,7 @@
 package org.example.path;
 
+import org.example.path.nest.PathNestController.NestedTypeResponse;
+
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Path;
@@ -13,5 +15,10 @@ public class PathTestController {
   @Get
   String hello() {
     return "hi";
+  }
+
+  @Get("/nested/respo")
+  NestedTypeResponse nested() {
+    return new NestedTypeResponse(0, null);
   }
 }
