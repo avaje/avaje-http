@@ -75,6 +75,28 @@ public interface UType {
     return "";
   }
 
+  static String innerTypesImport(String type) {
+    final var parts = type.split("\\.");
+    var result = "";
+    var foundUpper = false;
+
+    for (var i = 0; i < parts.length; i++) {
+      if (!Character.isUpperCase(parts[i].charAt(0))) {
+        result += parts[i] + ".";
+      } else if (!foundUpper) {
+        foundUpper = true;
+        result += parts[i] + (i == parts.length - 1 ? "" : ".");
+      } else {
+        break;
+      }
+    }
+
+    if (result.endsWith(".")) {
+      result = result.substring(0, result.length() - 1);
+    }
+    return result;
+  }
+
   class VoidType implements UType {
 
     @Override
@@ -122,7 +144,7 @@ public interface UType {
     public Set<String> importTypes() {
       return isJavaLangPackage(rawType)
           ? Set.of()
-          : Collections.singleton(rawType.replace("[]", ""));
+          : Collections.singleton(innerTypesImport(rawType.replace("[]", "")));
     }
 
     @Override
@@ -215,28 +237,6 @@ public interface UType {
       }
       set.remove("?");
       return set;
-    }
-
-    public String innerTypesImport(String type) {
-      final var parts = type.split("\\.");
-      var result = "";
-      var foundUpper = false;
-
-      for (var i = 0; i < parts.length; i++) {
-        if (!Character.isUpperCase(parts[i].charAt(0))) {
-          result += parts[i] + ".";
-        } else if (!foundUpper) {
-          foundUpper = true;
-          result += parts[i] + (i == parts.length - 1 ? "" : ".");
-        } else {
-          break;
-        }
-      }
-
-      if (result.endsWith(".")) {
-        result = result.substring(0, result.length() - 1);
-      }
-      return result;
     }
 
     @Override
