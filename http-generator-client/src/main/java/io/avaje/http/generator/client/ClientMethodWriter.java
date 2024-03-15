@@ -58,21 +58,21 @@ final class ClientMethodWriter {
     var element = method.element();
 
     this.presetHeaders =
-        Stream.concat(
-                HeadersPrism.getOptionalOn(element).stream(),
-                HeadersPrism.getOptionalOn(element.getEnclosingElement()).stream())
-            .map(HeadersPrism::value)
-            .map(List::stream)
-            .flatMap(Function.identity())
-            .peek(
-                s -> {
-                  if (!s.contains(":")) {
-                    logError(element, "@Headers value must have a \":\"", method);
-                  }
-                })
-            .map(s -> s.split(":", 2))
-            .filter(a -> a.length == 2)
-            .map(a -> Map.entry(a[0].trim(), a[1].trim())).collect(toList());
+      Stream.concat(
+        HeadersPrism.getOptionalOn(element).stream(),
+        HeadersPrism.getOptionalOn(element.getEnclosingElement()).stream())
+      .map(HeadersPrism::value)
+      .map(List::stream)
+      .flatMap(Function.identity())
+      .peek(
+        s -> {
+          if (!s.contains(":")) {
+            logError(element, "@Headers value must have a \":\"", method);
+          }
+        })
+      .map(s -> s.split(":", 2))
+      .filter(a -> a.length == 2)
+      .map(a -> Map.entry(a[0].trim(), a[1].trim())).collect(toList());
   }
 
   void addImportTypes(ControllerReader reader) {
@@ -295,12 +295,8 @@ final class ClientMethodWriter {
         }
       }
     }
-    presetHeaders.forEach(
-        e ->
-            writer
-                .append(
-                    "      .header(\"%s\", \"%s\")", e.getKey(), e.getValue().replace("\\", "\\\\"))
-                .eol());
+    presetHeaders.forEach(e ->
+      writer.append("      .header(\"%s\", \"%s\")", e.getKey(), e.getValue().replace("\\", "\\\\")).eol());
   }
 
   private void writeBeanParams(PathSegments segments) {
