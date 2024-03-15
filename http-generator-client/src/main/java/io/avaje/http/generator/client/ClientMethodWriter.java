@@ -7,11 +7,15 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static io.avaje.http.generator.core.ProcessingContext.*;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -35,6 +39,7 @@ final class ClientMethodWriter {
   private final boolean useConfig;
   private final Map<String, String> segmentPropertyMap;
   private final Set<String> propertyConstants;
+  private final List<Entry<String, String>> presetHeaders;
 
   ClientMethodWriter(MethodReader method, Append writer, boolean useJsonb, Set<String> propertyConstants) {
     this.method = method;
@@ -50,6 +55,24 @@ final class ClientMethodWriter {
         .filter(Segment::isProperty)
         .collect(toMap(Segment::name, s -> Util.sanitizeName(s.name()).toUpperCase()));
     this.propertyConstants = propertyConstants;
+    var element = method.element();
+
+    this.presetHeaders =
+      Stream.concat(
+        HeadersPrism.getOptionalOn(element).stream(),
+        HeadersPrism.getOptionalOn(element.getEnclosingElement()).stream())
+      .map(HeadersPrism::value)
+      .map(List::stream)
+      .flatMap(Function.identity())
+      .peek(
+        s -> {
+          if (!s.contains(":")) {
+            logError(element, "@Headers value must have a \":\"", method);
+          }
+        })
+      .map(s -> s.split(":", 2))
+      .filter(a -> a.length == 2)
+      .map(a -> Map.entry(a[0].trim(), a[1].trim())).collect(toList());
   }
 
   void addImportTypes(ControllerReader reader) {
@@ -272,6 +295,8 @@ final class ClientMethodWriter {
         }
       }
     }
+    presetHeaders.forEach(e ->
+      writer.append("      .header(\"%s\", \"%s\")", e.getKey(), e.getValue().replace("\\", "\\\\")).eol());
   }
 
   private void writeBeanParams(PathSegments segments) {

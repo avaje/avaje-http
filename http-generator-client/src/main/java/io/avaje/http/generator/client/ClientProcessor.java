@@ -21,7 +21,9 @@ import io.avaje.http.generator.core.ClientPrism;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ImportPrism;
 import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.prism.GeneratePrism;
 
+@GeneratePrism(io.avaje.http.api.Headers.class)
 @SupportedAnnotationTypes({ClientPrism.PRISM_TYPE, ImportPrism.PRISM_TYPE})
 public class ClientProcessor extends AbstractProcessor {
 
