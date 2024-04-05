@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.media.StringSchema;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Stream;
@@ -168,7 +169,7 @@ class SchemaDocBuilder {
   private Schema<?> buildEnumSchema(Element e) {
     var schema = new StringSchema();
     e.getEnclosedElements().stream()
-      .filter(ec -> ec.getKind().equals(ElementKind.ENUM_CONSTANT))
+      .filter(ec -> ElementKind.ENUM_CONSTANT.equals(ec.getKind()))
       .forEach(ec -> schema.addEnumItem(ec.getSimpleName().toString()));
 
     var doc = Javadoc.parse(elements.getDocComment(e));
@@ -267,8 +268,21 @@ class SchemaDocBuilder {
 
   private void setDescription(Element element, Schema<?> propSchema) {
     var doc = Javadoc.parse(elements.getDocComment(element));
+
     if (!doc.getSummary().isEmpty()) {
       propSchema.setDescription(doc.getSummary());
+      return;
+    }
+    try {
+
+      final var enclosingElement = element.getEnclosingElement();
+      if (enclosingElement.getKind() == ElementKind.valueOf("RECORD")) {
+        Optional.of(Javadoc.parse(elements.getDocComment(enclosingElement)))
+            .map(d -> d.getParams().get(element.getSimpleName().toString()))
+            .ifPresent(propSchema::setDescription);
+      }
+    } catch (IllegalArgumentException e) {
+      // not on jdk 16+
     }
   }
 
@@ -322,7 +336,9 @@ class SchemaDocBuilder {
     }
     if (element instanceof TypeElement) {
       Element mappedSuper = types.asElement(((TypeElement) element).getSuperclass());
-      if (mappedSuper != null && !"java.lang.Object".equals(mappedSuper.toString())) {
+      if (mappedSuper != null
+              && !"java.lang.Object".equals(mappedSuper.toString())
+              && !"java.lang.Record".equals(mappedSuper.toString())) {
         gatherProperties(fields, mappedSuper);
       }
       for (VariableElement field : ElementFilter.fieldsIn(element.getEnclosedElements())) {
