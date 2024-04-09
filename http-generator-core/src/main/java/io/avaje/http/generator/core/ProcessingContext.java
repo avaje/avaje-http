@@ -91,7 +91,7 @@ public final class ProcessingContext {
     }
   }
 
-  static void init(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
+  public static void init(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
     final var oldCtx = CTX.get();
     final var newCTX = new Ctx(env, adapter, generateOpenAPI);
     if (oldCtx != null && newCTX.docContext == null) {
