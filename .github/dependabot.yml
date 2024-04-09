@@ -5,6 +5,8 @@ updates:
   schedule:
     interval: "weekly"
   open-pull-requests-limit: 10
+  ignore:
+      - dependency-name: "jakarta.inject:jakarta.inject-api"
   groups:
       dev-deps:
         dependency-type: "development"
