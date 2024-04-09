@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -33,7 +33,7 @@ import javax.tools.StandardLocation;
 
 import io.avaje.http.generator.core.openapi.DocContext;
 
-public class ProcessingContext {
+public final class ProcessingContext {
 
   private static final ThreadLocal<Ctx> CTX = new ThreadLocal<>();
 
@@ -91,7 +91,7 @@ public class ProcessingContext {
     }
   }
 
-  public static void init(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
+  static void init(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
     final var oldCtx = CTX.get();
     final var newCTX = new Ctx(env, adapter, generateOpenAPI);
     if (oldCtx != null && newCTX.docContext == null) {
@@ -203,7 +203,7 @@ public class ProcessingContext {
   public static boolean useJsonb() {
     try {
       return CTX.get().elementUtils.getTypeElement("io.avaje.jsonb.Jsonb") != null
-          || Class.forName("io.avaje.jsonb.Jsonb") != null;
+        || Class.forName("io.avaje.jsonb.Jsonb") != null;
     } catch (final ClassNotFoundException e) {
       return false;
     }
@@ -254,33 +254,24 @@ public class ProcessingContext {
     if (module != null && !CTX.get().validated && !module.isUnnamed()) {
 
       CTX.get().validated = true;
-
       try (var inputStream =
-              CTX.get()
-                  .filer
-                  .getResource(StandardLocation.SOURCE_PATH, "", "module-info.java")
-                  .toUri()
-                  .toURL()
-                  .openStream();
+             CTX.get()
+               .filer
+               .getResource(StandardLocation.SOURCE_PATH, "", "module-info.java")
+               .toUri()
+               .toURL()
+               .openStream();
           var reader = new BufferedReader(new InputStreamReader(inputStream))) {
 
-        var noProvides =
-            reader
-                .lines()
-                .map(
-                    s -> {
-                      if (s.contains("io.avaje.http.api.javalin") && !s.contains("static")) {
-                        logWarn(
-                            "io.avaje.http.api.javalin only contains SOURCE retention annotations. It should added as `requires static`");
-                      }
-                      return s;
-                    })
-                .noneMatch(s -> s.contains(fqn));
+        var noProvides = reader.lines().map(s -> {
+            if (s.contains("io.avaje.http.api.javalin") && !s.contains("static")) {
+              logWarn("io.avaje.http.api.javalin only contains SOURCE retention annotations. It should added as `requires static`");
+            }
+            return s;
+          })
+          .noneMatch(s -> s.contains(fqn));
         if (noProvides && !buildPluginAvailable()) {
-          logError(
-              module,
-              "Missing `provides io.avaje.http.client.HttpClient.GeneratedComponent with %s;`",
-              fqn);
+          logError(module, "Missing `provides io.avaje.http.client.HttpClient.GeneratedComponent with %s;`", fqn);
         }
       } catch (Exception e) {
         // can't read module
@@ -300,24 +291,21 @@ public class ProcessingContext {
   }
 
   private static boolean buildPluginAvailable() {
-
-    return resource("target/avaje-plugin-exists.txt", "/target/classes")
-        || resource("build/avaje-plugin-exists.txt", "/build/classes/java/main");
+    return resourceExists("target/avaje-plugin-exists.txt")
+      || resourceExists("build/avaje-plugin-exists.txt");
   }
 
-  private static boolean resource(String relativeName, String replace) {
-    try (var inputStream =
-        new URI(
-                filer()
-                    .getResource(StandardLocation.CLASS_OUTPUT, "", relativeName)
-                    .toUri()
-                    .toString()
-                    .replace(replace, ""))
-            .toURL()
-            .openStream()) {
-
-      return inputStream.available() > 0;
-    } catch (IOException | URISyntaxException e) {
+  private static boolean resourceExists(String relativeName) {
+    try {
+      final String resource =
+        filer()
+          .getResource(StandardLocation.CLASS_OUTPUT, "", relativeName)
+          .toUri()
+          .toString()
+          .replaceFirst("/target/classes", "")
+          .replaceFirst("/build/classes/java/main", "");
+      return Paths.get(new URI(resource)).toFile().exists();
+    } catch (final Exception e) {
       return false;
     }
   }
