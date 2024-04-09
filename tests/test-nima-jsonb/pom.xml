@@ -90,7 +90,7 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-jsonb-generator</artifactId>
-              <version>1.10</version>
+              <version>1.11</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
