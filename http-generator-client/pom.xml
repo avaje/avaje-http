@@ -10,8 +10,9 @@
   <artifactId>avaje-http-client-generator</artifactId>
 
   <properties>
-    <java.version>11</java.version>
+    <maven.compiler.release>11</maven.compiler.release>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.avaje</groupId>
@@ -48,7 +49,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven-surefire-plugin.version}</version>
         <configuration>
           <useModulePath>false</useModulePath>
         </configuration>
