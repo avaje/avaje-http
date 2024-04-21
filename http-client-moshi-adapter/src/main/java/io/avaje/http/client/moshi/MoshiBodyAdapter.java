@@ -1,6 +1,7 @@
 package io.avaje.http.client.moshi;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,12 +33,16 @@ public final class MoshiBodyAdapter implements BodyAdapter {
   private final ConcurrentHashMap<Type, BodyReader<?>> beanReaderCache = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<Type, BodyReader<?>> listReaderCache = new ConcurrentHashMap<>();
 
-  /** Create passing the Moshi to use. */
+  /**
+   * Create passing the Moshi to use.
+   */
   public MoshiBodyAdapter(Moshi moshi) {
     this.moshi = moshi;
   }
 
-  /** Create with a default Moshi that allows unknown properties. */
+  /**
+   * Create with a default Moshi that allows unknown properties.
+   */
   public MoshiBodyAdapter() {
     this(new Moshi.Builder().build());
   }
@@ -45,48 +50,43 @@ public final class MoshiBodyAdapter implements BodyAdapter {
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyWriter<T> beanWriter(Class<?> cls) {
-    return (BodyWriter<T>)
-        beanWriterCache.computeIfAbsent(cls, aClass -> new JWriter<>(moshi.adapter(cls)));
+    return (BodyWriter<T>) beanWriterCache.computeIfAbsent(cls, aClass -> new JWriter<>(moshi.adapter(cls)));
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyWriter<T> beanWriter(Type type) {
-    return (BodyWriter<T>)
-        beanWriterCache.computeIfAbsent(type, aClass -> new JWriter<>(moshi.adapter(type)));
+    return (BodyWriter<T>) beanWriterCache.computeIfAbsent(type, aClass -> new JWriter<>(moshi.adapter(type)));
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyReader<T> beanReader(Class<T> cls) {
-    return (BodyReader<T>)
-        beanReaderCache.computeIfAbsent(cls, aClass -> new JReader<>(moshi.adapter(cls)));
+    return (BodyReader<T>) beanReaderCache.computeIfAbsent(cls, aClass -> new JReader<>(moshi.adapter(cls)));
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyReader<T> beanReader(Type type) {
-    return (BodyReader<T>)
-        beanReaderCache.computeIfAbsent(type, aClass -> new JReader<>(moshi.adapter(type)));
+    return (BodyReader<T>) beanReaderCache.computeIfAbsent(type, aClass -> new JReader<>(moshi.adapter(type)));
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyReader<List<T>> listReader(Type type) {
-
     return (BodyReader<List<T>>)
-        listReaderCache.computeIfAbsent(
-            type,
-            aClass -> new JReader<>(moshi.adapter(Types.newParameterizedType(List.class, type))));
+      listReaderCache.computeIfAbsent(
+        type,
+        aClass -> new JReader<>(moshi.adapter(Types.newParameterizedType(List.class, type))));
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyReader<List<T>> listReader(Class<T> cls) {
     return (BodyReader<List<T>>)
-        listReaderCache.computeIfAbsent(
-            cls,
-            aClass -> new JReader<>(moshi.adapter(Types.newParameterizedType(List.class, cls))));
+      listReaderCache.computeIfAbsent(
+        cls,
+        aClass -> new JReader<>(moshi.adapter(Types.newParameterizedType(List.class, cls))));
   }
 
   private static class JReader<T> implements BodyReader<T> {
@@ -102,7 +102,7 @@ public final class MoshiBodyAdapter implements BodyAdapter {
       try {
         return reader.fromJson(content);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new UncheckedIOException(e);
       }
     }
 
@@ -111,7 +111,7 @@ public final class MoshiBodyAdapter implements BodyAdapter {
       try {
         return reader.fromJson(bodyContent.contentAsUtf8());
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new UncheckedIOException(e);
       }
     }
   }
