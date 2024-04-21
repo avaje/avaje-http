@@ -39,12 +39,12 @@
     <module>http-api-javalin</module>
     <module>http-client</module>
     <module>http-client-gson-adapter</module>
+    <module>http-client-moshi-adapter</module>
     <module>http-inject-plugin</module>
     <module>http-generator-core</module>
     <module>http-generator-javalin</module>
     <module>http-generator-jex</module>
     <module>http-generator-client</module>
-    <module>avaje-http-client-moshi</module>
   </modules>
 
   <profiles>
