@@ -274,20 +274,24 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   }
 
   <T> T readBean(Class<T> type, BodyContent content) {
+    if(content.content().length == 0) return null;
     return bodyAdapter.beanReader(type).read(content);
   }
 
   <T> List<T> readList(Class<T> type, BodyContent content) {
+    if(content.content().length == 0) return null;
     return bodyAdapter.listReader(type).read(content);
   }
 
   @SuppressWarnings("unchecked")
   <T> T readBean(Type type, BodyContent content) {
+    if(content.content().length == 0) return null;
     return (T) bodyAdapter.beanReader(type).read(content);
   }
 
   @SuppressWarnings("unchecked")
   <T> List<T> readList(Type type, BodyContent content) {
+    if(content.content().length == 0) return null;
     return (List<T>) bodyAdapter.listReader(type).read(content);
   }
 
