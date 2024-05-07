@@ -3,6 +3,7 @@ package org.example;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.http.HttpResponse;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -120,5 +121,39 @@ class TestControllerTest {
       .asString();
 
     assertThat(res.statusCode()).isEqualTo(503);
+  }
+
+  @Test
+  void testNoBodyResponse() {
+    HttpResponse<Person> res = client.request()
+      .path("test/maybe/true")
+      .GET().as(Person.class);
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body().name()).isEqualTo("hi");
+
+    HttpResponse<Person> resNoBody = client.request()
+      .path("test/maybe/false")
+      .GET().as(Person.class);
+
+    assertThat(resNoBody.statusCode()).isEqualTo(204);
+    assertThat(resNoBody.body()).isNull();
+  }
+
+  @Test
+  void testNoBodyListResponse() {
+    HttpResponse<List<Person>> res = client.request()
+      .path("test/maybeList/true")
+      .GET().asList(Person.class);
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body().getFirst().name()).isEqualTo("hi");
+
+    HttpResponse<List<Person>> resNoBody = client.request()
+      .path("test/maybeList/false")
+      .GET().asList(Person.class);
+
+    assertThat(resNoBody.statusCode()).isEqualTo(204);
+    assertThat(resNoBody.body()).isEmpty();
   }
 }

@@ -26,6 +26,11 @@ final class DBodyContentS implements BodyContent {
   }
 
   @Override
+  public boolean isEmpty() {
+    return content == null || content.isEmpty();
+  }
+
+  @Override
   public String contentAsUtf8() {
     return content;
   }
