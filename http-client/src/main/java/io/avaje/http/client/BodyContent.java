@@ -56,4 +56,9 @@ public interface BodyContent {
    * Return the content as UTF8 string.
    */
   String contentAsUtf8();
+
+  /**
+   * Return true if the content is empty.
+   */
+  boolean isEmpty();
 }

@@ -1,10 +1,7 @@
 package org.example;
 
 import java.io.InputStream;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import io.avaje.http.api.BodyString;
 import io.avaje.http.api.Controller;
@@ -154,5 +151,15 @@ public class TestController {
   @Get("/minus/{+plus}")
   String patternPlus(String plus) {
     return plus.toString();
+  }
+
+  @Get("/maybe/{maybe}")
+  Person maybePerson(boolean maybe) {
+    return maybe ? new Person(9, "hi") : null;
+  }
+
+  @Get("/maybeList/{maybe}")
+  List<Person> maybePersonList(boolean maybe) {
+    return maybe ? List.of(new Person(9, "hi")) : null; // Collections.emptyList();
   }
 }
