@@ -52,17 +52,9 @@ final class ComponentMetaData {
   Collection<String> allImports() {
     final Set<String> packageImports = new TreeSet<>(generatedClients);
     generatedClients.stream()
-        .map(s -> removeLast(removeLast(s, ".httpclient"), "HttpClient"))
-        .forEach(packageImports::add);
+      .map(ClientSuffix::toInterface)
+      .forEach(packageImports::add);
 
     return packageImports;
-  }
-
-  public static String removeLast(String className, String search) {
-    final int pos = className.lastIndexOf(search);
-    if (pos > -1) {
-      return className.substring(0, pos) + className.substring(pos + search.length());
-    }
-    return className;
   }
 }

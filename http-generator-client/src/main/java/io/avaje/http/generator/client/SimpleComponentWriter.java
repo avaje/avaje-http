@@ -64,7 +64,7 @@ final class SimpleComponentWriter {
 
     for (final String clientFullName : metaData.all()) {
       final String clientShortName = Util.shortName(clientFullName);
-      final var clientInterface = ComponentMetaData.removeLast(clientShortName, "HttpClient");
+      final String clientInterface = ClientSuffix.removeSuffix(clientShortName);
       writer.append("    providerMap.put(%s.class, %s::new);", clientInterface, clientShortName).eol();
     }
     writer.append("  }").eol().eol();
@@ -102,7 +102,6 @@ final class SimpleComponentWriter {
     importTypes.addAll(metaData.allImports());
 
     for (final String importType : importTypes) {
-      writer.append("import %s;", importType).eol();
       writer.append("import %s;", importType).eol();
     }
     writer.eol();
