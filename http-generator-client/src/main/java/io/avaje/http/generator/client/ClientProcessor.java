@@ -101,7 +101,8 @@ public class ClientProcessor extends AbstractProcessor {
   }
 
   protected String writeClientAdapter(ControllerReader reader) throws IOException {
-    return new ClientWriter(reader, useJsonB).write();
+    var suffix = ClientSuffix.fromInterface(reader.beanType().getQualifiedName().toString());
+    return new ClientWriter(reader, suffix, useJsonB).write();
   }
 
   private void initialiseComponent() {
