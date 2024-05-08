@@ -17,10 +17,6 @@ final class ComponentMetaData {
     fullName();
   }
 
-  boolean contains(String type) {
-    return generatedClients.contains(type);
-  }
-
   void add(String type) {
     generatedClients.add(type);
   }
@@ -38,10 +34,6 @@ final class ComponentMetaData {
       fullName = topPackage + ".GeneratedHttpComponent";
     }
     return fullName;
-  }
-
-  String packageName() {
-    return TopPackage.packageOf(fullName());
   }
 
   List<String> all() {

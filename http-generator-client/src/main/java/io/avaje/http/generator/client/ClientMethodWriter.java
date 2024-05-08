@@ -59,20 +59,19 @@ final class ClientMethodWriter {
 
     this.presetHeaders =
       Stream.concat(
-        HeadersPrism.getOptionalOn(element).stream(),
-        HeadersPrism.getOptionalOn(element.getEnclosingElement()).stream())
-      .map(HeadersPrism::value)
-      .map(List::stream)
-      .flatMap(Function.identity())
-      .peek(
-        s -> {
+          HeadersPrism.getOptionalOn(element).stream(),
+          HeadersPrism.getOptionalOn(element.getEnclosingElement()).stream())
+        .map(HeadersPrism::value)
+        .map(List::stream)
+        .flatMap(Function.identity())
+        .peek(s -> {
           if (!s.contains(":")) {
             logError(element, "@Headers value must have a \":\"", method);
           }
         })
-      .map(s -> s.split(":", 2))
-      .filter(a -> a.length == 2)
-      .map(a -> Map.entry(a[0].trim(), a[1].trim())).collect(toList());
+        .map(s -> s.split(":", 2))
+        .filter(a -> a.length == 2)
+        .map(a -> Map.entry(a[0].trim(), a[1].trim())).collect(toList());
   }
 
   void addImportTypes(ControllerReader reader) {
@@ -357,26 +356,18 @@ final class ClientMethodWriter {
   private void writeErrorMapper() {
     method.throwsList().stream()
       .map(ProcessingContext::asElement)
-      .filter(
-        e ->
-          isAssignable2Interface(
-            e.getQualifiedName().toString(), "java.lang.RuntimeException"))
-      .filter(
-        e ->
-          ElementFilter.constructorsIn(e.getEnclosedElements()).stream()
-            .filter(c -> c.getParameters().size() == 1)
-            .map(c -> c.getParameters().get(0).asType().toString())
-            .map(Util::trimAnnotations)
-            .anyMatch("io.avaje.http.client.HttpException"::equals))
+      .filter(e -> isAssignable2Interface(e.getQualifiedName().toString(), "java.lang.RuntimeException"))
+      .filter(e ->
+        ElementFilter.constructorsIn(e.getEnclosedElements()).stream()
+          .filter(c -> c.getParameters().size() == 1)
+          .map(c -> c.getParameters().get(0).asType().toString())
+          .map(Util::trimAnnotations)
+          .anyMatch("io.avaje.http.client.HttpException"::equals))
       .findFirst()
       .map(TypeElement::getQualifiedName)
       .map(Object::toString)
       .map(Util::shortName)
-      .ifPresent(
-        exception ->
-          writer
-            .append("      .errorMapper(%s::new)", exception)
-            .eol());
+      .ifPresent(exception -> writer.append("      .errorMapper(%s::new)", exception).eol());
   }
 
   /**

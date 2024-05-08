@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * Write Http client adapter.
  */
-class ClientWriter extends BaseControllerWriter {
+final class ClientWriter extends BaseControllerWriter {
 
   private static final String HTTP_CLIENT = "io.avaje.http.client.HttpClient";
 

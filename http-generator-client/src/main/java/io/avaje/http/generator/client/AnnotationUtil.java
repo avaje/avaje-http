@@ -42,6 +42,7 @@ final class AnnotationUtil {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private static void writeVal(final StringBuilder sb, final AnnotationValue annotationValue) {
     final var value = annotationValue.getValue();
     // handle array values
@@ -50,7 +51,6 @@ final class AnnotationUtil {
       boolean first = true;
 
       for (final AnnotationValue listValue : (List<AnnotationValue>) value) {
-
         if (!first) {
           sb.append(", ");
         }
@@ -61,16 +61,13 @@ final class AnnotationUtil {
       sb.append("}");
       // Handle enum values
     } else if (value instanceof VariableElement) {
-
       final var element = (VariableElement) value;
-
       final var type = UType.parse(element.asType());
-      sb.append(type.full() + "." + element.toString());
+      sb.append(type.full()).append('.').append(element);
       // handle annotation values
+
     } else if (value instanceof AnnotationMirror) {
-
       final var mirror = (AnnotationMirror) value;
-
       final String annotationName = mirror.getAnnotationType().toString();
       sb.append("@").append(annotationName).append("(");
       boolean first = true;
@@ -83,10 +80,9 @@ final class AnnotationUtil {
         writeVal(sb, entry.getValue());
         first = false;
       }
-
       sb.append(")");
     } else {
-      sb.append(annotationValue.toString());
+      sb.append(annotationValue);
     }
   }
 }
