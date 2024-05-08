@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -62,8 +61,7 @@ final class ClientMethodWriter {
           HeadersPrism.getOptionalOn(element).stream(),
           HeadersPrism.getOptionalOn(element.getEnclosingElement()).stream())
         .map(HeadersPrism::value)
-        .map(List::stream)
-        .flatMap(Function.identity())
+        .flatMap(List::stream)
         .peek(s -> {
           if (!s.contains(":")) {
             logError(element, "@Headers value must have a \":\"", method);
