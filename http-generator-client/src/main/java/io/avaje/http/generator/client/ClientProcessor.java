@@ -82,9 +82,9 @@ public class ClientProcessor extends AbstractProcessor {
 
   private void writeForImported(Element importedElement) {
     ImportPrism.getInstanceOn(importedElement).types().stream()
-        .map(ProcessingContext::asElement)
-        .filter(Objects::nonNull)
-        .forEach(this::writeClient);
+      .map(ProcessingContext::asElement)
+      .filter(Objects::nonNull)
+      .forEach(this::writeClient);
   }
 
   private void writeClient(Element controller) {
@@ -94,7 +94,6 @@ public class ClientProcessor extends AbstractProcessor {
       try {
         metaData.add(writeClientAdapter(reader));
       } catch (final Exception e) {
-        e.printStackTrace();
         logError(reader.beanType(), "Failed to write client class " + e);
       }
     }
