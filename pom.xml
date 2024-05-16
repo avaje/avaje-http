@@ -35,6 +35,8 @@
   </dependencies>
 
   <modules>
+    <module>htmx-api</module>
+    <module>htmx-nima</module>
     <module>http-api</module>
     <module>http-api-javalin</module>
     <module>http-client</module>

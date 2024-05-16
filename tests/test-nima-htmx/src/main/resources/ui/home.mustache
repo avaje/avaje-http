@@ -1,0 +1,13 @@
+<html lang="en">
+<head>
+  <title>Hi</title>
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+<body>
+<h1>Heading</h1>
+<div id="name">
+ Hi {{ name }}
+</div>
+<button hx-get="name" hx-target="#name">One</button>
+</body>
+</html>

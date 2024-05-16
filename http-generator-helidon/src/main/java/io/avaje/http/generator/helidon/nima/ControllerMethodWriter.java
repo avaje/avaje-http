@@ -7,14 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import io.avaje.http.generator.core.Append;
-import io.avaje.http.generator.core.CoreWebMethod;
-import io.avaje.http.generator.core.MethodParam;
-import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.ParamType;
-import io.avaje.http.generator.core.PathSegments;
-import io.avaje.http.generator.core.UType;
-import io.avaje.http.generator.core.WebMethod;
+import io.avaje.http.generator.core.*;
 import io.avaje.http.generator.core.openapi.MediaType;
 
 import javax.lang.model.type.TypeMirror;
@@ -92,8 +85,33 @@ final class ControllerMethodWriter {
     } else if (isFilter) {
       writer.append("    routing.addFilter(this::_%s);", method.simpleName()).eol();
     } else {
-      writer.append("    routing.%s(\"%s\", this::_%s);", webMethod.name().toLowerCase(), method.fullPath().replace("\\", "\\\\"), method.simpleName()).eol();
+      writer.append("    routing.%s(\"%s\", ", webMethod.name().toLowerCase(), method.fullPath().replace("\\", "\\\\"));
+      var hxRequest = method.hxRequest();
+      if (hxRequest != null) {
+        writer.append("HxHandler.builder(this::_%s)", method.simpleName());
+        if (hasValue(hxRequest.target())) {
+          writer.append(".target(\"%s\")", hxRequest.target());
+        }
+        if (hasValue(hxRequest.triggerId())) {
+          writer.append(".trigger(\"%s\")", hxRequest.triggerId());
+        } else if (hasValue(hxRequest.value())) {
+          writer.append(".trigger(\"%s\")", hxRequest.value());
+        }
+        if (hasValue(hxRequest.triggerName())) {
+          writer.append(".triggerName(\"%s\")", hxRequest.triggerName());
+        } else if (hasValue(hxRequest.value())) {
+          writer.append(".triggerName(\"%s\")", hxRequest.value());
+        }
+        writer.append(".build());").eol();
+
+      } else {
+        writer.append("this::_%s);", method.simpleName()).eol();
+      }
     }
+  }
+
+  private static boolean hasValue(String value) {
+    return value != null && !value.isBlank();
   }
 
   void writeHandler(boolean requestScoped) {

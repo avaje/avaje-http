@@ -1,6 +1,6 @@
 package org.example.path;
 
-import org.example.path.nest.PathNestController.NestedTypeResponse;
+import org.example.htmx.PathNestController.NestedTypeResponse;
 
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Get;

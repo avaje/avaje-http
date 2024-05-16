@@ -6,6 +6,7 @@ import static io.avaje.http.generator.core.ProcessingContext.isAssignable2Interf
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
@@ -58,6 +59,11 @@ class ControllerWriter extends BaseControllerWriter {
       reader.addImportType("io.helidon.webserver.http.FilterChain");
       reader.addImportType("io.helidon.webserver.http.RoutingRequest");
       reader.addImportType("io.helidon.webserver.http.RoutingResponse");
+    }
+    if (reader.methods().stream()
+      .map(MethodReader::hxRequest)
+      .anyMatch(Objects::nonNull)) {
+      reader.addImportType("io.avaje.htmx.nima.HxHandler");
     }
   }
 

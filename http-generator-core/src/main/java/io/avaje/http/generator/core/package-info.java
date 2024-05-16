@@ -34,6 +34,7 @@
 @GeneratePrism(value = io.swagger.v3.oas.annotations.Hidden.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Client.Import.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.RequestTimeout.class, publicAccess = true)
+@GeneratePrism(value = io.avaje.htmx.api.HxRequest.class, publicAccess = true)
 package io.avaje.http.generator.core;
 
 import io.avaje.prism.GeneratePrism;
