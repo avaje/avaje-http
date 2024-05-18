@@ -17,10 +17,6 @@ final class ComponentMetaData {
     fullName();
   }
 
-  boolean contains(String type) {
-    return generatedClients.contains(type);
-  }
-
   void add(String type) {
     generatedClients.add(type);
   }
@@ -40,10 +36,6 @@ final class ComponentMetaData {
     return fullName;
   }
 
-  String packageName() {
-    return TopPackage.packageOf(fullName());
-  }
-
   List<String> all() {
     return generatedClients;
   }
@@ -52,17 +44,9 @@ final class ComponentMetaData {
   Collection<String> allImports() {
     final Set<String> packageImports = new TreeSet<>(generatedClients);
     generatedClients.stream()
-        .map(s -> removeLast(removeLast(s, ".httpclient"), "HttpClient"))
-        .forEach(packageImports::add);
+      .map(ClientSuffix::toInterface)
+      .forEach(packageImports::add);
 
     return packageImports;
-  }
-
-  public static String removeLast(String className, String search) {
-    final int pos = className.lastIndexOf(search);
-    if (pos > -1) {
-      return className.substring(0, pos) + className.substring(pos + search.length());
-    }
-    return className;
   }
 }

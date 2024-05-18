@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Known response types for Http Client methods.
  */
-class KnownResponse {
+final class KnownResponse {
 
   private final Map<String, String> map = new HashMap<>();
 

@@ -45,7 +45,7 @@ class NimaProcessorTest {
 
     final var task =
         compiler.getTask(
-            new PrintWriter(System.out), null, null, List.of("--release=20", "-AdisableDirectWrites=true"), null, files);
+            new PrintWriter(System.out), null, null, List.of("--release=21", "-AdisableDirectWrites=true"), null, files);
     task.setProcessors(List.of(new HelidonProcessor()));
 
     assertThat(task.call()).isTrue();
@@ -61,7 +61,7 @@ class NimaProcessorTest {
 
     final var task =
         compiler.getTask(
-            new PrintWriter(System.out), null, null, List.of("--release=19"), null, files);
+            new PrintWriter(System.out), null, null, List.of("--release=21"), null, files);
     task.setProcessors(List.of(new HelidonProcessor()));
 
     assertThat(task.call()).isTrue();

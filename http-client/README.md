@@ -1,4 +1,4 @@
-[![Build](https://github.com/avaje/avaje-http-client/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-http-client/actions/workflows/build.yml)
+[![Build](https://github.com/avaje/avaje-http/actions/workflows/build.yml/badge.svg)](https://github.com/avaje/avaje-http-client/actions/workflows/build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/io.avaje/avaje-http-client.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/io.avaje/avaje-http-client)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/avaje/avaje-http-client/blob/master/LICENSE)
 
@@ -6,15 +6,14 @@
 
 A lightweight wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.net/groups/net/httpclient/intro.html)
 
-- Use Java 11.0.8 or higher (some SSL related bugs prior to 11.0.8 with JDK HttpClient)
-- Adds a fluid API for building URL and payload
-- Adds JSON marshalling/unmarshalling of request and response using Jackson or Gson
+- Requires Java 11+
+- Adds a fluid API for building URLs and payloads
+- Adds JSON marshalling/unmarshalling of request/response using avaje-jsonb, Jackson, Moshi, or Gson 
 - Gzip encoding/decoding
 - Logging of request/response logging
 - Interception of request/response
-- Built in support for authorization via Basic Auth and Bearer Token
+- Built in support for authorization via Basic Auth and Bearer Tokens
 - Provides async and sync API
-
 
 ### Dependency
 
@@ -60,13 +59,6 @@ From HttpClient:
  - Async processing of the request using CompletableFuture
    - a bean, list of beans, stream of beans, String, Void or any JDK Response.BodyHandler
 
-
-
-## Limitations:
-- No support for POSTing multipart-form currently
-- Retry (when specified) does not apply to `async` response processing`
-
-
 ## JDK HttpClient
 
 - Introduction to JDK HttpClient at
@@ -74,7 +66,6 @@ From HttpClient:
 
 - Javadoc for JDK
   [HttpClient](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html)
-
 
 #### Example GET as String
 ```java
@@ -172,7 +163,7 @@ Overview of response types for sync calls.
 ### HttpResponse BodyHandlers
 
 JDK HttpClient provides a number of [BodyHandlers](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandler.html)
-including reactive Flow based subscribers. With the `handler()` method we can use any of these or our own [`HttpResponse.BodyHandler`](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandler.html)
+including reactive Flow-based subscribers. With the `handler()` method we can use any of these or our own [`HttpResponse.BodyHandler`](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandler.html)
 implementation.
 
 Refer to [HttpResponse.BodyHandlers](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpResponse.BodyHandlers.html)
@@ -197,8 +188,6 @@ When sending body content we can use:
 - byte[], String, Path (file), InputStream
 - formParams() for url encoded form (`application/x-www-form-urlencoded`)
 - Any [HttpRequest.BodyPublisher](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpRequest.BodyPublishers.html)
-
-
 
 ## Examples
 
@@ -345,7 +334,7 @@ HttpResponse<Void> res = client.request()
 assertThat(res.statusCode()).isEqualTo(201);
 ```
 
-## Retry (Sync Requests Only)
+## Retry
 To add Retry funtionality, use `.retryHandler(yourhandler)` on the builder to provide your retry handler. The `RetryHandler` interface provides two methods, one for status exceptions (e.g. you get a 4xx/5xx from the server) and another for exceptions thrown by the underlying client (e.g. server times out or client couldn't send request). Here is example implementation of `RetryHandler`.
 
 ```
@@ -382,7 +371,7 @@ public final class ExampleRetry implements RetryHandler {
 ## Async processing
 
 All async requests use JDK httpClient.sendAsync(...) returning CompletableFuture. Commonly the
-`whenComplete()` callback will be used to process the async responses.
+`whenComplete()` callback is used to process the async responses.
 
 The `bean()`, `list()` and `stream()` responses throw a `HttpException` if the status code >= 300
 (noting that by default redirects are followed apart for HTTPS to HTTP).
@@ -521,10 +510,9 @@ call.async()
   });
 ```
 
-
 ## BasicAuthIntercept - Authorization Basic / Basic Auth
 
-We can use `BasicAuthIntercept` to intercept all requests adding a `Authorization: Basic ...`
+We can use `BasicAuthIntercept` to intercept all requests by adding an `Authorization: Basic ...`
 header ("Basic Auth").
 
 ##### Example
@@ -541,7 +529,7 @@ HttpClient client =
 
 ## AuthTokenProvider - Authorization Bearer token
 
-For Authorization using `Bearer` tokens that are obtained and expire, implement `AuthTokenProvider`
+For authorization using `Bearer` tokens that are obtained and expire, implement `AuthTokenProvider`
 and register that when building the HttpClient.
 
 ### 1. Implement AuthTokenProvider
@@ -580,124 +568,4 @@ and register that when building the HttpClient.
 
 All requests using the HttpClient will automatically get
 an `Authorization` header with `Bearer` token added. The token will be
-obtained for initial request and then renewed when the token has expired.
-
-
-# 10K requests - Loom vs Async
-
-The following is a very quick and rough comparison of running 10,000 requests
-using `Async` vs `Loom`.
-
-The intention is to test the thought that in a "future Loom world" the
-desire to use `async()` execution with HttpClient reduces.
-
-TLDR: Caveat, caveat, more caveats ... initial testing shows Loom to be just a
-touch faster (~10%) than async.
-
-To run my tests I use [Jex](https://github.com/avaje/avaje-jex) as the server
-(Jetty based) and have it running using Loom. For whatever testing you do
-you will need a server that can handle a very large number of concurrent requests.
-
-The Loom blocking request (make 10K of these)
-
-```java
-HttpResponse<String> hres =  httpClient.request()
-  .path("s200")
-  .GET()
-  .asString();
-```
-The equivalent async request (make 10K of these joining the CompletableFuture's).
-
-```java
-CompletableFuture<HttpResponse<String>> future = httpClient.request()
-  .path("s200")
-  .GET()
-  .async()
-  .asString()
-  .whenComplete((hres, throwable) -> {
-    ...
-  });
-```
-
-
-### 10K requests using Async and reactive streams
-
-Use `.async()` to execute the requests which internally is using JDK
-HttpClient's reactive streams. The `whenComplete()` callback is invoked
-when the response is ready. Collect all the resulting CompletableFuture
-and wait for them all to complete.
-
-Outline:
-
-```java
-
-// Collect all the CompletableFuture's
-List<CompletableFuture<HttpResponse<String>>> futures = new ArrayList<>();
-
-for (int i = 0; i < 10_000; i++) {
-  futures.add(httpClient.request().path("s200")
-    .GET()
-    .async().asString()
-    .whenComplete((hres, throwable) -> {
-        // confirm 200 response etc
-        ...
-    }));
-}
-
-// wait for all requests to complete via join() ...
-CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-```
-
-### 10K requests using Loom
-
-With Loom Java 17 EA Release we can use `Executors.newVirtualThreadExecutor()`
-to return an ExecutorService that uses Loom Virtual Threads. These are backed
-by "Carrier threads" (via ForkedJoinPool).
-
-Outline:
-
-```java
-
-// use Loom's Executors.newVirtualThreadExecutor()
-
-try (ExecutorService executorService = Executors.newVirtualThreadExecutor()) {
-    for (int i = 0; i < 10_000; i++) {
-        executorService.submit(this::task);
-    }
-}
-
-```
-```java
-private void task() {
-  HttpResponse<String> hres =
-    httpClient.request().path("s200")
-     .GET()
-     .asString();
-
-  // confirm 200 response etc
-  ...
-}
-
-```
-
-Caveat: Proper performance benchmarks are really hard and take a lot of
-effort.
-
-Running some "rough/approx performance comparison tests" using `Loom`
-build `17 EA 2021-09-14 / (build 17-loom+7-342)` vs `Async` for my environment
-and 10K request scenarios has loom execution around 10% faster than async.
-
-It looks like Loom and Async run in pretty much the same time although it
-currently looks that Loom is just a touch faster (perhaps due to how it does
-park/unpark). More investigation required.
-
-
-Date: 2021-06
-Build: `17 EA 2021-09-14 / (build 17-loom+7-342)`.
-
-```
-openjdk version "17-loom" 2021-09-14
-OpenJDK Runtime Environment (build 17-loom+7-342)
-OpenJDK 64-Bit Server VM (build 17-loom+7-342, mixed mode, sharing)
-```
+obtained for the initial request and then renewed when the token has expired.

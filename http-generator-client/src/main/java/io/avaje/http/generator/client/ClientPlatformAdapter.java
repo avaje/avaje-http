@@ -8,7 +8,7 @@ import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
 import io.avaje.http.generator.core.UType;
 
-class ClientPlatformAdapter implements PlatformAdapter {
+final class ClientPlatformAdapter implements PlatformAdapter {
 
   @Override
   public boolean isContextType(String rawType) {

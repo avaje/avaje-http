@@ -23,7 +23,6 @@ public interface BodyAdapter {
    * @param type The type of the bean this writer is for
    */
   default <T> BodyWriter<T> beanWriter(Type type) {
-
     throw new UnsupportedOperationException("java.lang.reflect.Type is not supported for this adapter");
   }
 

@@ -13,20 +13,20 @@ import java.util.Set;
 /**
  * Write Http client adapter.
  */
-class ClientWriter extends BaseControllerWriter {
+final class ClientWriter extends BaseControllerWriter {
 
   private static final String HTTP_CLIENT = "io.avaje.http.client.HttpClient";
 
   private static final String AT_GENERATED = "@Generated(\"avaje-http-client-generator\")";
-  private static final String SUFFIX = "HttpClient";
 
   private final List<ClientMethodWriter> methodList = new ArrayList<>();
   private final boolean useJsonb;
   private final Set<String> propertyConstants = new HashSet<>();
+  private final String suffix;
 
-
-  ClientWriter(ControllerReader reader, boolean useJsonB) throws IOException {
-    super(reader, SUFFIX);
+  ClientWriter(ControllerReader reader, String suffix, boolean useJsonB) throws IOException {
+    super(reader, suffix);
+    this.suffix = suffix;
     reader.addImportType(HTTP_CLIENT);
     this.useJsonb = useJsonB;
     readMethods();
@@ -67,11 +67,11 @@ class ClientWriter extends BaseControllerWriter {
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
     AnnotationUtil.writeAnnotations(writer, reader.beanType());
-    writer.append("public class %s%s implements %s {", shortName, SUFFIX, shortName).eol().eol();
+    writer.append("public class %s%s implements %s {", shortName, suffix, shortName).eol().eol();
 
     writer.append("  private final HttpClient client;").eol().eol();
 
-    writer.append("  public %s%s(HttpClient client) {", shortName, SUFFIX).eol();
+    writer.append("  public %s%s(HttpClient client) {", shortName, suffix).eol();
     writer.append("    this.client = client;").eol();
     writer.append("  }").eol().eol();
   }

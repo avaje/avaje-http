@@ -46,9 +46,9 @@ final class ComponentReader {
   private void readMetaData(TypeElement moduleType) {
     for (final AnnotationMirror annotationMirror : moduleType.getAnnotationMirrors()) {
       MetaDataPrism.getOptional(annotationMirror).map(MetaDataPrism::value).stream()
-          .flatMap(List::stream)
-          .map(TypeMirror::toString)
-          .forEach(componentMetaData::add);
+        .flatMap(List::stream)
+        .map(TypeMirror::toString)
+        .forEach(componentMetaData::add);
     }
   }
 
@@ -83,7 +83,6 @@ final class ComponentReader {
       logDebug("FilerException reading services file");
 
     } catch (final Exception e) {
-      e.printStackTrace();
       logWarn("Error reading services file: " + e.getMessage());
     }
     return Collections.emptyList();
