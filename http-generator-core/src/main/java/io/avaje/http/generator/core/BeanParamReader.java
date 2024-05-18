@@ -117,7 +117,10 @@ public class BeanParamReader {
       ParamType paramType = field.element.paramType();
       String type = propertyParamType(paramType);
       if (type != null) {
-        String accessor = (getter != null) ? getter.toString() : field.isPublic() ? field.varName() : null;
+        String accessor =
+            (getter != null)
+                ? getter.getSimpleName() + "()"
+                : field.isPublic() ? field.varName() : null;
         if (accessor != null) {
           writer.append("      .%s(\"%s\", %s.%s)", type, field.paramName(), beanVarName, accessor).eol();
         }
