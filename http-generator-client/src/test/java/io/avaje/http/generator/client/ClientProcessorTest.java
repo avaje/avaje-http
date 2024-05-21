@@ -50,7 +50,7 @@ class ClientProcessorTest {
 
     final CompilationTask task =
         compiler.getTask(
-            new PrintWriter(System.out), null, null, Arrays.asList("--release=11"), null, files);
+            new PrintWriter(System.out), null, null, List.of("--release=" + Integer.getInteger("java.specification.version")), null, files);
     task.setProcessors(Arrays.asList(new ClientProcessor()));
 
     assertThat(task.call()).isTrue();
