@@ -36,7 +36,6 @@
 
   <modules>
     <module>htmx-api</module>
-    <module>htmx-nima</module>
     <module>http-api</module>
     <module>http-api-javalin</module>
     <module>http-client</module>
@@ -65,6 +64,7 @@
         <jdk>[21,22]</jdk>
       </activation>
       <modules>
+        <module>htmx-nima</module>
         <module>http-generator-helidon</module>
       </modules>
     </profile>
