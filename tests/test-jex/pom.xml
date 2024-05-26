@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>tests</artifactId>
-    <version>2.5-RC1</version>
+    <version>2.6-RC1</version>
   </parent>
 
   <artifactId>test-jex</artifactId>
@@ -13,7 +13,7 @@
     <maven.deploy.skip>true</maven.deploy.skip>
     <main.class>org.example.myapp.Main</main.class>
     <jex.version>2.5</jex.version>
-    <swagger.version>2.2.21</swagger.version>
+    <swagger.version>2.2.22</swagger.version>
   </properties>
 
   <dependencies>
