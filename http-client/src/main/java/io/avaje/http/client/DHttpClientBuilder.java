@@ -16,9 +16,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 
 final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder.State {
 
@@ -99,6 +105,20 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
     }
     if (executor != null) {
       builder.executor(executor);
+    } else {
+      try {
+        ExecutorService virtualExecutorService =
+            (ExecutorService)
+                MethodHandles.lookup()
+                    .findStatic(
+                        Executors.class,
+                        "newVirtualThreadPerTaskExecutor",
+                        MethodType.methodType(ExecutorService.class))
+                    .invokeExact();
+        builder.executor(virtualExecutorService);
+      } catch (Throwable t) {
+        // Nothing to do
+      }
     }
     if (proxy != null) {
       builder.proxy(proxy);
