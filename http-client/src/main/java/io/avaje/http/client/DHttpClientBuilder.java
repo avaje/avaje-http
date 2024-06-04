@@ -105,7 +105,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
     }
     if (executor != null) {
       builder.executor(executor);
-    } else {
+    } else if (Integer.getInteger("java.specification.version") >= 21) {
       try {
         ExecutorService virtualExecutorService =
             (ExecutorService)
@@ -117,7 +117,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
                     .invokeExact();
         builder.executor(virtualExecutorService);
       } catch (Throwable t) {
-        // Nothing to do
+        // Impossible
       }
     }
     if (proxy != null) {
