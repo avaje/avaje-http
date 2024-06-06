@@ -139,7 +139,7 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append("  private final RequestContextResolver resolver;").eol();
     }
     if (reader.html()) {
-      writer.append("  private final TemplateRender renderer; // v5").eol();
+      writer.append("  private final TemplateRender renderer;").eol();
     }
 
     for (final UType type : jsonTypes.values()) {
@@ -170,7 +170,7 @@ class ControllerWriter extends BaseControllerWriter {
       writer.append("    this.validator = validator;").eol();
     }
     if (reader.html()) {
-      writer.append("    this.renderer = renderer; // v5").eol();
+      writer.append("    this.renderer = renderer;").eol();
     }
     if (instrumentContext) {
       writer.append("    this.resolver = resolver;").eol();

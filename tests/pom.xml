@@ -27,7 +27,6 @@
     <module>test-jex</module>
     <module>test-client</module>
     <module>test-client-generation</module>
-    <module>test-nima-htmx</module>
   </modules>
 
   <profiles>
@@ -38,7 +37,7 @@
       </activation>
       <modules>
         <module>test-nima</module>
-<!--        <module>test-nima-jsonb</module>-->
+        <module>test-nima-jsonb</module>
         <module>test-nima-htmx</module>
       </modules>
     </profile>

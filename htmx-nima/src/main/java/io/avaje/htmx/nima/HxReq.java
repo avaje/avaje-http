@@ -3,6 +3,9 @@ package io.avaje.htmx.nima;
 import io.avaje.htmx.api.HtmxRequest;
 import io.helidon.webserver.http.ServerRequest;
 
+/**
+ * Obtain the HtmxRequest for the given Helidon ServerRequest.
+ */
 public class HxReq {
 
   /**
