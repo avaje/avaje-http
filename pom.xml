@@ -35,6 +35,7 @@
   </dependencies>
 
   <modules>
+    <module>htmx-api</module>
     <module>http-api</module>
     <module>http-api-javalin</module>
     <module>http-client</module>
@@ -63,7 +64,18 @@
         <jdk>[21,22]</jdk>
       </activation>
       <modules>
+        <module>htmx-nima</module>
+        <module>htmx-nima-jstache</module>
         <module>http-generator-helidon</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>test21</id>
+      <modules>
+        <module>htmx-nima</module>
+        <module>htmx-nima-jstache</module>
+        <module>http-generator-helidon</module>
+        <module>tests</module>
       </modules>
     </profile>
 

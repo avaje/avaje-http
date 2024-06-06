@@ -43,6 +43,7 @@ public class MethodReader {
   private final boolean hasValid;
   private final List<ExecutableElement> superMethods;
   private final Optional<RequestTimeoutPrism> timeout;
+  private final HxRequestPrism hxRequest;
 
   private WebMethod webMethod;
   private int statusCode;
@@ -77,6 +78,7 @@ public class MethodReader {
     this.securityRequirements = readSecurityRequirements();
     this.apiResponses = buildApiResponses();
     this.javadoc = buildJavadoc(element);
+    this.hxRequest = HxRequestPrism.getInstanceOn(element);
     this.timeout = RequestTimeoutPrism.getOptionalOn(element);
     timeout.ifPresent(
         p -> {
@@ -188,6 +190,13 @@ public class MethodReader {
     }
     this.exceptionShortName = Util.shortName(exType);
     bean.addImportType(exType);
+  }
+
+  /**
+   * Return the Htmx request annotation for this method.
+   */
+  public HxRequestPrism hxRequest() {
+    return hxRequest;
   }
 
   public Javadoc javadoc() {
