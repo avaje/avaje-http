@@ -59,7 +59,7 @@
     <dependency>
       <groupId>io.javalin</groupId>
       <artifactId>javalin</artifactId>
-      <version>6.1.4</version>
+      <version>6.1.6</version>
       <scope>test</scope>
     </dependency>
 
@@ -67,6 +67,7 @@
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
       <version>2.6-RC1</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
