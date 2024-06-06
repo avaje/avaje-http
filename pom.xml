@@ -65,7 +65,17 @@
       </activation>
       <modules>
         <module>htmx-nima</module>
+        <module>htmx-nima-jstache</module>
         <module>http-generator-helidon</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>test21</id>
+      <modules>
+        <module>htmx-nima</module>
+        <module>htmx-nima-jstache</module>
+        <module>http-generator-helidon</module>
+        <module>tests</module>
       </modules>
     </profile>
 

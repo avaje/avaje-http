@@ -60,8 +60,10 @@ final class ControllerMethodWriter {
   private final boolean useJsonB;
   private final boolean instrumentContext;
   private final boolean isFilter;
+  private final ControllerReader reader;
 
-  ControllerMethodWriter(MethodReader method, Append writer, boolean useJsonB) {
+  ControllerMethodWriter(MethodReader method, Append writer, boolean useJsonB, ControllerReader reader) {
+    this.reader = reader;
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
@@ -223,6 +225,8 @@ final class ControllerMethodWriter {
           final var uType = UType.parse(method.returnType());
           writer.append(indent).append("%sJsonType.toJson(result, JsonOutput.of(res));", uType.shortName()).eol();
         }
+      } else if (useTemplating()) {
+        writer.append(indent).append("renderer.render(result, req, res);").eol();
       } else {
         writer.append(indent).append("res.send(result);").eol();
       }
@@ -231,6 +235,12 @@ final class ControllerMethodWriter {
       }
     }
     writer.append("  }").eol().eol();
+  }
+
+  private boolean useTemplating() {
+    return reader.html()
+      && !"byte[]".equals(method.returnType().toString())
+      && (method.produces() == null || method.produces().toLowerCase().contains("html"));
   }
 
   private static boolean isExceptionOrFilterChain(MethodParam param) {
