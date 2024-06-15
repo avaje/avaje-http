@@ -1,34 +1,30 @@
 
-name: avaje-http EA
+name: JDK EA Stable
 
 on:
+  push:
   pull_request:
   workflow_dispatch:
   schedule:
-    - cron: '39 1 * * 2,5'
+    - cron: '39 1 * * 1,3,5'
 
 jobs:
   build:
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    strategy:
-      fail-fast: false
-      matrix:
-        java_version: [GA,EA] ## valhalla (fails javadoc)
-        os: [ubuntu-latest]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Set up Java
       uses: oracle-actions/setup-java@v1
       with:
         website: jdk.java.net
-        release: ${{ matrix.java_version }}
+        release: ea
+        version: stable
     - name: Maven cache
-      uses: actions/cache@v4
+      uses: actions/cache@v3
       env:
         cache-name: maven-cache
       with:
@@ -39,4 +35,3 @@ jobs:
       run: mvn --version
     - name: Build with Maven
       run: mvn clean verify package -Ptest
-
