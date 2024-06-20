@@ -5,8 +5,13 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class JsonBUtil {
+public final class JsonBUtil {
+
   private JsonBUtil() {}
+
+  public static boolean isJsonMimeType(String producesMimeType) {
+    return producesMimeType == null || producesMimeType.toLowerCase().contains("application/json");
+  }
 
   public static Map<String, UType> jsonTypes(ControllerReader reader) {
 

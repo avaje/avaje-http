@@ -3,12 +3,7 @@ package io.avaje.http.generator.jex;
 import static io.avaje.http.generator.core.ProcessingContext.platform;
 import java.util.List;
 
-import io.avaje.http.generator.core.Append;
-import io.avaje.http.generator.core.MethodParam;
-import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.PathSegments;
-import io.avaje.http.generator.core.Util;
-import io.avaje.http.generator.core.WebMethod;
+import io.avaje.http.generator.core.*;
 import io.avaje.http.generator.core.openapi.MediaType;
 
 /**
@@ -96,7 +91,7 @@ class ControllerMethodWriter {
 
   private void writeContextReturn() {
     final var produces = method.produces();
-    if (produces == null || produces.equalsIgnoreCase(MediaType.APPLICATION_JSON.getValue())) {
+    if (produces == null || JsonBUtil.isJsonMimeType(produces)) {
       writer.append("ctx.json(");
     } else if (produces.equalsIgnoreCase(MediaType.TEXT_HTML.getValue())) {
       writer.append("ctx.html(");

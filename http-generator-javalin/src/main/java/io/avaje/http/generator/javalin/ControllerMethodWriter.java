@@ -4,14 +4,7 @@ import static io.avaje.http.generator.core.ProcessingContext.*;
 
 import java.util.List;
 
-import io.avaje.http.generator.core.Append;
-import io.avaje.http.generator.core.CoreWebMethod;
-import io.avaje.http.generator.core.MethodParam;
-import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.PathSegments;
-import io.avaje.http.generator.core.UType;
-import io.avaje.http.generator.core.Util;
-import io.avaje.http.generator.core.WebMethod;
+import io.avaje.http.generator.core.*;
 import io.avaje.http.generator.core.openapi.MediaType;
 
 /** Write code to register Web route for a given controller method. */
@@ -180,6 +173,8 @@ class ControllerMethodWriter {
       writer.append("      ctx.html(%s);", resultVariableName);
     } else if (MediaType.TEXT_PLAIN.getValue().equalsIgnoreCase(produces)) {
       writer.append("      ctx.contentType(\"text/plain\").result(%s);", resultVariableName);
+    } else if (JsonBUtil.isJsonMimeType(produces)) {
+      writer.append("      ctx.contentType(\"%s\").json(%s);", produces, resultVariableName);
     } else {
       writer.append("      ctx.contentType(\"%s\").result(%s);", produces, resultVariableName);
     }
