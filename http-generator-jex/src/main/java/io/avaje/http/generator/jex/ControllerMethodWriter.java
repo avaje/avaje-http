@@ -91,12 +91,14 @@ class ControllerMethodWriter {
 
   private void writeContextReturn() {
     final var produces = method.produces();
-    if (produces == null || JsonBUtil.isJsonMimeType(produces)) {
+    if (produces == null || produces.equalsIgnoreCase(MediaType.APPLICATION_JSON.getValue())) {
       writer.append("ctx.json(");
     } else if (produces.equalsIgnoreCase(MediaType.TEXT_HTML.getValue())) {
       writer.append("ctx.html(");
     } else if (produces.equalsIgnoreCase(MediaType.TEXT_PLAIN.getValue())) {
       writer.append("ctx.text(");
+    } else if (JsonBUtil.isJsonMimeType(produces)) {
+      writer.append("ctx.contentType(\"%s\").json(", produces);
     } else {
       writer.append("ctx.contentType(\"%s\").write(", produces);
     }

@@ -320,7 +320,7 @@
 					"201" : {
 						"description" : "",
 						"content" : {
-							"application/json" : {
+							"application/json-patch+json" : {
 								"schema" : {
 									"$ref" : "#/components/schemas/HelloDto"
 								}
