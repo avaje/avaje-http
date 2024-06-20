@@ -646,6 +646,41 @@
 				}
 			}
 		},
+		"/hello/takesNestedEnum" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "myEnum",
+						"in" : "query",
+						"schema" : {
+							"type" : "string",
+							"enum" : [
+								"A",
+								"B",
+								"C"
+							]
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/hello/withMatrix/{year_segment}/{other}" : {
 			"get" : {
 				"tags" : [

@@ -25,6 +25,7 @@ import io.avaje.http.api.Valid;
 import io.javalin.http.Context;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.inject.Inject;
+import org.example.myapp.web.other.Foo;
 
 /**
  * Hello resource manager.
@@ -182,5 +183,11 @@ class HelloController {
   String controlStatusCode(Context ctx) {
     ctx.status(201);
     return "controlStatusCode";
+  }
+
+  @Produces(value = "text/plain")
+  @Get("takesNestedEnum")
+  String takesNestedEnum(Foo.NestedEnum myEnum) {
+    return "takesNestedEnum-" + myEnum;
   }
 }
