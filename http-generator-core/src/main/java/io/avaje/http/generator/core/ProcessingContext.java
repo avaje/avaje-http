@@ -144,9 +144,9 @@ public final class ProcessingContext {
   /** Create a file writer for the META-INF services file. */
   public static FileObject createMetaInfWriter(String target) throws IOException {
     var serviceFile =
-        CTX.get().spiPresent
-            ? target.replace("META-INF/services/", "META-INF/generated-services/")
-            : target;
+      CTX.get().spiPresent
+        ? target.replace("META-INF/services/", "META-INF/generated-services/")
+        : target;
 
     return filer().createResource(StandardLocation.CLASS_OUTPUT, "", serviceFile);
   }
@@ -177,7 +177,7 @@ public final class ProcessingContext {
       .filter(type -> !type.toString().contains("java.lang.Object"))
       .map(superType -> {
         final var superClass = (TypeElement) types.asElement(superType);
-        for (final ExecutableElement method : ElementFilter.methodsIn(CTX.get().elementUtils.getAllMembers(superClass))) {
+        for (final var method : ElementFilter.methodsIn(CTX.get().elementUtils.getAllMembers(superClass))) {
           if (method.getSimpleName().contentEquals(methodName)) {
             return method;
           }
@@ -233,44 +233,32 @@ public final class ProcessingContext {
   static Stream<String> superTypes(Element element) {
     final Types types = CTX.get().typeUtils;
     return types.directSupertypes(element.asType()).stream()
-        .filter(type -> !type.toString().contains("java.lang.Object"))
-        .map(superType -> (TypeElement) types.asElement(superType))
-        .flatMap(e -> Stream.concat(superTypes(e), Stream.of(e)))
-        .map(Object::toString);
+      .filter(type -> !type.toString().contains("java.lang.Object"))
+      .map(superType -> (TypeElement) types.asElement(superType))
+      .flatMap(e -> Stream.concat(superTypes(e), Stream.of(e)))
+      .map(Object::toString);
   }
 
   public static void validateModule() {
     var module = APContext.getProjectModuleElement();
     if (module != null && !CTX.get().validated && !module.isUnnamed()) {
-
       CTX.get().validated = true;
       try (var bufferedReader = APContext.getModuleInfoReader()) {
         var reader = new ModuleInfoReader(module, bufferedReader);
-        reader
-            .requires()
-            .forEach(
-                r -> {
-                  if (!r.isStatic()
-                      && r.getDependency()
-                          .getQualifiedName()
-                          .contentEquals("io.avaje.http.api.javalin")) {
-                    logWarn(
-                        module,
-                        "io.avaje.http.api.javalin only contains SOURCE retention annotations. It should added as `requires static`");
-                  }
-                });
+        reader.requires().forEach(r -> {
+          if (!r.isStatic() && r.getDependency().getQualifiedName().contentEquals("io.avaje.http.api.javalin")) {
+            logWarn(module, "io.avaje.http.api.javalin only contains SOURCE retention annotations. It should added as `requires static`");
+          }
+        });
         var fqn = CTX.get().clientFQN;
         if (CTX.get().spiPresent || fqn == null) {
           return;
         }
-
-        var noProvides =
-            reader.provides().stream()
-                .filter(
-                    p -> "io.avaje.http.client.HttpClient.GeneratedComponent".equals(p.service()))
-                .map(Provides::implementations)
-                .flatMap(List::stream)
-                .noneMatch(s -> s.contains(fqn));
+        var noProvides = reader.provides().stream()
+          .filter(p -> "io.avaje.http.client.HttpClient.GeneratedComponent".equals(p.service()))
+          .map(Provides::implementations)
+          .flatMap(List::stream)
+          .noneMatch(s -> s.contains(fqn));
 
         if (noProvides && !buildPluginAvailable()) {
           logError(module, "Missing `provides io.avaje.http.client.HttpClient.GeneratedComponent with %s;`", fqn);
