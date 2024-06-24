@@ -1,22 +1,17 @@
 package io.avaje.http.generator.core;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.ModuleElement;
@@ -31,6 +26,7 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 
+import io.avaje.http.generator.core.ModuleInfoReader.Provides;
 import io.avaje.http.generator.core.openapi.DocContext;
 
 public final class ProcessingContext {
@@ -53,8 +49,9 @@ public final class ProcessingContext {
     private final boolean instrumentAllMethods;
     private final boolean disableDirectWrites;
     private final boolean javalin6;
-    private ModuleElement module;
+    private final boolean spiPresent = APContext.typeElement("io.avaje.spi.internal.ServiceProcessor") != null;
     private boolean validated;
+    private String clientFQN;
 
     Ctx(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
       readAdapter = adapter;
@@ -146,7 +143,12 @@ public final class ProcessingContext {
 
   /** Create a file writer for the META-INF services file. */
   public static FileObject createMetaInfWriter(String target) throws IOException {
-    return CTX.get().filer.createResource(StandardLocation.CLASS_OUTPUT, "", target);
+    var serviceFile =
+      CTX.get().spiPresent
+        ? target.replace("META-INF/services/", "META-INF/generated-services/")
+        : target;
+
+    return filer().createResource(StandardLocation.CLASS_OUTPUT, "", serviceFile);
   }
 
   public static JavaFileObject createWriter(String cls) throws IOException {
@@ -175,7 +177,7 @@ public final class ProcessingContext {
       .filter(type -> !type.toString().contains("java.lang.Object"))
       .map(superType -> {
         final var superClass = (TypeElement) types.asElement(superType);
-        for (final ExecutableElement method : ElementFilter.methodsIn(CTX.get().elementUtils.getAllMembers(superClass))) {
+        for (final var method : ElementFilter.methodsIn(CTX.get().elementUtils.getAllMembers(superClass))) {
           if (method.getSimpleName().contentEquals(methodName)) {
             return method;
           }
@@ -231,45 +233,33 @@ public final class ProcessingContext {
   static Stream<String> superTypes(Element element) {
     final Types types = CTX.get().typeUtils;
     return types.directSupertypes(element.asType()).stream()
-        .filter(type -> !type.toString().contains("java.lang.Object"))
-        .map(superType -> (TypeElement) types.asElement(superType))
-        .flatMap(e -> Stream.concat(superTypes(e), Stream.of(e)))
-        .map(Object::toString);
+      .filter(type -> !type.toString().contains("java.lang.Object"))
+      .map(superType -> (TypeElement) types.asElement(superType))
+      .flatMap(e -> Stream.concat(superTypes(e), Stream.of(e)))
+      .map(Object::toString);
   }
 
-  public static void findModule(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    if (CTX.get().module == null) {
-      CTX.get().module =
-          annotations.stream()
-              .map(roundEnv::getElementsAnnotatedWith)
-              .flatMap(Collection::stream)
-              .findAny()
-              .map(ProcessingContext::getModuleElement)
-              .orElse(null);
-    }
-  }
-
-  public static void validateModule(String fqn) {
-    var module = CTX.get().module;
+  public static void validateModule() {
+    var module = APContext.getProjectModuleElement();
     if (module != null && !CTX.get().validated && !module.isUnnamed()) {
-
       CTX.get().validated = true;
-      try (var inputStream =
-             CTX.get()
-               .filer
-               .getResource(StandardLocation.SOURCE_PATH, "", "module-info.java")
-               .toUri()
-               .toURL()
-               .openStream();
-          var reader = new BufferedReader(new InputStreamReader(inputStream))) {
-
-        var noProvides = reader.lines().map(s -> {
-            if (s.contains("io.avaje.http.api.javalin") && !s.contains("static")) {
-              logWarn("io.avaje.http.api.javalin only contains SOURCE retention annotations. It should added as `requires static`");
-            }
-            return s;
-          })
+      try (var bufferedReader = APContext.getModuleInfoReader()) {
+        var reader = new ModuleInfoReader(module, bufferedReader);
+        reader.requires().forEach(r -> {
+          if (!r.isStatic() && r.getDependency().getQualifiedName().contentEquals("io.avaje.http.api.javalin")) {
+            logWarn(module, "io.avaje.http.api.javalin only contains SOURCE retention annotations. It should added as `requires static`");
+          }
+        });
+        var fqn = CTX.get().clientFQN;
+        if (CTX.get().spiPresent || fqn == null) {
+          return;
+        }
+        var noProvides = reader.provides().stream()
+          .filter(p -> "io.avaje.http.client.HttpClient.GeneratedComponent".equals(p.service()))
+          .map(Provides::implementations)
+          .flatMap(List::stream)
           .noneMatch(s -> s.contains(fqn));
+
         if (noProvides && !buildPluginAvailable()) {
           logError(module, "Missing `provides io.avaje.http.client.HttpClient.GeneratedComponent with %s;`", fqn);
         }
@@ -308,5 +298,9 @@ public final class ProcessingContext {
     } catch (final Exception e) {
       return false;
     }
+  }
+
+  public static void addClientComponent(String clientFQN) {
+    CTX.get().clientFQN = clientFQN;
   }
 }
