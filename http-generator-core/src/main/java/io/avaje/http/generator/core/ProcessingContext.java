@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,7 +27,6 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 
-import io.avaje.http.generator.core.ModuleInfoReader.Provides;
 import io.avaje.http.generator.core.openapi.DocContext;
 
 public final class ProcessingContext {
@@ -49,8 +49,6 @@ public final class ProcessingContext {
     private final boolean instrumentAllMethods;
     private final boolean disableDirectWrites;
     private final boolean javalin6;
-    private final boolean spiPresent = APContext.typeElement("io.avaje.spi.internal.ServiceProcessor") != null;
-    private boolean validated;
     private String clientFQN;
 
     Ctx(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
@@ -143,12 +141,8 @@ public final class ProcessingContext {
 
   /** Create a file writer for the META-INF services file. */
   public static FileObject createMetaInfWriter(String target) throws IOException {
-    var serviceFile =
-      CTX.get().spiPresent
-        ? target.replace("META-INF/services/", "META-INF/generated-services/")
-        : target;
 
-    return filer().createResource(StandardLocation.CLASS_OUTPUT, "", serviceFile);
+    return filer().createResource(StandardLocation.CLASS_OUTPUT, "", target);
   }
 
   public static JavaFileObject createWriter(String cls) throws IOException {
@@ -241,8 +235,7 @@ public final class ProcessingContext {
 
   public static void validateModule() {
     var module = APContext.getProjectModuleElement();
-    if (module != null && !CTX.get().validated && !module.isUnnamed()) {
-      CTX.get().validated = true;
+    if (module != null && !module.isUnnamed()) {
       try (var bufferedReader = APContext.getModuleInfoReader()) {
         var reader = new ModuleInfoReader(module, bufferedReader);
         reader.requires().forEach(r -> {
@@ -251,18 +244,9 @@ public final class ProcessingContext {
           }
         });
         var fqn = CTX.get().clientFQN;
-        if (CTX.get().spiPresent || fqn == null) {
-          return;
-        }
-        var noProvides = reader.provides().stream()
-          .filter(p -> "io.avaje.http.client.HttpClient.GeneratedComponent".equals(p.service()))
-          .map(Provides::implementations)
-          .flatMap(List::stream)
-          .noneMatch(s -> s.contains(fqn));
 
-        if (noProvides && !buildPluginAvailable()) {
-          logError(module, "Missing `provides io.avaje.http.client.HttpClient.GeneratedComponent with %s;`", fqn);
-        }
+        reader.validateServices("io.avaje.http.client.HttpClient.GeneratedComponent", Set.of(fqn));
+
       } catch (Exception e) {
         // can't read module
       }
