@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.avaje.http.generator.javalin.JavalinProcessor;
-import io.avaje.jsonb.generator.Processor;
+import io.avaje.jsonb.generator.JsonbProcessor;
 
 class JavalinProcessorTest {
 
@@ -76,7 +76,7 @@ class JavalinProcessorTest {
     final var task =
         compiler.getTask(
             new PrintWriter(System.out), null, null, List.of("--release=11"), null, files);
-    task.setProcessors(List.of(new JavalinProcessor(), new Processor()));
+    task.setProcessors(List.of(new JavalinProcessor(), new JsonbProcessor()));
 
     assertThat(task.call()).isTrue();
     assert Files.readString(
@@ -104,7 +104,7 @@ class JavalinProcessorTest {
                 "-AdisableDirectWrites=true"),
             null,
             files);
-    task.setProcessors(List.of(new JavalinProcessor(), new Processor()));
+    task.setProcessors(List.of(new JavalinProcessor(), new JsonbProcessor()));
     // we don't have javax on the cp
     assertThat(task.call()).isFalse();
 
@@ -133,7 +133,7 @@ class JavalinProcessorTest {
                 "-AdisableDirectWrites=true"),
             null,
             files);
-    task.setProcessors(List.of(new JavalinProcessor(), new Processor()));
+    task.setProcessors(List.of(new JavalinProcessor(), new JsonbProcessor()));
 
     assertThat(task.call()).isTrue();
 
@@ -163,7 +163,7 @@ class JavalinProcessorTest {
             List.of("--release=11", "-AdisableDirectWrites=true"),
             null,
             openAPIController);
-    task.setProcessors(List.of(new JavalinProcessor(), new Processor()));
+    task.setProcessors(List.of(new JavalinProcessor(), new JsonbProcessor()));
 
     assertThat(task.call()).isTrue();
 
@@ -197,7 +197,7 @@ class JavalinProcessorTest {
             List.of("--release=11", "-AdisableDirectWrites=true"),
             null,
             openAPIController);
-    task.setProcessors(List.of(new JavalinProcessor(), new Processor()));
+    task.setProcessors(List.of(new JavalinProcessor(), new JsonbProcessor()));
 
     assertThat(task.call()).isTrue();
 
