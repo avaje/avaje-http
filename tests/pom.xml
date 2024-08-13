@@ -4,7 +4,7 @@
   <parent>
     <artifactId>avaje-http-parent</artifactId>
     <groupId>io.avaje</groupId>
-    <version>2.6-RC1</version>
+    <version>2.7</version>
   </parent>
 
   <artifactId>tests</artifactId>
@@ -12,13 +12,13 @@
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
-    <junit.version>5.10.2</junit.version>
-    <assertj.version>3.26.0</assertj.version>
-    <jackson.version>2.17.1</jackson.version>
+    <junit.version>5.10.3</junit.version>
+    <assertj.version>3.26.3</assertj.version>
+    <jackson.version>2.17.2</jackson.version>
     <jex.version>2.5</jex.version>
     <avaje-inject.version>10.3</avaje-inject.version>
-    <nima.version>4.0.9</nima.version>
-    <javalin.version>6.1.6</javalin.version>
+    <nima.version>4.0.11</nima.version>
+    <javalin.version>6.2.0</javalin.version>
   </properties>
 
   <modules>
@@ -38,7 +38,7 @@
       <modules>
         <module>test-nima</module>
         <module>test-nima-jsonb</module>
-<!--        <module>test-nima-htmx</module>-->
+        <module>test-nima-htmx</module>
       </modules>
     </profile>
   </profiles>

@@ -1,7 +1,7 @@
 {
 	"openapi" : "3.0.1",
 	"info" : {
-		"title" : "Example service showing off the Path extension method of controller",
+		"title" : "Example service",
 		"description" : "Example Javalin controllers with Java and Maven",
 		"version" : ""
 	},
@@ -14,11 +14,11 @@
 	"tags" : [
 		{
 			"name" : "tag1",
-			"description" : "this is added to openapi tags"
+			"description" : "it's somethin"
 		},
 		{
 			"name" : "tag1",
-			"description" : "it's somethin"
+			"description" : "this is added to openapi tags"
 		}
 	],
 	"paths" : {
@@ -320,7 +320,7 @@
 					"201" : {
 						"description" : "",
 						"content" : {
-							"application/json" : {
+							"application/json-patch+json" : {
 								"schema" : {
 									"$ref" : "#/components/schemas/HelloDto"
 								}
@@ -629,6 +629,41 @@
 						"required" : true,
 						"schema" : {
 							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/takesNestedEnum" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "myEnum",
+						"in" : "query",
+						"schema" : {
+							"type" : "string",
+							"enum" : [
+								"A",
+								"B",
+								"C"
+							]
 						}
 					}
 				],

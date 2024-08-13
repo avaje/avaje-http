@@ -316,12 +316,12 @@ class TypeMap {
 
     @Override
     public String toMethod() {
-      return "(" + type.shortType() + ") toEnum(" + type.shortType() + ".class, ";
+      return "(" + type.shortTypeNested() + ") toEnum(" + type.shortTypeNested() + ".class, ";
     }
 
     @Override
     public String asMethod() {
-      return "(" + type.shortType() + ") asEnum(" + type.shortType() + ".class, ";
+      return "(" + type.shortTypeNested() + ") asEnum(" + type.shortTypeNested() + ".class, ";
     }
   }
 
