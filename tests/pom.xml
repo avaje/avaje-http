@@ -38,6 +38,7 @@
       <modules>
         <module>test-nima</module>
         <module>test-nima-jsonb</module>
+        <module>test-nima-htmx</module>
       </modules>
     </profile>
   </profiles>

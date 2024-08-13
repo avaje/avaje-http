@@ -7,14 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import io.avaje.http.generator.core.Append;
-import io.avaje.http.generator.core.CoreWebMethod;
-import io.avaje.http.generator.core.MethodParam;
-import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.ParamType;
-import io.avaje.http.generator.core.PathSegments;
-import io.avaje.http.generator.core.UType;
-import io.avaje.http.generator.core.WebMethod;
+import io.avaje.http.generator.core.*;
 import io.avaje.http.generator.core.openapi.MediaType;
 
 import javax.lang.model.type.TypeMirror;
@@ -67,8 +60,10 @@ final class ControllerMethodWriter {
   private final boolean useJsonB;
   private final boolean instrumentContext;
   private final boolean isFilter;
+  private final ControllerReader reader;
 
-  ControllerMethodWriter(MethodReader method, Append writer, boolean useJsonB) {
+  ControllerMethodWriter(MethodReader method, Append writer, boolean useJsonB, ControllerReader reader) {
+    this.reader = reader;
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
@@ -92,8 +87,33 @@ final class ControllerMethodWriter {
     } else if (isFilter) {
       writer.append("    routing.addFilter(this::_%s);", method.simpleName()).eol();
     } else {
-      writer.append("    routing.%s(\"%s\", this::_%s);", webMethod.name().toLowerCase(), method.fullPath().replace("\\", "\\\\"), method.simpleName()).eol();
+      writer.append("    routing.%s(\"%s\", ", webMethod.name().toLowerCase(), method.fullPath().replace("\\", "\\\\"));
+      var hxRequest = method.hxRequest();
+      if (hxRequest != null) {
+        writer.append("HxHandler.builder(this::_%s)", method.simpleName());
+        if (hasValue(hxRequest.target())) {
+          writer.append(".target(\"%s\")", hxRequest.target());
+        }
+        if (hasValue(hxRequest.triggerId())) {
+          writer.append(".trigger(\"%s\")", hxRequest.triggerId());
+        } else if (hasValue(hxRequest.value())) {
+          writer.append(".trigger(\"%s\")", hxRequest.value());
+        }
+        if (hasValue(hxRequest.triggerName())) {
+          writer.append(".triggerName(\"%s\")", hxRequest.triggerName());
+        } else if (hasValue(hxRequest.value())) {
+          writer.append(".triggerName(\"%s\")", hxRequest.value());
+        }
+        writer.append(".build());").eol();
+
+      } else {
+        writer.append("this::_%s);", method.simpleName()).eol();
+      }
     }
+  }
+
+  private static boolean hasValue(String value) {
+    return value != null && !value.isBlank();
   }
 
   void writeHandler(boolean requestScoped) {
@@ -205,6 +225,8 @@ final class ControllerMethodWriter {
           final var uType = UType.parse(method.returnType());
           writer.append(indent).append("%sJsonType.toJson(result, JsonOutput.of(res));", uType.shortName()).eol();
         }
+      } else if (useTemplating()) {
+        writer.append(indent).append("renderer.render(result, req, res);").eol();
       } else {
         writer.append(indent).append("res.send(result);").eol();
       }
@@ -213,6 +235,12 @@ final class ControllerMethodWriter {
       }
     }
     writer.append("  }").eol().eol();
+  }
+
+  private boolean useTemplating() {
+    return reader.html()
+      && !"byte[]".equals(method.returnType().toString())
+      && (method.produces() == null || method.produces().toLowerCase().contains("html"));
   }
 
   private static boolean isExceptionOrFilterChain(MethodParam param) {
