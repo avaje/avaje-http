@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.avaje</groupId>
     <artifactId>java11-oss</artifactId>
-    <version>4.1</version>
+    <version>4.3</version>
   </parent>
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-parent</artifactId>
-  <version>2.6-RC1</version>
+  <version>2.7</version>
   <packaging>pom</packaging>
 
   <scm>
@@ -21,7 +21,7 @@
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
     <swagger.version>2.2.22</swagger.version>
     <jackson.version>2.14.2</jackson.version>
-    <avaje.prisms.version>1.21</avaje.prisms.version>
+    <avaje.prisms.version>1.31</avaje.prisms.version>
     <module-info.shade>${project.build.directory}${file.separator}module-info.shade</module-info.shade>
   </properties>
 

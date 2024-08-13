@@ -3,12 +3,7 @@ package io.avaje.http.generator.jex;
 import static io.avaje.http.generator.core.ProcessingContext.platform;
 import java.util.List;
 
-import io.avaje.http.generator.core.Append;
-import io.avaje.http.generator.core.MethodParam;
-import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.PathSegments;
-import io.avaje.http.generator.core.Util;
-import io.avaje.http.generator.core.WebMethod;
+import io.avaje.http.generator.core.*;
 import io.avaje.http.generator.core.openapi.MediaType;
 
 /**
@@ -102,6 +97,8 @@ class ControllerMethodWriter {
       writer.append("ctx.html(");
     } else if (produces.equalsIgnoreCase(MediaType.TEXT_PLAIN.getValue())) {
       writer.append("ctx.text(");
+    } else if (JsonBUtil.isJsonMimeType(produces)) {
+      writer.append("ctx.contentType(\"%s\").json(", produces);
     } else {
       writer.append("ctx.contentType(\"%s\").write(", produces);
     }
