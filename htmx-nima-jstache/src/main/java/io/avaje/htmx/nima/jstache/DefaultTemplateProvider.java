@@ -1,5 +1,6 @@
 package io.avaje.htmx.nima.jstache;
 
+import io.avaje.htmx.nima.TemplateContentCache;
 import io.avaje.htmx.nima.TemplateRender;
 import io.avaje.inject.BeanScopeBuilder;
 import io.avaje.inject.spi.Plugin;
@@ -11,11 +12,12 @@ public final class DefaultTemplateProvider implements Plugin {
 
   @Override
   public Class<?>[] provides() {
-    return new Class<?>[]{TemplateRender.class};
+    return new Class<?>[]{TemplateRender.class, TemplateContentCache.class};
   }
 
   @Override
   public void apply(BeanScopeBuilder builder) {
     builder.provideDefault(null, TemplateRender.class, JStacheTemplateRender::new);
+    builder.provideDefault(null, TemplateContentCache.class, SimpleContentCache::new);
   }
 }
