@@ -36,6 +36,7 @@
 @GeneratePrism(value = io.avaje.http.api.RequestTimeout.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.htmx.api.HxRequest.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.htmx.api.Html.class, publicAccess = true)
+@GeneratePrism(value = io.avaje.htmx.api.ContentCache.class, publicAccess = true)
 package io.avaje.http.generator.core;
 
 import io.avaje.prism.GeneratePrism;

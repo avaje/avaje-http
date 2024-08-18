@@ -67,6 +67,9 @@ class ControllerWriter extends BaseControllerWriter {
     }
     if (reader.html()) {
       reader.addImportType("io.avaje.htmx.nima.TemplateRender");
+      if (reader.hasContentCache()) {
+        reader.addImportType("io.avaje.htmx.nima.TemplateContentCache");
+      }
     }
   }
 
@@ -129,6 +132,9 @@ class ControllerWriter extends BaseControllerWriter {
     if (reader.isIncludeValidator()) {
       writer.append("  private static final HeaderName HEADER_ACCEPT_LANGUAGE = HeaderNames.create(\"Accept-Language\");").eol();
     }
+    if (reader.html()) {
+      writer.append("  private static final io.helidon.common.media.type.MediaType HTML_UTF8 = MediaTypes.create(\"text/html;charset=UTF8\");").eol();
+    }
 
     writer.append("  private final %s %s;", controllerType, controllerName).eol();
 
@@ -140,6 +146,9 @@ class ControllerWriter extends BaseControllerWriter {
     }
     if (reader.html()) {
       writer.append("  private final TemplateRender renderer;").eol();
+      if (reader.hasContentCache()) {
+        writer.append("  private final TemplateContentCache contentCache;").eol();
+      }
     }
 
     for (final UType type : jsonTypes.values()) {
@@ -159,6 +168,9 @@ class ControllerWriter extends BaseControllerWriter {
     }
     if (reader.html()) {
       writer.append(", TemplateRender renderer");
+      if (reader.hasContentCache()) {
+        writer.append(", TemplateContentCache contentCache");
+      }
     }
     if (instrumentContext) {
       writer.append(", RequestContextResolver resolver");
@@ -171,6 +183,9 @@ class ControllerWriter extends BaseControllerWriter {
     }
     if (reader.html()) {
       writer.append("    this.renderer = renderer;").eol();
+      if (reader.hasContentCache()) {
+        writer.append("    this.contentCache = contentCache;").eol();
+      }
     }
     if (instrumentContext) {
       writer.append("    this.resolver = resolver;").eol();

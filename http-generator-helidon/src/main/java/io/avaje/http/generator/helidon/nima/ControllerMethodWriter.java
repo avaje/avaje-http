@@ -131,7 +131,7 @@ final class ControllerMethodWriter {
         writer.append("    res.status(%s);", lookupStatusCode(statusCode)).eol();
       }
     }
-
+    boolean withFormParams = false;
     final var bodyType = method.bodyType();
     if (bodyType != null && !method.isErrorMethod() && !isFilter) {
       if ("InputStream".equals(bodyType)) {
@@ -144,26 +144,41 @@ final class ControllerMethodWriter {
       } else {
         defaultHelidonBodyContent();
       }
-    } else if (usesFormParams()) {
-      writer.append("    var formParams = req.content().as(Parameters.class);").eol();
+    } else {
+      withFormParams = usesFormParams();
+      if (withFormParams) {
+        writer.append("    var formParams = req.content().as(Parameters.class);").eol();
+      }
+    }
+    final ResponseMode responseMode = responseMode();
+    final boolean withContentCache = responseMode == ResponseMode.Templating && useContentCache();
+    if (withContentCache) {
+      writer.append("    var key = contentCache.key(req");
+      if (withFormParams) {
+        writer.append(", formParams");
+      }
+      writer.append(");").eol();
+      writer.append("    var cacheContent = contentCache.content(key);").eol();
+      writer.append("    if (cacheContent != null) {").eol();
+      writeContextReturn("      ");
+      writer.append("      res.send(cacheContent);").eol();
+      writer.append("      return;").eol();
+      writer.append("    }").eol();
     }
 
     final var segments = method.pathSegments();
     if (segments.fullPath().contains("{")) {
       writer.append("    var pathParams = req.path().pathParameters();").eol();
     }
-
     for (final PathSegments.Segment matrixSegment : segments.matrixSegments()) {
       matrixSegment.writeCreateSegment(writer, platform());
     }
-
     final var params = method.params();
     for (final MethodParam param : params) {
       if (!isExceptionOrFilterChain(param)) {
         param.writeCtxGet(writer, segments);
       }
     }
-
     if (method.includeValidate()) {
       for (final MethodParam param : params) {
         param.writeValidate(writer);
@@ -205,7 +220,7 @@ final class ControllerMethodWriter {
     }
     writer.append(");").eol();
 
-    if (!method.isVoid() && !isFilter) {
+    if (responseMode != ResponseMode.Void) {
       TypeMirror typeMirror = method.returnType();
       boolean includeNoContent = !typeMirror.getKind().isPrimitive();
       if (includeNoContent) {
@@ -214,27 +229,63 @@ final class ControllerMethodWriter {
         writer.append("    } else {").eol();
       }
       String indent = includeNoContent ? "      " : "    ";
-      writeContextReturn(indent);
-      if (isInputStream(method.returnType())) {
-        final var uType = UType.parse(method.returnType());
-        writer.append(indent).append("result.transferTo(res.outputStream());", uType.shortName()).eol();
-      } else if (producesJson()) {
-        if (returnTypeString()) {
-          writer.append(indent).append("res.send(result); // send raw JSON").eol();
-        } else {
-          final var uType = UType.parse(method.returnType());
-          writer.append(indent).append("%sJsonType.toJson(result, JsonOutput.of(res));", uType.shortName()).eol();
+      if (responseMode == ResponseMode.Templating) {
+        writer.append(indent).append("var content = renderer.render(result);").eol();
+        if (withContentCache) {
+          writer.append(indent).append("contentCache.contentPut(key, content);").eol();
         }
-      } else if (useTemplating()) {
-        writer.append(indent).append("renderer.render(result, req, res);").eol();
+        writeContextReturn(indent);
+        writer.append(indent).append("res.send(content);").eol();
+
       } else {
-        writer.append(indent).append("res.send(result);").eol();
+        writeContextReturn(indent);
+        if (responseMode == ResponseMode.InputStream) {
+          final var uType = UType.parse(method.returnType());
+          writer.append(indent).append("result.transferTo(res.outputStream());", uType.shortName()).eol();
+        } else if (responseMode == ResponseMode.Json) {
+          if (returnTypeString()) {
+            writer.append(indent).append("res.send(result); // send raw JSON").eol();
+          } else {
+            final var uType = UType.parse(method.returnType());
+            writer.append(indent).append("%sJsonType.toJson(result, JsonOutput.of(res));", uType.shortName()).eol();
+          }
+        } else {
+          writer.append(indent).append("res.send(result);").eol();
+        }
       }
       if (includeNoContent) {
         writer.append("    }").eol();
       }
     }
     writer.append("  }").eol().eol();
+  }
+
+  enum ResponseMode {
+    Void,
+    Json,
+    Templating,
+    InputStream,
+    Other
+  }
+
+  ResponseMode responseMode() {
+    if (method.isVoid() || isFilter) {
+      return ResponseMode.Void;
+    }
+    if (isInputStream(method.returnType())) {
+      return ResponseMode.InputStream;
+    }
+    if (producesJson()) {
+      return ResponseMode.Json;
+    }
+    if (useTemplating()) {
+      return ResponseMode.Templating;
+    }
+    return ResponseMode.Other;
+  }
+
+  private boolean useContentCache() {
+    return method.hasContentCache();
   }
 
   private boolean useTemplating() {
@@ -308,6 +359,7 @@ final class ControllerMethodWriter {
     final var contentTypeString = "res.headers().contentType(MediaTypes.";
     writer.append(indent);
     switch (produces) {
+      case HTML_UTF8 -> writer.append("res.headers().contentType(HTML_UTF8);").eol();
       case APPLICATION_JSON -> writer.append(contentTypeString).append("APPLICATION_JSON);").eol();
       case TEXT_HTML -> writer.append(contentTypeString).append("TEXT_HTML);").eol();
       case TEXT_PLAIN -> writer.append(contentTypeString).append("TEXT_PLAIN);").eol();
