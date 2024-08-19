@@ -15,7 +15,7 @@
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.useModulePath>false</surefire.useModulePath>
-    <io.jstach.version>1.3.5</io.jstach.version>
+    <io.jstach.version>1.3.6</io.jstach.version>
   </properties>
 
   <dependencies>
