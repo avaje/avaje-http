@@ -3,12 +3,12 @@ package io.avaje.htmx.nima.jstache;
 import io.avaje.htmx.nima.TemplateContentCache;
 import io.avaje.htmx.nima.TemplateRender;
 import io.avaje.inject.BeanScopeBuilder;
-import io.avaje.inject.spi.Plugin;
+import io.avaje.inject.spi.InjectPlugin;
 
 /**
  * Plugin for avaje inject that provides a default TemplateRender instance.
  */
-public final class DefaultTemplateProvider implements Plugin {
+public final class DefaultTemplateProvider implements InjectPlugin {
 
   @Override
   public Class<?>[] provides() {
