@@ -3,10 +3,10 @@ package io.avaje.http.inject;
 import io.avaje.http.api.context.RequestContextResolver;
 import io.avaje.http.api.context.ThreadLocalRequestContextResolver;
 import io.avaje.inject.BeanScopeBuilder;
-import io.avaje.inject.spi.Plugin;
+import io.avaje.inject.spi.InjectPlugin;
 
 /** Plugin for avaje inject that provides a default RequestContextResolver instance. */
-public final class DefaultResolverProvider implements Plugin {
+public final class DefaultResolverProvider implements InjectPlugin {
 
   @Override
   public Class<?>[] provides() {
