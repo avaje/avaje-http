@@ -4,10 +4,12 @@ import io.avaje.htmx.nima.TemplateContentCache;
 import io.avaje.htmx.nima.TemplateRender;
 import io.avaje.inject.BeanScopeBuilder;
 import io.avaje.inject.spi.InjectPlugin;
+import io.avaje.spi.ServiceProvider;
 
 /**
  * Plugin for avaje inject that provides a default TemplateRender instance.
  */
+@ServiceProvider
 public final class DefaultTemplateProvider implements InjectPlugin {
 
   @Override
