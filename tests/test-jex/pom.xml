@@ -13,7 +13,7 @@
     <maven.deploy.skip>true</maven.deploy.skip>
     <main.class>org.example.myapp.Main</main.class>
     <jex.version>2.5</jex.version>
-    <swagger.version>2.2.22</swagger.version>
+    <swagger.version>2.2.23</swagger.version>
   </properties>
 
   <dependencies>
