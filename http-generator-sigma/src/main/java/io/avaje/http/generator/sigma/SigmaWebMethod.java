@@ -2,7 +2,7 @@ package io.avaje.http.generator.sigma;
 
 import io.avaje.http.generator.core.WebMethod;
 
-public enum JavalinWebMethod implements WebMethod {
+public enum SigmaWebMethod implements WebMethod {
   BEFORE(0),
   BEFORE_MATCHED(0),
   AFTER(0),
@@ -10,7 +10,7 @@ public enum JavalinWebMethod implements WebMethod {
 
   private final int statusCode;
 
-  JavalinWebMethod(int statusCode) {
+  SigmaWebMethod(int statusCode) {
     this.statusCode = statusCode;
   }
 

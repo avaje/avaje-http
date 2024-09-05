@@ -17,7 +17,8 @@ class ControllerWriter extends BaseControllerWriter {
 
   ControllerWriter(ControllerReader reader) throws IOException {
     super(reader);
-    reader.addImportType("io.avaje.sigma.*");
+    reader.addImportType("io.avaje.sigma.HttpService");
+    reader.addImportType("io.avaje.sigma.Routing");
   }
 
   void write() {

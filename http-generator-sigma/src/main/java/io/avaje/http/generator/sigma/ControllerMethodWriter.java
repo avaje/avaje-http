@@ -20,7 +20,7 @@ class ControllerMethodWriter {
     this.method = method;
     this.writer = writer;
     final var webM = method.webMethod();
-    this.webMethod = webM == CoreWebMethod.FILTER ? JavalinWebMethod.BEFORE : webM;
+    this.webMethod = webM == CoreWebMethod.FILTER ? SigmaWebMethod.BEFORE : webM;
     this.instrumentContext = method.instrumentContext();
     customMethod = !(webMethod instanceof CoreWebMethod);
   }
@@ -67,17 +67,6 @@ class ControllerMethodWriter {
     }
 
     writer.append("    }");
-
-    final var roles = method.roles();
-    if (!roles.isEmpty() && !customMethod) {
-      writer.append(", ");
-      for (var i = 0; i < roles.size(); i++) {
-        if (i > 0) {
-          writer.append(", ");
-        }
-        writer.append(Util.shortName(roles.get(i), true));
-      }
-    }
     writer.append(");").eol().eol();
   }
 
