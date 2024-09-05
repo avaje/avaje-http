@@ -18,7 +18,7 @@ class ControllerWriter extends BaseControllerWriter {
   ControllerWriter(ControllerReader reader) throws IOException {
     super(reader);
     reader.addImportType("io.avaje.sigma.HttpService");
-    reader.addImportType("io.avaje.sigma.Routing");
+    reader.addImportType("io.avaje.sigma.Router");
   }
 
   void write() {
@@ -31,7 +31,7 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeAddRoutes() {
     writer.append("  @Override").eol();
-    writer.append("  public void setup(Routing routing) {").eol().eol();
+    writer.append("  public void setup(Router router) {").eol().eol();
 
 
     for (final MethodReader method : reader.methods()) {

@@ -73,11 +73,11 @@ class ControllerMethodWriter {
   private void writeMethod(final String fullPath) {
     if (method.isErrorMethod()) {
       writer
-          .append("    routing.exception(%s.class, (ex, ctx) -> {", method.exceptionShortName())
+          .append("    router.exception(%s.class, (ex, ctx) -> {", method.exceptionShortName())
           .eol();
     } else {
       var methodName = webMethod.name().toLowerCase().replace("_m", "M");
-      writer.append("    routing.%s(\"%s\", ctx -> {", methodName, fullPath).eol();
+      writer.append("    router.%s(\"%s\", ctx -> {", methodName, fullPath).eol();
     }
     if (!customMethod) {
       int statusCode = method.statusCode();
