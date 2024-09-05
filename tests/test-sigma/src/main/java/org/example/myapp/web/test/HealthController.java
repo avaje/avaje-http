@@ -1,8 +1,5 @@
 package org.example.myapp.web.test;
 
-import org.example.myapp.web.AppRoles;
-import org.example.myapp.web.Roles;
-
 import io.avaje.http.api.Get;
 import io.avaje.http.api.MediaType;
 import io.avaje.http.api.OpenAPIResponse;
