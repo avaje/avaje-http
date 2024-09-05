@@ -61,7 +61,6 @@ class HelloController {
    * @deprecated Please migrate away
    */
   @Deprecated
-@Roles({AppRoles.ADMIN, AppRoles.BASIC_USER})
   @Get("/:id/:date")
   HelloDto hello(int id, LocalDate date, String otherParam) {
     return new HelloDto(id, date.toString(), otherParam);
@@ -74,7 +73,6 @@ class HelloController {
    * @param myParam My option parameter
    * @return The Hellos that we found.
    */
-  @Roles(AppRoles.ADMIN)
   @Get("/findbyname/{name}")
   List<HelloDto> findByName(String name, @QueryParam("my-param") @Default("one") String myParam) {
     return new ArrayList<>();
@@ -96,7 +94,6 @@ class HelloController {
    * @param foo The hello doo id
    * @param dto The hello body as json
    */
-//  @Roles({ADMIN})
   @Post("/savebean/:foo")
   void saveBean(String foo, HelloDto dto, HttpContext HttpContext) {
     // save hello data ...
