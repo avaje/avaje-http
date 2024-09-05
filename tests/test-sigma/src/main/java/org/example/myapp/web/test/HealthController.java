@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Path("javalin")
-@Roles(AppRoles.ANYONE)
 @OpenAPIDefinition(
     info =
         @Info(

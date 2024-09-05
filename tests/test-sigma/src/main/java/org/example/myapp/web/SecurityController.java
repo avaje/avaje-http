@@ -16,7 +16,6 @@ class SecurityController {
   }
 
   @Get("/second")
-  @SecurityRoles
   String second() {
     return "simple";
   }
