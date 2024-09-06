@@ -56,7 +56,6 @@
     </dependency>
 
     <!-- java annotation processors -->
-
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject-generator</artifactId>
