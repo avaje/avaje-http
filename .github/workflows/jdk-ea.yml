@@ -2,6 +2,7 @@
 name: avaje-http EA
 
 on:
+  pull_request:
   workflow_dispatch:
   schedule:
     - cron: '39 1 * * 2,5'

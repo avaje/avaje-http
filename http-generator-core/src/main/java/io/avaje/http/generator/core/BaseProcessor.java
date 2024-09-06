@@ -22,6 +22,11 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 
+import io.avaje.prism.GenerateAPContext;
+import io.avaje.prism.GenerateModuleInfoReader;
+
+@GenerateAPContext
+@GenerateModuleInfoReader
 @SupportedOptions({"useJavax", "useSingleton", "instrumentRequests","disableDirectWrites"})
 public abstract class BaseProcessor extends AbstractProcessor {
 
@@ -42,6 +47,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
+    APContext.init(processingEnv);
     ProcessingContext.init(processingEnv, providePlatformAdapter());
   }
 
@@ -51,7 +57,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
     var pathElements = round.getElementsAnnotatedWith(typeElement(PathPrism.PRISM_TYPE));
-
+    APContext.setProjectModuleElement(annotations, round);
     if (contextPathString == null) {
       contextPathString =
           ElementFilter.modulesIn(pathElements).stream()
@@ -79,6 +85,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
     if (round.processingOver()) {
       writeOpenAPI();
+      ProcessingContext.validateModule();
     }
     return false;
   }

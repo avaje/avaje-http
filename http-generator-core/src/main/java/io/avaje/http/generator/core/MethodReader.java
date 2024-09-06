@@ -41,8 +41,10 @@ public class MethodReader {
   private final List<? extends TypeMirror> actualParams;
   private final PathSegments pathSegments;
   private final boolean hasValid;
+  private final Optional<ContentCachePrism> contentCache;
   private final List<ExecutableElement> superMethods;
   private final Optional<RequestTimeoutPrism> timeout;
+  private final HxRequestPrism hxRequest;
 
   private WebMethod webMethod;
   private int statusCode;
@@ -77,6 +79,7 @@ public class MethodReader {
     this.securityRequirements = readSecurityRequirements();
     this.apiResponses = buildApiResponses();
     this.javadoc = buildJavadoc(element);
+    this.hxRequest = HxRequestPrism.getInstanceOn(element);
     this.timeout = RequestTimeoutPrism.getOptionalOn(element);
     timeout.ifPresent(
         p -> {
@@ -85,10 +88,12 @@ public class MethodReader {
         });
     if (isWebMethod()) {
       this.hasValid = initValid();
+      this.contentCache = initContentCache();
       this.instrumentContext = initResolver();
       this.pathSegments = PathSegments.parse(Util.combinePath(bean.path(), webMethodPath));
     } else {
       this.hasValid = false;
+      this.contentCache = Optional.empty();
       this.pathSegments = null;
       this.instrumentContext = false;
     }
@@ -122,7 +127,11 @@ public class MethodReader {
 
   private boolean superMethodHasValid() {
     return superMethods.stream()
-        .anyMatch(e -> findAnnotation(ValidPrism::getOptionalOn).isPresent());
+      .anyMatch(e -> findAnnotation(ValidPrism::getOptionalOn).isPresent());
+  }
+
+  private Optional<ContentCachePrism> initContentCache() {
+    return findAnnotation(ContentCachePrism::getOptionalOn);
   }
 
   @Override
@@ -188,6 +197,13 @@ public class MethodReader {
     }
     this.exceptionShortName = Util.shortName(exType);
     bean.addImportType(exType);
+  }
+
+  /**
+   * Return the Htmx request annotation for this method.
+   */
+  public HxRequestPrism hxRequest() {
+    return hxRequest;
   }
 
   public Javadoc javadoc() {
@@ -402,6 +418,10 @@ public class MethodReader {
 
   boolean hasValid() {
     return hasValid;
+  }
+
+  public boolean hasContentCache() {
+    return contentCache.isPresent();
   }
 
   public String simpleName() {

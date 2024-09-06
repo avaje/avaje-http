@@ -47,6 +47,10 @@ public final class ControllerReader {
   private final String producesPrism;
 
   private final boolean hasValid;
+  /** Set true via {@code @Html} to indicate use of Templating */
+  private final boolean html;
+  /** Set true via {@code @ContentCache} to indicate use of Templating content cache */
+  private boolean hasContentCache;
   private boolean methodHasValid;
 
   /**
@@ -70,7 +74,8 @@ public final class ControllerReader {
       docHidden = initDocHidden();
     }
     this.hasValid = initHasValid();
-    this.producesPrism = initProduces();
+    this.html = initHtml();
+    this.producesPrism = initProduces(html);
     this.apiResponses = buildApiResponses();
     hasInstrument =
       instrumentAllWebMethods()
@@ -172,8 +177,13 @@ public final class ControllerReader {
     return interfaceMethod.toString().equals(element.toString());
   }
 
-  private String initProduces() {
-    return findAnnotation(ProducesPrism::getOptionalOn).map(ProducesPrism::value).orElse(null);
+  private boolean initHtml() {
+    return findAnnotation(HtmlPrism::getOptionalOn).isPresent();
+  }
+
+  private String initProduces(boolean html) {
+    String defaultProduces = html ? "text/html;charset=UTF8" : null;
+    return findAnnotation(ProducesPrism::getOptionalOn).map(ProducesPrism::value).orElse(defaultProduces);
   }
 
   private boolean initDocHidden() {
@@ -186,6 +196,14 @@ public final class ControllerReader {
 
   String produces() {
     return producesPrism;
+  }
+
+  public boolean html() {
+    return html;
+  }
+
+  public boolean hasContentCache() {
+    return hasContentCache;
   }
 
   public TypeElement beanType() {
@@ -235,12 +253,22 @@ public final class ControllerReader {
   }
 
   private void deriveIncludeValidation() {
-    methodHasValid = methodHasValid();
+    methodHasValid = anyMethodHasValid();
+    hasContentCache = anyMethodHasContentCache();
   }
 
-  private boolean methodHasValid() {
+  private boolean anyMethodHasValid() {
     for (final MethodReader method : methods) {
       if (method.hasValid()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean anyMethodHasContentCache() {
+    for (final MethodReader method : methods) {
+      if (method.hasContentCache()) {
         return true;
       }
     }

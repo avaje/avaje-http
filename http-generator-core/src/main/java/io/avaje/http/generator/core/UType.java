@@ -32,6 +32,13 @@ public interface UType {
   String shortType();
 
   /**
+   * Return the short type taking nested type into account.
+   */
+  default String shortTypeNested() {
+    return shortType();
+  }
+
+  /**
    * Return the short name.
    */
   String shortName();
@@ -150,6 +157,11 @@ public interface UType {
     @Override
     public String shortType() {
       return Util.shortName(rawType);
+    }
+
+    @Override
+    public String shortTypeNested() {
+      return Util.shortName(rawType, true);
     }
 
     @Override

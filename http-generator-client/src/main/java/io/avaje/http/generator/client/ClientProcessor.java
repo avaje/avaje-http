@@ -17,6 +17,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
+import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.ClientPrism;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ImportPrism;
@@ -44,6 +45,7 @@ public class ClientProcessor extends AbstractProcessor {
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     this.processingEnv = processingEnv;
+    APContext.init(processingEnv);
     ProcessingContext.init(processingEnv, new ClientPlatformAdapter(), false);
     this.componentWriter = new SimpleComponentWriter(metaData);
     useJsonB = ProcessingContext.useJsonb();
@@ -51,7 +53,7 @@ public class ClientProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
-    ProcessingContext.findModule(annotations, round);
+    APContext.setProjectModuleElement(annotations, round);
     final var platform = platform();
     if (!(platform instanceof ClientPlatformAdapter)) {
       setPlatform(new ClientPlatformAdapter());
@@ -107,7 +109,8 @@ public class ClientProcessor extends AbstractProcessor {
   private void initialiseComponent() {
     metaData.initialiseFullName();
     if (!metaData.all().isEmpty()) {
-      ProcessingContext.validateModule(metaData.fullName());
+      ProcessingContext.addClientComponent(metaData.fullName());
+      ProcessingContext.validateModule();
     }
     try {
       componentWriter.init();

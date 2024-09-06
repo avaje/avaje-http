@@ -6,7 +6,7 @@ import io.avaje.inject.BeanScopeBuilder;
 /**
  * Plugin for avaje inject that provides a default BeanValidator instance.
  */
-public final class ValidatorProvider implements io.avaje.inject.spi.Plugin {
+public final class ValidatorProvider implements io.avaje.inject.spi.InjectPlugin {
 
   @Override
   public Class<?>[] provides() {

@@ -8,5 +8,5 @@ module io.avaje.http.hibernate.validator {
   requires io.avaje.inject;
   requires jakarta.validation;
 
-  provides io.avaje.inject.spi.Plugin with ValidatorProvider;
+  provides io.avaje.inject.spi.InjectExtension with ValidatorProvider;
 }

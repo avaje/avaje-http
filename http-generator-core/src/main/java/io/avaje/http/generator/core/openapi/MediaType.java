@@ -4,6 +4,7 @@ public enum MediaType {
   APPLICATION_JSON("application/json"),
   TEXT_PLAIN("text/plain"),
   TEXT_HTML("text/html"),
+  HTML_UTF8("text/html;charset=UTF8"),
   UNKNOWN("");
 
   private final String value;

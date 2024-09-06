@@ -1,4 +1,4 @@
-package org.example.path.nest;
+package org.example.htmx;
 
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Get;

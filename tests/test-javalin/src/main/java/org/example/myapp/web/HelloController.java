@@ -82,6 +82,7 @@ class HelloController {
   /**
    * Simple example post with JSON body response.
    */
+  @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
   @Post
   HelloDto post(HelloDto dto) {
     dto.name = "posted";

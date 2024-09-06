@@ -4,14 +4,7 @@ import static io.avaje.http.generator.core.ProcessingContext.*;
 
 import java.util.List;
 
-import io.avaje.http.generator.core.Append;
-import io.avaje.http.generator.core.CoreWebMethod;
-import io.avaje.http.generator.core.MethodParam;
-import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.PathSegments;
-import io.avaje.http.generator.core.UType;
-import io.avaje.http.generator.core.Util;
-import io.avaje.http.generator.core.WebMethod;
+import io.avaje.http.generator.core.*;
 import io.avaje.http.generator.core.openapi.MediaType;
 
 /** Write code to register Web route for a given controller method. */
@@ -158,8 +151,9 @@ class ControllerMethodWriter {
   }
 
   private void writeContextReturn(final String resultVariableName) {
-    final var produces = method.produces();
-    if (produces == null || MediaType.APPLICATION_JSON.getValue().equalsIgnoreCase(produces)) {
+    var produces = method.produces();
+    boolean applicationJson = produces == null || MediaType.APPLICATION_JSON.getValue().equalsIgnoreCase(produces);
+    if (applicationJson || JsonBUtil.isJsonMimeType(produces)) {
       if (useJsonB) {
         var uType = UType.parse(method.returnType());
         final boolean isfuture = "java.util.concurrent.CompletableFuture".equals(uType.mainType());
@@ -169,12 +163,19 @@ class ControllerMethodWriter {
           }
           writer.append("      try {");
         }
-        writer.append("      %sJsonType.toJson(%s, ctx.contentType(\"application/json\").res().getOutputStream());", uType.shortName(), resultVariableName);
+        if (produces == null) {
+          produces = MediaType.APPLICATION_JSON.getValue();
+        }
+        writer.append("      %sJsonType.toJson(%s, ctx.contentType(\"%s\").res().getOutputStream());", uType.shortName(), resultVariableName, produces);
         if (isfuture || method.isErrorMethod()) {
           writer.append("      } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }");
         }
       } else {
-        writer.append("      ctx.json(%s);", resultVariableName);
+        if (applicationJson) {
+          writer.append("      ctx.json(%s);", resultVariableName);
+        } else {
+          writer.append("      ctx.contentType(\"%s\").json(%s);", produces, resultVariableName);
+        }
       }
     } else if (MediaType.TEXT_HTML.getValue().equalsIgnoreCase(produces)) {
       writer.append("      ctx.html(%s);", resultVariableName);

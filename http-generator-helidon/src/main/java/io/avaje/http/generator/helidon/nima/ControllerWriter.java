@@ -6,6 +6,7 @@ import static io.avaje.http.generator.core.ProcessingContext.isAssignable2Interf
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
@@ -59,6 +60,17 @@ class ControllerWriter extends BaseControllerWriter {
       reader.addImportType("io.helidon.webserver.http.RoutingRequest");
       reader.addImportType("io.helidon.webserver.http.RoutingResponse");
     }
+    if (reader.methods().stream()
+      .map(MethodReader::hxRequest)
+      .anyMatch(Objects::nonNull)) {
+      reader.addImportType("io.avaje.htmx.nima.HxHandler");
+    }
+    if (reader.html()) {
+      reader.addImportType("io.avaje.htmx.nima.TemplateRender");
+      if (reader.hasContentCache()) {
+        reader.addImportType("io.avaje.htmx.nima.TemplateContentCache");
+      }
+    }
   }
 
   void write() {
@@ -80,7 +92,7 @@ class ControllerWriter extends BaseControllerWriter {
   private List<ControllerMethodWriter> writerMethods() {
     return reader.methods().stream()
       .filter(MethodReader::isWebMethod)
-      .map(it -> new ControllerMethodWriter(it, writer, useJsonB))
+      .map(it -> new ControllerMethodWriter(it, writer, useJsonB, reader))
       .toList();
   }
 
@@ -120,15 +132,23 @@ class ControllerWriter extends BaseControllerWriter {
     if (reader.isIncludeValidator()) {
       writer.append("  private static final HeaderName HEADER_ACCEPT_LANGUAGE = HeaderNames.create(\"Accept-Language\");").eol();
     }
+    if (reader.html()) {
+      writer.append("  private static final io.helidon.common.media.type.MediaType HTML_UTF8 = MediaTypes.create(\"text/html;charset=UTF8\");").eol();
+    }
 
     writer.append("  private final %s %s;", controllerType, controllerName).eol();
 
     if (reader.isIncludeValidator()) {
       writer.append("  private final Validator validator;").eol();
     }
-
     if (instrumentContext) {
       writer.append("  private final RequestContextResolver resolver;").eol();
+    }
+    if (reader.html()) {
+      writer.append("  private final TemplateRender renderer;").eol();
+      if (reader.hasContentCache()) {
+        writer.append("  private final TemplateContentCache contentCache;").eol();
+      }
     }
 
     for (final UType type : jsonTypes.values()) {
@@ -146,6 +166,12 @@ class ControllerWriter extends BaseControllerWriter {
     if (useJsonB) {
       writer.append(", Jsonb jsonb");
     }
+    if (reader.html()) {
+      writer.append(", TemplateRender renderer");
+      if (reader.hasContentCache()) {
+        writer.append(", TemplateContentCache contentCache");
+      }
+    }
     if (instrumentContext) {
       writer.append(", RequestContextResolver resolver");
     }
@@ -154,6 +180,12 @@ class ControllerWriter extends BaseControllerWriter {
     writer.append("    this.%s = %s;", controllerName, controllerName).eol();
     if (reader.isIncludeValidator()) {
       writer.append("    this.validator = validator;").eol();
+    }
+    if (reader.html()) {
+      writer.append("    this.renderer = renderer;").eol();
+      if (reader.hasContentCache()) {
+        writer.append("    this.contentCache = contentCache;").eol();
+      }
     }
     if (instrumentContext) {
       writer.append("    this.resolver = resolver;").eol();
@@ -176,6 +208,6 @@ class ControllerWriter extends BaseControllerWriter {
   }
 
   private boolean isInputStream(String type) {
-    return isAssignable2Interface(type.toString(), "java.io.InputStream");
+    return isAssignable2Interface(type, "java.io.InputStream");
   }
 }
