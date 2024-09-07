@@ -45,6 +45,7 @@
     <module>http-generator-core</module>
     <module>http-generator-javalin</module>
     <module>http-generator-jex</module>
+    <module>http-generator-sigma</module>
     <module>http-generator-client</module>
   </modules>
 
