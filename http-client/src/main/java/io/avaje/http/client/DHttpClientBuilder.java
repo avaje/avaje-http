@@ -148,7 +148,6 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
   }
 
   private DHttpClientContext buildClient() {
-    requireNonNull(baseUrl, "baseUrl is not specified");
     requireNonNull(requestTimeout, "requestTimeout is not specified");
     final var httpClient = client != null ? client : defaultClient();
     if (requestLogging) {
