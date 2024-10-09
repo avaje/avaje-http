@@ -67,16 +67,16 @@ class NimaPlatformAdapter implements PlatformAdapter {
   @Override
   public void writeReadParameter(Append writer, ParamType paramType, String paramName) {
     switch (paramType) {
-      case PATHPARAM -> writer.append("pathParams.first(\"%s\").get()", paramName);
+      case PATHPARAM -> writer.append("pathParams.contains(\"%s\") ? pathParams.get(\"%s\") : null", paramName, paramName);
 
-      case QUERYPARAM -> writer.append("req.query().first(\"%s\").orElse(null)", paramName);
+      case QUERYPARAM -> writer.append("req.query().contains(\"%s\") ? req.query().get(\"%s\") : null", paramName, paramName);
 
-      case FORMPARAM -> writer.append("formParams.first(\"%s\").orElse(null)", paramName);
+      case FORMPARAM -> writer.append("formParams.contains(\"%s\") ? formParams.get(\"%s\") : null", paramName, paramName);
 
       case HEADER -> writer.append(
           "req.headers().value(HeaderNames.create(\"%s\")).orElse(null)", paramName);
 
-      case COOKIE -> writer.append("req.headers().cookies().first(\"%s\").orElse(null)", paramName);
+      case COOKIE -> writer.append("req.headers().cookies().contains(\"%s\") ? req.headers().cookies().get(\"%s\") : null", paramName, paramName);
 
       default -> writer.append("null // TODO req.%s().param(\"%s\")", paramType.type(), paramName);
     }
@@ -86,19 +86,19 @@ class NimaPlatformAdapter implements PlatformAdapter {
   public void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault) {
     switch (paramType) {
       case PATHPARAM -> writer.append(
-          "pathParams.first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+          "pathParams.contains(\"%s\") ? pathParams.get(\"%s\") : \"%s\"", paramName, paramName, paramDefault);
 
       case QUERYPARAM -> writer.append(
-          "req.query().first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+          "req.query().contains(\"%s\") ? req.query().get(\"%s\") : \"%s\"", paramName, paramName, paramDefault);
 
       case FORMPARAM -> writer.append(
-          "formParams.first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+          "formParams.contains(\"%s\") ? formParams.get(\"%s\") : \"%s\"", paramName, paramName, paramDefault);
 
       case HEADER -> writer.append(
           "req.headers().value(Http.Header.create(\"%s\").orElse(\"%s\")", paramName, paramDefault);
 
       case COOKIE -> writer.append(
-          "req.headers().cookies().first(\"%s\").orElse(\"%s\")", paramName, paramDefault);
+          "req.headers().cookies().contains(\"%s\") ? req.headers().cookies().get(\"%s\") : \"%s\"", paramName, paramName, paramDefault);
 
       default -> writer.append("null // TODO req.%s().param(\"%s\")", paramType.type(), paramName);
     }
