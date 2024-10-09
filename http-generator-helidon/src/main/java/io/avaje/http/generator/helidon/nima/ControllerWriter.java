@@ -50,6 +50,9 @@ class ControllerWriter extends BaseControllerWriter {
     reader.addImportType("io.helidon.webserver.http.ServerResponse");
     reader.addImportType("io.helidon.webserver.http.HttpFeature");
     reader.addImportType("io.helidon.http.HeaderNames");
+    if (!reader.roles().isEmpty() || reader.methods().stream().anyMatch(m -> !m.roles().isEmpty())) {
+      reader.addImportType("io.helidon.webserver.security.SecurityFeature");
+    }
     if (reader.isIncludeValidator()) {
       reader.addImportType("io.helidon.http.HeaderName");
     }
