@@ -61,7 +61,9 @@ class NimaPlatformAdapter implements PlatformAdapter {
   }
 
   private void addRoleImports(List<String> roles, ControllerReader controller) {
-    // nothing here yet
+    for (final String role : roles) {
+      controller.addStaticImportType(role);
+    }
   }
 
   @Override
