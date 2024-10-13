@@ -2,6 +2,7 @@ package org.example;
 
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Get;
+import io.avaje.http.api.Produces;
 
 @Controller
 public class HelloController {
@@ -17,5 +18,12 @@ public class HelloController {
     p.setId(42);
     p.setName(name + " hello" + " sortBy:" + sortBy);
     return p;
+  }
+
+  @Roles({AppRoles.ADMIN, AppRoles.BASIC_USER})
+  @Produces("text/plain")
+  @Get("other/{name}")
+  String name(String name) {
+    return "hi " + name;
   }
 }

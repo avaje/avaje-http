@@ -50,6 +50,9 @@ class ControllerWriter extends BaseControllerWriter {
     reader.addImportType("io.helidon.webserver.http.ServerResponse");
     reader.addImportType("io.helidon.webserver.http.HttpFeature");
     reader.addImportType("io.helidon.http.HeaderNames");
+    if (!reader.roles().isEmpty() || reader.methods().stream().anyMatch(m -> !m.roles().isEmpty())) {
+      reader.addImportType("io.helidon.webserver.security.SecurityFeature");
+    }
     if (reader.isIncludeValidator()) {
       reader.addImportType("io.helidon.http.HeaderName");
     }
@@ -202,7 +205,11 @@ class ControllerWriter extends BaseControllerWriter {
 
     if (reader.isIncludeValidator()) {
       writer.append("  private String language(ServerRequest req) {").eol();
-      writer.append("    return req.headers().first(HEADER_ACCEPT_LANGUAGE).orElse(null);").eol();
+      writer.append("    var headers = req.headers();").eol();
+      writer.append("    if (headers.contains(HEADER_ACCEPT_LANGUAGE)) {").eol();
+      writer.append("      return headers.get(HEADER_ACCEPT_LANGUAGE).get();").eol();
+      writer.append("    }").eol();
+      writer.append("    return null;").eol();
       writer.append("  }").eol().eol();
     }
   }

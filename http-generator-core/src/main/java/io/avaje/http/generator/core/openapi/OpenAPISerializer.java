@@ -65,7 +65,8 @@ final class OpenAPISerializer {
         for (final Field field : fields) {
 
           // skip JsonIgnored fields
-          if ("BIND_TYPE_AND_TYPES".equals(field.getName())
+          if ("SCHEMA_RESOLUTION_PROPERTY".equals(field.getName())
+              || "BIND_TYPE_AND_TYPES".equals(field.getName())
               || "BINARY_STRING_CONVERSION_PROPERTY".equals(field.getName())
               || "COMPONENTS_SCHEMAS_REF".equals(field.getName())
               || "exampleSetFlag".equals(field.getName())

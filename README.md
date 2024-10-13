@@ -184,7 +184,7 @@ public class WidgetController$Route implements HttpFeature {
   private void _getById(ServerRequest req, ServerResponse res) throws Exception {
     res.status(OK_200);
     var pathParams = req.path().pathParameters();
-    var id = asInt(pathParams.first("id").get());
+    var id = asInt(pathParams.contains("id") ? pathParams.get("id") : null);
     var result = controller.getById(id);
     res.send(result);
   }
@@ -263,7 +263,7 @@ public class WidgetController$Route implements HttpFeature {
   private void _getById(ServerRequest req, ServerResponse res) throws Exception {
     res.status(OK_200);
     var pathParams = req.path().pathParameters();
-    var id = asInt(pathParams.first("id").get());
+    var id = asInt(pathParams.contains("id") ? pathParams.get("id") : null);
     var result = controller.getById(id);
     res.headers().contentType(MediaTypes.APPLICATION_JSON);
     //jsonb has a special accommodation for helidon to improve performance

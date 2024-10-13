@@ -88,6 +88,15 @@ final class ControllerMethodWriter {
       writer.append("    routing.addFilter(this::_%s);", method.simpleName()).eol();
     } else {
       writer.append("    routing.%s(\"%s\", ", webMethod.name().toLowerCase(), method.fullPath().replace("\\", "\\\\"));
+      var roles = method.roles();
+      if (!roles.isEmpty()) {
+        writer.append("SecurityFeature.rolesAllowed(");
+        writer.append("\"%s\"", Util.shortName(roles.getFirst(), true));
+        for (var i = 1; i < roles.size(); i++) {
+          writer.append(", \"%s\"", Util.shortName(roles.get(i), true));
+        }
+        writer.append("), ");
+      }
       var hxRequest = method.hxRequest();
       if (hxRequest != null) {
         writer.append("HxHandler.builder(this::_%s)", method.simpleName());
