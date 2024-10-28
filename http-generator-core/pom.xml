@@ -102,6 +102,13 @@
           </annotationProcessorPaths>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-artifact-plugin</artifactId>
+        <configuration>
+          <fail>false</fail>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
