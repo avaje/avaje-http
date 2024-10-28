@@ -33,5 +33,5 @@ jobs:
         env:
           JAVA_VERSION: ${{ matrix.java_version }}
         run: |
-          mvn clean install -DskipTests -Ptest && mvn clean package -Ptest -DskipTests artifact:compare || cd http-generator-core/target && mkdir ./core && mkdir ./compare && cd ./core && jar xvf ../avaje-http-generator-core-2.8-RC5.jar && cd ../compare && jar xvf ../reference/io.avaje/avaje-http-generator-core-2.8-RC5.jar && cd .. && diff -r core compare
+          mvn clean install -DskipTests -Ptest && mvn clean package -Ptest -DskipTests artifact:compare || cd http-generator-core/target && mkdir ./core && mkdir ./compare && cd ./core && jar xvf ../avaje-http-generator-core-2.8-RC5.jar && cd ../compare && jar xvf ../reference/io.avaje/avaje-http-generator-core-2.8-RC5.jar && cd .. && diff -r core compare && diff -r reference/io.avaje/avaje-http-generator-core-2.8-RC5.jar avaje-http-generator-core-2.8-RC5.jar
 
