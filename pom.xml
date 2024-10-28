@@ -23,6 +23,7 @@
     <jackson.version>2.14.2</jackson.version>
     <avaje.prisms.version>1.32</avaje.prisms.version>
     <module-info.shade>${project.build.directory}${file.separator}module-info.shade</module-info.shade>
+    <project.build.outputTimestamp>2024-10-28T03:02:30Z</project.build.outputTimestamp>
   </properties>
 
   <dependencies>

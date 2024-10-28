@@ -33,4 +33,4 @@ jobs:
         env:
           JAVA_VERSION: ${{ matrix.java_version }}
         run: |
-          mvn clean package -Ptest
+          mvn clean install -Ptest && mvn clean package -Ptest -DskipTests artifact:compare
