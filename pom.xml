@@ -9,7 +9,7 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-parent</artifactId>
-  <version>2.8-RC4</version>
+  <version>2.8-RC5</version>
   <packaging>pom</packaging>
 
   <scm>
@@ -23,7 +23,7 @@
     <jackson.version>2.14.2</jackson.version>
     <avaje.prisms.version>1.32</avaje.prisms.version>
     <module-info.shade>${project.build.directory}${file.separator}module-info.shade</module-info.shade>
-    <project.build.outputTimestamp>2024-10-28T03:02:30Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2024-10-28T03:18:56Z</project.build.outputTimestamp>
   </properties>
 
   <dependencies>
