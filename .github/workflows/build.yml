@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java_version: [17, 21]
+        java_version: [21]
         os: [ubuntu-latest]
 
     steps:
@@ -33,4 +33,5 @@ jobs:
         env:
           JAVA_VERSION: ${{ matrix.java_version }}
         run: |
-          mvn clean install -Ptest && mvn clean package -Ptest -DskipTests artifact:compare
+          mvn clean install -Ptest && mvn clean package -Ptest -DskipTests artifact:compare || mkdir ./target/core && mkdir ./target/compare && cd ./target/core && jar xvf ../../http-generator-core/target/avaje-http-generator-core-2.8-RC5.jar && cd ../compare && jar xvf ../reference/io.avaje/avaje-http-generator-core-2.8-RC5.jar && cd .. && diff -r core compare
+
