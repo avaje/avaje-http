@@ -1,5 +1,7 @@
 package io.avaje.http.client;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Type;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
@@ -9,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
@@ -339,5 +342,18 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
   String maxResponseBody(String body) {
     return body.length() > 1_000 ? body.substring(0, 1_000) + " <truncated> ..." : body;
+  }
+
+  @Override
+  public void close() {
+    if (Integer.getInteger("java.specification.version") >= 21) {
+      try {
+        MethodHandles.lookup()
+            .findVirtual(java.net.http.HttpClient.class, "close", MethodType.methodType(void.class))
+            .invokeExact(httpClient);
+      } catch (Throwable t) {
+        throw new IllegalStateException("Failed to close java.net.http.HttpClient instance");
+      }
+    }
   }
 }
