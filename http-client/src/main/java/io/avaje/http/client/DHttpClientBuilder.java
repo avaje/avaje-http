@@ -22,7 +22,6 @@ import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
@@ -106,19 +105,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
     if (executor != null) {
       builder.executor(executor);
     } else if (Integer.getInteger("java.specification.version") >= 21) {
-      try {
-        ExecutorService virtualExecutorService =
-            (ExecutorService)
-                MethodHandles.lookup()
-                    .findStatic(
-                        Executors.class,
-                        "newVirtualThreadPerTaskExecutor",
-                        MethodType.methodType(ExecutorService.class))
-                    .invokeExact();
-        builder.executor(virtualExecutorService);
-      } catch (Throwable t) {
-        // Impossible
-      }
+      builder.executor(virtualThreadExecutor());
     }
     if (proxy != null) {
       builder.proxy(proxy);
@@ -136,6 +123,17 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
       builder.priority(priority);
     }
     return builder.build();
+  }
+
+  private static ExecutorService virtualThreadExecutor() {
+    try {
+      return (ExecutorService)
+        MethodHandles.lookup()
+          .findStatic(Executors.class, "newVirtualThreadPerTaskExecutor", MethodType.methodType(ExecutorService.class))
+          .invokeExact();
+    } catch (Throwable e) {
+      return null;
+    }
   }
 
   /**
