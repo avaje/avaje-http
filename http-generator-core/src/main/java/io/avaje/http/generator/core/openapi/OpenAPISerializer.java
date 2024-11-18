@@ -3,8 +3,19 @@ package io.avaje.http.generator.core.openapi;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 final class OpenAPISerializer {
+
+  private static final Set<String> IGNORED_FIELDS = Set.of(
+          "SCHEMA_RESOLUTION_PROPERTY",
+          "BIND_TYPE_AND_TYPES",
+          "BINARY_STRING_CONVERSION_PROPERTY",
+          "COMPONENTS_SCHEMAS_REF",
+          "APPLY_SCHEMA_RESOLUTION_PROPERTY",
+          "exampleSetFlag",
+          "types",
+          "specVersion");
 
   private OpenAPISerializer() {}
 
@@ -65,13 +76,8 @@ final class OpenAPISerializer {
         for (final Field field : fields) {
 
           // skip JsonIgnored fields
-          if ("SCHEMA_RESOLUTION_PROPERTY".equals(field.getName())
-              || "BIND_TYPE_AND_TYPES".equals(field.getName())
-              || "BINARY_STRING_CONVERSION_PROPERTY".equals(field.getName())
-              || "COMPONENTS_SCHEMAS_REF".equals(field.getName())
-              || "exampleSetFlag".equals(field.getName())
-              || "types".equals(field.getName())
-              || "specVersion".equals(field.getName())) {
+          if (IGNORED_FIELDS
+              .contains(field.getName())) {
             continue;
           }
 
