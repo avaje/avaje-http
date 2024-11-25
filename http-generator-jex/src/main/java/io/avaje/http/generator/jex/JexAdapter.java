@@ -38,7 +38,7 @@ class JexAdapter implements PlatformAdapter {
 
   @Override
   public String indent() {
-    return "    ";
+    return "  ";
   }
 
   @Override
@@ -85,7 +85,7 @@ class JexAdapter implements PlatformAdapter {
     }
     writer.append("withDefault(ctx.queryParams(\"%s\"), java.util.List.of(\"%s\"))", paramName, String.join(",", paramDefault));
   }
-  
+
   @Override
   public void writeAcceptLanguage(Append writer) {
     writer.append("ctx.header(\"%s\")", Constants.ACCEPT_LANGUAGE);
