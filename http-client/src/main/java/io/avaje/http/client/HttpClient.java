@@ -3,7 +3,6 @@ package io.avaje.http.client;
 import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.ProxySelector;
-import java.net.http.HttpRequest;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -33,7 +32,7 @@ import io.avaje.inject.BeanScope;
  *
  * }</pre>
  */
-public interface HttpClient {
+public interface HttpClient extends AutoCloseable {
 
   /**
    * Return the builder to config and build the client context.
@@ -92,6 +91,19 @@ public interface HttpClient {
    * These metrics are collected for all requests sent via this context.
    */
   HttpClient.Metrics metrics(boolean reset);
+
+  /**
+   * Note: invoking this method has no effect on JDK versions less than 21.
+   *
+   * <p>Initiates an orderly shutdown in which http requests previously submitted are run to
+   * completion, but no new requests will be accepted. Running a request to completion may involve
+   * running several operations in the background, including waiting for responses to be delivered.
+   * This method waits until all operations have completed execution and the client has terminated.
+   *
+   * @see {@linkplain java.net.http.HttpClient#close}
+   */
+  @Override
+  void close();
 
   /**
    * Builds the HttpClient.

@@ -1,10 +1,12 @@
 package org.example;
 
-import io.avaje.http.api.Validator;
+import java.util.List;
+import java.util.Locale;
+
 import io.avaje.http.api.context.ThreadLocalRequestContextResolver;
 import io.avaje.http.client.HttpClient;
-import io.avaje.http.hibernate.validator.BeanValidator;
 import io.avaje.jsonb.Jsonb;
+import io.avaje.validation.http.BeanValidator;
 import io.helidon.webserver.WebServer;
 import io.helidon.webserver.http.HttpRouting;
 
@@ -38,7 +40,7 @@ public class TestPair {
   private static HttpRouting.Builder routing() {
     HttpRouting.Builder routing = HttpRouting.builder();
 
-    var beanValidator = new BeanValidator();
+    var beanValidator = new BeanValidator(List.of(Locale.getDefault()));
     Jsonb jsonb = Jsonb.builder().build();
 
     var ec = new ErrorController();

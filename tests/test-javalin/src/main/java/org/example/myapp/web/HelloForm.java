@@ -2,13 +2,12 @@ package org.example.myapp.web;
 
 import java.time.LocalDate;
 
-import org.hibernate.validator.constraints.URL;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import io.avaje.validation.constraints.Email;
+import io.avaje.validation.constraints.Future;
+import io.avaje.validation.constraints.NotNull;
+import io.avaje.validation.constraints.Size;
+import io.avaje.validation.constraints.URI;
+import io.avaje.validation.constraints.Valid;
 
 @Valid
 public class HelloForm {
@@ -19,7 +18,7 @@ public class HelloForm {
   @Email @Size(max = 100)
   String email;
 
-  @URL
+  @URI
   String url;
 
   @Future

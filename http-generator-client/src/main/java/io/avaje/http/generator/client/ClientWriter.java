@@ -1,5 +1,6 @@
 package io.avaje.http.generator.client;
 
+import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.MethodReader;
@@ -62,12 +63,17 @@ final class ClientWriter extends BaseControllerWriter {
     for (final ClientMethodWriter methodWriter : methodList) {
       methodWriter.write();
     }
+    writer.append("  @Override").eol();
+    writer.append("  public void close() {").eol();
+    writer.append("    this.client.close();").eol();
+    writer.append("  }").eol();
   }
 
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
     AnnotationUtil.writeAnnotations(writer, reader.beanType());
-    writer.append("public class %s%s implements %s {", shortName, suffix, shortName).eol().eol();
+
+    writer.append("public class %s%s implements %s, AutoCloseable {", shortName, suffix, shortName).eol().eol();
 
     writer.append("  private final HttpClient client;").eol().eol();
 

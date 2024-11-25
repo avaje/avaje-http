@@ -14,7 +14,7 @@ class ControllerMethodWriter {
   private final MethodReader method;
   private final Append writer;
   private final WebMethod webMethod;
-  private boolean instrumentContext;
+  private final boolean instrumentContext;
 
   ControllerMethodWriter(MethodReader method, Append writer) {
     this.method = method;
@@ -23,16 +23,37 @@ class ControllerMethodWriter {
     this.instrumentContext = method.instrumentContext();
   }
 
-  void write(boolean requestScoped) {
+  void writeRouting() {
     final PathSegments segments = method.pathSegments();
     final String fullPath = segments.fullPath();
+    writer.append("    routing.%s(\"%s\", this::_%s)", webMethod.name().toLowerCase(), fullPath, method.simpleName());
+    List<String> roles = method.roles();
+    if (!roles.isEmpty()) {
+      writer.append(".withRoles(");
+      for (int i = 0; i < roles.size(); i++) {
+        if (i > 0) {
+          writer.append(", ");
+        }
+        writer.append(Util.shortName(roles.get(i), true));
+      }
+      writer.append(")");
+    }
+    writer.append(";").eol();
+  }
 
-    writer.append("    routing.%s(\"%s\", ctx -> {", webMethod.name().toLowerCase(), fullPath).eol();
+  void writeHandler(boolean requestScoped) {
+    writer.append("  private void _%s(Context ctx) {", method.simpleName()).eol();
+    write(requestScoped);
+    writer.append("  }").eol().eol();
+  }
+
+  private void write(boolean requestScoped) {
     int statusCode = method.statusCode();
     if (statusCode > 0) {
-      writer.append("      ctx.status(%d);", statusCode).eol();
+      writer.append("    ctx.status(%d);", statusCode).eol();
     }
 
+    final PathSegments segments = method.pathSegments();
     List<PathSegments.Segment> matrixSegments = segments.matrixSegments();
     for (PathSegments.Segment matrixSegment : matrixSegments) {
       matrixSegment.writeCreateSegment(writer, platform());
@@ -47,7 +68,7 @@ class ControllerMethodWriter {
         param.writeValidate(writer);
       }
     }
-    writer.append("      ");
+    writer.append("    ");
     if (!method.isVoid()) {
       writeContextReturn();
     }
@@ -74,19 +95,6 @@ class ControllerMethodWriter {
       writer.append(")");
     }
     writer.append(";").eol();
-    writer.append("    }");
-
-    List<String> roles = method.roles();
-    if (!roles.isEmpty()) {
-      writer.append(").withRoles(");
-      for (int i = 0; i < roles.size(); i++) {
-        if (i > 0) {
-          writer.append(", ");
-        }
-        writer.append(Util.shortName(roles.get(i), true));
-      }
-    }
-    writer.append(");").eol().eol();
   }
 
   private void writeContextReturn() {
