@@ -19,7 +19,7 @@ import io.javalin.http.staticfiles.Location;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 
-@InjectModule(name = "app", requires = Validator.class)
+@InjectModule(name = "app")
 @OpenAPIDefinition(info = @Info(title = "Example service", description = "Example Javalin controllers with Java and Maven"))
 public class Main {
 
