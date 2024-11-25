@@ -1,7 +1,7 @@
 package org.example.web;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import io.avaje.validation.constraints.NotNull;
+import io.avaje.validation.constraints.Valid;
 
 @Valid
 public class HelloDto {

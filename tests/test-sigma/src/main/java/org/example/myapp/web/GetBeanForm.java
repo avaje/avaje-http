@@ -7,10 +7,10 @@ import io.avaje.http.api.Header;
 import io.avaje.http.api.Ignore;
 import io.avaje.http.api.QueryParam;
 import io.avaje.jsonb.Json;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import io.avaje.validation.constraints.Email;
+import io.avaje.validation.constraints.NotNull;
+import io.avaje.validation.constraints.Size;
+import io.avaje.validation.constraints.Valid;
 
 @Json
 @Valid

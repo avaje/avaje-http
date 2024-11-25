@@ -61,12 +61,6 @@
     </dependency>
     
     <dependency>
-      <groupId>io.avaje</groupId>
-      <artifactId>avaje-validator-constraints</artifactId>
-      <version>2.3</version>
-    </dependency>
-
-    <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations</artifactId>
       <version>${swagger.version}</version>
@@ -87,13 +81,6 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-    
-    <dependency>
-      <groupId>io.avaje</groupId>
-      <artifactId>avaje-validator-generator</artifactId>
-      <version>2.3</version>
-    </dependency>
-
 
     <!-- test dependencies -->
     <dependency>

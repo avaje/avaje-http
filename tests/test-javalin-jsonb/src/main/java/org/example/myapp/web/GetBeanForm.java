@@ -3,13 +3,12 @@ package org.example.myapp.web;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
-
 import io.avaje.http.api.Header;
 import io.avaje.http.api.Ignore;
 import io.avaje.http.api.QueryParam;
 import io.avaje.jsonb.Json;
 import io.avaje.validation.constraints.Email;
+import io.avaje.validation.constraints.NotNull;
 import io.avaje.validation.constraints.Size;
 import io.avaje.validation.constraints.Valid;
 
