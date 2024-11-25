@@ -56,8 +56,14 @@
 
     <dependency>
       <groupId>io.avaje</groupId>
-      <artifactId>avaje-http-hibernate-validator</artifactId>
-      <version>3.5-RC3</version>
+      <artifactId>avaje-validator</artifactId>
+      <version>2.3</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-validator-constraints</artifactId>
+      <version>2.3</version>
     </dependency>
 
     <dependency>
@@ -80,6 +86,12 @@
       <artifactId>avaje-http-javalin-generator</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-validator-generator</artifactId>
+      <version>2.3</version>
     </dependency>
 
 

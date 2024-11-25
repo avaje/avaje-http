@@ -21,10 +21,10 @@ import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.QueryParam;
+import io.avaje.http.api.Valid;
 import io.javalin.http.Context;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
 
 /**
  * Hello resource manager.
