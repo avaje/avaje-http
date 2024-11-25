@@ -11,11 +11,13 @@ import java.io.IOException;
 class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-jex-generator\")";
+  private static final String API_CONTEXT = "io.avaje.jex.Context";
   private static final String API_ROUTING = "io.avaje.jex.Routing";
   private static final String API_ROUTING_SERVICE = "io.avaje.jex.Routing.Service";
 
   ControllerWriter(ControllerReader reader) throws IOException {
     super(reader);
+    reader.addImportType(API_CONTEXT);
     reader.addImportType(API_ROUTING);
     reader.addImportType(API_ROUTING_SERVICE);
   }
@@ -25,25 +27,34 @@ class ControllerWriter extends BaseControllerWriter {
     writeImports();
     writeClassStart();
     writeAddRoutes();
+    writeHandlers();
     writeClassEnd();
   }
 
   private void writeAddRoutes() {
     writer.append("  @Override").eol();
-    writer.append("  public void add(Routing routing) {").eol().eol();
+    writer.append("  public void add(Routing routing) {").eol();
     for (MethodReader method : reader.methods()) {
       if (method.isWebMethod()) {
-        writeForMethod(method);
+        writeRouting(method);
       }
     }
     writer.append("  }").eol().eol();
   }
 
-  private void writeForMethod(MethodReader method) {
-    new ControllerMethodWriter(method, writer).write(isRequestScoped());
-    if (!reader.isDocHidden()) {
-      method.buildApiDocumentation();
+  private void writeHandlers() {
+    for (MethodReader method : reader.methods()) {
+      if (method.isWebMethod()) {
+        new ControllerMethodWriter(method, writer).writeHandler(isRequestScoped());
+        if (!reader.isDocHidden()) {
+          method.buildApiDocumentation();
+        }
+      }
     }
+  }
+
+  private void writeRouting(MethodReader method) {
+    new ControllerMethodWriter(method, writer).writeRouting();
   }
 
   private void writeClassStart() {
@@ -62,7 +73,7 @@ class ControllerWriter extends BaseControllerWriter {
     if (reader.isIncludeValidator()) {
       writer.append("  private final Validator validator;").eol();
     }
-    
+
     if (instrumentContext) {
       writer.append("  private final RequestContextResolver resolver;").eol();
     }
