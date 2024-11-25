@@ -13,3 +13,5 @@ build/
 *.Module
 dependency-reduced-pom.xml
 .DS_Store
+tests/test-sigma/avaje-processors.txt
+tests/test-sigma/io.avaje.jsonb.spi.JsonbExtension

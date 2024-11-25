@@ -55,12 +55,6 @@
     </dependency>
 
     <dependency>
-      <groupId>io.avaje</groupId>
-      <artifactId>avaje-http-hibernate-validator</artifactId>
-      <version>3.5-RC3</version>
-    </dependency>
-
-    <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations</artifactId>
       <version>${swagger.version}</version>

@@ -34,11 +34,6 @@
       <version>2.3</version>
     </dependency>
     <dependency>
-      <groupId>io.avaje</groupId>
-      <artifactId>avaje-http-hibernate-validator</artifactId>
-      <version>3.3</version>
-    </dependency>
-    <dependency>
       <groupId>io.helidon.webserver</groupId>
       <artifactId>helidon-webserver</artifactId>
       <version>${nima.version}</version>
@@ -92,6 +87,11 @@
               <artifactId>avaje-jsonb-generator</artifactId>
               <version>2.3</version>
             </path>
+            <path>
+              <groupId>io.avaje</groupId>
+              <artifactId>avaje-validator-generator</artifactId>
+              <version>2.3</version>
+            </path>
           </annotationProcessorPaths>
         </configuration>
       </plugin>
@@ -109,7 +109,7 @@
       <plugin>
         <groupId>io.avaje</groupId>
         <artifactId>avaje-inject-maven-plugin</artifactId>
-        <version>10.5</version>
+        <version>11.0</version>
         <executions>
           <execution>
             <phase>process-sources</phase>

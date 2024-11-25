@@ -2,14 +2,13 @@ package org.example.myapp.web;
 
 import java.time.LocalDate;
 
-import org.hibernate.validator.constraints.URL;
-
+import io.avaje.http.api.Valid;
 import io.avaje.jsonb.Json;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import io.avaje.validation.constraints.Email;
+import io.avaje.validation.constraints.Future;
+import io.avaje.validation.constraints.NotNull;
+import io.avaje.validation.constraints.Size;
+import io.avaje.validation.constraints.URI;
 
 @Json
 @Valid
@@ -22,10 +21,12 @@ public class HelloForm {
   @Email
   @Size(max = 100)
   String email;
-@URL
-   private String url;
-@Future
-   public LocalDate startDate;
+
+  @URI
+  private String url;
+
+  @Future
+  public LocalDate startDate;
 
   public HelloForm(String name, String email) {
     this.name = name;
