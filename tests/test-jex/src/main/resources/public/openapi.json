@@ -1009,27 +1009,6 @@
 				}
 			}
 		},
-		"/req-scoped" : {
-			"get" : {
-				"tags" : [
-					
-				],
-				"summary" : "",
-				"description" : "",
-				"responses" : {
-					"200" : {
-						"description" : "",
-						"content" : {
-							"text/plain" : {
-								"schema" : {
-									"type" : "string"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
 		"/security/first" : {
 			"get" : {
 				"tags" : [
