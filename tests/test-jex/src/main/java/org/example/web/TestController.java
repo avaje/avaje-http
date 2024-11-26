@@ -3,8 +3,6 @@ package org.example.web;
 import java.io.IOException;
 import java.util.Set;
 
-import org.example.Person;
-
 import io.avaje.http.api.BodyString;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Default;
@@ -18,7 +16,6 @@ import io.avaje.http.api.Produces;
 import io.avaje.http.api.QueryParam;
 import io.avaje.jex.Context;
 import io.avaje.jex.FilterChain;
-import io.helidon.webserver.http.ServerResponse;
 
 @Path("test/")
 @Controller
