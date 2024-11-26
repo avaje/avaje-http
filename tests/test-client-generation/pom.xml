@@ -61,7 +61,7 @@
 
     <dependency>
       <groupId>io.avaje</groupId>
-      <artifactId>avaje-jex-jetty</artifactId>
+      <artifactId>avaje-jex</artifactId>
       <version>${jex.version}</version>
     </dependency>
     <dependency>
@@ -90,7 +90,19 @@
       <version>${assertj.version}</version>
       <scope>test</scope>
     </dependency>
-
+    
+    <!-- needed for mvnd parallel builds-->
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-client-generator</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-jex-generator</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
   </dependencies>
 
   <build>

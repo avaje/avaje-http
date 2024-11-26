@@ -21,7 +21,9 @@
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
     <swagger.version>2.2.26</swagger.version>
     <jackson.version>2.14.2</jackson.version>
+    <jex.version>3.0-SNAPSHOT</jex.version>
     <avaje.prisms.version>1.35</avaje.prisms.version>
+    <project.build.outputTimestamp>2024-10-28T03:18:56Z</project.build.outputTimestamp>
     <module-info.shade>${project.build.directory}${file.separator}module-info.shade</module-info.shade>
   </properties>
 

@@ -6,12 +6,13 @@ public enum CoreWebMethod implements WebMethod {
   PUT(200, 204),
   PATCH(200, 204),
   DELETE(200, 204),
+  OPTIONS(200, 204),
   ERROR(500),
   FILTER(0),
   OTHER(0, 0);
 
-  private int statusCode;
-  private int voidStatusCode;
+  private final int statusCode;
+  private final int voidStatusCode;
 
   CoreWebMethod(int statusCode, int voidStatusCode) {
     this.statusCode = statusCode;

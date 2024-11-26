@@ -691,8 +691,6 @@
 						"name" : "name",
 						"in" : "query",
 						"schema" : {
-							"maxLength" : 150,
-							"minLength" : 2,
 							"type" : "string",
 							"nullable" : false
 						}
@@ -701,9 +699,7 @@
 						"name" : "email",
 						"in" : "query",
 						"schema" : {
-							"maxLength" : 100,
-							"type" : "string",
-							"format" : "email"
+							"type" : "string"
 						}
 					}
 				],
@@ -884,15 +880,11 @@
 				"type" : "object",
 				"properties" : {
 					"name" : {
-						"maxLength" : 150,
-						"minLength" : 2,
 						"type" : "string",
 						"nullable" : false
 					},
 					"email" : {
-						"maxLength" : 100,
-						"type" : "string",
-						"format" : "email"
+						"type" : "string"
 					},
 					"url" : {
 						"type" : "string"

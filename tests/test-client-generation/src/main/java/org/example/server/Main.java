@@ -2,9 +2,6 @@ package org.example.server;
 
 import io.avaje.inject.BeanScope;
 import io.avaje.jex.Jex;
-import io.avaje.jex.Routing;
-
-import java.util.List;
 
 public class Main {
 
@@ -19,10 +16,7 @@ public class Main {
 
   public static Jex.Server start(int port, BeanScope context) {
 
-    final List<Routing.Service> services = context.list(Routing.Service.class);
-
-    final Jex jex = Jex.create();
-    jex.routing().addAll(services);
+    final Jex jex = Jex.create().configureWith(context);
     return jex.port(port).start();
   }
 }
