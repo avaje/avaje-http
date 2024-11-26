@@ -86,7 +86,7 @@ class JexAdapter implements PlatformAdapter {
         break;
       default:
         throw new UnsupportedOperationException(
-            "Only Query/Form Params have Map<String, List<String>> supported in Javalin");
+            "Only Query/Form Params have Map<String, List<String>> supported in Jex");
     }
   }
 
@@ -101,7 +101,7 @@ class JexAdapter implements PlatformAdapter {
         break;
       default:
         throw new UnsupportedOperationException(
-            "Only MultiValue Form/Query Params are supported in Javalin");
+            "Only MultiValue Form/Query Params are supported in Jex");
     }
   }
 
@@ -122,7 +122,7 @@ class JexAdapter implements PlatformAdapter {
         break;
       default:
         throw new UnsupportedOperationException(
-            "Only MultiValue Form/Query Params are supported in Javalin");
+            "Only MultiValue Form/Query Params are supported in Jex");
     }
   }
 
