@@ -18,6 +18,7 @@ class ControllerWriter extends BaseControllerWriter {
     super(reader);
     reader.addImportType(API_CONTEXT);
     reader.addImportType(API_ROUTING);
+    reader.addImportType("java.io.IOException");
 
     if (reader.methods().stream()
         .map(MethodReader::webMethod)

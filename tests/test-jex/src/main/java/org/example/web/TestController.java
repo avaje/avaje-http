@@ -18,7 +18,6 @@ import io.avaje.jex.FilterChain;
 
 @Path("test/")
 @Controller
-@InstrumentServerContext
 public class TestController {
 
   @Get("/paramMulti")
@@ -45,7 +44,6 @@ public class TestController {
   String strBody(@BodyString String body, Context ctx) {
     return body;
   }
-
 
   @Filter
   void filter(FilterChain chain) throws IOException {
