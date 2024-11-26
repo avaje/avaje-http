@@ -37,12 +37,12 @@ import jakarta.inject.Inject;
 @Valid
 @Controller
 @Path("/hello")
-class HelloController {
+class WebController {
 
   private final MyService myService;
 
   @Inject
-  HelloController(MyService myService) {
+  WebController(MyService myService) {
     this.myService = myService;
   }
 
