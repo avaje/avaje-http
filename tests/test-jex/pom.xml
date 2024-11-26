@@ -12,7 +12,6 @@
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
     <main.class>org.example.myapp.Main</main.class>
-    <jex.version>3.0-SNAPSHOT</jex.version>
     <swagger.version>2.2.26</swagger.version>
   </properties>
 
