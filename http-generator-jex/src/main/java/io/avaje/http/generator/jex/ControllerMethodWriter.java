@@ -42,10 +42,14 @@ class ControllerMethodWriter {
     final PathSegments segments = method.pathSegments();
     final String fullPath = segments.fullPath();
 
-    if (isFilter) {
+    if (method.isErrorMethod()) {
+      writer.append("    routing.error(this::_%s)", fullPath, method.simpleName());
+    } else if (isFilter) {
       writer.append("    routing.filter(this::_%s)", method.simpleName());
     } else {
-      writer.append("    routing.%s(\"%s\", this::_%s)", webMethod.name().toLowerCase(), fullPath, method.simpleName());
+      writer.append(
+          "    routing.%s(\"%s\", this::_%s)",
+          webMethod.name().toLowerCase(), fullPath, method.simpleName());
     }
 
     List<String> roles = method.roles();
