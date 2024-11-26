@@ -25,7 +25,6 @@
     <module>test-javalin</module>
     <module>test-javalin-jsonb</module>
     <module>test-client</module>
-    <module>test-client-generation</module>
     <module>test-sigma</module>
   </modules>
 
@@ -40,6 +39,7 @@
         <module>test-jex</module>
         <module>test-nima-jsonb</module>
         <module>test-nima-htmx</module>
+        <module>test-client-generation</module>
       </modules>
     </profile>
   </profiles>
