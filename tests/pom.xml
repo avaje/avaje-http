@@ -15,7 +15,7 @@
     <junit.version>5.11.3</junit.version>
     <assertj.version>3.26.3</assertj.version>
     <jackson.version>2.18.1</jackson.version>
-    <jex.version>2.5</jex.version>
+    <jex.version>3.0-RC1</jex.version>
     <avaje-inject.version>11.0</avaje-inject.version>
     <nima.version>4.1.4</nima.version>
     <javalin.version>6.3.0</javalin.version>
@@ -24,9 +24,7 @@
   <modules>
     <module>test-javalin</module>
     <module>test-javalin-jsonb</module>
-    <module>test-jex</module>
     <module>test-client</module>
-    <module>test-client-generation</module>
     <module>test-sigma</module>
   </modules>
 
@@ -38,19 +36,21 @@
       </activation>
       <modules>
         <module>test-nima</module>
+        <module>test-jex</module>
         <module>test-nima-jsonb</module>
         <module>test-nima-htmx</module>
+        <module>test-client-generation</module>
       </modules>
     </profile>
   </profiles>
-  
+
   <dependencies>
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-validator</artifactId>
       <version>2.3</version>
     </dependency>
-        
+
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-validator-constraints</artifactId>
@@ -62,7 +62,7 @@
       <artifactId>avaje-validator-generator</artifactId>
       <version>2.3</version>
     </dependency>
-  
+
   </dependencies>
 
 </project>

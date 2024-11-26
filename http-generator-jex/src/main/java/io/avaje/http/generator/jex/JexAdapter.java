@@ -29,11 +29,17 @@ class JexAdapter implements PlatformAdapter {
   }
 
   @Override
-  public String bodyAsClass(UType uType) {
-    if ("java.lang.String".equals(uType.full())) {
+  public String bodyAsClass(UType type) {
+
+    if ("java.io.InputStream".equals(type.full())) {
+      return "ctx.bodyInputStream()";
+    } else if ("java.lang.String".equals(type.full())) {
       return "ctx.body()";
+    } else if ("byte[]".equals(type.full())) {
+      return "ctx.bodyAsBytes()";
     }
-    return "ctx.bodyAsClass(" + uType.mainType() + ".class)";
+
+    return "ctx.bodyAsClass(" + type.mainType() + ".class)";
   }
 
   @Override
@@ -68,26 +74,61 @@ class JexAdapter implements PlatformAdapter {
   }
 
   @Override
-  public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
-    if (paramType != ParamType.QUERYPARAM) {
-      throw new UnsupportedOperationException(
-          "Only MultiValue Query Params are supported in Jex");
+  public void writeReadMapParameter(Append writer, ParamType paramType) {
+
+    switch (paramType) {
+      case QUERYPARAM:
+        writer.append("ctx.queryParamMap()");
+        break;
+      case FORM:
+      case FORMPARAM:
+        writer.append("ctx.formParamMap()");
+        break;
+      default:
+        throw new UnsupportedOperationException(
+            "Only Query/Form Params have Map<String, List<String>> supported in Jex");
     }
-    writer.append("ctx.queryParams(\"%s\")", paramName);
+  }
+
+  @Override
+  public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
+    switch (paramType) {
+      case QUERYPARAM:
+        writer.append("ctx.queryParams(\"%s\")", paramName);
+        break;
+      case FORMPARAM:
+        writer.append("ctx.formParams(\"%s\")", paramName);
+        break;
+      default:
+        throw new UnsupportedOperationException(
+            "Only MultiValue Form/Query Params are supported in Jex");
+    }
   }
 
   @Override
   public void writeReadCollectionParameter(
       Append writer, ParamType paramType, String paramName, List<String> paramDefault) {
-    if (paramType != ParamType.QUERYPARAM) {
-      throw new UnsupportedOperationException(
-          "Only MultiValue Query Params are supported in Jex");
+
+    switch (paramType) {
+      case QUERYPARAM:
+        writer.append(
+            "withDefault(ctx.queryParams(\"%s\"), java.util.List.of(\"%s\"))",
+            paramName, String.join(",", paramDefault));
+        break;
+      case FORMPARAM:
+        writer.append(
+            "withDefault(ctx.formParams(\"%s\"), java.util.List.of(\"%s\"))",
+            paramName, String.join(",", paramDefault));
+        break;
+      default:
+        throw new UnsupportedOperationException(
+            "Only MultiValue Form/Query Params are supported in Jex");
     }
-    writer.append("withDefault(ctx.queryParams(\"%s\"), java.util.List.of(\"%s\"))", paramName, String.join(",", paramDefault));
   }
 
   @Override
   public void writeAcceptLanguage(Append writer) {
     writer.append("ctx.header(\"%s\")", Constants.ACCEPT_LANGUAGE);
   }
+
 }

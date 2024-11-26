@@ -13,13 +13,18 @@ class ControllerWriter extends BaseControllerWriter {
   private static final String AT_GENERATED = "@Generated(\"avaje-jex-generator\")";
   private static final String API_CONTEXT = "io.avaje.jex.Context";
   private static final String API_ROUTING = "io.avaje.jex.Routing";
-  private static final String API_ROUTING_SERVICE = "io.avaje.jex.Routing.Service";
 
   ControllerWriter(ControllerReader reader) throws IOException {
     super(reader);
     reader.addImportType(API_CONTEXT);
     reader.addImportType(API_ROUTING);
-    reader.addImportType(API_ROUTING_SERVICE);
+    reader.addImportType("java.io.IOException");
+
+    if (reader.methods().stream()
+        .map(MethodReader::webMethod)
+        .anyMatch(w -> CoreWebMethod.FILTER == w)) {
+      reader.addImportType("io.avaje.jex.FilterChain");
+    }
   }
 
   void write() {
@@ -60,7 +65,7 @@ class ControllerWriter extends BaseControllerWriter {
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
     writer.append(diAnnotation()).eol();
-    writer.append("public class ").append(shortName).append("$Route implements Routing.Service {").eol().eol();
+    writer.append("public class ").append(shortName).append("$Route implements Routing.HttpService {").eol().eol();
 
     String controllerName = "controller";
     String controllerType = shortName;

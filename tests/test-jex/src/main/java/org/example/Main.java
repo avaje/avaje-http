@@ -21,9 +21,9 @@ public class Main {
 
   public static Jex.Server start(int port, BeanScope context) {
     final Jex jex = Jex.create();
-    jex.routing().addAll(context.list(Routing.Service.class));
+    jex.routing().addAll(context.list(Routing.HttpService.class));
 
-    jex.exception(ValidationException.class, (exception, ctx) -> {
+    jex.routing().error(ValidationException.class, (exception, ctx) -> {
       Map<String, Object> map = new LinkedHashMap<>();
       map.put("message", exception.getMessage());
       map.put("errors", exception.getErrors());
