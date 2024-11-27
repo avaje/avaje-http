@@ -1291,6 +1291,27 @@
 				}
 			}
 		},
+		"/ui" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/html;charset=UTF8" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/Object"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/withDefault/{name}" : {
 			"get" : {
 				"tags" : [
@@ -1407,6 +1428,9 @@
 						"format" : "date"
 					}
 				}
+			},
+			"Object" : {
+				"type" : "object"
 			}
 		}
 	}
