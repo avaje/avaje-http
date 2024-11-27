@@ -1,0 +1,8 @@
+{{<fragments/layout}}
+  {{$body}}
+    <div id="name">
+      Hi there {{ name }}
+    </div>
+    <button hx-get="name" hx-target="#name">One</button>
+{{/body}}
+{{/fragments/layout}}

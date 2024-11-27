@@ -4,6 +4,7 @@ import static io.avaje.http.generator.core.ProcessingContext.diAnnotation;
 import io.avaje.http.generator.core.*;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Write Jex specific Controller WebRoute handling adapter.
@@ -19,11 +20,21 @@ class ControllerWriter extends BaseControllerWriter {
     reader.addImportType(API_CONTEXT);
     reader.addImportType(API_ROUTING);
     reader.addImportType("java.io.IOException");
-
     if (reader.methods().stream()
         .map(MethodReader::webMethod)
         .anyMatch(w -> CoreWebMethod.FILTER == w)) {
       reader.addImportType("io.avaje.jex.FilterChain");
+    }
+    if (reader.methods().stream()
+      .map(MethodReader::hxRequest)
+      .anyMatch(Objects::nonNull)) {
+      reader.addImportType("io.avaje.jex.htmx.HxHandler");
+    }
+    if (reader.html()) {
+      reader.addImportType("io.avaje.jex.htmx.TemplateRender");
+      if (reader.hasContentCache()) {
+        reader.addImportType("io.avaje.jex.htmx.TemplateContentCache");
+      }
     }
   }
 
@@ -50,7 +61,7 @@ class ControllerWriter extends BaseControllerWriter {
   private void writeHandlers() {
     for (MethodReader method : reader.methods()) {
       if (method.isWebMethod()) {
-        new ControllerMethodWriter(method, writer).writeHandler(isRequestScoped());
+        new ControllerMethodWriter(method, writer, reader).writeHandler(isRequestScoped());
         if (!reader.isDocHidden()) {
           method.buildApiDocumentation();
         }
@@ -59,7 +70,7 @@ class ControllerWriter extends BaseControllerWriter {
   }
 
   private void writeRouting(MethodReader method) {
-    new ControllerMethodWriter(method, writer).writeRouting();
+    new ControllerMethodWriter(method, writer, reader).writeRouting();
   }
 
   private void writeClassStart() {
@@ -82,7 +93,12 @@ class ControllerWriter extends BaseControllerWriter {
     if (instrumentContext) {
       writer.append("  private final RequestContextResolver resolver;").eol();
     }
-
+    if (reader.html()) {
+      writer.append("  private final TemplateRender renderer;").eol();
+      if (reader.hasContentCache()) {
+        writer.append("  private final TemplateContentCache contentCache;").eol();
+      }
+    }
     writer.eol();
 
     writer.append("  public %s$Route(%s %s", shortName, controllerType, controllerName);
@@ -92,6 +108,12 @@ class ControllerWriter extends BaseControllerWriter {
     if (instrumentContext) {
       writer.append(", RequestContextResolver resolver");
     }
+    if (reader.html()) {
+      writer.append(", TemplateRender renderer");
+      if (reader.hasContentCache()) {
+        writer.append(", TemplateContentCache contentCache");
+      }
+    }
     writer.append(") {").eol();
     writer.append("    this.%s = %s;", controllerName, controllerName).eol();
     if (reader.isIncludeValidator()) {
@@ -99,6 +121,12 @@ class ControllerWriter extends BaseControllerWriter {
     }
     if (instrumentContext) {
       writer.append("    this.resolver = resolver;").eol();
+    }
+    if (reader.html()) {
+      writer.append("    this.renderer = renderer;").eol();
+      if (reader.hasContentCache()) {
+        writer.append("    this.contentCache = contentCache;").eol();
+      }
     }
     writer.append("  }").eol().eol();
   }
