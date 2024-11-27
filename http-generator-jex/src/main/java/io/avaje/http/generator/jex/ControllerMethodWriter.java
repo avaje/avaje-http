@@ -33,7 +33,7 @@ class ControllerMethodWriter {
   }
 
   private void validateMethod() {
-    if (method.params().stream().map(MethodParam::shortType).noneMatch("FilterChain"::equals)) {
+    if (method.params().stream().map(MethodParam::shortType).noneMatch("HttpFilter.FilterChain"::equals)) {
       logError(method.element(), "Filters must contain a FilterChain parameter");
     }
   }
@@ -227,7 +227,7 @@ class ControllerMethodWriter {
       final var param = params.get(i);
       if (isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")) {
         writer.append("ex");
-      } else if ("FilterChain".equals(param.shortType())) {
+      } else if ("HttpFilter.FilterChain".equals(param.shortType())) {
         writer.append("chain");
       } else {
         param.buildParamName(writer);
@@ -267,16 +267,16 @@ class ControllerMethodWriter {
   private void writeContextReturn(ResponseMode responseMode) {
     final var produces = method.produces();
     switch (responseMode) {
-      case Void: break;
-      case Json: writer.append("ctx.json("); break;
-      case Text: writer.append("ctx.text("); break;
-      case Templating: writer.append("ctx.html("); break;
-      default: writer.append("ctx.contentType(\"%s\").write(", produces);
+      case Void -> {}
+      case Json -> writer.append("ctx.json(");
+      case Text -> writer.append("ctx.text(");
+      case Templating -> writer.append("ctx.html(");
+      default -> writer.append("ctx.contentType(\"%s\").write(", produces);
     }
   }
 
   private static boolean isExceptionOrFilterChain(MethodParam param) {
     return isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")
-      || "FilterChain".equals(param.shortType());
+      || "HttpFilter.FilterChain".equals(param.shortType());
   }
 }
