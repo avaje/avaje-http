@@ -42,10 +42,14 @@ class ControllerMethodWriter {
     final PathSegments segments = method.pathSegments();
     final String fullPath = segments.fullPath();
 
-    if (isFilter) {
+    if (method.isErrorMethod()) {
+      writer.append("    routing.error(%s.class, this::_%s)", method.exceptionShortName(), method.simpleName());
+    } else if (isFilter) {
       writer.append("    routing.filter(this::_%s)", method.simpleName());
     } else {
-      writer.append("    routing.%s(\"%s\", this::_%s)", webMethod.name().toLowerCase(), fullPath, method.simpleName());
+      writer.append(
+          "    routing.%s(\"%s\", this::_%s)",
+          webMethod.name().toLowerCase(), fullPath, method.simpleName());
     }
 
     List<String> roles = method.roles();
@@ -65,14 +69,14 @@ class ControllerMethodWriter {
   void writeHandler(boolean requestScoped) {
 
     if (method.isErrorMethod()) {
-      writer.append("  private void _%s(Context ctx, %s ex)", method.simpleName(), method.exceptionShortName());
+      writer.append("  private void _%s(Context ctx, %s ex) {", method.simpleName(), method.exceptionShortName());
     } else if (isFilter) {
-      writer.append("  private void _%s(Context ctx, FilterChain chain)", method.simpleName());
+      writer.append("  private void _%s(Context ctx, FilterChain chain) throws IOException {", method.simpleName());
     } else {
-      writer.append("  private void _%s(Context ctx)", method.simpleName());
+      writer.append("  private void _%s(Context ctx) throws IOException {", method.simpleName());
     }
 
-    writer.append(" throws IOException {", method.simpleName()).eol();
+    writer.eol();
 
     write(requestScoped);
     writer.append("  }").eol().eol();

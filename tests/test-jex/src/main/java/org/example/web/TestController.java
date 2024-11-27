@@ -6,12 +6,13 @@ import java.util.Set;
 import io.avaje.http.api.BodyString;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Default;
+import io.avaje.http.api.ExceptionHandler;
 import io.avaje.http.api.Filter;
 import io.avaje.http.api.Get;
-import io.avaje.http.api.InstrumentServerContext;
 import io.avaje.http.api.Options;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
+import io.avaje.http.api.Produces;
 import io.avaje.http.api.QueryParam;
 import io.avaje.jex.Context;
 import io.avaje.jex.FilterChain;
@@ -49,5 +50,22 @@ public class TestController {
   void filter(FilterChain chain) throws IOException {
     System.err.println("do nothing lmao");
     chain.proceed();
+  }
+
+  @ExceptionHandler
+  String exception(IllegalArgumentException ex) {
+    return "Err: " + ex;
+  }
+
+  @Produces(statusCode = 501)
+  @ExceptionHandler
+  HelloDto exceptionCtx(Exception ex, Context ctx) {
+    return null;
+  }
+
+  @ExceptionHandler(IllegalStateException.class)
+  void exceptionVoid(Context ctx) {
+    ctx.status(503);
+    ctx.text("IllegalStateException");
   }
 }
