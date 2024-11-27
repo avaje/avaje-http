@@ -69,7 +69,7 @@ class ControllerMethodWriter {
   void writeHandler(boolean requestScoped) {
 
     if (method.isErrorMethod()) {
-      writer.append("  private void _%s(%s ex, Context ctx) {", method.simpleName(), method.exceptionShortName());
+      writer.append("  private void _%s(Context ctx, %s ex) {", method.simpleName(), method.exceptionShortName());
     } else if (isFilter) {
       writer.append("  private void _%s(Context ctx, FilterChain chain) throws IOException {", method.simpleName());
     } else {
