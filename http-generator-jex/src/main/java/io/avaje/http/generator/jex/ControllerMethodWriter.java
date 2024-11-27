@@ -43,7 +43,7 @@ class ControllerMethodWriter {
     final String fullPath = segments.fullPath();
 
     if (method.isErrorMethod()) {
-      writer.append("    routing.error(%s.class, this::_%s);", method.exceptionShortName(), method.simpleName()).eol();
+      writer.append("    routing.error(%s.class, this::_%s)", method.exceptionShortName(), method.simpleName());
     } else if (isFilter) {
       writer.append("    routing.filter(this::_%s)", method.simpleName());
     } else {

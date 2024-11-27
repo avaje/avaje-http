@@ -23,7 +23,7 @@ public class Main {
     final Jex jex = Jex.create();
     jex.routing().addAll(context.list(Routing.HttpService.class));
 
-    jex.routing().error(ValidationException.class, (exception, ctx) -> {
+    jex.routing().error(ValidationException.class, (ctx, exception) -> {
       Map<String, Object> map = new LinkedHashMap<>();
       map.put("message", exception.getMessage());
       map.put("errors", exception.getErrors());
