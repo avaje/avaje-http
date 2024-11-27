@@ -8,8 +8,8 @@
   </parent>
 
   <artifactId>test-jex</artifactId>
-
   <properties>
+    <maven.compiler.release>21</maven.compiler.release>
     <maven.deploy.skip>true</maven.deploy.skip>
     <main.class>org.example.myapp.Main</main.class>
     <swagger.version>2.2.26</swagger.version>

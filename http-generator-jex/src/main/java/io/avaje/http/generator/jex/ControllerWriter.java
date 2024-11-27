@@ -23,7 +23,7 @@ class ControllerWriter extends BaseControllerWriter {
     if (reader.methods().stream()
         .map(MethodReader::webMethod)
         .anyMatch(w -> CoreWebMethod.FILTER == w)) {
-      reader.addImportType("io.avaje.jex.FilterChain");
+      reader.addImportType("io.avaje.jex.HttpFilter.FilterChain");
     }
     if (reader.methods().stream()
       .map(MethodReader::hxRequest)

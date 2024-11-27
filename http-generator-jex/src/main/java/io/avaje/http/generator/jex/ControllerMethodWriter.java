@@ -267,11 +267,11 @@ class ControllerMethodWriter {
   private void writeContextReturn(ResponseMode responseMode) {
     final var produces = method.produces();
     switch (responseMode) {
-      case Void: break;
-      case Json: writer.append("ctx.json("); break;
-      case Text: writer.append("ctx.text("); break;
-      case Templating: writer.append("ctx.html("); break;
-      default: writer.append("ctx.contentType(\"%s\").write(", produces);
+      case Void -> {}
+      case Json -> writer.append("ctx.json(");
+      case Text -> writer.append("ctx.text(");
+      case Templating -> writer.append("ctx.html(");
+      default -> writer.append("ctx.contentType(\"%s\").write(", produces);
     }
   }
 

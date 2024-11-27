@@ -69,7 +69,8 @@ class JexAdapter implements PlatformAdapter {
   }
 
   @Override
-  public void writeReadParameter(Append writer, ParamType paramType, String paramName, String paramDefault) {
+  public void writeReadParameter(
+      Append writer, ParamType paramType, String paramName, String paramDefault) {
     writer.append("withDefault(ctx.%s(\"%s\"), \"%s\")", paramType, paramName, paramDefault);
   }
 
@@ -77,31 +78,22 @@ class JexAdapter implements PlatformAdapter {
   public void writeReadMapParameter(Append writer, ParamType paramType) {
 
     switch (paramType) {
-      case QUERYPARAM:
-        writer.append("ctx.queryParamMap()");
-        break;
-      case FORM:
-      case FORMPARAM:
-        writer.append("ctx.formParamMap()");
-        break;
-      default:
-        throw new UnsupportedOperationException(
-            "Only Query/Form Params have Map<String, List<String>> supported in Jex");
+      case QUERYPARAM -> writer.append("ctx.queryParamMap()");
+      case FORM, FORMPARAM -> writer.append("ctx.formParamMap()");
+      default ->
+          throw new UnsupportedOperationException(
+              "Only Query/Form Params have Map<String, List<String>> supported in Jex");
     }
   }
 
   @Override
   public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
     switch (paramType) {
-      case QUERYPARAM:
-        writer.append("ctx.queryParams(\"%s\")", paramName);
-        break;
-      case FORMPARAM:
-        writer.append("ctx.formParams(\"%s\")", paramName);
-        break;
-      default:
-        throw new UnsupportedOperationException(
-            "Only MultiValue Form/Query Params are supported in Jex");
+      case QUERYPARAM -> writer.append("ctx.queryParams(\"%s\")", paramName);
+      case FORMPARAM -> writer.append("ctx.formParams(\"%s\")", paramName);
+      default ->
+          throw new UnsupportedOperationException(
+              "Only MultiValue Form/Query Params are supported in Jex");
     }
   }
 
@@ -110,19 +102,17 @@ class JexAdapter implements PlatformAdapter {
       Append writer, ParamType paramType, String paramName, List<String> paramDefault) {
 
     switch (paramType) {
-      case QUERYPARAM:
-        writer.append(
-            "withDefault(ctx.queryParams(\"%s\"), java.util.List.of(\"%s\"))",
-            paramName, String.join(",", paramDefault));
-        break;
-      case FORMPARAM:
-        writer.append(
-            "withDefault(ctx.formParams(\"%s\"), java.util.List.of(\"%s\"))",
-            paramName, String.join(",", paramDefault));
-        break;
-      default:
-        throw new UnsupportedOperationException(
-            "Only MultiValue Form/Query Params are supported in Jex");
+      case QUERYPARAM ->
+          writer.append(
+              "withDefault(ctx.queryParams(\"%s\"), java.util.List.of(\"%s\"))",
+              paramName, String.join(",", paramDefault));
+      case FORMPARAM ->
+          writer.append(
+              "withDefault(ctx.formParams(\"%s\"), java.util.List.of(\"%s\"))",
+              paramName, String.join(",", paramDefault));
+      default ->
+          throw new UnsupportedOperationException(
+              "Only MultiValue Form/Query Params are supported in Jex");
     }
   }
 
@@ -130,5 +120,4 @@ class JexAdapter implements PlatformAdapter {
   public void writeAcceptLanguage(Append writer) {
     writer.append("ctx.header(\"%s\")", Constants.ACCEPT_LANGUAGE);
   }
-
 }

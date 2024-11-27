@@ -8,7 +8,11 @@
   </parent>
 
   <artifactId>avaje-http-jex-generator</artifactId>
-
+  
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+  </properties>
+  
   <dependencies>
 
     <dependency>
