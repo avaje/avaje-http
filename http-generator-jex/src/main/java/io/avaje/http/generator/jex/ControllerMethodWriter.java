@@ -107,7 +107,8 @@ class ControllerMethodWriter {
     }
     writer.append("    ");
     if (!method.isVoid()) {
-      writeContextReturn();
+      writer.append("var result = ");
+
     }
     if (instrumentContext) {
         method.writeContext(writer, "ctx", "ctx");
@@ -132,13 +133,17 @@ class ControllerMethodWriter {
       }
     }
     writer.append(")");
-    if (!method.isVoid()) {
-      writer.append(")");
-    }
     if (instrumentContext) {
       writer.append(")");
     }
     writer.append(";").eol();
+    if (!method.isVoid()) {
+      writer.append("    if (result != null) {").eol();
+      writer.append("      ");
+      writeContextReturn();
+      writer.append("result);").eol();
+      writer.append("    }").eol();
+    }
   }
 
   private void writeContextReturn() {
