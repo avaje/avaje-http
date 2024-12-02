@@ -89,7 +89,7 @@ class ControllerWriter extends BaseControllerWriter {
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
     writer.append(diAnnotation()).eol();
-    writer.append("public class ").append(shortName).append("$Route implements Routing.HttpService {").eol().eol();
+    writer.append("public final class ").append(shortName).append("$Route implements Routing.HttpService {").eol().eol();
 
     String controllerName = "controller";
     String controllerType = shortName;

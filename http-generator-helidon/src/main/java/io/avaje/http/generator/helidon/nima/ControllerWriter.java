@@ -123,7 +123,7 @@ class ControllerWriter extends BaseControllerWriter {
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
     writer.append(diAnnotation()).eol();
-    writer.append("public class %s$Route implements HttpFeature {", shortName).eol().eol();
+    writer.append("public final class %s$Route implements HttpFeature {", shortName).eol().eol();
 
     var controllerName = "controller";
     var controllerType = shortName;
