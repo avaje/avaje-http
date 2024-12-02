@@ -84,7 +84,7 @@ class ControllerWriter extends BaseControllerWriter {
     writer.append(AT_GENERATED).eol();
     writer.append(diAnnotation()).eol();
     writer
-      .append("public class ")
+      .append("public final class ")
       .append(shortName)
       .append(javalin6 ? "$Route extends AvajeJavalinPlugin {" : "$Route implements Plugin {")
       .eol()
