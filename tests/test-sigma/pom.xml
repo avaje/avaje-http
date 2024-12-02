@@ -28,7 +28,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-sigma</artifactId>
-      <version>0.3</version>
+      <version>0.4</version>
     </dependency>
 
     <dependency>
@@ -42,7 +42,7 @@
       <artifactId>avaje-http-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations</artifactId>
