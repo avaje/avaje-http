@@ -146,21 +146,6 @@ class WebController {
     return myService.findAll();
   }
 
-  @Get("/async")
-  CompletableFuture<List<HelloDto>> getAllAsync() {
-    return CompletableFuture.supplyAsync(() -> {
-      // Simulate a delay as if an actual IO operation is being executed.
-      // This also helps ensure that we aren't just getting lucky with timings.
-      try {
-        Thread.sleep(10L);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-
-      return myService.findAll();
-    }, Executors.newSingleThreadExecutor()); // Example of how to use a custom executor.
-  }
-
   //  @Hidden
   @Delete(":id")
   void deleteById(int id) {
