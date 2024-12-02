@@ -64,8 +64,8 @@ class WebController {
   @Deprecated
   @Roles({AppRoles.ADMIN, AppRoles.BASIC_USER})
   @Get("/:id/:date")
-  HelloDto hello(int id, LocalDate date, String otherParam) {
-    return new HelloDto(id, date.toString(), otherParam);
+  WebHelloDto hello(int id, LocalDate date, String otherParam) {
+    return new WebHelloDto(id, date.toString(), otherParam);
   }
 
   /**
@@ -77,7 +77,7 @@ class WebController {
    */
   @Roles(AppRoles.ADMIN)
   @Get("/findbyname/{name}")
-  List<HelloDto> findByName(String name, @QueryParam("my-param") @Default("one") String myParam) {
+  List<WebHelloDto> findByName(String name, @QueryParam("my-param") @Default("one") String myParam) {
     return new ArrayList<>();
   }
 
@@ -86,7 +86,7 @@ class WebController {
    */
   @Produces(MediaType.APPLICATION_JSON_PATCH_JSON)
   @Post
-  HelloDto post(HelloDto dto) {
+  WebHelloDto post(WebHelloDto dto) {
     dto.name = "posted";
     return dto;
   }
@@ -99,7 +99,7 @@ class WebController {
    */
 //  @Roles({ADMIN})
   @Post("/savebean/:foo")
-  void saveBean(String foo, HelloDto dto, Context context) {
+  void saveBean(String foo, WebHelloDto dto, Context context) {
     // save hello data ...
     System.out.println("save " + foo + " dto:" + dto);
     requireNonNull(foo);
@@ -130,8 +130,8 @@ class WebController {
 
   @Post("saveform3")
   @Form
-  HelloDto saveForm3(HelloForm helloForm) {
-    return new HelloDto(52, helloForm.name, helloForm.email);
+  WebHelloDto saveForm3(HelloForm helloForm) {
+    return new WebHelloDto(52, helloForm.name, helloForm.email);
   }
 
   @Produces("text/plain")
@@ -142,7 +142,7 @@ class WebController {
 
   @Hidden
   @Get
-  List<HelloDto> getAll() {
+  List<WebHelloDto> getAll() {
     return myService.findAll();
   }
 

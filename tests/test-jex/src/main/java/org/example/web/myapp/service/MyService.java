@@ -3,18 +3,18 @@ package org.example.web.myapp.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.example.web.myapp.HelloDto;
+import org.example.web.myapp.WebHelloDto;
 
 import jakarta.inject.Singleton;
 
 @Singleton
 public class MyService {
 
-  public List<HelloDto> findAll() {
+  public List<WebHelloDto> findAll() {
 
-    List<HelloDto> list = new ArrayList<>();
-    list.add(new HelloDto(12, "Jim", "asd"));
-    list.add(new HelloDto(13, "Spock", "456456"));
+    List<WebHelloDto> list = new ArrayList<>();
+    list.add(new WebHelloDto(12, "Jim", "asd"));
+    list.add(new WebHelloDto(13, "Spock", "456456"));
 
     return list;
   }
