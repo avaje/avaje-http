@@ -6,21 +6,22 @@ import io.avaje.http.api.Controller;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Path;
 import org.example.web.template.ViewHome;
+import org.example.web.template.ViewPartial;
 
 @Controller
 @Html
 @Path("ui")
 public class ContentController {
 
-  @Get
-  Object index() {
-    return  new ViewHome("Hi");
-  }
-
   @HxRequest
   @Get
-  Object indexHxReqest() {
-    return  new ViewHome("Hi");
+  ViewPartial indexHxPartial() {
+    return new ViewPartial("Rob");
+  }
+
+  @Get
+  ViewHome index() {
+    return new ViewHome("Hi");
   }
 
 }
