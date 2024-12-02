@@ -256,7 +256,6 @@ class ControllerMethodWriter {
       } else {
         writer.append(indent);
         writeContextReturn(responseMode, "result");
-        writer.eol();
       }
       if (includeNoContent) {
         writer.append("    }").eol();
@@ -268,7 +267,7 @@ class ControllerMethodWriter {
     final UType type = UType.parse(method.returnType());
     if ("java.util.concurrent.CompletableFuture".equals(type.mainType())) {
       logError(method.element(), "CompletableFuture is not a supported return type.");
-      writer.append("; //ERROR");
+      writer.append("; //ERROR").eol();
       return;
     }
 
@@ -280,6 +279,7 @@ class ControllerMethodWriter {
       case Templating -> writer.append("ctx.html(%s);", resultVariable);
       default -> writer.append("ctx.contentType(\"%s\").write(%s);", produces, resultVariable);
     }
+    writer.eol();
   }
 
   private void writeJsonReturn(String produces) {

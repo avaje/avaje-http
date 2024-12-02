@@ -1280,7 +1280,7 @@
 						"content" : {
 							"text/html;charset=UTF8" : {
 								"schema" : {
-									"$ref" : "#/components/schemas/Object"
+									"$ref" : "#/components/schemas/ViewHome"
 								}
 							}
 						}
@@ -1405,8 +1405,21 @@
 					}
 				}
 			},
-			"Object" : {
-				"type" : "object"
+			"ViewHome" : {
+				"type" : "object",
+				"properties" : {
+					"name" : {
+						"type" : "string"
+					}
+				}
+			},
+			"ViewPartial" : {
+				"type" : "object",
+				"properties" : {
+					"name" : {
+						"type" : "string"
+					}
+				}
 			},
 			"WebHelloDto" : {
 				"type" : "object",

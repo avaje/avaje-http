@@ -1,8 +1,6 @@
 {{<fragments/layout}}
-  {{$body}}
-    <div id="name">
-      Hi there {{ name }}
-    </div>
-    <button hx-get="name" hx-target="#name">One</button>
+{{$body}}
+  <button hx-get="/ui" hx-target="#replaceMe">Update name</button>
+  <div id="replaceMe">placeholder</div>
 {{/body}}
 {{/fragments/layout}}
