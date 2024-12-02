@@ -373,7 +373,7 @@
 					"content" : {
 						"application/json" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/HelloDto"
+								"$ref" : "#/components/schemas/WebHelloDto"
 							}
 						}
 					},
@@ -385,31 +385,7 @@
 						"content" : {
 							"application/json-patch+json" : {
 								"schema" : {
-									"$ref" : "#/components/schemas/HelloDto"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/hello/async" : {
-			"get" : {
-				"tags" : [
-					
-				],
-				"summary" : "",
-				"description" : "",
-				"responses" : {
-					"200" : {
-						"description" : "",
-						"content" : {
-							"application/json" : {
-								"schema" : {
-									"type" : "array",
-									"items" : {
-										"$ref" : "#/components/schemas/HelloDto"
-									}
+									"$ref" : "#/components/schemas/WebHelloDto"
 								}
 							}
 						}
@@ -471,7 +447,7 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/HelloDto"
+										"$ref" : "#/components/schemas/WebHelloDto"
 									}
 								}
 							}
@@ -559,7 +535,7 @@
 					"content" : {
 						"application/json" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/HelloDto"
+								"$ref" : "#/components/schemas/WebHelloDto"
 							}
 						}
 					},
@@ -654,7 +630,7 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"$ref" : "#/components/schemas/HelloDto"
+									"$ref" : "#/components/schemas/WebHelloDto"
 								}
 							}
 						}
@@ -948,7 +924,7 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"$ref" : "#/components/schemas/HelloDto"
+									"$ref" : "#/components/schemas/WebHelloDto"
 								}
 							}
 						}
@@ -1431,6 +1407,32 @@
 			},
 			"Object" : {
 				"type" : "object"
+			},
+			"WebHelloDto" : {
+				"type" : "object",
+				"properties" : {
+					"id" : {
+						"type" : "integer",
+						"format" : "int32",
+						"nullable" : false
+					},
+					"name" : {
+						"type" : "string",
+						"description" : "This is a comment"
+					},
+					"otherParam" : {
+						"type" : "string",
+						"description" : "This is a comment"
+					},
+					"gid" : {
+						"type" : "string",
+						"format" : "uuid"
+					},
+					"whenAction" : {
+						"type" : "string",
+						"format" : "date-time"
+					}
+				}
 			}
 		}
 	}

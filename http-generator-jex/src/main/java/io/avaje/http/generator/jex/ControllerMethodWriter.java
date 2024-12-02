@@ -3,6 +3,7 @@ package io.avaje.http.generator.jex;
 import java.util.List;
 
 import io.avaje.http.generator.core.*;
+import io.avaje.http.generator.core.openapi.MediaType;
 
 import javax.lang.model.type.TypeMirror;
 
@@ -17,22 +18,25 @@ class ControllerMethodWriter {
   private final Append writer;
   private final ControllerReader reader;
   private final WebMethod webMethod;
+  private final boolean useJsonB;
   private final boolean instrumentContext;
   private final boolean isFilter;
 
-  ControllerMethodWriter(MethodReader method, Append writer, ControllerReader reader) {
+  ControllerMethodWriter(
+      MethodReader method, Append writer, ControllerReader reader, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
     this.reader = reader;
+    this.useJsonB = useJsonB;
     this.webMethod = method.webMethod();
     this.instrumentContext = method.instrumentContext();
     this.isFilter = webMethod == CoreWebMethod.FILTER;
     if (isFilter) {
-      validateMethod();
+      validateFilter();
     }
   }
 
-  private void validateMethod() {
+  private void validateFilter() {
     if (method.params().stream().map(MethodParam::shortType).noneMatch("HttpFilter.FilterChain"::equals)) {
       logError(method.element(), "Filters must contain a FilterChain parameter");
     }
@@ -128,9 +132,7 @@ class ControllerMethodWriter {
   }
 
   private boolean producesJson() {
-    return // useJsonB
-      !disabledDirectWrites()
-      && !"byte[]".equals(method.returnType().toString())
+    return !"byte[]".equals(method.returnType().toString())
       && (method.produces() == null || method.produces().toLowerCase().contains("json"));
   }
 
@@ -200,8 +202,7 @@ class ControllerMethodWriter {
       writer.append(");").eol();
       writer.append("    var cacheContent = contentCache.content(key);").eol();
       writer.append("    if (cacheContent != null) {").eol();
-      writeContextReturn(responseMode);
-      writer.append("      res.send(cacheContent);").eol();
+      writeContextReturn(responseMode, "cacheContent");
       writer.append("      return;").eol();
       writer.append("    }").eol();
     }
@@ -251,12 +252,11 @@ class ControllerMethodWriter {
           writer.append(indent).append("contentCache.contentPut(key, content);").eol();
         }
         writer.append(indent);
-        writeContextReturn(responseMode);
-        writer.append("content);").eol();
+        writeContextReturn(responseMode, "content");
       } else {
         writer.append(indent);
-        writeContextReturn(responseMode);
-        writer.append("result);").eol();
+        writeContextReturn(responseMode, "result");
+        writer.eol();
       }
       if (includeNoContent) {
         writer.append("    }").eol();
@@ -264,14 +264,35 @@ class ControllerMethodWriter {
     }
   }
 
-  private void writeContextReturn(ResponseMode responseMode) {
+  private void writeContextReturn(ResponseMode responseMode, String resultVariable) {
+    final UType type = UType.parse(method.returnType());
+    if ("java.util.concurrent.CompletableFuture".equals(type.mainType())) {
+      logError(method.element(), "CompletableFuture is not a supported return type.");
+      writer.append("; //ERROR");
+      return;
+    }
+
     final var produces = method.produces();
     switch (responseMode) {
       case Void -> {}
-      case Json -> writer.append("ctx.json(");
-      case Text -> writer.append("ctx.text(");
-      case Templating -> writer.append("ctx.html(");
-      default -> writer.append("ctx.contentType(\"%s\").write(", produces);
+      case Json -> writeJsonReturn(produces);
+      case Text -> writer.append("ctx.text(%s);", resultVariable);
+      case Templating -> writer.append("ctx.html(%s);", resultVariable);
+      default -> writer.append("ctx.contentType(\"%s\").write(%s);", produces, resultVariable);
+    }
+  }
+
+  private void writeJsonReturn(String produces) {
+    if (useJsonB) {
+      var uType = UType.parse(method.returnType());
+      if (produces == null) {
+        produces = MediaType.APPLICATION_JSON.getValue();
+      }
+      writer.append(
+        "%sJsonType.toJson(result, ctx.contentType(\"%s\").outputStream());",
+        uType.shortName(), produces);
+    } else {
+      writer.append("ctx.json(result);");
     }
   }
 

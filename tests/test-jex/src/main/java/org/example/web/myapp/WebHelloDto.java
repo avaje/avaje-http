@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import io.avaje.jsonb.Json;
 @Json
-public class HelloDto {
+public class WebHelloDto {
 
   public int id;
   /**
@@ -20,7 +20,7 @@ public class HelloDto {
 
   private Instant whenAction;
 
-  public HelloDto(int id, String name, String otherParam) {
+  public WebHelloDto(int id, String name, String otherParam) {
     this.id = id;
     this.name = name;
     this.otherParam = otherParam;
@@ -29,7 +29,7 @@ public class HelloDto {
   /**
    * Jackson constructor.
    */
-  public HelloDto() {
+  public WebHelloDto() {
   }
 
   public UUID getGid() {
