@@ -1,0 +1,2046 @@
+{
+	"openapi" : "3.0.1",
+	"info" : {
+		"title" : "Example service",
+		"description" : "Example Javalin controllers with Java and Maven",
+		"version" : ""
+	},
+	"servers" : [
+		{
+			"url" : "localhost:8080",
+			"description" : "local testing"
+		}
+	],
+	"tags" : [
+		{
+			"name" : "tag1",
+			"description" : "it's somethin"
+		},
+		{
+			"name" : "tag1",
+			"description" : "this is added to openapi tags"
+		}
+	],
+	"paths" : {
+		"/bars" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/bars/find/{code}" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "code",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "array",
+									"items" : {
+										"$ref" : "#/components/schemas/Bar"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/bars/{id}" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "id",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "integer",
+							"format" : "int64",
+							"nullable" : false
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/Bar"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/baz" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "array",
+									"items" : {
+										"$ref" : "#/components/schemas/Baz"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/Baz"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "integer",
+									"format" : "int64"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/baz/checkparams/{id}" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "id",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "integer",
+							"format" : "int32",
+							"nullable" : false
+						}
+					},
+					{
+						"name" : "p1",
+						"in" : "query",
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "p2",
+						"in" : "query",
+						"schema" : {
+							"type" : "number"
+						}
+					},
+					{
+						"name" : "p3",
+						"in" : "query",
+						"schema" : {
+							"type" : "integer",
+							"format" : "int32"
+						}
+					},
+					{
+						"name" : "p4",
+						"in" : "query",
+						"schema" : {
+							"type" : "number"
+						}
+					},
+					{
+						"name" : "body",
+						"in" : "query",
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/baz/findbyname/{name}" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "Find the baz by name",
+				"description" : "This is some more comments about this method.",
+				"parameters" : [
+					{
+						"name" : "name",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "The list of baz",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "array",
+									"items" : {
+										"$ref" : "#/components/schemas/Baz"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/baz/{id}" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "id",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "integer",
+							"format" : "int64"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/Baz"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "Simple example post with JSON body response",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/HelloDto"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json-patch+json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloDto"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/async" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "array",
+									"items" : {
+										"$ref" : "#/components/schemas/HelloDto"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/controlStatusCode" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/findbyname/{name}" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "Find Hellos by name",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "name",
+						"in" : "path",
+						"description" : "The name to search for",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "myParam",
+						"in" : "query",
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "The Hellos that we found.",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "array",
+									"items" : {
+										"$ref" : "#/components/schemas/HelloDto"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/message" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/mySave" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string"
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									}
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "No content"
+					}
+				}
+			}
+		},
+		"/hello/savebean/{foo}" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "Save the hello using json body",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "foo",
+						"in" : "path",
+						"description" : "The hello doo id",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"requestBody" : {
+					"description" : "The hello body as json",
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/HelloDto"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "No content"
+					}
+				}
+			}
+		},
+		"/hello/saveform" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "Create the new Hello using a form",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/HelloForm"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "No content"
+					}
+				}
+			}
+		},
+		"/hello/saveform2" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string"
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									}
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "No content"
+					}
+				}
+			}
+		},
+		"/hello/saveform3" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/HelloForm"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloDto"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/slash/{name}/<nam0>/other/<nam1>" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "name",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "nam0",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "nam1",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/takesNestedEnum" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "myEnum",
+						"in" : "query",
+						"schema" : {
+							"type" : "string",
+							"enum" : [
+								"A",
+								"B",
+								"C"
+							]
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/withMatrix/{year_segment}/{other}" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "year",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "integer",
+							"format" : "int32",
+							"nullable" : false
+						}
+					},
+					{
+						"name" : "author",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "country",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "other",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "extra",
+						"in" : "query",
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/withValidBean" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "name",
+						"in" : "query",
+						"schema" : {
+							"type" : "string",
+							"nullable" : false
+						}
+					},
+					{
+						"name" : "email",
+						"in" : "query",
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "addresses",
+						"in" : "query",
+						"schema" : {
+							"type" : "array",
+							"items" : {
+								"type" : "string"
+							}
+						}
+					},
+					{
+						"name" : "head",
+						"in" : "header",
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "type",
+						"in" : "query",
+						"schema" : {
+							"type" : "array",
+							"items" : {
+								"type" : "string",
+								"enum" : [
+									"PROXY",
+									"HIDE_N_SEEK",
+									"FFA"
+								]
+							}
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/{id}" : {
+			"delete" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "id",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "integer",
+							"format" : "int32",
+							"nullable" : false
+						}
+					}
+				],
+				"responses" : {
+					"204" : {
+						"description" : "No content"
+					}
+				}
+			}
+		},
+		"/hello/{id}/{date}" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "Return the Hello DTO",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "id",
+						"in" : "path",
+						"description" : "The hello Id.",
+						"required" : true,
+						"schema" : {
+							"type" : "integer",
+							"format" : "int32",
+							"nullable" : false
+						}
+					},
+					{
+						"name" : "date",
+						"in" : "path",
+						"description" : "The name of the hello",
+						"required" : true,
+						"schema" : {
+							"type" : "string",
+							"format" : "date"
+						}
+					},
+					{
+						"name" : "otherParam",
+						"in" : "query",
+						"description" : "Optional other parameter",
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "Return the Hello DTO.",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloDto"
+								}
+							}
+						}
+					}
+				},
+				"deprecated" : true
+			}
+		},
+		"/javalin/health" : {
+			"get" : {
+				"tags" : [
+					"tag1"
+				],
+				"summary" : "Standard Get",
+				"description" : "",
+				"responses" : {
+					"500" : {
+						"description" : "a health check",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"403" : {
+						"description" : "Not Authorized"
+					},
+					"200" : {
+						"description" : "a health check",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/openapi/get" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "Example of Open API Get (up to the first period is the summary)",
+				"description" : "When using Javalin HttpContext only This Javadoc description is added to the generated openapi.json",
+				"responses" : {
+					"200" : {
+						"description" : "funny phrase (this part of the javadoc is added to the response desc)",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/openapi/post" : {
+			"post" : {
+				"tags" : [
+					"tag1"
+				],
+				"summary" : "Standard Post",
+				"description" : "uses tag annotation to add tags to openapi json",
+				"requestBody" : {
+					"description" : "the body (this is used for generated request body desc)",
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/Person"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"200" : {
+						"description" : "overrides @return javadoc description",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/Person"
+								}
+							}
+						}
+					},
+					"201" : {
+						"description" : "the response body (from javadoc)",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/Person"
+								}
+							}
+						}
+					},
+					"400" : {
+						"description" : "User not found (Will not have an associated response schema)"
+					},
+					"500" : {
+						"description" : "Some other Error (Will have this error class as the response class)",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/openapi/post1" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "Standard Post",
+				"description" : "The Deprecated annotation adds \"deprecacted:true\" to the generated json",
+				"requestBody" : {
+					"description" : "the body",
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"type" : "array",
+								"items" : {
+									"$ref" : "#/components/schemas/Person"
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"400" : {
+						"description" : "User not found"
+					},
+					"500" : {
+						"description" : "Some other Error",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"201" : {
+						"description" : "the response body (from javadoc)",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/Person"
+								}
+							}
+						}
+					}
+				},
+				"deprecated" : true
+			}
+		},
+		"/openapi/put" : {
+			"put" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"204" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					},
+					"203" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/security/first" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				},
+				"security" : [
+					{
+						"JWT" : [
+							
+						]
+					}
+				]
+			}
+		},
+		"/security/second" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/async" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloDto"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/ctx" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "No content"
+					}
+				}
+			}
+		},
+		"/test/enumForm" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"type" : "object",
+								"properties" : {
+									"s" : {
+										"type" : "string"
+									},
+									"type" : {
+										"type" : "string",
+										"enum" : [
+											"PROXY",
+											"HIDE_N_SEEK",
+											"FFA"
+										]
+									}
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"200" : {
+						"description" : "No content"
+					}
+				}
+			}
+		},
+		"/test/enumFormParam" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"type" : "object",
+								"properties" : {
+									"s" : {
+										"type" : "string"
+									},
+									"type" : {
+										"type" : "string",
+										"enum" : [
+											"PROXY",
+											"HIDE_N_SEEK",
+											"FFA"
+										]
+									}
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/enumPath/{type}" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "type",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string",
+							"enum" : [
+								"PROXY",
+								"HIDE_N_SEEK",
+								"FFA"
+							]
+						}
+					}
+				],
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/enumQuery" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "type",
+						"in" : "query",
+						"schema" : {
+							"type" : "string",
+							"enum" : [
+								"PROXY",
+								"HIDE_N_SEEK",
+								"FFA"
+							]
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/enumQuery2" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "type",
+						"in" : "query",
+						"schema" : {
+							"type" : "array",
+							"items" : {
+								"type" : "string",
+								"enum" : [
+									"PROXY",
+									"HIDE_N_SEEK",
+									"FFA"
+								]
+							}
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/enumQueryImplied" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "s",
+						"in" : "query",
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "type",
+						"in" : "query",
+						"schema" : {
+							"type" : "string",
+							"enum" : [
+								"PROXY",
+								"HIDE_N_SEEK",
+								"FFA"
+							]
+						}
+					}
+				],
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/form" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string"
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									}
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/formBean" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/MyForm"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/formMulti" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"type" : "object",
+								"properties" : {
+									"strings" : {
+										"type" : "array",
+										"items" : {
+											"type" : "string"
+										}
+									}
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/header" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "head",
+						"in" : "header",
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/hey" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/int" : {
+			"put" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "integer",
+									"format" : "int32",
+									"nullable" : false
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/long" : {
+			"put" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "integer",
+									"format" : "int64",
+									"nullable" : false
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/person" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/Person"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/Person"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/person/update" : {
+			"put" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"type" : "array",
+								"items" : {
+									"$ref" : "#/components/schemas/Person"
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/person/{name}" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "name",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/Person"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/person/{sortBy}/list" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "sortBy",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "array",
+									"items" : {
+										"$ref" : "#/components/schemas/Person"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/person/{sortBy}/map" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "sortBy",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "object",
+									"additionalProperties" : {
+										"$ref" : "#/components/schemas/Person"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/person/{sortBy}/set" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "sortBy",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "array",
+									"items" : {
+										"$ref" : "#/components/schemas/Person"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/strBody" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/text" : {
+							"schema" : {
+								"type" : "string"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/withMatrixParam/{type-1_segment}/{range_segment}" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "type",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "category",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "vendor",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "range",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "style",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "No content"
+					}
+				}
+			}
+		}
+	},
+	"components" : {
+		"schemas" : {
+			"Bar" : {
+				"type" : "object",
+				"properties" : {
+					"id" : {
+						"type" : "integer",
+						"format" : "int64",
+						"nullable" : false
+					},
+					"name" : {
+						"type" : "string"
+					}
+				}
+			},
+			"Baz" : {
+				"type" : "object",
+				"properties" : {
+					"id" : {
+						"type" : "integer",
+						"format" : "int64"
+					},
+					"name" : {
+						"type" : "string"
+					},
+					"startDate" : {
+						"type" : "string",
+						"format" : "date"
+					}
+				}
+			},
+			"ErrorResponse" : {
+				"type" : "object",
+				"properties" : {
+					"id" : {
+						"type" : "string"
+					},
+					"text" : {
+						"type" : "string"
+					}
+				}
+			},
+			"HelloDto" : {
+				"type" : "object",
+				"properties" : {
+					"id" : {
+						"type" : "integer",
+						"format" : "int32",
+						"nullable" : false
+					},
+					"name" : {
+						"type" : "string",
+						"description" : "This is a comment"
+					},
+					"otherParam" : {
+						"type" : "string",
+						"description" : "This is a comment"
+					},
+					"gid" : {
+						"type" : "string",
+						"format" : "uuid"
+					},
+					"whenAction" : {
+						"type" : "string",
+						"format" : "date-time"
+					}
+				}
+			},
+			"HelloForm" : {
+				"required" : [
+					"name"
+				],
+				"type" : "object",
+				"properties" : {
+					"name" : {
+						"type" : "string",
+						"nullable" : false
+					},
+					"email" : {
+						"type" : "string"
+					},
+					"url" : {
+						"type" : "string"
+					},
+					"startDate" : {
+						"type" : "string",
+						"format" : "date"
+					}
+				}
+			},
+			"MyForm" : {
+				"type" : "object",
+				"properties" : {
+					"name" : {
+						"type" : "string"
+					},
+					"email" : {
+						"type" : "string"
+					},
+					"url" : {
+						"type" : "string"
+					}
+				}
+			},
+			"Person" : {
+				"type" : "object",
+				"properties" : {
+					"id" : {
+						"type" : "integer",
+						"format" : "int64",
+						"nullable" : false
+					},
+					"name" : {
+						"type" : "string"
+					}
+				}
+			}
+		},
+		"securitySchemes" : {
+			"JWT" : {
+				"type" : "apiKey",
+				"description" : "JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.",
+				"name" : "access_token",
+				"in" : "query"
+			}
+		}
+	}
+}
