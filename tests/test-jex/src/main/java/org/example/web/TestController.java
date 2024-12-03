@@ -1,6 +1,5 @@
 package org.example.web;
 
-import java.io.IOException;
 import java.util.Set;
 
 import io.avaje.http.api.BodyString;
@@ -47,7 +46,7 @@ public class TestController {
   }
 
   @Filter
-  void filter(FilterChain chain) throws IOException {
+  void filter(FilterChain chain) throws Exception {
     System.err.println("do nothing lmao");
     chain.proceed();
   }

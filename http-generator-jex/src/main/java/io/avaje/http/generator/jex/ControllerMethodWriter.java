@@ -158,9 +158,9 @@ class ControllerMethodWriter {
     if (method.isErrorMethod()) {
       writer.append("  private void _%s(Context ctx, %s ex) {", method.simpleName(), method.exceptionShortName());
     } else if (isFilter) {
-      writer.append("  private void _%s(Context ctx, FilterChain chain) throws IOException {", method.simpleName());
+      writer.append("  private void _%s(Context ctx, FilterChain chain) throws Exception {", method.simpleName());
     } else {
-      writer.append("  private void _%s(Context ctx) throws IOException {", method.simpleName());
+      writer.append("  private void _%s(Context ctx) throws Exception {", method.simpleName());
     }
 
     writer.eol();
