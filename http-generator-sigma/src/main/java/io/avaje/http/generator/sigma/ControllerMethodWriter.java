@@ -14,15 +14,23 @@ class ControllerMethodWriter {
   private final Append writer;
   private final WebMethod webMethod;
   private final boolean instrumentContext;
-  private final boolean customMethod;
+  private final boolean isFilter;
 
   ControllerMethodWriter(MethodReader method, Append writer) {
     this.method = method;
     this.writer = writer;
-    final var webM = method.webMethod();
-    this.webMethod = webM == CoreWebMethod.FILTER ? SigmaWebMethod.BEFORE : webM;
+    this.webMethod = method.webMethod();
     this.instrumentContext = method.instrumentContext();
-    customMethod = !(webMethod instanceof CoreWebMethod);
+    this.isFilter = webMethod == CoreWebMethod.FILTER;
+    if (isFilter) {
+      validateFilter();
+    }
+  }
+
+  private void validateFilter() {
+    if (method.params().stream().map(MethodParam::shortType).noneMatch("HttpFilter.FilterChain"::equals)) {
+      logError(method.element(), "Filters must contain a FilterChain parameter");
+    }
   }
 
   void write() {
@@ -33,7 +41,7 @@ class ControllerMethodWriter {
 
     final var params = writeParams(segments);
     writer.append("      ");
-    if (!method.isVoid() && !customMethod) {
+    if (!method.isVoid() && !isFilter) {
       writer.append("var result = ");
     }
 
@@ -51,6 +59,8 @@ class ControllerMethodWriter {
       final var param = params.get(i);
       if (isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")) {
         writer.append("ex");
+      } else if ("HttpFilter.FilterChain".equals(param.shortType())) {
+        writer.append("chain");
       } else {
         param.buildParamName(writer);
       }
@@ -61,7 +71,7 @@ class ControllerMethodWriter {
     }
 
     writer.append(");").eol();
-    if (!method.isVoid() && !customMethod) {
+    if (!method.isVoid() && !isFilter) {
       writeContextReturn();
       writer.eol();
     }
@@ -71,15 +81,18 @@ class ControllerMethodWriter {
   }
 
   private void writeMethod(final String fullPath) {
-    if (method.isErrorMethod()) {
+
+    if (isFilter) {
+      writer.append("    router.filter((ctx, chain) -> {");
+    } else if (method.isErrorMethod()) {
       writer
-          .append("    router.exception(%s.class, (ex, ctx) -> {", method.exceptionShortName())
+          .append("    router.exception(%s.class, (ctx, ex) -> {", method.exceptionShortName())
           .eol();
     } else {
       var methodName = webMethod.name().toLowerCase().replace("_m", "M");
       writer.append("    router.%s(\"%s\", ctx -> {", methodName, fullPath).eol();
     }
-    if (!customMethod) {
+    if (!isFilter) {
       int statusCode = method.statusCode();
       if (statusCode > 0) {
         writer.append("      ctx.status(%d);", statusCode).eol();
@@ -95,7 +108,7 @@ class ControllerMethodWriter {
 
     final var params = method.params();
     for (final MethodParam param : params) {
-      if (!isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")) {
+      if (!isExceptionOrFilterChain(param)) {
         param.writeCtxGet(writer, segments);
       }
     }
@@ -124,5 +137,10 @@ class ControllerMethodWriter {
     } else {
       writer.append("      ctx.contentType(\"%s\").result(%s);", produces);
     }
+  }
+
+  private static boolean isExceptionOrFilterChain(MethodParam param) {
+    return isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")
+      || "HttpFilter.FilterChain".equals(param.shortType());
   }
 }

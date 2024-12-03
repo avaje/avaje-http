@@ -17,6 +17,7 @@ import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.QueryParam;
 import io.avaje.sigma.HttpContext;
+import io.avaje.sigma.HttpFilter.FilterChain;
 
 @Path("test/")
 @Controller
@@ -84,7 +85,7 @@ public class TestController2 {
   }
 
   @Filter
-  void filter(HttpContext ctx) {
+  void filter(HttpContext ctx, FilterChain chain) {
   }
 
   @Form
