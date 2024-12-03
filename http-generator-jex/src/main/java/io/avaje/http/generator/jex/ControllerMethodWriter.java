@@ -283,11 +283,15 @@ class ControllerMethodWriter {
   }
 
   private void writeJsonReturn(String produces) {
+    if (produces == null) {
+      produces = MediaType.APPLICATION_JSON.getValue();
+    }
+    var uType = UType.parse(method.returnType());
+    if ("java.lang.String".equals(method.returnType().toString())) {
+      writer.append("ctx.contentType(\"%s\").write(result); // raw json", produces);
+      return;
+    }
     if (useJsonB) {
-      var uType = UType.parse(method.returnType());
-      if (produces == null) {
-        produces = MediaType.APPLICATION_JSON.getValue();
-      }
       writer.append(
         "%sJsonType.toJson(result, ctx.contentType(\"%s\").outputStream());",
         uType.shortName(), produces);

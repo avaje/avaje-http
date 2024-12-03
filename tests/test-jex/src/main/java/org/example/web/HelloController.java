@@ -61,8 +61,14 @@ public class HelloController {
     dto.hashCode();
   }
 
+  @Produces("text/plain")
   @Get("/bigInt/{val}")
   String testBigInt(BigInteger val) {
     return "hi|" + val;
+  }
+
+  @Get("rawJson")
+  String rawJsonString() {
+    return "{\"key\": 42 }";
   }
 }
