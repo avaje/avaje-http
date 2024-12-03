@@ -352,7 +352,7 @@
 					"200" : {
 						"description" : "",
 						"content" : {
-							"application/json" : {
+							"text/plain" : {
 								"schema" : {
 									"type" : "string"
 								}
@@ -976,6 +976,27 @@
 						"description" : "",
 						"content" : {
 							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/rawJson" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
 								"schema" : {
 									"type" : "string"
 								}

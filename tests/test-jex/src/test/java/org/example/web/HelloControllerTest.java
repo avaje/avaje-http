@@ -54,6 +54,27 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void plainText() {
+    final HttpResponse<String> hres = client.request()
+      .path("bigInt/42")
+      .GET().asString();
+
+    assertThat(hres.statusCode()).isEqualTo(200);
+    assertThat(hres.body()).contains("hi|42");
+  }
+
+  @Test
+  void rawJson() {
+    final HttpResponse<String> hres = client.request()
+      .path("rawJson")
+      .GET().asString();
+
+    assertThat(hres.statusCode()).isEqualTo(200);
+    assertThat(hres.headers().firstValue("Content-Type").orElseThrow()).isEqualTo("application/json");
+    assertThat(hres.body()).contains("{\"key\": 42 }");
+  }
+
+  @Test
   void validation() {
     HelloDto helloDto = new HelloDto();
     helloDto.id = 42;
