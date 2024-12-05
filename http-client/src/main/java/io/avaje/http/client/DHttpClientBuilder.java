@@ -16,9 +16,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 
 final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder.State {
 
@@ -99,6 +104,8 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
     }
     if (executor != null) {
       builder.executor(executor);
+    } else if (Integer.getInteger("java.specification.version") >= 21) {
+      builder.executor(virtualThreadExecutor());
     }
     if (proxy != null) {
       builder.proxy(proxy);
@@ -116,6 +123,17 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
       builder.priority(priority);
     }
     return builder.build();
+  }
+
+  private static ExecutorService virtualThreadExecutor() {
+    try {
+      return (ExecutorService)
+        MethodHandles.lookup()
+          .findStatic(Executors.class, "newVirtualThreadPerTaskExecutor", MethodType.methodType(ExecutorService.class))
+          .invokeExact();
+    } catch (Throwable e) {
+      return null;
+    }
   }
 
   /**
