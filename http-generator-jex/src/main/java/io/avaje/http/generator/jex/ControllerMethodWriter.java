@@ -47,33 +47,32 @@ class ControllerMethodWriter {
     final String fullPath = segments.fullPath();
 
     if (method.isErrorMethod()) {
-      writer.append("    routing.error(%s.class, this::_%s)", method.exceptionShortName(), method.simpleName());
+      writer.append("    routing.error(%s.class, this::_%s", method.exceptionShortName(), method.simpleName());
     } else if (isFilter) {
-      writer.append("    routing.filter(this::_%s)", method.simpleName());
+      writer.append("    routing.filter(this::_%s", method.simpleName());
     } else {
       writer.append("    routing.%s(\"%s\", ", webMethod.name().toLowerCase(), fullPath);
       var hxRequest = method.hxRequest();
       if (hxRequest != null) {
         writeHxHandler(hxRequest);
       } else {
-        writer.append("this::_%s)", method.simpleName());
+        writer.append("this::_%s", method.simpleName());
       }
     }
     writeRoles();
-    writer.append(";").eol();
+    writer.append(");").eol();
   }
 
   private void writeRoles() {
     List<String> roles = method.roles();
-    if (!roles.isEmpty()) {
-      writer.append(".withRoles(");
+    if (!roles.isEmpty() && !isFilter) {
+      writer.append(", ");
       for (int i = 0; i < roles.size(); i++) {
         if (i > 0) {
           writer.append(", ");
         }
         writer.append(Util.shortName(roles.get(i), true));
       }
-      writer.append(")");
     }
   }
 
@@ -92,7 +91,7 @@ class ControllerMethodWriter {
     } else if (hasValue(hxRequest.value())) {
       writer.append(".triggerName(\"%s\")", hxRequest.value());
     }
-    writer.append(".build())");
+    writer.append(".build()");
   }
 
   private static boolean hasValue(String value) {
