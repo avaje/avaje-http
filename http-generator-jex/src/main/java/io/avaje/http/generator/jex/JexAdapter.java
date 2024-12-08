@@ -7,6 +7,7 @@ import io.avaje.http.generator.core.Constants;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
+import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.UType;
 
 class JexAdapter implements PlatformAdapter {
@@ -32,13 +33,14 @@ class JexAdapter implements PlatformAdapter {
   public String bodyAsClass(UType type) {
 
     if ("java.io.InputStream".equals(type.full())) {
-      return "ctx.bodyInputStream()";
+      return "ctx.bodyAsInputStream()";
     } else if ("java.lang.String".equals(type.full())) {
       return "ctx.body()";
     } else if ("byte[]".equals(type.full())) {
       return "ctx.bodyAsBytes()";
+    } else if (ProcessingContext.useJsonb()) {
+      return type.shortName() + "JsonType.fromJson(ctx.bodyAsInputStream())";
     }
-
     return "ctx.bodyAsClass(" + type.mainType() + ".class)";
   }
 
