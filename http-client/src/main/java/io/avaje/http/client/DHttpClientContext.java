@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
@@ -21,9 +20,6 @@ import java.util.stream.Stream;
 
 final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
-  /**
-   * HTTP Authorization header.
-   */
   static final String AUTHORIZATION = "Authorization";
   private static final String BEARER = "Bearer ";
 

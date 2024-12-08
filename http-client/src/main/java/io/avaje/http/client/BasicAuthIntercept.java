@@ -5,7 +5,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.Base64;
 
 /** Adds Basic Authorization header to requests. */
-public class BasicAuthIntercept implements RequestIntercept {
+public final class BasicAuthIntercept implements RequestIntercept {
 
   private final String headerValue;
 
