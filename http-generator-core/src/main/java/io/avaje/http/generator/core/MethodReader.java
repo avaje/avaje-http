@@ -338,7 +338,9 @@ public class MethodReader {
 
   public List<String> roles() {
     final var roles = new ArrayList<>(methodRoles);
-    roles.addAll(bean.roles());
+    if (roles.isEmpty()) {
+      roles.addAll(bean.roles());
+    }
     return roles;
   }
 
@@ -521,7 +523,7 @@ public class MethodReader {
 
   private boolean allArgParamNames() {
     for (int i = 0; i < params.size(); i++) {
-      if (!params.get(i).name().equals("arg" + i)) {
+      if (!("arg" + i).equals(params.get(i).name())) {
         return false;
       }
     }
