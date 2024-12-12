@@ -8,14 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import io.avaje.http.generator.core.BaseControllerWriter;
-import io.avaje.http.generator.core.Constants;
-import io.avaje.http.generator.core.ControllerReader;
-import io.avaje.http.generator.core.CoreWebMethod;
-import io.avaje.http.generator.core.JsonBUtil;
-import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.PrimitiveUtil;
-import io.avaje.http.generator.core.UType;
+import io.avaje.http.generator.core.*;
 
 /**
  * Write Helidon specific web route adapter (a Helidon Service).
@@ -24,6 +17,9 @@ class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-helidon-generator\")";
   private static final String IMPORT_HTTP_STATUS = "import static io.helidon.http.Status.*;";
+
+  private static final String JSON_JsonOutput = "io.avaje.json.stream.JsonOutput";
+  private static final String JSONB_JsonOutput = "io.avaje.jsonb.stream.JsonOutput";
 
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
@@ -35,7 +31,7 @@ class ControllerWriter extends BaseControllerWriter {
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
       reader.addImportType("io.avaje.jsonb.Types");
-      reader.addImportType("io.avaje.jsonb.stream.JsonOutput");
+      reader.addImportType(jsonOutputType());
       this.jsonTypes = JsonBUtil.jsonTypes(reader);
       jsonTypes.values().stream()
           .map(UType::importTypes)
@@ -74,6 +70,12 @@ class ControllerWriter extends BaseControllerWriter {
         reader.addImportType("io.avaje.htmx.nima.TemplateContentCache");
       }
     }
+  }
+
+  private static String jsonOutputType() {
+    return ProcessingContext.typeElement(JSON_JsonOutput) != null
+      ? JSON_JsonOutput
+      : JSONB_JsonOutput;
   }
 
   void write() {

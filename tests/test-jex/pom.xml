@@ -74,7 +74,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>2.4</version>
+      <version>3.0-RC2</version>
     </dependency>
 
     <!-- java annotation processors -->
@@ -96,7 +96,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb-generator</artifactId>
-      <version>2.4</version>
+      <version>3.0-RC2</version>
     </dependency>
 
     <dependency>
