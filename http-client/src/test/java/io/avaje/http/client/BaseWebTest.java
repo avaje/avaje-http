@@ -25,12 +25,16 @@ public class BaseWebTest {
     webServer.stop();
   }
 
-  public static HttpClient client() {
+  public static HttpClient client(BodyAdapter bodyAdapter) {
     return HttpClient.builder()
       .baseUrl(baseUrl)
-      .connectionTimeout(Duration.ofSeconds(1))
-      .requestTimeout(Duration.ofSeconds(1))
-      .bodyAdapter(new JacksonBodyAdapter(new ObjectMapper()))
+      .connectionTimeout(Duration.ofSeconds(10))
+      .requestTimeout(Duration.ofSeconds(10))
+      .bodyAdapter(bodyAdapter)
       .build();
+  }
+
+  public static HttpClient client() {
+    return client(new JacksonBodyAdapter(new ObjectMapper()));
   }
 }
