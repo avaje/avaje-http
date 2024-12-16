@@ -12,7 +12,7 @@
     <maven.compiler.release>21</maven.compiler.release>
     <maven.deploy.skip>true</maven.deploy.skip>
     <main.class>org.example.myapp.Main</main.class>
-    <swagger.version>2.2.26</swagger.version>
+    <swagger.version>2.2.27</swagger.version>
   </properties>
 
   <dependencies>
@@ -74,7 +74,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>3.0-RC2</version>
+      <version>3.0-RC5</version>
     </dependency>
 
     <!-- java annotation processors -->
@@ -96,7 +96,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb-generator</artifactId>
-      <version>3.0-RC2</version>
+      <version>3.0-RC5</version>
     </dependency>
 
     <dependency>

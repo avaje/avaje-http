@@ -1,15 +1,19 @@
 package org.example.web;
 
-import io.avaje.http.client.HttpClient;
-import io.avaje.http.client.HttpException;
-import org.junit.jupiter.api.Test;
-
-import java.net.http.HttpResponse;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.net.http.HttpResponse;
+
+import org.junit.jupiter.api.Test;
+
+import io.avaje.http.api.ValidationException.Violation;
+import io.avaje.http.client.HttpClient;
+import io.avaje.http.client.HttpException;
+import io.avaje.jsonb.Json.Import;
+
+@Import(Violation.class)
 class HelloControllerTest extends BaseWebTest {
 
   final static HttpClient client = client();
