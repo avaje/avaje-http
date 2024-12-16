@@ -15,6 +15,12 @@ class BasicAuthInterceptTest {
   }
 
   @Test
+  void header() {
+    final String encode = BasicAuthIntercept.header("Aladdin", "open sesame");
+    assertThat(encode).isEqualTo("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==");
+  }
+
+  @Test
   void beforeRequest() {
     // setup
     final BasicAuthIntercept intercept = new BasicAuthIntercept("Aladdin", "open sesame");
