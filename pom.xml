@@ -19,7 +19,7 @@
 
   <properties>
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
-    <swagger.version>2.2.26</swagger.version>
+    <swagger.version>2.2.27</swagger.version>
     <jackson.version>2.14.2</jackson.version>
     <jex.version>3.0-RC10</jex.version>
     <avaje.prisms.version>1.36</avaje.prisms.version>
