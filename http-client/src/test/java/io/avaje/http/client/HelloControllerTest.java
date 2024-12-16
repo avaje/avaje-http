@@ -1,6 +1,7 @@
 package io.avaje.http.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.avaje.json.simple.SimpleMapper;
 import org.example.webserver.ErrorResponse;
 import org.example.webserver.HelloDto;
 import org.junit.jupiter.api.Test;
@@ -816,6 +817,31 @@ class HelloControllerTest extends BaseWebTest {
       assertThat(e.contentType()).isPresent().get().isEqualTo("text/plain");
       assertThat(e.bodyAsString()).isEqualTo("Endpoint GET /does-not-exist not found");
     }
+  }
+
+  @Test
+  void singleBodyAdapter_returningBean() {
+    var simpleMapper = SimpleMapper.builder().build();
+
+    SimpleMapper.Type<HelloDto> type = simpleMapper.type(new HelloDtoAdapter());
+    BodyAdapter bodyAdapter = SingleBodyAdapter.create(type);
+    HttpClient client = client(bodyAdapter);
+
+    final var str = client.request()
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", (Object) null)
+      .GET()
+      .asString();
+
+    System.out.println(str.body());
+
+    final HelloDto dto = client.request()
+      .path("hello/43/2020-03-05").queryParam("otherParam", "other").queryParam("foo", (Object) null)
+      .GET()
+      .bean(HelloDto.class);
+
+    assertThat(dto.id).isEqualTo(43L);
+    assertThat(dto.name).isEqualTo("2020-03-05");
+    assertThat(dto.otherParam).isEqualTo("other");
   }
 
   @Test
