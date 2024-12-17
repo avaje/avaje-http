@@ -10,5 +10,6 @@
   </parent>
 
   <artifactId>aws-cognito</artifactId>
+  <packaging>pom</packaging>
 
 </project>
