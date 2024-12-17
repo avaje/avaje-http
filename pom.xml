@@ -75,6 +75,8 @@
     <profile>
       <id>test21</id>
       <modules>
+        <!-- release http-client-authtoken on its own cadence -->
+        <module>aws-cognito/http-client-authtoken</module>
         <module>htmx-nima</module>
         <module>htmx-nima-jstache</module>
         <module>http-generator-helidon</module>
