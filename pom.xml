@@ -48,6 +48,8 @@
     <module>http-generator-javalin</module>
     <module>http-generator-sigma</module>
     <module>http-generator-client</module>
+    <module>aws-cognito</module>
+    <module>aws-cognito/http-client-authtoken</module>
   </modules>
 
   <profiles>
