@@ -86,12 +86,14 @@ public final class JsonBUtil {
   static void writeType(UType type, Append writer) {
     if (type.isGeneric()) {
       final var params =
-          type.importTypes().stream()
-              .skip(1)
+          type.params().stream()
               .map(Util::shortName)
+              .map(s -> "?".equals(s) ? "Object" : s)
               .collect(Collectors.joining(".class, "));
 
-      writer.append("Types.newParameterizedType(%s.class, %s.class))", Util.shortName(type.mainType()), params);
+      writer.append(
+          "Types.newParameterizedType(%s.class, %s.class))",
+          Util.shortName(type.mainType()), params);
     } else {
       writer.append("%s.class)", Util.shortName(type.mainType()));
     }
