@@ -1,6 +1,9 @@
 package io.avaje.http.generator.core;
 
 import javax.lang.model.type.TypeMirror;
+
+import static java.util.stream.Collectors.toList;
+
 import java.util.*;
 
 public interface UType {
@@ -67,6 +70,13 @@ public interface UType {
    */
   default UType paramRaw() {
     return null;
+  }
+
+  /**
+   * Return the first generic parameter.
+   */
+  default List<String> params() {
+    return List.of();
   }
 
   /**
@@ -275,7 +285,7 @@ public interface UType {
 
     @Override
     public String shortName() {
-      return shortName.replace(".", "$");
+      return shortName.replace(".", "$").replace("?", "Object");
     }
 
     @Override
@@ -291,6 +301,11 @@ public interface UType {
     @Override
     public String param1() {
       return allTypes.size() < 3 ? null : allTypes.get(2);
+    }
+
+    @Override
+    public List<String> params() {
+      return allTypes.stream().skip(1).collect(toList());
     }
 
     @Override

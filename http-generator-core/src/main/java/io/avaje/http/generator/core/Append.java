@@ -8,7 +8,10 @@ import java.io.Writer;
  */
 public class Append {
 
+  private static final boolean DEBUG = Boolean.getBoolean("append.debug");
+
   private final Writer writer;
+  private final StringBuilder stringBuilder = new StringBuilder();
 
   public Append(Writer writer) {
     this.writer = writer;
@@ -17,6 +20,9 @@ public class Append {
   public Append append(String content) {
     try {
       writer.append(content);
+      if (DEBUG) {
+        stringBuilder.append(content);
+      }
       return this;
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -35,6 +41,9 @@ public class Append {
   public Append eol() {
     try {
       writer.append("\n");
+      if (DEBUG) {
+        stringBuilder.append("\n");
+      }
       return this;
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -48,4 +57,8 @@ public class Append {
     return append(String.format(format, args));
   }
 
+  @Override
+  public String toString() {
+    return stringBuilder.toString();
+  }
 }
