@@ -15,12 +15,12 @@ public class GenericController {
   @Json
   public static class Data2<T, T2> {}
 
-  @Get
+  @Get("single")
   Data<String> getData() {
     return null;
   }
 
-  @Get
+  @Get("double")
   Data2<String, ?> getData2() {
     return null;
   }
