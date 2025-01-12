@@ -5,9 +5,10 @@ import io.avaje.http.api.Get;
 import io.avaje.http.api.Path;
 import io.avaje.jsonb.Json;
 
-@Path("generic/")
+@Path("/jsonbGeneric")
 @Controller
 public class GenericController {
+
   @Json
   public static class Data<T> {}
 
