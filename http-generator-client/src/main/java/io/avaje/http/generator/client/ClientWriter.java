@@ -2,6 +2,7 @@ package io.avaje.http.generator.client;
 
 import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.BaseControllerWriter;
+import io.avaje.http.generator.core.ClientPrism;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.MethodReader;
 
@@ -37,7 +38,9 @@ final class ClientWriter extends BaseControllerWriter {
   @Override
   protected String initPackageName(String originName) {
     // put the generated Http client into a sub-package
-    return super.initPackageName(originName);
+    return ClientPrism.isPresent(reader.beanType())
+        ? super.initPackageName(originName)
+        : super.initPackageName(originName)+".httpclient";
   }
 
   private void readMethods() {
