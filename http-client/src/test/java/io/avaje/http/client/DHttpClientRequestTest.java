@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.Duration;
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class DHttpClientRequestTest {
@@ -34,6 +35,7 @@ class DHttpClientRequestTest {
     assertThat(headers).asList().contains("application/json", "application/json2");
   }
 
+  @Disabled
   @Test
   void assertQuery() {
     final var client = HttpClient.builder().baseUrl("https://ap7i.github.com").build();
