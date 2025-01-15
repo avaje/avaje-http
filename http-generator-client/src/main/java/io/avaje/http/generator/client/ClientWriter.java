@@ -2,6 +2,7 @@ package io.avaje.http.generator.client;
 
 import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.BaseControllerWriter;
+import io.avaje.http.generator.core.ClientPrism;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.MethodReader;
 
@@ -37,7 +38,9 @@ final class ClientWriter extends BaseControllerWriter {
   @Override
   protected String initPackageName(String originName) {
     // put the generated Http client into a sub-package
-    return super.initPackageName(originName) + ".httpclient";
+    return ClientPrism.isPresent(reader.beanType())
+        ? super.initPackageName(originName)
+        : super.initPackageName(originName)+".httpclient";
   }
 
   private void readMethods() {
@@ -73,7 +76,7 @@ final class ClientWriter extends BaseControllerWriter {
     writer.append(AT_GENERATED).eol();
     AnnotationUtil.writeAnnotations(writer, reader.beanType());
 
-    writer.append("public class %s%s implements %s, AutoCloseable {", shortName, suffix, shortName).eol().eol();
+    writer.append("public final class %s%s implements %s, AutoCloseable {", shortName, suffix, shortName).eol().eol();
 
     writer.append("  private final HttpClient client;").eol().eol();
 
