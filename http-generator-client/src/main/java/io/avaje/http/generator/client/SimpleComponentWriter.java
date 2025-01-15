@@ -81,7 +81,7 @@ final class SimpleComponentWriter {
     final List<String> all = metaData.all();
     writeMetaDataEntry(all);
     writer.append("})").eol();
-    writer.append("public class %s implements HttpClient.GeneratedComponent {", shortName).eol().eol();
+    writer.append("public final class %s implements HttpClient.GeneratedComponent {", shortName).eol().eol();
   }
 
   private void writeMetaDataEntry(List<String> entries) {

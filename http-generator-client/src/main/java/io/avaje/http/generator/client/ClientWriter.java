@@ -73,7 +73,7 @@ final class ClientWriter extends BaseControllerWriter {
     writer.append(AT_GENERATED).eol();
     AnnotationUtil.writeAnnotations(writer, reader.beanType());
 
-    writer.append("public class %s%s implements %s, AutoCloseable {", shortName, suffix, shortName).eol().eol();
+    writer.append("public final class %s%s implements %s, AutoCloseable {", shortName, suffix, shortName).eol().eol();
 
     writer.append("  private final HttpClient client;").eol().eol();
 
