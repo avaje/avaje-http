@@ -35,6 +35,7 @@ class DHttpClientRequestTest {
     assertThat(headers).asList().contains("application/json", "application/json2");
   }
 
+  @Disabled
   @Test
   @Disabled
   void assertQuery() {
