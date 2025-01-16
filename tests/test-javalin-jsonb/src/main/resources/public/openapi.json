@@ -928,6 +928,48 @@
 				}
 			}
 		},
+		"/jsonbGeneric/double" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/String,?>"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/jsonbGeneric/single" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/String>"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/openapi/get" : {
 			"get" : {
 				"tags" : [
@@ -2188,6 +2230,12 @@
 						"type" : "string"
 					}
 				}
+			},
+			"String,?>" : {
+				"type" : "object"
+			},
+			"String>" : {
+				"type" : "object"
 			}
 		},
 		"securitySchemes" : {
