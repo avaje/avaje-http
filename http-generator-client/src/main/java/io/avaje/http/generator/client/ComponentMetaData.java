@@ -28,9 +28,6 @@ final class ComponentMetaData {
   String fullName() {
     if (fullName == null) {
       String topPackage = TopPackage.of(generatedClients);
-      if (!topPackage.endsWith(".httpclient")) {
-        topPackage += ".httpclient";
-      }
       fullName = topPackage + ".GeneratedHttpComponent";
     }
     return fullName;
