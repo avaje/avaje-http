@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 @Client
-public interface JunkApi {
+interface JunkApi {
 
   @Post
   void asVoid();
