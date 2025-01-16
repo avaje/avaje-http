@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.lang.model.element.Modifier;
+
 /**
  * Write Http client adapter.
  */
@@ -38,9 +40,11 @@ final class ClientWriter extends BaseControllerWriter {
   @Override
   protected String initPackageName(String originName) {
     // put the generated Http client into a sub-package
-    return ClientPrism.isPresent(reader.beanType())
+    final var beanType = reader.beanType();
+
+    return !beanType.getModifiers().contains(Modifier.PUBLIC) && ClientPrism.isPresent(beanType)
         ? super.initPackageName(originName)
-        : super.initPackageName(originName)+".httpclient";
+        : super.initPackageName(originName) + ".httpclient";
   }
 
   private void readMethods() {
