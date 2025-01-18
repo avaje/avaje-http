@@ -62,6 +62,21 @@ class TypeMap {
                 isEnum));
   }
 
+  static TypeHandler optionalHandler(UType type, boolean isEnum) {
+    final var handler = types.get(type.param0());
+
+    if (!isEnum && handler == null) {
+      return null;
+    }
+
+    return types.computeIfAbsent(
+      type.full(),
+      k ->
+        new OptionalHandler(
+          isEnum ? enumParamHandler(type.paramRaw()) : handler,
+          isEnum));
+  }
+
   static TypeHandler enumParamHandler(UType type) {
     return new EnumHandler(type);
   }
@@ -343,6 +358,54 @@ class TypeMap {
                   ? "qp -> " + handler.toMethod() + " qp)"
                   : "PathTypeConversion::as" + shortName)
               + ", ";
+
+      this.toMethod = toMethod.replace("PathTypeConversion::asString", "Object::toString");
+    }
+
+    @Override
+    public boolean isPrimitive() {
+      return false;
+    }
+
+    @Override
+    public List<String> importTypes() {
+
+      return importTypes;
+    }
+
+    @Override
+    public String shortName() {
+      return shortName;
+    }
+
+    @Override
+    public String asMethod() {
+      return null;
+    }
+
+    @Override
+    public String toMethod() {
+      return toMethod;
+    }
+  }
+
+  static class OptionalHandler implements TypeHandler {
+
+    private final List<String> importTypes;
+    private final String shortName;
+    private String toMethod;
+
+    OptionalHandler(TypeHandler handler, boolean isEnum) {
+
+      this.importTypes = new ArrayList<>(handler.importTypes());
+      importTypes.add("io.avaje.http.api.PathTypeConversion");
+      this.shortName = handler.shortName();
+      this.toMethod =
+        "optional("
+        + (isEnum
+           ? "qp -> " + handler.toMethod() + " qp)"
+           : "PathTypeConversion::as" + shortName)
+        + ", ";
 
       this.toMethod = toMethod.replace("PathTypeConversion::asString", "Object::toString");
     }

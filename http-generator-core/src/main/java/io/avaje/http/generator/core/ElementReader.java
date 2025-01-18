@@ -119,18 +119,23 @@ public class ElementReader {
       final var isMap =
           !isCollection && typeOp.filter(t -> t.mainType().startsWith("java.util.Map")).isPresent();
 
+      final var isOptional = typeOp.filter(t -> t.mainType().startsWith("java.util.Optional")).isPresent();
+
       if (mainTypeEnum) {
         return TypeMap.enumParamHandler(typeOp.orElseThrow());
-      } else if (isCollection) {
-        this.isParamCollection = true;
-        final var isEnumCollection =
+      } else if (isCollection || isOptional) {
+        final var isEnumContainer =
             typeOp
                 .flatMap(t -> Optional.ofNullable(typeElement(t.param0())))
                 .map(TypeElement::getKind)
                 .filter(ElementKind.ENUM::equals)
                 .isPresent();
 
-        return TypeMap.collectionHandler(typeOp.orElseThrow(), isEnumCollection);
+        if (isOptional) {//Needs to be checked first, as 'isCollection' is too broad
+          return TypeMap.optionalHandler(typeOp.orElseThrow(), isEnumContainer);
+        }
+        this.isParamCollection = true;
+        return TypeMap.collectionHandler(typeOp.orElseThrow(), isEnumContainer);
       } else if (isMap) {
         this.isParamMap = true;
         return new TypeMap.StringHandler();

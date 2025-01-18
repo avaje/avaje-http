@@ -66,7 +66,7 @@ public interface UType {
   }
 
   /**
-   * Return the raw generic parameter if this UType is a Collection.
+   * Return the raw generic parameter if this UType is a Collection or an Optional.
    */
   default UType paramRaw() {
     return null;
@@ -212,6 +212,7 @@ public interface UType {
       switch (mainType()) {
         case "java.util.Set":
         case "java.util.List":
+        case "java.util.Optional":
         case "java.util.stream.Stream":
         case "java.net.http.HttpResponse":
         case "java.util.concurrent.CompletableFuture":
