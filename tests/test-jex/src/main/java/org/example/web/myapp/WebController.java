@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
@@ -175,5 +176,23 @@ class WebController {
   @Get("takesNestedEnum")
   String takesNestedEnum(Foo.NestedEnum myEnum) {
     return "takesNestedEnum-" + myEnum;
+  }
+
+  @Produces(value = "text/plain")
+  @Get("takesOptional{myOptional}")
+  String takesOptional(@QueryParam("myOptional") Optional<Long> myOptional) {
+    return "takesOptional-" + myOptional;
+  }
+
+  @Produces(value = "text/plain")
+  @Get("takesOptionalEnum{myOptional}")
+  String takesOptionalEnum(@QueryParam("myOptional") Optional<Foo.NestedEnum> myOptional) {
+    return "takesOptionalEnum-" + myOptional;
+  }
+
+  @Produces(value = "text/plain")
+  @Get("takesOptionalEnum{myOptional}")
+  String takesOptionalString(@QueryParam("myOptional") Optional<String> myOptional) {
+    return "takesOptionalString-" + myOptional;
   }
 }

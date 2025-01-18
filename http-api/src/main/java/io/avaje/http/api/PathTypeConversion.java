@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.*;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -58,6 +59,10 @@ public final class PathTypeConversion {
 
   public static <T> Set<T> set(Function<String, T> func, List<String> params) {
     return params.stream().map(func).collect(Collectors.toSet());
+  }
+
+  public static <T> Optional<T> optional(Function<String, T> func, String value) {
+    return Optional.ofNullable(func.apply(value));
   }
 
   /** Convert to int. */
