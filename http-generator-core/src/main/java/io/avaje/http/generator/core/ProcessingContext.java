@@ -3,6 +3,7 @@ package io.avaje.http.generator.core;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -49,7 +50,7 @@ public final class ProcessingContext {
     private final boolean instrumentAllMethods;
     private final boolean disableDirectWrites;
     private final boolean javalin6;
-    private String clientFQN;
+    private final Set<String> clientFQN = new HashSet<>();
 
     Ctx(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
       readAdapter = adapter;
@@ -243,9 +244,8 @@ public final class ProcessingContext {
             logWarn(module, "io.avaje.http.api.javalin only contains SOURCE retention annotations. It should added as `requires static`");
           }
         });
-        var fqn = CTX.get().clientFQN;
 
-        reader.validateServices("io.avaje.http.client.HttpClient.GeneratedComponent", Set.of(fqn));
+        reader.validateServices("io.avaje.http.client.HttpClient.GeneratedComponent", CTX.get().clientFQN);
 
       } catch (Exception e) {
         // can't read module
@@ -285,6 +285,6 @@ public final class ProcessingContext {
   }
 
   public static void addClientComponent(String clientFQN) {
-    CTX.get().clientFQN = clientFQN;
+    CTX.get().clientFQN.add(clientFQN);
   }
 }
