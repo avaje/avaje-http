@@ -30,8 +30,6 @@ public class ClientProcessor extends AbstractProcessor {
 
   private final ComponentMetaData metaData = new ComponentMetaData();
 
-  private boolean useJsonB;
-
   private SimpleComponentWriter componentWriter;
 
   private boolean readModuleInfo;
@@ -48,7 +46,6 @@ public class ClientProcessor extends AbstractProcessor {
     APContext.init(processingEnv);
     ProcessingContext.init(processingEnv, new ClientPlatformAdapter(), false);
     this.componentWriter = new SimpleComponentWriter(metaData);
-    useJsonB = ProcessingContext.useJsonb();
   }
 
   @Override
@@ -103,7 +100,7 @@ public class ClientProcessor extends AbstractProcessor {
 
   protected String writeClientAdapter(ControllerReader reader) throws IOException {
     var suffix = ClientSuffix.fromInterface(reader.beanType().getQualifiedName().toString());
-    return new ClientWriter(reader, suffix, useJsonB).write();
+    return new ClientWriter(reader, suffix).write();
   }
 
   private void initialiseComponent() {
