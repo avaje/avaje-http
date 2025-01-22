@@ -21,7 +21,6 @@ import static java.util.stream.Collectors.toMap;
  * Write code to register Web route for a given controller method.
  */
 final class ClientMethodWriter {
-
   private static final KnownResponse KNOWN_RESPONSE = new KnownResponse();
   private static final String BODY_HANDLER = "java.net.http.HttpResponse.BodyHandler";
   private static final String COMPLETABLE_FUTURE = "java.util.concurrent.CompletableFuture";
@@ -33,19 +32,23 @@ final class ClientMethodWriter {
   private final UType returnType;
   private MethodParam bodyHandlerParam;
   private String methodGenericParams = "";
-  private final boolean useJsonb;
+  private static final boolean useJsonb = APContext.typeElement("io.avaje.jsonb.Types") != null;
+  private static final boolean useJackson =
+      APContext.typeElement("com.fasterxml.jackson.core.type.TypeReference") != null;
+  private static final boolean useInject =
+      APContext.typeElement("io.avaje.inject.spi.GenericType") != null;
+
   private final Optional<RequestTimeoutPrism> timeout;
   private final boolean useConfig;
   private final Map<String, String> segmentPropertyMap;
   private final Set<String> propertyConstants;
   private final List<Entry<String, String>> presetHeaders;
 
-  ClientMethodWriter(MethodReader method, Append writer, boolean useJsonb, Set<String> propertyConstants) {
+  ClientMethodWriter(MethodReader method, Append writer, Set<String> propertyConstants) {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
     this.returnType = Util.parseType(method.returnType());
-    this.useJsonb = useJsonb;
     this.timeout = method.timeout();
     this.useConfig = ProcessingContext.typeElement("io.avaje.config.Config") != null;
 
@@ -73,6 +76,13 @@ final class ClientMethodWriter {
   }
 
   void addImportTypes(ControllerReader reader) {
+    if (useJsonb) {
+      reader.addImportType("io.avaje.jsonb.Types");
+    } else if (useJackson) {
+      reader.addImportType("com.fasterxml.jackson.core.type.TypeReference");
+    } else if (useInject) {
+      reader.addImportType("io.avaje.inject.spi.GenericType");
+    }
     reader.addImportTypes(returnType.importTypes());
     method.throwsList().stream()
       .map(UType::parse)
@@ -240,13 +250,20 @@ final class ClientMethodWriter {
   }
 
   void writeGeneric(UType type) {
-    if (useJsonb && type.isGeneric()) {
-      final var params = type.importTypes().stream()
-        .skip(1)
-        .map(Util::shortName)
-        .collect(Collectors.joining(".class, "));
+    if (type.isGeneric() && useJsonb) {
+      final var params =
+          type.importTypes().stream()
+              .skip(1)
+              .map(Util::shortName)
+              .collect(Collectors.joining(".class, "));
 
-      writer.append("Types.newParameterizedType(%s.class, %s.class)", Util.shortName(type.mainType()), params);
+      writer.append(
+          "Types.newParameterizedType(%s.class, %s.class)",
+          Util.shortName(type.mainType()), params);
+    } else if (type.isGeneric() && useJackson) {
+      writer.append("new TypeReference<%s>() {}.getType()", type.shortType());
+    } else if (type.isGeneric() && useInject) {
+      writer.append("new GenericType<%s>() {}.getType()", type.shortType());
     } else {
       writer.append("%s.class", Util.shortName(type.mainType()));
     }

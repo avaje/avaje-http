@@ -1,14 +1,20 @@
 package io.avaje.http.client;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.type.CollectionType;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.type.CollectionType;
 
 /**
  * Jackson BodyAdapter to read and write beans as JSON.
@@ -26,9 +32,9 @@ public final class JacksonBodyAdapter implements BodyAdapter {
 
   private final ObjectMapper mapper;
 
-  private final ConcurrentHashMap<Class<?>, BodyWriter<?>> beanWriterCache = new ConcurrentHashMap<>();
-  private final ConcurrentHashMap<Class<?>, BodyReader<?>> beanReaderCache = new ConcurrentHashMap<>();
-  private final ConcurrentHashMap<Class<?>, BodyReader<?>> listReaderCache = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<Type, BodyWriter<?>> beanWriterCache = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<Type, BodyReader<?>> beanReaderCache = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<Type, BodyReader<?>> listReaderCache = new ConcurrentHashMap<>();
 
   /**
    * Create passing the ObjectMapper to use.
@@ -66,6 +72,31 @@ public final class JacksonBodyAdapter implements BodyAdapter {
     return (BodyReader<T>) beanReaderCache.computeIfAbsent(cls, aClass -> {
       try {
         return new JReader<>(mapper.readerFor(cls));
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> BodyWriter<T> beanWriter(Type cls) {
+
+    return (BodyWriter<T>) beanWriterCache.computeIfAbsent(cls, aClass -> {
+      try {
+        return new JWriter<>(mapper.writerFor(mapper.getTypeFactory().constructType(cls)));
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> BodyReader<T> beanReader(Type cls) {
+    return (BodyReader<T>) beanReaderCache.computeIfAbsent(cls, aClass -> {
+      try {
+        return new JReader<>(mapper.readerFor(mapper.getTypeFactory().constructType(cls)));
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
