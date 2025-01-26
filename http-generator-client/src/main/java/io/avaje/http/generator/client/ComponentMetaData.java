@@ -4,17 +4,12 @@ import java.util.*;
 
 final class ComponentMetaData {
 
-  private final List<String> generatedClients = new ArrayList<>();
+  private final Set<String> generatedClients = new HashSet<>();
   private String fullName;
 
   @Override
   public String toString() {
     return generatedClients.toString();
-  }
-
-  /** Ensure the component name has been initialised. */
-  void initialiseFullName() {
-    fullName();
   }
 
   void add(String type) {
@@ -28,13 +23,13 @@ final class ComponentMetaData {
   String fullName() {
     if (fullName == null) {
       String topPackage = TopPackage.of(generatedClients);
-      fullName = topPackage + ".GeneratedHttpComponent";
+      fullName = topPackage + "." + name(topPackage) + "HttpComponent";
     }
     return fullName;
   }
 
   List<String> all() {
-    return generatedClients;
+    return new ArrayList<>(generatedClients);
   }
 
   /** Return the package imports for the JsonAdapters and related types. */
@@ -45,5 +40,38 @@ final class ComponentMetaData {
       .forEach(packageImports::add);
 
     return packageImports;
+  }
+
+
+  static String name(String name) {
+    if (name == null) {
+      return null;
+    }
+    final int pos = name.lastIndexOf('.');
+    if (pos > -1) {
+      name = name.substring(pos + 1);
+    }
+    return camelCase(name).replaceFirst("Httpclient", "Generated");
+  }
+
+  private static String camelCase(String name) {
+    StringBuilder sb = new StringBuilder(name.length());
+    boolean upper = true;
+    for (char aChar : name.toCharArray()) {
+      if (Character.isLetterOrDigit(aChar)) {
+        if (upper) {
+          aChar = Character.toUpperCase(aChar);
+          upper = false;
+        }
+        sb.append(aChar);
+      } else if (toUpperOn(aChar)) {
+        upper = true;
+      }
+    }
+    return sb.toString();
+  }
+
+  private static boolean toUpperOn(char aChar) {
+    return aChar == ' ' || aChar == '-' || aChar == '_';
   }
 }
