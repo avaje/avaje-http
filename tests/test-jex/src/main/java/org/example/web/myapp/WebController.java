@@ -178,21 +178,24 @@ class WebController {
     return "takesNestedEnum-" + myEnum;
   }
 
+  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   @Produces(value = "text/plain")
-  @Get("takesOptional{myOptional}")
-  String takesOptional(@QueryParam("myOptional") Optional<Long> myOptional) {
+  @Get("takesOptional")
+  String takesOptional(Optional<Long> myOptional) {
     return "takesOptional-" + myOptional;
   }
 
+  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   @Produces(value = "text/plain")
-  @Get("takesOptionalEnum{myOptional}")
+  @Get("takesOptionalEnum")
   String takesOptionalEnum(@QueryParam("myOptional") Optional<Foo.NestedEnum> myOptional) {
     return "takesOptionalEnum-" + myOptional;
   }
 
+  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   @Produces(value = "text/plain")
-  @Get("takesOptionalEnum{myOptional}")
-  String takesOptionalString(@QueryParam("myOptional") Optional<String> myOptional) {
+  @Get("takesOptionalString")
+  String takesOptionalString(@QueryParam Optional<String> myOptional) {
     return "takesOptionalString-" + myOptional;
   }
 }

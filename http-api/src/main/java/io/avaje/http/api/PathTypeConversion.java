@@ -53,19 +53,42 @@ public final class PathTypeConversion {
     }
   }
 
-  public static <T> List<T> list(Function<String, T> func, List<String> params) {
-    return params.stream().map(func).collect(Collectors.toList());
+  /**
+   * Return the list of parameters using a type conversion function.
+   */
+  public static <T> List<T> list(Function<String, T> typeConversion, List<String> params) {
+    return params.stream().map(typeConversion).collect(Collectors.toList());
   }
 
-  public static <T> Set<T> set(Function<String, T> func, List<String> params) {
-    return params.stream().map(func).collect(Collectors.toSet());
+  /**
+   * Return the parameters as a Set using a type conversion function.
+   */
+  public static <T> Set<T> set(Function<String, T> typeConversion, List<String> params) {
+    return params.stream().map(typeConversion).collect(Collectors.toSet());
   }
 
-  public static <T> Optional<T> optional(Function<String, T> func, String value) {
-    return Optional.ofNullable(func.apply(value));
+  /**
+   * Return an Optional taking a type conversion function and string value.
+   *
+   * @param typeConversion The type conversion function
+   * @param value          The nullable value
+   * @param <T>            The ty
+   * @return The Optional typed value
+   */
+  public static <T> Optional<T> optional(Function<String, T> typeConversion, String value) {
+    return value == null ? Optional.empty() : Optional.ofNullable(typeConversion.apply(value));
   }
 
-  /** Convert to int. */
+  /**
+   * Return an Optional for a nullable String value.
+   */
+  public static Optional<String> optional(String value) {
+    return Optional.ofNullable(value);
+  }
+
+  /**
+   * Convert to int.
+   */
   public static int asInt(String value) {
     checkNull(value);
     try {
@@ -75,7 +98,9 @@ public final class PathTypeConversion {
     }
   }
 
-  /** Convert to enum. */
+  /**
+   * Convert to enum.
+   */
   @SuppressWarnings({"rawtypes"})
   public static <T> Enum asEnum(Class<T> clazz, String value) {
     checkNull(value);
@@ -86,6 +111,9 @@ public final class PathTypeConversion {
     }
   }
 
+  /**
+   * Convert to an Enum of the given type.
+   */
   @SuppressWarnings({"unchecked", "rawtypes"})
   public static <T> Enum convertEnum(Class<T> clazz, String value) {
     try {
@@ -260,7 +288,9 @@ public final class PathTypeConversion {
     }
   }
 
-  /** Convert to enum. */
+  /**
+   * Convert to enum of the given type.
+   */
   @SuppressWarnings({"rawtypes"})
   public static <T> Enum toEnum(Class<T> clazz, String value) {
     if (isNullOrEmpty(value)) {
