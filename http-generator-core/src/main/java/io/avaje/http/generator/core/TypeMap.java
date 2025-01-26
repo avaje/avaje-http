@@ -347,9 +347,8 @@ class TypeMap {
     private String toMethod;
 
     CollectionHandler(TypeHandler handler, boolean set, boolean isEnum) {
-
       this.importTypes = new ArrayList<>(handler.importTypes());
-      importTypes.add("io.avaje.http.api.PathTypeConversion");
+      this.importTypes.add("io.avaje.http.api.PathTypeConversion");
       this.shortName = handler.shortName();
       this.toMethod =
           (set ? "set" : "list")
@@ -369,7 +368,6 @@ class TypeMap {
 
     @Override
     public List<String> importTypes() {
-
       return importTypes;
     }
 
@@ -393,21 +391,24 @@ class TypeMap {
 
     private final List<String> importTypes;
     private final String shortName;
-    private String toMethod;
+    private final String toMethod;
 
     OptionalHandler(TypeHandler handler, boolean isEnum) {
-
       this.importTypes = new ArrayList<>(handler.importTypes());
-      importTypes.add("io.avaje.http.api.PathTypeConversion");
+      this.importTypes.add("io.avaje.http.api.PathTypeConversion");
       this.shortName = handler.shortName();
-      this.toMethod =
-        "optional("
-        + (isEnum
-           ? "qp -> " + handler.toMethod() + " qp)"
-           : "PathTypeConversion::as" + shortName)
-        + ", ";
+      this.toMethod = buildToMethod(handler, isEnum);
+    }
 
-      this.toMethod = toMethod.replace("PathTypeConversion::asString", "Object::toString");
+    static String buildToMethod(TypeHandler handler, boolean isEnum) {
+      if (isEnum) {
+        return "optional(qp -> " + handler.toMethod() + " qp), ";
+      }
+      if ("String".equals(handler.shortName())) {
+        return "optional(";
+      } else {
+        return "optional(PathTypeConversion::as" + handler.shortName() + ", ";
+      }
     }
 
     @Override
@@ -417,7 +418,6 @@ class TypeMap {
 
     @Override
     public List<String> importTypes() {
-
       return importTypes;
     }
 
