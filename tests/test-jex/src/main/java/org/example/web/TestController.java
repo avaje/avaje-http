@@ -46,8 +46,8 @@ public class TestController {
   }
 
   @Filter
-  void filter(FilterChain chain) throws Exception {
-    System.err.println("do nothing lmao");
+  void filter(FilterChain chain) {
+    // do nothing
     chain.proceed();
   }
 
