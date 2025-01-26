@@ -46,16 +46,6 @@ final class SimpleComponentWriter {
     writeRegister();
     writeClassEnd();
     writer.close();
-    writeMetaInf();
-  }
-
-  void writeMetaInf() throws IOException {
-    final FileObject fileObject = createMetaInfWriter(Constants.META_INF_COMPONENT);
-    if (fileObject != null) {
-      try (var fileWriter = fileObject.openWriter()) {
-        fileWriter.write(fullName);
-      }
-    }
   }
 
   private void writeRegister() {

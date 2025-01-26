@@ -10,7 +10,7 @@ import java.util.Map;
  * <p/>
  * These types convert from String to types on controller methods.
  */
-class TypeMap {
+final class TypeMap {
 
   private static final Map<String, TypeHandler> types = new HashMap<>();
 
@@ -48,40 +48,25 @@ class TypeMap {
 
   static TypeHandler collectionHandler(UType type, boolean isEnum) {
     final var handler = types.get(type.param0());
-
     if (!isEnum && handler == null) {
       return null;
     }
-
-    return types.computeIfAbsent(
-        type.full(),
-        k ->
-            new CollectionHandler(
-                isEnum ? enumParamHandler(type.paramRaw()) : handler,
-                type.mainType().startsWith("java.util.Set"),
-                isEnum));
+    return types.computeIfAbsent(type.full(), k -> CollectionHandler.of(type, isEnum, handler));
   }
 
   static TypeHandler optionalHandler(UType type, boolean isEnum) {
     final var handler = types.get(type.param0());
-
     if (!isEnum && handler == null) {
       return null;
     }
-
-    return types.computeIfAbsent(
-      type.full(),
-      k ->
-        new OptionalHandler(
-          isEnum ? enumParamHandler(type.paramRaw()) : handler,
-          isEnum));
+    return types.computeIfAbsent(type.full(), k -> OptionalHandler.of(type, isEnum, handler));
   }
 
   static TypeHandler enumParamHandler(UType type) {
     return new EnumHandler(type);
   }
 
-  static class StringHandler extends JavaLangType {
+  static final class StringHandler extends JavaLangType {
     StringHandler() {
       super("String");
     }
@@ -97,7 +82,7 @@ class TypeMap {
     }
   }
 
-  static class IntegerHandler extends JavaLangType {
+  static final class IntegerHandler extends JavaLangType {
     IntegerHandler() {
       super("Integer");
     }
@@ -113,13 +98,13 @@ class TypeMap {
     }
   }
 
-  static class IntHandler extends Primitive {
+  static final class IntHandler extends Primitive {
     IntHandler() {
       super("Int");
     }
   }
 
-  static class LongHandler extends JavaLangType {
+  static final class LongHandler extends JavaLangType {
     LongHandler() {
       super("Long");
     }
@@ -135,13 +120,13 @@ class TypeMap {
     }
   }
 
-  static class PLongHandler extends Primitive {
+  static final class PLongHandler extends Primitive {
     PLongHandler() {
       super("Long");
     }
   }
 
-  static class FloatHandler extends JavaLangType {
+  static final class FloatHandler extends JavaLangType {
     FloatHandler() {
       super("Float");
     }
@@ -157,13 +142,13 @@ class TypeMap {
     }
   }
 
-  static class PFloatHandler extends Primitive {
+  static final class PFloatHandler extends Primitive {
     PFloatHandler() {
       super("Float");
     }
   }
 
-  static class DoubleHandler extends JavaLangType {
+  static final class DoubleHandler extends JavaLangType {
     DoubleHandler() {
       super("Double");
     }
@@ -179,13 +164,13 @@ class TypeMap {
     }
   }
 
-  static class PDoubleHandler extends Primitive {
+  static final class PDoubleHandler extends Primitive {
     PDoubleHandler() {
       super("Double");
     }
   }
 
-  static class BooleanHandler extends JavaLangType {
+  static final class BooleanHandler extends JavaLangType {
     BooleanHandler() {
       super("Boolean");
     }
@@ -201,7 +186,7 @@ class TypeMap {
     }
   }
 
-  static class BoolHandler extends Primitive {
+  static final class BoolHandler extends Primitive {
     BoolHandler() {
       super("asBool(", "boolean");
     }
@@ -231,7 +216,7 @@ class TypeMap {
     }
   }
 
-  abstract static class Primitive implements TypeHandler {
+  static abstract class Primitive implements TypeHandler {
 
     private final String type;
 
@@ -273,55 +258,55 @@ class TypeMap {
     }
   }
 
-  static class UuidHandler extends ObjectHandler {
+  static final class UuidHandler extends ObjectHandler {
     UuidHandler() {
       super("java.util.UUID", "UUID");
     }
   }
 
-  static class BigDecimalHandler extends ObjectHandler {
+  static final class BigDecimalHandler extends ObjectHandler {
     BigDecimalHandler() {
       super("java.math.BigDecimal", "BigDecimal");
     }
   }
 
-  static class BigIntegerHandler extends ObjectHandler {
+  static final class BigIntegerHandler extends ObjectHandler {
     BigIntegerHandler() {
       super("java.math.BigInteger", "BigInteger");
     }
   }
 
-  static class LocalDateHandler extends ObjectHandler {
+  static final class LocalDateHandler extends ObjectHandler {
     LocalDateHandler() {
       super("java.time.LocalDate", "LocalDate");
     }
   }
 
-  static class InstantHandler extends ObjectHandler {
+  static final class InstantHandler extends ObjectHandler {
     InstantHandler() {
       super("java.time.Instant", "Instant");
     }
   }
 
-  static class OffsetDateTimeHandler extends ObjectHandler {
+  static final class OffsetDateTimeHandler extends ObjectHandler {
     OffsetDateTimeHandler() {
       super("java.time.OffsetDateTime", "OffsetDateTime");
     }
   }
 
-  static class LocalTimeHandler extends ObjectHandler {
+  static final class LocalTimeHandler extends ObjectHandler {
     LocalTimeHandler() {
       super("java.time.LocalTime", "LocalTime");
     }
   }
 
-  static class LocalDateTimeHandler extends ObjectHandler {
+  static final class LocalDateTimeHandler extends ObjectHandler {
     LocalDateTimeHandler() {
       super("java.time.LocalDateTime", "LocalDateTime");
     }
   }
 
-  static class EnumHandler extends ObjectHandler {
+  static final class EnumHandler extends ObjectHandler {
     private final UType type;
 
     EnumHandler(UType type) {
@@ -340,26 +325,31 @@ class TypeMap {
     }
   }
 
-  static class CollectionHandler implements TypeHandler {
+  static final class CollectionHandler implements TypeHandler {
 
     private final List<String> importTypes;
     private final String shortName;
-    private String toMethod;
+    private final String toMethod;
 
-    CollectionHandler(TypeHandler handler, boolean set, boolean isEnum) {
+    private static CollectionHandler of(UType type, boolean isEnum, TypeHandler sourceHandler) {
+      final var handler = isEnum ? enumParamHandler(type.paramRaw()) : sourceHandler;
+      final var isSet = type.mainType().startsWith("java.util.Set");
+      return new CollectionHandler(handler, isSet, isEnum);
+    }
 
+    private CollectionHandler(TypeHandler handler, boolean set, boolean isEnum) {
       this.importTypes = new ArrayList<>(handler.importTypes());
-      importTypes.add("io.avaje.http.api.PathTypeConversion");
+      this.importTypes.add("io.avaje.http.api.PathTypeConversion");
       this.shortName = handler.shortName();
-      this.toMethod =
-          (set ? "set" : "list")
-              + "("
-              + (isEnum
-                  ? "qp -> " + handler.toMethod() + " qp)"
-                  : "PathTypeConversion::as" + shortName)
-              + ", ";
+      String _toMethod =
+        (set ? "set" : "list")
+          + "("
+          + (isEnum
+              ? "qp -> " + handler.toMethod() + " qp)"
+              : "PathTypeConversion::as" + shortName)
+          + ", ";
 
-      this.toMethod = toMethod.replace("PathTypeConversion::asString", "Object::toString");
+      this.toMethod = _toMethod.replace("PathTypeConversion::asString", "Object::toString");
     }
 
     @Override
@@ -369,7 +359,6 @@ class TypeMap {
 
     @Override
     public List<String> importTypes() {
-
       return importTypes;
     }
 
@@ -389,25 +378,33 @@ class TypeMap {
     }
   }
 
-  static class OptionalHandler implements TypeHandler {
+  static final class OptionalHandler implements TypeHandler {
 
     private final List<String> importTypes;
     private final String shortName;
-    private String toMethod;
+    private final String toMethod;
 
-    OptionalHandler(TypeHandler handler, boolean isEnum) {
+    private static OptionalHandler of(UType type, boolean isEnum, TypeHandler sourceHandler) {
+      final var handler = isEnum ? enumParamHandler(type.paramRaw()) : sourceHandler;
+      return new OptionalHandler(handler, isEnum);
+    }
 
+    private OptionalHandler(TypeHandler handler, boolean isEnum) {
       this.importTypes = new ArrayList<>(handler.importTypes());
-      importTypes.add("io.avaje.http.api.PathTypeConversion");
+      this.importTypes.add("io.avaje.http.api.PathTypeConversion");
       this.shortName = handler.shortName();
-      this.toMethod =
-        "optional("
-        + (isEnum
-           ? "qp -> " + handler.toMethod() + " qp)"
-           : "PathTypeConversion::as" + shortName)
-        + ", ";
+      this.toMethod = buildToMethod(handler, isEnum);
+    }
 
-      this.toMethod = toMethod.replace("PathTypeConversion::asString", "Object::toString");
+    static String buildToMethod(TypeHandler handler, boolean isEnum) {
+      if (isEnum) {
+        return "optional(qp -> " + handler.toMethod() + " qp), ";
+      }
+      if ("String".equals(handler.shortName())) {
+        return "optional(";
+      } else {
+        return "optional(PathTypeConversion::as" + handler.shortName() + ", ";
+      }
     }
 
     @Override
@@ -417,7 +414,6 @@ class TypeMap {
 
     @Override
     public List<String> importTypes() {
-
       return importTypes;
     }
 
@@ -437,7 +433,7 @@ class TypeMap {
     }
   }
 
-  abstract static class ObjectHandler implements TypeHandler {
+  static abstract class ObjectHandler implements TypeHandler {
 
     private final String importType;
     private final String shortName;

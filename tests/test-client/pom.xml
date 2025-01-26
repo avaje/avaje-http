@@ -12,6 +12,7 @@
   <artifactId>test-client</artifactId>
 
   <properties>
+    <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -52,6 +53,19 @@
       <groupId>org.avaje</groupId>
       <artifactId>logback</artifactId>
       <version>1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-jex</artifactId>
+      <version>3.0-RC14</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-client-generator</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
   </dependencies>

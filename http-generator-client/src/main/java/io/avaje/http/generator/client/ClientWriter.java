@@ -1,6 +1,5 @@
 package io.avaje.http.generator.client;
 
-import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.ClientPrism;
 import io.avaje.http.generator.core.ControllerReader;
@@ -24,17 +23,17 @@ final class ClientWriter extends BaseControllerWriter {
   private static final String AT_GENERATED = "@Generated(\"avaje-http-client-generator\")";
 
   private final List<ClientMethodWriter> methodList = new ArrayList<>();
-  private final boolean useJsonb;
   private final Set<String> propertyConstants = new HashSet<>();
   private final String suffix;
 
-  ClientWriter(ControllerReader reader, String suffix, boolean useJsonB) throws IOException {
+  private final boolean packagePrivate;
+
+  ClientWriter(ControllerReader reader, String suffix, boolean packagePrivate) throws IOException {
     super(reader, suffix);
     this.suffix = suffix;
+    this.packagePrivate = packagePrivate;
     reader.addImportType(HTTP_CLIENT);
-    this.useJsonb = useJsonB;
     readMethods();
-    if (useJsonB) reader.addImportType("io.avaje.jsonb.Types");
   }
 
   @Override
@@ -50,7 +49,7 @@ final class ClientWriter extends BaseControllerWriter {
   private void readMethods() {
     for (final MethodReader method : reader.methods()) {
       if (method.isWebMethod()) {
-        final var methodWriter = new ClientMethodWriter(method, writer, useJsonb, propertyConstants);
+        final var methodWriter = new ClientMethodWriter(method, writer, propertyConstants);
         methodWriter.addImportTypes(reader);
         methodList.add(methodWriter);
       }
@@ -79,12 +78,12 @@ final class ClientWriter extends BaseControllerWriter {
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
     AnnotationUtil.writeAnnotations(writer, reader.beanType());
-
-    writer.append("public final class %s%s implements %s, AutoCloseable {", shortName, suffix, shortName).eol().eol();
+    var access = packagePrivate ? "" : "public ";
+    writer.append("%sfinal class %s%s implements %s, AutoCloseable {", access, shortName, suffix, shortName).eol().eol();
 
     writer.append("  private final HttpClient client;").eol().eol();
 
-    writer.append("  public %s%s(HttpClient client) {", shortName, suffix).eol();
+    writer.append("  %s%s%s(HttpClient client) {", access, shortName, suffix).eol();
     writer.append("    this.client = client;").eol();
     writer.append("  }").eol().eol();
   }
