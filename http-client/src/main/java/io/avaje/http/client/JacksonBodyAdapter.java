@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -81,7 +80,6 @@ public final class JacksonBodyAdapter implements BodyAdapter {
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyWriter<T> beanWriter(Type cls) {
-
     return (BodyWriter<T>) beanWriterCache.computeIfAbsent(cls, aClass -> {
       try {
         return new JWriter<>(mapper.writerFor(mapper.getTypeFactory().constructType(cls)));
@@ -132,7 +130,7 @@ public final class JacksonBodyAdapter implements BodyAdapter {
     });
   }
 
-  private static class JReader<T> implements BodyReader<T> {
+  private static final class JReader<T> implements BodyReader<T> {
 
     private final ObjectReader reader;
 
@@ -159,7 +157,7 @@ public final class JacksonBodyAdapter implements BodyAdapter {
     }
   }
 
-  private static class JWriter<T> implements BodyWriter<T> {
+  private static final class JWriter<T> implements BodyWriter<T> {
 
     private final ObjectWriter writer;
 

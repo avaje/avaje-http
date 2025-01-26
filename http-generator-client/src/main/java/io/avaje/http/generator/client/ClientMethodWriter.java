@@ -33,10 +33,8 @@ final class ClientMethodWriter {
   private MethodParam bodyHandlerParam;
   private String methodGenericParams = "";
   private static final boolean useJsonb = APContext.typeElement("io.avaje.jsonb.Types") != null;
-  private static final boolean useJackson =
-      APContext.typeElement("com.fasterxml.jackson.core.type.TypeReference") != null;
-  private static final boolean useInject =
-      APContext.typeElement("io.avaje.inject.spi.GenericType") != null;
+  private static final boolean useJackson = APContext.typeElement("com.fasterxml.jackson.core.type.TypeReference") != null;
+  private static final boolean useInject = APContext.typeElement("io.avaje.inject.spi.GenericType") != null;
 
   private final Optional<RequestTimeoutPrism> timeout;
   private final boolean useConfig;
@@ -252,14 +250,12 @@ final class ClientMethodWriter {
   void writeGeneric(UType type) {
     if (type.isGeneric() && useJsonb) {
       final var params =
-          type.importTypes().stream()
-              .skip(1)
-              .map(Util::shortName)
-              .collect(Collectors.joining(".class, "));
+        type.importTypes().stream()
+          .skip(1)
+          .map(Util::shortName)
+          .collect(Collectors.joining(".class, "));
 
-      writer.append(
-          "Types.newParameterizedType(%s.class, %s.class)",
-          Util.shortName(type.mainType()), params);
+      writer.append("Types.newParameterizedType(%s.class, %s.class)", Util.shortName(type.mainType()), params);
     } else if (type.isGeneric() && useJackson) {
       writer.append("new TypeReference<%s>() {}.getType()", type.shortType());
     } else if (type.isGeneric() && useInject) {

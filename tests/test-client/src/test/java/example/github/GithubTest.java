@@ -81,8 +81,6 @@ class GithubTest {
         HttpClient.builder()
             .baseUrl(url)
             .bodyAdapter(bodyAdapter)
-            //      .requestLogging(false)
-            //      .requestListener(new RequestLogger())
             .build();
 
     final Simple simple = client.create(Simple.class);
@@ -96,8 +94,6 @@ class GithubTest {
         HttpClient.builder()
             .baseUrl(url)
             .bodyAdapter(bodyAdapter)
-            //      .requestLogging(false)
-            //      .requestListener(new RequestLogger())
             .build();
 
     final var generic = client.create(Generic.class);
