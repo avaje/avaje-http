@@ -117,6 +117,21 @@ public final class JacksonBodyAdapter implements BodyAdapter {
     });
   }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> BodyReader<List<T>> listReader(Type type) {
+    return (BodyReader<List<T>>) listReaderCache.computeIfAbsent(type, aType -> {
+      try {
+        var javaType = mapper.getTypeFactory().constructType(aType);
+        final CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, javaType);
+        final ObjectReader reader = mapper.readerFor(collectionType);
+        return new JReader<>(reader);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
+  }
+
   private static class JReader<T> implements BodyReader<T> {
 
     private final ObjectReader reader;
