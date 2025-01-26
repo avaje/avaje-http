@@ -72,22 +72,73 @@ class TypeMapTest {
 
   @Test
   void get_OptionalInteger() {
-    TypeHandler handler = TypeMap.get("java.lang.Integer");
-    TypeMap.OptionalHandler optionalHandler = new TypeMap.OptionalHandler(handler, false);
+    UType uType = UType.parse("java.util.Optional<java.lang.Integer>");
+    TypeHandler optionalHandler = TypeMap.optionalHandler(uType, false);
+    assertThat(optionalHandler).isNotNull();
     assertThat(optionalHandler.toMethod()).isEqualTo("optional(PathTypeConversion::asInteger, ");
   }
 
   @Test
   void get_OptionalString() {
-    TypeHandler handler = TypeMap.get("java.lang.String");
-    TypeMap.OptionalHandler optionalHandler = new TypeMap.OptionalHandler(handler, false);
+    UType uType = UType.parse("java.util.Optional<java.lang.String>");
+    TypeHandler optionalHandler = TypeMap.optionalHandler(uType, false);
+    assertThat(optionalHandler).isNotNull();
     assertThat(optionalHandler.toMethod()).isEqualTo("optional(");
   }
 
   @Test
   void get_OptionalEnum() {
-    TypeHandler handler = TypeMap.enumParamHandler(UType.parse("org.my.MyEnum"));
-    TypeMap.OptionalHandler optionalHandler = new TypeMap.OptionalHandler(handler, true);
+    UType uType = UType.parse("java.util.Optional<org.my.MyEnum>");
+    TypeHandler optionalHandler = TypeMap.optionalHandler(uType, true);
+    assertThat(optionalHandler).isNotNull();
     assertThat(optionalHandler.toMethod()).isEqualTo("optional(qp -> (MyEnum) toEnum(MyEnum.class,  qp), ");
+  }
+
+  @Test
+  void get_ListInteger() {
+    UType uType = UType.parse("java.util.List<java.lang.Integer>");
+    TypeHandler handler = TypeMap.collectionHandler(uType, false);
+    assertThat(handler).isNotNull();
+    assertThat(handler.toMethod()).isEqualTo("list(PathTypeConversion::asInteger, ");
+  }
+
+  @Test
+  void get_SetInteger() {
+    UType uType = UType.parse("java.util.Set<java.lang.Integer>");
+    TypeHandler handler = TypeMap.collectionHandler(uType, false);
+    assertThat(handler).isNotNull();
+    assertThat(handler.toMethod()).isEqualTo("set(PathTypeConversion::asInteger, ");
+  }
+
+  @Test
+  void get_ListString() {
+    UType uType = UType.parse("java.util.List<java.lang.String>");
+    TypeHandler handler = TypeMap.collectionHandler(uType, false);
+    assertThat(handler).isNotNull();
+    assertThat(handler.toMethod()).isEqualTo("list(Object::toString, ");
+  }
+
+  @Test
+  void get_SetString() {
+    UType uType = UType.parse("java.util.Set<java.lang.String>");
+    TypeHandler handler = TypeMap.collectionHandler(uType, false);
+    assertThat(handler).isNotNull();
+    assertThat(handler.toMethod()).isEqualTo("set(Object::toString, ");
+  }
+
+  @Test
+  void get_ListEnum() {
+    UType uType = UType.parse("java.util.List<org.my.MyEnum>");
+    TypeHandler handler = TypeMap.collectionHandler(uType, true);
+    assertThat(handler).isNotNull();
+    assertThat(handler.toMethod()).isEqualTo("list(qp -> (MyEnum) toEnum(MyEnum.class,  qp), ");
+  }
+
+  @Test
+  void get_SetEnum() {
+    UType uType = UType.parse("java.util.Set<org.my.MyEnum>");
+    TypeHandler handler = TypeMap.collectionHandler(uType, true);
+    assertThat(handler).isNotNull();
+    assertThat(handler.toMethod()).isEqualTo("set(qp -> (MyEnum) toEnum(MyEnum.class,  qp), ");
   }
 }
