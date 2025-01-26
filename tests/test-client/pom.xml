@@ -58,10 +58,10 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jex</artifactId>
-      <version>3.0-RC14</version>
+      <version>${jex.version}</version>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client-generator</artifactId>
