@@ -16,7 +16,7 @@ class PkgPrivateTest {
 
   @BeforeAll
   static void startServer() {
-    server = Jex.create().get("/private", ctx -> ctx.text("private")).port(0).start();
+    server = Jex.create().get("/private", ctx -> ctx.text("myPrivateResult")).port(0).start();
   }
 
   @AfterAll
@@ -37,8 +37,7 @@ class PkgPrivateTest {
     final HttpClient client = HttpClient.builder().baseUrl(url).build();
 
     final var simple = client.create(SimplePkgPrivate.class);
-
     final var result = simple.get();
-    assertThat(result).isNotEmpty();
+    assertThat(result).isEqualTo("myPrivateResult");
   }
 }

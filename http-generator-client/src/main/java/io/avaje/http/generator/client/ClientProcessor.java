@@ -35,13 +35,9 @@ import io.avaje.prism.GeneratePrism;
 public class ClientProcessor extends AbstractProcessor {
 
   private final ComponentMetaData metaData = new ComponentMetaData();
-
   private final Map<String, ComponentMetaData> privateMetaData = new HashMap<>();
 
-  private boolean useJsonB;
-
   private SimpleComponentWriter componentWriter;
-
   private boolean readModuleInfo;
 
   @Override
@@ -101,13 +97,11 @@ public class ClientProcessor extends AbstractProcessor {
       final ControllerReader reader = new ControllerReader((TypeElement) controller);
       reader.read(false);
       try {
-
         var packagePrivate =
-            !controller.getModifiers().contains(Modifier.PUBLIC)
-                && ClientPrism.isPresent(controller);
+          !controller.getModifiers().contains(Modifier.PUBLIC)
+            && ClientPrism.isPresent(controller);
         if (packagePrivate) {
-          var packageName =
-              APContext.elements().getPackageOf(controller).getQualifiedName().toString();
+          var packageName = APContext.elements().getPackageOf(controller).getQualifiedName().toString();
           var meta = privateMetaData.computeIfAbsent(packageName, k -> new ComponentMetaData());
           meta.add(writeClientAdapter(reader, true));
         } else {
@@ -127,19 +121,15 @@ public class ClientProcessor extends AbstractProcessor {
 
   private void writeComponent(boolean processingOver) {
     if (processingOver) {
-
       try {
-
         if (!metaData.all().isEmpty()) {
           ProcessingContext.addClientComponent(metaData.fullName());
-
           componentWriter.init();
           componentWriter.write();
         }
 
         for (var meta : privateMetaData.values()) {
           ProcessingContext.addClientComponent(meta.fullName());
-
           var writer = new SimpleComponentWriter(meta);
           writer.init();
           writer.write();
@@ -156,15 +146,12 @@ public class ClientProcessor extends AbstractProcessor {
     final FileObject fileObject = createMetaInfWriter(Constants.META_INF_COMPONENT);
     if (fileObject != null) {
       try (var fileWriter = fileObject.openWriter()) {
-
         if (!metaData.all().isEmpty()) {
-
           fileWriter.write(metaData.fullName());
           fileWriter.write("\n");
         }
 
         for (var meta : privateMetaData.values()) {
-
           fileWriter.write(meta.fullName());
           fileWriter.write("\n");
         }

@@ -37,31 +37,28 @@ final class ComponentReader {
   }
 
   void read() {
-
     for (String fqn : loadMetaInf()) {
-
       final TypeElement moduleType = typeElement(fqn);
       if (moduleType != null) {
         var adapters =
-            MetaDataPrism.getInstanceOn(moduleType).value().stream()
-                .map(APContext::asTypeElement)
-                .collect(toList());
+          MetaDataPrism.getInstanceOn(moduleType).value().stream()
+            .map(APContext::asTypeElement)
+            .collect(toList());
 
         if (adapters.get(0).getModifiers().contains(Modifier.PUBLIC)) {
           componentMetaData.setFullName(fqn);
           adapters.stream()
-              .map(TypeElement::getQualifiedName)
-              .map(Object::toString)
-              .forEach(componentMetaData::add);
+            .map(TypeElement::getQualifiedName)
+            .map(Object::toString)
+            .forEach(componentMetaData::add);
 
         } else {
-          var packageName =
-              APContext.elements().getPackageOf(moduleType).getQualifiedName().toString();
+          var packageName = APContext.elements().getPackageOf(moduleType).getQualifiedName().toString();
           var meta = privateMetaData.computeIfAbsent(packageName, k -> new ComponentMetaData());
           adapters.stream()
-              .map(TypeElement::getQualifiedName)
-              .map(Object::toString)
-              .forEach(meta::add);
+            .map(TypeElement::getQualifiedName)
+            .map(Object::toString)
+            .forEach(meta::add);
         }
       }
     }
@@ -69,9 +66,7 @@ final class ComponentReader {
 
   private List<String> loadMetaInf() {
     try {
-      final FileObject fileObject =
-          filer().getResource(StandardLocation.CLASS_OUTPUT, "", Constants.META_INF_COMPONENT);
-
+      final FileObject fileObject = filer().getResource(StandardLocation.CLASS_OUTPUT, "", Constants.META_INF_COMPONENT);
       if (fileObject != null) {
         final List<String> lines = new ArrayList<>();
         final Reader reader = fileObject.openReader(true);
