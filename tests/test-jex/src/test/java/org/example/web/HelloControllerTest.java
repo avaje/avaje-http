@@ -106,4 +106,74 @@ class HelloControllerTest extends BaseWebTest {
     final ErrorResponse errBean = ex.bean(ErrorResponse.class);
     assertThat(errBean.get("name")).isEqualTo("must not be null");
   }
+
+  @Test
+  void optionalQueryParamLong() {
+    HttpResponse<String> res = client.request()
+      .path("hello/takesOptional")
+      .GET()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("takesOptional-Optional.empty");
+  }
+
+  @Test
+  void optionalQueryParamLong_withValue() {
+    HttpResponse<String> res = client.request()
+      .path("hello/takesOptional")
+      .queryParam("myOptional","42")
+      .GET()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("takesOptional-Optional[42]");
+  }
+
+  @Test
+  void optionalQueryParamEnum() {
+    HttpResponse<String> res = client.request()
+      .path("hello/takesOptionalEnum")
+      .GET()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("takesOptionalEnum-Optional.empty");
+  }
+
+  @Test
+  void optionalQueryParamEnum_withValue() {
+    HttpResponse<String> res = client.request()
+      .path("hello/takesOptionalEnum")
+      .queryParam("myOptional","B")
+      .GET()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("takesOptionalEnum-Optional[B]");
+  }
+
+  @Test
+  void optionalQueryParamString() {
+    HttpResponse<String> res = client.request()
+      .path("hello/takesOptionalString")
+      .GET()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("takesOptionalString-Optional.empty");
+  }
+
+  @Test
+  void optionalQueryParamString_withValue() {
+    HttpResponse<String> res = client.request()
+      .path("hello/takesOptionalString")
+      .queryParam("myOptional","foo")
+      .GET()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("takesOptionalString-Optional[foo]");
+  }
+
 }

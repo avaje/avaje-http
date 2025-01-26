@@ -69,4 +69,25 @@ class TypeMapTest {
     assertThat(handler.asMethod()).isEqualTo("asBigInteger(");
     assertFalse(handler.isPrimitive());
   }
+
+  @Test
+  void get_OptionalInteger() {
+    TypeHandler handler = TypeMap.get("java.lang.Integer");
+    TypeMap.OptionalHandler optionalHandler = new TypeMap.OptionalHandler(handler, false);
+    assertThat(optionalHandler.toMethod()).isEqualTo("optional(PathTypeConversion::asInteger, ");
+  }
+
+  @Test
+  void get_OptionalString() {
+    TypeHandler handler = TypeMap.get("java.lang.String");
+    TypeMap.OptionalHandler optionalHandler = new TypeMap.OptionalHandler(handler, false);
+    assertThat(optionalHandler.toMethod()).isEqualTo("optional(");
+  }
+
+  @Test
+  void get_OptionalEnum() {
+    TypeHandler handler = TypeMap.enumParamHandler(UType.parse("org.my.MyEnum"));
+    TypeMap.OptionalHandler optionalHandler = new TypeMap.OptionalHandler(handler, true);
+    assertThat(optionalHandler.toMethod()).isEqualTo("optional(qp -> (MyEnum) toEnum(MyEnum.class,  qp), ");
+  }
 }
