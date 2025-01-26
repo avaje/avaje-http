@@ -23,20 +23,17 @@ final class ClientWriter extends BaseControllerWriter {
   private static final String AT_GENERATED = "@Generated(\"avaje-http-client-generator\")";
 
   private final List<ClientMethodWriter> methodList = new ArrayList<>();
-  private final boolean useJsonb;
   private final Set<String> propertyConstants = new HashSet<>();
   private final String suffix;
 
   private final boolean packagePrivate;
 
-  ClientWriter(ControllerReader reader, String suffix, boolean useJsonB, boolean packagePrivate) throws IOException {
+  ClientWriter(ControllerReader reader, String suffix, boolean packagePrivate) throws IOException {
     super(reader, suffix);
     this.suffix = suffix;
     this.packagePrivate = packagePrivate;
     reader.addImportType(HTTP_CLIENT);
-    this.useJsonb = useJsonB;
     readMethods();
-    if (useJsonB) reader.addImportType("io.avaje.jsonb.Types");
   }
 
   @Override
@@ -52,7 +49,7 @@ final class ClientWriter extends BaseControllerWriter {
   private void readMethods() {
     for (final MethodReader method : reader.methods()) {
       if (method.isWebMethod()) {
-        final var methodWriter = new ClientMethodWriter(method, writer, useJsonb, propertyConstants);
+        final var methodWriter = new ClientMethodWriter(method, writer, propertyConstants);
         methodWriter.addImportTypes(reader);
         methodList.add(methodWriter);
       }

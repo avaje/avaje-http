@@ -720,6 +720,96 @@
 				}
 			}
 		},
+		"/hello/takesOptional" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "myOptional",
+						"in" : "query",
+						"schema" : {
+							"$ref" : "#/components/schemas/Long>"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/takesOptionalEnum" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "myOptional",
+						"in" : "query",
+						"schema" : {
+							"$ref" : "#/components/schemas/NestedEnum>"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/hello/takesOptionalString" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "myOptional",
+						"in" : "query",
+						"schema" : {
+							"$ref" : "#/components/schemas/String>"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/hello/withMatrix/{year_segment}/{other}" : {
 			"get" : {
 				"tags" : [
@@ -1425,6 +1515,33 @@
 						"format" : "date"
 					}
 				}
+			},
+			"Long>" : {
+				"type" : "object",
+				"properties" : {
+					"value" : {
+						"$ref" : "#/components/schemas/T"
+					}
+				}
+			},
+			"NestedEnum>" : {
+				"type" : "object",
+				"properties" : {
+					"value" : {
+						"$ref" : "#/components/schemas/T"
+					}
+				}
+			},
+			"String>" : {
+				"type" : "object",
+				"properties" : {
+					"value" : {
+						"$ref" : "#/components/schemas/T"
+					}
+				}
+			},
+			"T" : {
+				"type" : "object"
 			},
 			"ViewHome" : {
 				"type" : "object",

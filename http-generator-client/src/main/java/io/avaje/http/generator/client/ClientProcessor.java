@@ -56,7 +56,6 @@ public class ClientProcessor extends AbstractProcessor {
     APContext.init(processingEnv);
     ProcessingContext.init(processingEnv, new ClientPlatformAdapter(), false);
     this.componentWriter = new SimpleComponentWriter(metaData);
-    useJsonB = ProcessingContext.useJsonb();
   }
 
   @Override
@@ -123,7 +122,20 @@ public class ClientProcessor extends AbstractProcessor {
 
   protected String writeClientAdapter(ControllerReader reader, boolean packagePrivate) throws IOException {
     var suffix = ClientSuffix.fromInterface(reader.beanType().getQualifiedName().toString());
-    return new ClientWriter(reader, suffix, useJsonB, packagePrivate).write();
+    return new ClientWriter(reader, suffix, packagePrivate).write();
+  }
+
+  private void initialiseComponent() {
+    metaData.initialiseFullName();
+    if (!metaData.all().isEmpty()) {
+      ProcessingContext.addClientComponent(metaData.fullName());
+      ProcessingContext.validateModule();
+    }
+    try {
+      componentWriter.init();
+    } catch (final IOException e) {
+      logError("Error creating writer for JsonbComponent", e);
+    }
   }
 
   private void writeComponent(boolean processingOver) {
