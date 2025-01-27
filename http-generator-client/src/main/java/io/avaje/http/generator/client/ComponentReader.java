@@ -7,18 +7,17 @@ import static io.avaje.http.generator.core.ProcessingContext.typeElement;
 import static java.util.stream.Collectors.toList;
 
 import java.io.FileNotFoundException;
-import java.io.LineNumberReader;
-import java.io.Reader;
+import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.processing.FilerException;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import io.avaje.http.generator.core.APContext;
@@ -38,6 +37,7 @@ final class ComponentReader {
 
   void read() {
     for (String fqn : loadMetaInf()) {
+      System.err.println(fqn );
       final TypeElement moduleType = typeElement(fqn);
       if (moduleType != null) {
         var adapters =
@@ -64,22 +64,26 @@ final class ComponentReader {
     }
   }
 
-  private List<String> loadMetaInf() {
+  private Set<String> loadMetaInf() {
+    var set = new HashSet<String>();
     try {
-      final FileObject fileObject = filer().getResource(StandardLocation.CLASS_OUTPUT, "", Constants.META_INF_COMPONENT);
-      if (fileObject != null) {
-        final List<String> lines = new ArrayList<>();
-        final Reader reader = fileObject.openReader(true);
-        final LineNumberReader lineReader = new LineNumberReader(reader);
-        String line;
-        while ((line = lineReader.readLine()) != null) {
-          line = line.trim();
-          if (!line.isEmpty()) {
-            lines.add(line);
-          }
-        }
-        return lines;
-      }
+      var main =
+          Path.of(
+              URI.create(
+                  filer()
+                      .getResource(StandardLocation.CLASS_OUTPUT, "", Constants.META_INF_COMPONENT)
+                      .toUri()
+                      .toString()
+                      .replaceFirst("java/test", "java/main")
+                      .replaceFirst("test-classes", "classes")));
+
+      final var fileObject =
+          Path.of(
+              filer()
+                  .getResource(StandardLocation.CLASS_OUTPUT, "", Constants.META_INF_COMPONENT)
+                  .toUri());
+      Files.lines(main).forEach(set::add);
+      Files.lines(fileObject).forEach(set::add);
 
     } catch (FileNotFoundException | NoSuchFileException e) {
       // logDebug("no services file yet");
@@ -90,6 +94,6 @@ final class ComponentReader {
     } catch (final Exception e) {
       logWarn("Error reading services file: " + e.getMessage());
     }
-    return Collections.emptyList();
+    return set;
   }
 }
