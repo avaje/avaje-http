@@ -86,7 +86,7 @@ public class ClientProcessor extends AbstractProcessor {
   }
 
   private void writeForImported(Element importedElement) {
-    ImportPrism.getInstanceOn(importedElement).types().stream()
+    ImportPrism.getInstanceOn(importedElement).value().stream()
       .map(ProcessingContext::asElement)
       .filter(Objects::nonNull)
       .forEach(this::writeClient);
