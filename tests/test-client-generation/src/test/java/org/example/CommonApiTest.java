@@ -12,7 +12,7 @@ import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Client.Import(types = CommonApi.class)
+@Client.Import(CommonApi.class)
 class CommonApiTest {
 
   static CommonApi client;
