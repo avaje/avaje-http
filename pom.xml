@@ -22,8 +22,8 @@
     <swagger.version>2.2.28</swagger.version>
     <jackson.version>2.14.2</jackson.version>
     <jex.version>3.0-RC10</jex.version>
-    <avaje.prisms.version>1.37</avaje.prisms.version>
-    <project.build.outputTimestamp>2025-01-27T17:59:51Z</project.build.outputTimestamp>
+    <avaje.prisms.version>1.38</avaje.prisms.version>
+    <project.build.outputTimestamp>2025-01-16T05:02:23Z</project.build.outputTimestamp>
     <module-info.shade>${project.build.directory}${file.separator}module-info.shade</module-info.shade>
   </properties>
 

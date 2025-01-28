@@ -53,6 +53,6 @@ public @interface Client {
     /**
      * Client interface types that we want to generate HTTP clients for.
      */
-    Class<?>[] types();
+    Class<?>[] value();
   }
 }
