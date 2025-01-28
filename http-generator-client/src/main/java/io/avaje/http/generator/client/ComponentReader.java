@@ -7,18 +7,18 @@ import static io.avaje.http.generator.core.ProcessingContext.typeElement;
 import static java.util.stream.Collectors.toList;
 
 import java.io.FileNotFoundException;
-import java.io.LineNumberReader;
-import java.io.Reader;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.processing.FilerException;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import io.avaje.http.generator.core.APContext;
@@ -64,32 +64,40 @@ final class ComponentReader {
     }
   }
 
-  private List<String> loadMetaInf() {
+  private Set<String> loadMetaInf() {
+    var set = new HashSet<String>();
     try {
-      final FileObject fileObject = filer().getResource(StandardLocation.CLASS_OUTPUT, "", Constants.META_INF_COMPONENT);
-      if (fileObject != null) {
-        final List<String> lines = new ArrayList<>();
-        final Reader reader = fileObject.openReader(true);
-        final LineNumberReader lineReader = new LineNumberReader(reader);
-        String line;
-        while ((line = lineReader.readLine()) != null) {
-          line = line.trim();
-          if (!line.isEmpty()) {
-            lines.add(line);
-          }
-        }
-        return lines;
-      }
-
-    } catch (FileNotFoundException | NoSuchFileException e) {
-      // logDebug("no services file yet");
-
-    } catch (final FilerException e) {
-      logDebug("FilerException reading services file");
-
-    } catch (final Exception e) {
+      addLines(mainMetaInfURI(), set);
+      addLines(metaInfURI(), set);
+    } catch (final IOException e) {
       logWarn("Error reading services file: " + e.getMessage());
     }
-    return Collections.emptyList();
+    return set;
+  }
+
+  private static void addLines(URI uri, HashSet<String> set) {
+    try (var lines = Files.lines(Path.of(uri))) {
+      lines.forEach(set::add);
+    } catch (FileNotFoundException | NoSuchFileException e) {
+      // logDebug("no services file yet");
+    } catch (final FilerException e) {
+      logDebug("FilerException reading services file");
+    } catch (Exception e) {
+      logWarn("Error reading services file: " + e.getMessage());
+    }
+  }
+
+  private static URI mainMetaInfURI() throws IOException {
+    return URI.create(
+      metaInfURI()
+        .toString()
+        .replaceFirst("java/test", "java/main")
+        .replaceFirst("test-classes", "classes"));
+  }
+
+  private static URI metaInfURI() throws IOException {
+    return filer()
+      .getResource(StandardLocation.CLASS_OUTPUT, "", Constants.META_INF_COMPONENT)
+      .toUri();
   }
 }
