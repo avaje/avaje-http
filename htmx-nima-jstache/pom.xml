@@ -39,7 +39,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject</artifactId>
-      <version>11.1</version>
+      <version>11.2</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
