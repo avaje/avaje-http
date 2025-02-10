@@ -12,7 +12,7 @@ import io.avaje.http.generator.core.UType;
 
 class JexAdapter implements PlatformAdapter {
 
-  static final String JEX_CONTEXT = "io.avaje.jex.Context";
+  static final String JEX_CONTEXT = "io.avaje.jex.http.Context";
 
   @Override
   public boolean isContextType(String rawType) {

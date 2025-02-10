@@ -13,8 +13,8 @@ import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.QueryParam;
-import io.avaje.jex.Context;
-import io.avaje.jex.HttpFilter.FilterChain;
+import io.avaje.jex.http.Context;
+import io.avaje.jex.http.HttpFilter.FilterChain;
 
 @Path("test/")
 @Controller
