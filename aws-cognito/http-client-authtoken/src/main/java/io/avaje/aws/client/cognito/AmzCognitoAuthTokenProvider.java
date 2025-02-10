@@ -4,7 +4,7 @@ import io.avaje.http.client.AuthToken;
 import io.avaje.http.client.AuthTokenProvider;
 import io.avaje.http.client.BasicAuthIntercept;
 import io.avaje.http.client.HttpClientRequest;
-import io.avaje.json.simple.SimpleMapper;
+import io.avaje.json.mapper.JsonMapper;
 
 import java.net.http.HttpResponse;
 import java.time.Instant;
@@ -47,7 +47,7 @@ final class AmzCognitoAuthTokenProvider implements CognitoAuthTokenProvider.Buil
 
   private static final class Provider implements AuthTokenProvider {
 
-    private static final SimpleMapper MAPPER = SimpleMapper.builder().build();
+    private static final JsonMapper MAPPER = JsonMapper.builder().build();
 
     private final String url;
     private final String clientId;
