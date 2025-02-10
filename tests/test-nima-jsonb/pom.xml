@@ -31,7 +31,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>3.0-RC6</version>
+      <version>3.0</version>
     </dependency>
     <dependency>
       <groupId>io.helidon.webserver</groupId>
@@ -85,7 +85,7 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-jsonb-generator</artifactId>
-              <version>3.0-RC2</version>
+              <version>3.0</version>
             </path>
             <path>
               <groupId>io.avaje</groupId>
