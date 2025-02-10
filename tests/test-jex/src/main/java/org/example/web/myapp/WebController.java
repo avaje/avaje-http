@@ -6,8 +6,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 
 import org.example.web.AppRoles;
 import org.example.web.myapp.other.Foo;
@@ -25,7 +23,7 @@ import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.QueryParam;
 import io.avaje.http.api.Valid;
-import io.avaje.jex.Context;
+import io.avaje.jex.http.Context;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.inject.Inject;
 

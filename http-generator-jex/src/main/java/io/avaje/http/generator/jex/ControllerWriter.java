@@ -13,7 +13,7 @@ import java.util.Objects;
 class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-jex-generator\")";
-  private static final String API_CONTEXT = "io.avaje.jex.Context";
+  private static final String API_CONTEXT = "io.avaje.jex.http.Context";
   private static final String API_ROUTING = "io.avaje.jex.Routing";
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
@@ -27,7 +27,7 @@ class ControllerWriter extends BaseControllerWriter {
     if (reader.methods().stream()
         .map(MethodReader::webMethod)
         .anyMatch(w -> CoreWebMethod.FILTER == w)) {
-      reader.addImportType("io.avaje.jex.HttpFilter.FilterChain");
+      reader.addImportType("io.avaje.jex.http.HttpFilter.FilterChain");
     }
     if (reader.methods().stream()
       .map(MethodReader::hxRequest)
