@@ -1,6 +1,6 @@
 package io.avaje.http.client;
 
-import io.avaje.json.simple.SimpleMapper;
+import io.avaje.json.mapper.JsonMapper;
 
 /**
  * A BodyAdapter that supports converting the request/response body to a single type.
@@ -25,7 +25,7 @@ public interface SingleBodyAdapter extends BodyAdapter {
      * @param jsonType The only type supported to read or write the body content.
      * @return The BodyAdapter that the HttpClient can use.
      */
-    static BodyAdapter create(SimpleMapper.Type<?> jsonType) {
+    static BodyAdapter create(JsonMapper.Type<?> jsonType) {
         return DSingleAdapter.of(jsonType);
     }
 

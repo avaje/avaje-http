@@ -1,7 +1,7 @@
 package io.avaje.http.client;
 
 import io.avaje.http.client.SingleBodyAdapter.JsonBodyAdapter;
-import io.avaje.json.simple.SimpleMapper;
+import io.avaje.json.mapper.JsonMapper;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ final class DSingleAdapter implements BodyAdapter {
 
     private final ReaderWriter<?> adapter;
 
-    static BodyAdapter of(SimpleMapper.Type<?> jsonType) {
+    static BodyAdapter of(JsonMapper.Type<?> jsonType) {
         return new DSingleAdapter(toAdapter(jsonType));
     }
 
@@ -22,7 +22,7 @@ final class DSingleAdapter implements BodyAdapter {
         this.adapter = new ReaderWriter<>(source);
     }
 
-    private static <T> JsonBodyAdapter<T> toAdapter(SimpleMapper.Type<T> jsonType) {
+    private static <T> JsonBodyAdapter<T> toAdapter(JsonMapper.Type<T> jsonType) {
         return new SimpleJsonAdapter<>(jsonType);
     }
 
@@ -72,9 +72,9 @@ final class DSingleAdapter implements BodyAdapter {
 
     private static final class SimpleJsonAdapter<T> implements JsonBodyAdapter<T> {
 
-        private final SimpleMapper.Type<T> jsonType;
+        private final JsonMapper.Type<T> jsonType;
 
-        public SimpleJsonAdapter(SimpleMapper.Type<T> jsonType) {
+        public SimpleJsonAdapter(JsonMapper.Type<T> jsonType) {
             this.jsonType = jsonType;
         }
 

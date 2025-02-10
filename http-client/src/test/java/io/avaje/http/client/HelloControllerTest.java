@@ -1,7 +1,7 @@
 package io.avaje.http.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.avaje.json.simple.SimpleMapper;
+import io.avaje.json.mapper.JsonMapper;
 import org.example.webserver.ErrorResponse;
 import org.example.webserver.HelloDto;
 import org.junit.jupiter.api.Test;
@@ -821,9 +821,9 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void singleBodyAdapter_returningBean() {
-    var simpleMapper = SimpleMapper.builder().build();
+    var mapper = JsonMapper.builder().build();
 
-    SimpleMapper.Type<HelloDto> type = simpleMapper.type(new HelloDtoAdapter());
+    JsonMapper.Type<HelloDto> type = mapper.type(new HelloDtoAdapter());
     BodyAdapter bodyAdapter = SingleBodyAdapter.create(type);
     HttpClient client = client(bodyAdapter);
 
