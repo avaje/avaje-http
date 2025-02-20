@@ -249,7 +249,6 @@ final class ControllerMethodWriter {
         writer.append(indent).append("res.send(content);").eol();
 
       } else if (responseMode == ResponseMode.Jstachio) {
-
         var renderer = ProcessingContext.jstacheRenderer(method.returnType());
         writer.append(indent).append("var content = %s(result);", renderer).eol();
         writeContextReturn(indent);
@@ -259,10 +258,7 @@ final class ControllerMethodWriter {
         writeContextReturn(indent);
         if (responseMode == ResponseMode.InputStream) {
           final var uType = UType.parse(method.returnType());
-          writer
-              .append(indent)
-              .append("result.transferTo(res.outputStream());", uType.shortName())
-              .eol();
+          writer.append(indent).append("result.transferTo(res.outputStream());", uType.shortName()).eol();
         } else if (responseMode == ResponseMode.Json) {
           if (returnTypeString()) {
             writer.append(indent).append("res.send(result); // send raw JSON").eol();
@@ -381,9 +377,9 @@ final class ControllerMethodWriter {
       return;
     }
     final var produces =
-        producesOp
-            .map(MediaType::parse)
-            .orElse(useJstachio ? MediaType.HTML_UTF8 : MediaType.APPLICATION_JSON);
+      producesOp
+        .map(MediaType::parse)
+        .orElse(useJstachio ? MediaType.HTML_UTF8 : MediaType.APPLICATION_JSON);
     final var contentTypeString = "res.headers().contentType(MediaTypes.";
     writer.append(indent);
     switch (produces) {

@@ -183,9 +183,8 @@ class ControllerMethodWriter {
         writer.append("      ctx.contentType(\"%s\").json(%s);", produces, resultVariableName);
       }
     } else if (useJstachio) {
-      writer.append(
-          "      ctx.contentType(\"%s\").result(%s(%s));",
-          produces, ProcessingContext.jstacheRenderer(method.returnType()), resultVariableName);
+      var renderer = ProcessingContext.jstacheRenderer(method.returnType());
+      writer.append("      ctx.contentType(\"%s\").result(%s(%s));", produces, renderer, resultVariableName);
     } else if (MediaType.TEXT_HTML.getValue().equalsIgnoreCase(produces)) {
       writer.append("      ctx.html(%s);", resultVariableName);
     } else if (MediaType.TEXT_PLAIN.getValue().equalsIgnoreCase(produces)) {

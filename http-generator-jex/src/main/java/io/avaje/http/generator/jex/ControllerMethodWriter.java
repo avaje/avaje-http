@@ -117,15 +117,12 @@ class ControllerMethodWriter {
     if (producesJson()) {
       return ResponseMode.Json;
     }
-
     if (useTemplating()) {
       return ResponseMode.Templating;
     }
-
     if (useJstachio) {
       return ResponseMode.Jstachio;
     }
-
     if (producesText()) {
       return ResponseMode.Text;
     }
@@ -138,8 +135,8 @@ class ControllerMethodWriter {
 
   private boolean producesJson() {
     return !"byte[]".equals(method.returnType().toString())
-        && !useJstachio
-        && (method.produces() == null || method.produces().toLowerCase().contains("json"));
+      && !useJstachio
+      && (method.produces() == null || method.produces().toLowerCase().contains("json"));
   }
 
   private boolean producesText() {

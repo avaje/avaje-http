@@ -1036,7 +1036,7 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"$ref" : "#/components/schemas/HelloWorldCompileTime"
+									"$ref" : "#/components/schemas/HelloWorldZeroDependency"
 								}
 							}
 						}
@@ -1057,7 +1057,7 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"$ref" : "#/components/schemas/HelloWorldRuntime"
+									"$ref" : "#/components/schemas/HelloWorld"
 								}
 							}
 						}
@@ -1558,7 +1558,7 @@
 					}
 				}
 			},
-			"HelloWorldCompileTime" : {
+			"HelloWorld" : {
 				"type" : "object",
 				"properties" : {
 					"message" : {
@@ -1572,7 +1572,7 @@
 					}
 				}
 			},
-			"HelloWorldRuntime" : {
+			"HelloWorldZeroDependency" : {
 				"type" : "object",
 				"properties" : {
 					"message" : {
@@ -1587,10 +1587,20 @@
 				}
 			},
 			"Long>" : {
-				"type" : "object"
+				"type" : "object",
+				"properties" : {
+					"value" : {
+						"$ref" : "#/components/schemas/T"
+					}
+				}
 			},
 			"NestedEnum>" : {
-				"type" : "object"
+				"type" : "object",
+				"properties" : {
+					"value" : {
+						"$ref" : "#/components/schemas/T"
+					}
+				}
 			},
 			"Person" : {
 				"type" : "object",
@@ -1605,6 +1615,14 @@
 				}
 			},
 			"String>" : {
+				"type" : "object",
+				"properties" : {
+					"value" : {
+						"$ref" : "#/components/schemas/T"
+					}
+				}
+			},
+			"T" : {
 				"type" : "object"
 			},
 			"ViewHome" : {

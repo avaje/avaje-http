@@ -30,10 +30,8 @@ public final class JsonBUtil {
                 addJsonBodyType(methodReader, addToMap);
               }
               final var asTypeElement = APContext.asTypeElement(methodReader.returnType());
-              if (!methodReader.isVoid()
-                  && (asTypeElement == null || !JStachePrism.isPresent(asTypeElement))) {
+              if (!methodReader.isVoid() && (asTypeElement == null || !JStachePrism.isPresent(asTypeElement))) {
                 var uType = UType.parse(methodReader.returnType());
-
                 if ("java.util.concurrent.CompletableFuture".equals(uType.mainType())) {
                   uType = uType.paramRaw();
                 }
@@ -74,14 +72,12 @@ public final class JsonBUtil {
           writeType(type.paramRaw(), writer);
           writer.append(".map()");
           break;
-        default:
-          {
-            if (type.mainType().contains("java.util")) {
-              throw new UnsupportedOperationException(
-                  "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
-            }
-            writeType(type, writer);
+        default: {
+          if (type.mainType().contains("java.util")) {
+            throw new UnsupportedOperationException("Only java.util Map, Set and List are supported JsonB Controller Collection Types");
           }
+          writeType(type, writer);
+        }
       }
     }
     writer.append(";").eol();
