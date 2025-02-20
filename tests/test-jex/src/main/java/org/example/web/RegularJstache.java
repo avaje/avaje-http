@@ -16,12 +16,12 @@ import io.jstach.jstache.JStacheType;
 public class RegularJstache {
 
   @Get("/hello")
-  public HelloWorldCompileTime hello() {
+  public HelloWorldZeroDependency hello() {
     Person rick = new Person("Rick", LocalDate.now().minusYears(70));
     Person morty = new Person("Morty", LocalDate.now().minusYears(14));
     Person beth = new Person("Beth", LocalDate.now().minusYears(35));
     Person jerry = new Person("Jerry", LocalDate.now().minusYears(35));
-    return new HelloWorldCompileTime("Hello alien", List.of(rick, morty, beth, jerry));
+    return new HelloWorldZeroDependency("Hello alien", List.of(rick, morty, beth, jerry));
   }
 
   @Get("/helloRuntime")
@@ -47,7 +47,7 @@ public class RegularJstache {
           {{/-last}}
           {{/people}}
           """)
-  public record HelloWorldCompileTime(String message, List<Person> people) implements AgeLambdaSupport {}
+  public record HelloWorldZeroDependency(String message, List<Person> people) implements AgeLambdaSupport {}
 
   public record Person(String name, LocalDate birthday) {}
 

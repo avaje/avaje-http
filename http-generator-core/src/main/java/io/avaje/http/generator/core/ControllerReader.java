@@ -271,7 +271,7 @@ public final class ControllerReader {
     for (final MethodReader method : methods) {
       final var asTypeElement = APContext.asTypeElement(method.returnType());
       if (ProcessingContext.isJstacheTemplate(method.returnType())) {
-        if ("JStachio.render(".equals(ProcessingContext.jstacheRenderer(method.returnType()))) {
+        if ("JStachio.render".equals(ProcessingContext.jstacheRenderer(method.returnType()))) {
           addImportType("io.jstach.jstachio.JStachio");
         } else {
           // jstachio generated classes don't have the parent type in the name

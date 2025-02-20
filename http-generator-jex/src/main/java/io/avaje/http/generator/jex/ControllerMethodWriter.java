@@ -263,7 +263,7 @@ class ControllerMethodWriter {
         }
         case Jstachio -> {
           var renderer = ProcessingContext.jstacheRenderer(method.returnType());
-          writer.append(indent).append("var content = %sresult);", renderer).eol();
+          writer.append(indent).append("var content = %s(result);", renderer).eol();
           writer.append(indent);
           writeContextReturn(responseMode, "content");
         }
