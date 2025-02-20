@@ -3,8 +3,10 @@ package io.avaje.http.generator.core;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -33,6 +35,9 @@ import io.avaje.http.generator.core.openapi.DocContext;
 public final class ProcessingContext {
 
   private static final ThreadLocal<Ctx> CTX = new ThreadLocal<>();
+
+  private static final boolean ZERO_JSTACHIO = APContext.typeElement("io.jstach.jstachio.JStachio") == null;
+  private static final Map<String, String> jstacheRenderers = new HashMap<>();
 
   private ProcessingContext() {}
 
@@ -142,7 +147,6 @@ public final class ProcessingContext {
 
   /** Create a file writer for the META-INF services file. */
   public static FileObject createMetaInfWriter(String target) throws IOException {
-
     return filer().createResource(StandardLocation.CLASS_OUTPUT, "", target);
   }
 
@@ -286,5 +290,40 @@ public final class ProcessingContext {
 
   public static void addClientComponent(String clientFQN) {
     CTX.get().clientFQN.add(clientFQN);
+  }
+
+  public static String jstacheRenderer(TypeMirror typeMirror) {
+    final var typeElement = APContext.asTypeElement(typeMirror);
+    final var typeName = typeElement.getSimpleName().toString();
+    return jstacheRenderers.computeIfAbsent(typeName, k -> determineJstacheRenderer(typeElement));
+  }
+
+  private static String determineJstacheRenderer(TypeElement typeElement) {
+    return ZERO_JSTACHIO
+      ? jstacheTypeRenderer(typeElement)
+      : checkJstacheConfig(typeElement, typeElement);
+  }
+
+  private static String checkJstacheConfig(Element element, TypeElement typeElement) {
+    if (element == null) {
+      return "JStachio.render";
+    }
+    var config = JStacheConfigPrism.getInstanceOn(element);
+    if (config != null && "STACHE".equals(config.type())) {
+      return jstacheTypeRenderer(typeElement);
+    } else if (config != null && "JSTACHIO".equals(config.type())) {
+      return "JStachio.render";
+    }
+
+    return checkJstacheConfig(element.getEnclosingElement(), typeElement);
+  }
+
+  private static String jstacheTypeRenderer(TypeElement typeElement) {
+    return typeElement.getSimpleName() + "Renderer.of().execute";
+  }
+
+  public static boolean isJstacheTemplate(TypeMirror mirror) {
+    final var typeElement = APContext.asTypeElement(mirror);
+    return typeElement != null && JStachePrism.isPresent(typeElement);
   }
 }

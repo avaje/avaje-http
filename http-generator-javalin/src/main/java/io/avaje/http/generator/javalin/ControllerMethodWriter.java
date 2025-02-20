@@ -16,13 +16,15 @@ class ControllerMethodWriter {
   private final boolean useJsonB;
   private final boolean instrumentContext;
   private final boolean customMethod;
+  private final boolean useJstachio;
 
   ControllerMethodWriter(MethodReader method, Append writer, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
     final var webM = method.webMethod();
     this.webMethod = webM == CoreWebMethod.FILTER ? JavalinWebMethod.BEFORE : webM;
-    this.useJsonB = useJsonB && !disabledDirectWrites();
+    this.useJstachio = ProcessingContext.isJstacheTemplate(method.returnType());
+    this.useJsonB = !useJstachio && useJsonB && !disabledDirectWrites();
     this.instrumentContext = method.instrumentContext();
     customMethod = !(webMethod instanceof CoreWebMethod);
   }
@@ -152,6 +154,11 @@ class ControllerMethodWriter {
 
   private void writeContextReturn(final String resultVariableName) {
     var produces = method.produces();
+
+    if (useJstachio && produces == null) {
+      produces = MediaType.TEXT_HTML.getValue();
+    }
+
     boolean applicationJson = produces == null || MediaType.APPLICATION_JSON.getValue().equalsIgnoreCase(produces);
     if (applicationJson || JsonBUtil.isJsonMimeType(produces)) {
       if (useJsonB) {
@@ -170,13 +177,14 @@ class ControllerMethodWriter {
         if (isfuture || method.isErrorMethod()) {
           writer.append("      } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }");
         }
+      } else if (applicationJson) {
+        writer.append("      ctx.json(%s);", resultVariableName);
       } else {
-        if (applicationJson) {
-          writer.append("      ctx.json(%s);", resultVariableName);
-        } else {
-          writer.append("      ctx.contentType(\"%s\").json(%s);", produces, resultVariableName);
-        }
+        writer.append("      ctx.contentType(\"%s\").json(%s);", produces, resultVariableName);
       }
+    } else if (useJstachio) {
+      var renderer = ProcessingContext.jstacheRenderer(method.returnType());
+      writer.append("      ctx.contentType(\"%s\").result(%s(%s));", produces, renderer, resultVariableName);
     } else if (MediaType.TEXT_HTML.getValue().equalsIgnoreCase(produces)) {
       writer.append("      ctx.html(%s);", resultVariableName);
     } else if (MediaType.TEXT_PLAIN.getValue().equalsIgnoreCase(produces)) {

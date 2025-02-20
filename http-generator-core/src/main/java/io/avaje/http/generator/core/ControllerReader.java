@@ -59,6 +59,7 @@ public final class ControllerReader {
   private boolean requestScope;
   private boolean docHidden;
   private final boolean hasInstrument;
+  private boolean hasJstache;
 
   public ControllerReader(TypeElement beanType) {
     this(beanType, "");
@@ -249,6 +250,7 @@ public final class ControllerReader {
       }
     }
     deriveIncludeValidation();
+    jstacheImport();
     addImports(withSingleton);
   }
 
@@ -264,6 +266,25 @@ public final class ControllerReader {
       }
     }
     return false;
+  }
+
+  private void jstacheImport() {
+    for (final MethodReader method : methods) {
+      final var asTypeElement = APContext.asTypeElement(method.returnType());
+      if (ProcessingContext.isJstacheTemplate(method.returnType())) {
+        if ("JStachio.render".equals(ProcessingContext.jstacheRenderer(method.returnType()))) {
+          addImportType("io.jstach.jstachio.JStachio");
+        } else {
+          // jstachio generated classes don't have the parent type in the name
+          addImportType(
+              APContext.elements().getPackageOf(asTypeElement).getQualifiedName().toString()
+                  + "."
+                  + asTypeElement.getSimpleName()
+                  + "Renderer");
+        }
+        this.hasJstache = true;
+      }
+    }
   }
 
   private boolean anyMethodHasContentCache() {
@@ -381,6 +402,10 @@ public final class ControllerReader {
 
   public boolean hasInstrument() {
     return hasInstrument;
+  }
+
+  public boolean hasJstache() {
+    return hasJstache;
   }
 
   public static String sanitizeImports(String type) {
