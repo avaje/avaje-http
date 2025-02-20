@@ -73,7 +73,9 @@ public abstract class BaseControllerWriter {
       writer.append("import static %s;", type).eol();
     }
     writer.eol();
-    for (String type : reader.importTypes()) {
+    var importTypes = reader.importTypes();
+    importTypes.removeIf(i -> i.substring(0, i.lastIndexOf(".")).equals(packageName));
+    for (String type : importTypes) {
       writer.append("import %s;", type).eol();
     }
     writer.eol();

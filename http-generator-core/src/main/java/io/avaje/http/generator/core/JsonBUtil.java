@@ -29,9 +29,9 @@ public final class JsonBUtil {
               if (!methodReader.isErrorMethod()) {
                 addJsonBodyType(methodReader, addToMap);
               }
-              if (!methodReader.isVoid()) {
+              final var asTypeElement = APContext.asTypeElement(methodReader.returnType());
+              if (!methodReader.isVoid() && (asTypeElement == null || !JStachePrism.isPresent(asTypeElement))) {
                 var uType = UType.parse(methodReader.returnType());
-
                 if ("java.util.concurrent.CompletableFuture".equals(uType.mainType())) {
                   uType = uType.paramRaw();
                 }

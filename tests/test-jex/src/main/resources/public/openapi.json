@@ -1023,6 +1023,48 @@
 				"deprecated" : true
 			}
 		},
+		"/jstache/hello" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloWorldZeroDependency"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/jstache/helloRuntime" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloWorld"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/other/{name}" : {
 			"get" : {
 				"tags" : [
@@ -1516,6 +1558,34 @@
 					}
 				}
 			},
+			"HelloWorld" : {
+				"type" : "object",
+				"properties" : {
+					"message" : {
+						"type" : "string"
+					},
+					"people" : {
+						"type" : "array",
+						"items" : {
+							"$ref" : "#/components/schemas/Person"
+						}
+					}
+				}
+			},
+			"HelloWorldZeroDependency" : {
+				"type" : "object",
+				"properties" : {
+					"message" : {
+						"type" : "string"
+					},
+					"people" : {
+						"type" : "array",
+						"items" : {
+							"$ref" : "#/components/schemas/Person"
+						}
+					}
+				}
+			},
 			"Long>" : {
 				"type" : "object",
 				"properties" : {
@@ -1529,6 +1599,18 @@
 				"properties" : {
 					"value" : {
 						"$ref" : "#/components/schemas/T"
+					}
+				}
+			},
+			"Person" : {
+				"type" : "object",
+				"properties" : {
+					"name" : {
+						"type" : "string"
+					},
+					"birthday" : {
+						"type" : "string",
+						"format" : "date"
 					}
 				}
 			},
