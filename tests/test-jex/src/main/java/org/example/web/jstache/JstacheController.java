@@ -13,7 +13,7 @@ import io.jstach.jstache.JStacheLambda;
 import io.jstach.jstache.JStacheType;
 
 @Controller("/jstache")
-public class RegularJstache {
+public class JstacheController {
 
   @Get("/hello")
   public HelloWorldZeroDependency hello() {
@@ -25,12 +25,12 @@ public class RegularJstache {
   }
 
   @Get("/helloRuntime")
-  public HelloWorldRuntime helloRuntime() {
+  public HelloWorld helloRuntime() {
     Person rick = new Person("Rick", LocalDate.now().minusYears(70));
     Person morty = new Person("Morty", LocalDate.now().minusYears(14));
     Person beth = new Person("Beth", LocalDate.now().minusYears(35));
     Person jerry = new Person("Jerry", LocalDate.now().minusYears(35));
-    return new HelloWorldRuntime("Hello alien", List.of(rick, morty, beth, jerry));
+    return new HelloWorld("Hello alien", List.of(rick, morty, beth, jerry));
   }
 
   /*
@@ -72,6 +72,6 @@ public class RegularJstache {
           {{/-last}}
           {{/people}}
           """)
-  public record HelloWorldRuntime(String message, List<Person> people) implements AgeLambdaSupport {}
+  public record HelloWorld(String message, List<Person> people) implements AgeLambdaSupport {}
 
 }
