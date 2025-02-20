@@ -291,9 +291,7 @@ class ControllerMethodWriter {
       return;
     }
     if (useJsonB) {
-      writer.append(
-        "%sJsonType.toJson(result, ctx.contentType(\"%s\").outputStream());",
-        uType.shortName(), produces);
+      writer.append("ctx.jsonb(%sJsonType, result);", uType.shortName());
     } else {
       writer.append("ctx.json(result);");
     }
