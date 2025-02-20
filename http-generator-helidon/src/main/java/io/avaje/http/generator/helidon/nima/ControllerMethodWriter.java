@@ -259,6 +259,10 @@ final class ControllerMethodWriter {
         writeContextReturn(indent);
         if (responseMode == ResponseMode.InputStream) {
           final var uType = UType.parse(method.returnType());
+          writer
+              .append(indent)
+              .append("result.transferTo(res.outputStream());", uType.shortName())
+              .eol();
         } else if (responseMode == ResponseMode.Json) {
           if (returnTypeString()) {
             writer.append(indent).append("res.send(result); // send raw JSON").eol();
