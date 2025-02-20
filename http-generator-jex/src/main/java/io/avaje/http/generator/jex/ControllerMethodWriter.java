@@ -285,7 +285,8 @@ class ControllerMethodWriter {
 
     var produces = method.produces();
     if (produces == null && useJstachio) {
-      produces = MediaType.TEXT_HTML.getValue();
+      writer.append("ctx.html(%s);", resultVariable).eol();
+      return;
     }
     switch (responseMode) {
       case Void -> {}
