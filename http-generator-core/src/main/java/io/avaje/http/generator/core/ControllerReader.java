@@ -59,6 +59,7 @@ public final class ControllerReader {
   private boolean requestScope;
   private boolean docHidden;
   private final boolean hasInstrument;
+  private boolean hasJstache;
 
   public ControllerReader(TypeElement beanType) {
     this(beanType, "");
@@ -281,6 +282,7 @@ public final class ControllerReader {
                   + asTypeElement.getSimpleName()
                   + "Renderer");
         }
+        this.hasJstache = true;
       }
     }
   }
@@ -400,6 +402,10 @@ public final class ControllerReader {
 
   public boolean hasInstrument() {
     return hasInstrument;
+  }
+
+  public boolean hasJstache() {
+    return hasJstache;
   }
 
   public static String sanitizeImports(String type) {

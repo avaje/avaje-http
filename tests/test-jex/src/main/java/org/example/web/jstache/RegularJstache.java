@@ -1,4 +1,4 @@
-package org.example.web;
+package org.example.web.jstache;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

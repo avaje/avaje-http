@@ -25,11 +25,11 @@ class ControllerMethodWriter {
     this.method = method;
     this.writer = writer;
     this.reader = reader;
-    this.useJsonB = useJsonB;
+    this.useJstachio = ProcessingContext.isJstacheTemplate(method.returnType());
+    this.useJsonB = !useJstachio && useJsonB;
     this.webMethod = method.webMethod();
     this.instrumentContext = method.instrumentContext();
     this.isFilter = webMethod == CoreWebMethod.FILTER;
-    this.useJstachio = ProcessingContext.isJstacheTemplate(method.returnType());
     if (isFilter) {
       validateFilter();
     }

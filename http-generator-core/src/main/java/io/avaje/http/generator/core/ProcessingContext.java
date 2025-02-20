@@ -302,21 +302,21 @@ public final class ProcessingContext {
         typeElement.getSimpleName().toString(),
         k ->
             ZERO_JSTACHIO
-                ? typeElement.getSimpleName() + "Renderer.of().execute("
+                ? typeElement.getSimpleName() + "Renderer.of().execute"
                 : checkJstacheConfig(typeElement, typeElement));
   }
 
   private static String checkJstacheConfig(Element element, TypeElement typeElement) {
 
     if (element == null) {
-      return "JStachio.render(";
+      return "JStachio.render";
     }
     var config = JStacheConfigPrism.getInstanceOn(element);
 
     if (config != null && "STACHE".equals(config.type())) {
-      return typeElement.getSimpleName() + "Renderer.of().execute(";
+      return typeElement.getSimpleName() + "Renderer.of().execute";
     } else if (config != null && "JSTACHIO".equals(config.type())) {
-      return "JStachio.render(";
+      return "JStachio.render";
     }
 
     return checkJstacheConfig(element.getEnclosingElement(), typeElement);

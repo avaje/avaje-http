@@ -61,13 +61,15 @@ final class ControllerMethodWriter {
   private final boolean instrumentContext;
   private final boolean isFilter;
   private final ControllerReader reader;
+  private final boolean useJstachio;
 
   ControllerMethodWriter(MethodReader method, Append writer, boolean useJsonB, ControllerReader reader) {
     this.reader = reader;
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
-    this.useJsonB = useJsonB;
+    this.useJstachio = ProcessingContext.isJstacheTemplate(method.returnType());
+    this.useJsonB = !useJstachio && useJsonB;
     this.instrumentContext = method.instrumentContext();
     this.isFilter = webMethod == CoreWebMethod.FILTER;
     if (isFilter) {
@@ -246,11 +248,17 @@ final class ControllerMethodWriter {
         writeContextReturn(indent);
         writer.append(indent).append("res.send(content);").eol();
 
+      } else if (responseMode == ResponseMode.Jstachio) {
+
+        var renderer = ProcessingContext.jstacheRenderer(method.returnType());
+        writer.append(indent).append("var content = %s(result);", renderer).eol();
+        writeContextReturn(indent);
+        writer.append(indent).append("res.send(content);").eol();
+
       } else {
         writeContextReturn(indent);
         if (responseMode == ResponseMode.InputStream) {
           final var uType = UType.parse(method.returnType());
-          writer.append(indent).append("result.transferTo(res.outputStream());", uType.shortName()).eol();
         } else if (responseMode == ResponseMode.Json) {
           if (returnTypeString()) {
             writer.append(indent).append("res.send(result); // send raw JSON").eol();
@@ -272,6 +280,7 @@ final class ControllerMethodWriter {
   enum ResponseMode {
     Void,
     Json,
+    Jstachio,
     Templating,
     InputStream,
     Other
@@ -289,6 +298,9 @@ final class ControllerMethodWriter {
     }
     if (useTemplating()) {
       return ResponseMode.Templating;
+    }
+    if (useJstachio) {
+      return ResponseMode.Jstachio;
     }
     return ResponseMode.Other;
   }
@@ -361,10 +373,13 @@ final class ControllerMethodWriter {
 
   private void writeContextReturn(String indent) {
     final var producesOp = Optional.ofNullable(method.produces());
-    if (producesOp.isEmpty() && !useJsonB) {
+    if (producesOp.isEmpty() && !useJsonB && !useJstachio) {
       return;
     }
-    final var produces = producesOp.map(MediaType::parse).orElse(MediaType.APPLICATION_JSON);
+    final var produces =
+        producesOp
+            .map(MediaType::parse)
+            .orElse(useJstachio ? MediaType.HTML_UTF8 : MediaType.APPLICATION_JSON);
     final var contentTypeString = "res.headers().contentType(MediaTypes.";
     writer.append(indent);
     switch (produces) {
