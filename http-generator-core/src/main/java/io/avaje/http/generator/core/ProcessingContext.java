@@ -3,8 +3,10 @@ package io.avaje.http.generator.core;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -33,6 +35,9 @@ import io.avaje.http.generator.core.openapi.DocContext;
 public final class ProcessingContext {
 
   private static final ThreadLocal<Ctx> CTX = new ThreadLocal<>();
+
+  private static final boolean ZERO_JSTACHIO =
+      APContext.typeElement("io.jstach.jstachio.JStachio") == null;
 
   private ProcessingContext() {}
 
@@ -286,5 +291,39 @@ public final class ProcessingContext {
 
   public static void addClientComponent(String clientFQN) {
     CTX.get().clientFQN.add(clientFQN);
+  }
+
+  private static Map<String, String> jstacheRenderers = new HashMap<>();
+
+  public static String jstacheRenderer(TypeMirror typeMirror) {
+    final var typeElement = APContext.asTypeElement(typeMirror);
+
+    return jstacheRenderers.computeIfAbsent(
+        typeElement.getSimpleName().toString(),
+        k ->
+            ZERO_JSTACHIO
+                ? typeElement.getSimpleName() + "Renderer.of().execute("
+                : checkJstacheConfig(typeElement, typeElement));
+  }
+
+  private static String checkJstacheConfig(Element element, TypeElement typeElement) {
+
+    if (element == null) {
+      return "JStachio.render(";
+    }
+    var config = JStacheConfigPrism.getInstanceOn(element);
+
+    if (config != null && "STACHE".equals(config.type())) {
+      return typeElement.getSimpleName() + "Renderer.of().execute(";
+    } else if (config != null && "JSTACHIO".equals(config.type())) {
+      return "JStachio.render(";
+    }
+
+    return checkJstacheConfig(element.getEnclosingElement(), typeElement);
+  }
+
+  public static boolean isJstacheTemplate(TypeMirror mirror) {
+    final var typeElement = APContext.asTypeElement(mirror);
+    return typeElement != null && JStachePrism.isPresent(typeElement);
   }
 }

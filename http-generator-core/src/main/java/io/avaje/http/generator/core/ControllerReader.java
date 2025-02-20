@@ -249,6 +249,7 @@ public final class ControllerReader {
       }
     }
     deriveIncludeValidation();
+    jstacheImport();
     addImports(withSingleton);
   }
 
@@ -264,6 +265,24 @@ public final class ControllerReader {
       }
     }
     return false;
+  }
+
+  private void jstacheImport() {
+    for (final MethodReader method : methods) {
+      final var asTypeElement = APContext.asTypeElement(method.returnType());
+      if (ProcessingContext.isJstacheTemplate(method.returnType())) {
+        if ("JStachio.render(".equals(ProcessingContext.jstacheRenderer(method.returnType()))) {
+          addImportType("io.jstach.jstachio.JStachio");
+        } else {
+          // jstachio generated classes don't have the parent type in the name
+          addImportType(
+              APContext.elements().getPackageOf(asTypeElement).getQualifiedName().toString()
+                  + "."
+                  + asTypeElement.getSimpleName()
+                  + "Renderer");
+        }
+      }
+    }
   }
 
   private boolean anyMethodHasContentCache() {

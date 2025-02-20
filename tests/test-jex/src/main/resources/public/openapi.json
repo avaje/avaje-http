@@ -1023,6 +1023,48 @@
 				"deprecated" : true
 			}
 		},
+		"/jstache/hello" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloWorldCompileTime"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/jstache/helloRuntime" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloWorldRuntime"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/other/{name}" : {
 			"get" : {
 				"tags" : [
@@ -1516,31 +1558,53 @@
 					}
 				}
 			},
-			"Long>" : {
+			"HelloWorldCompileTime" : {
 				"type" : "object",
 				"properties" : {
-					"value" : {
-						"$ref" : "#/components/schemas/T"
+					"message" : {
+						"type" : "string"
+					},
+					"people" : {
+						"type" : "array",
+						"items" : {
+							"$ref" : "#/components/schemas/Person"
+						}
 					}
 				}
 			},
-			"NestedEnum>" : {
+			"HelloWorldRuntime" : {
 				"type" : "object",
 				"properties" : {
-					"value" : {
-						"$ref" : "#/components/schemas/T"
+					"message" : {
+						"type" : "string"
+					},
+					"people" : {
+						"type" : "array",
+						"items" : {
+							"$ref" : "#/components/schemas/Person"
+						}
+					}
+				}
+			},
+			"Long>" : {
+				"type" : "object"
+			},
+			"NestedEnum>" : {
+				"type" : "object"
+			},
+			"Person" : {
+				"type" : "object",
+				"properties" : {
+					"name" : {
+						"type" : "string"
+					},
+					"birthday" : {
+						"type" : "string",
+						"format" : "date"
 					}
 				}
 			},
 			"String>" : {
-				"type" : "object",
-				"properties" : {
-					"value" : {
-						"$ref" : "#/components/schemas/T"
-					}
-				}
-			},
-			"T" : {
 				"type" : "object"
 			},
 			"ViewHome" : {

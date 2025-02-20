@@ -9,16 +9,14 @@ import javax.lang.model.type.TypeMirror;
 
 import static io.avaje.http.generator.core.ProcessingContext.*;
 
-/**
- * Write code to register Web route for a given controller method.
- */
+/** Write code to register Web route for a given controller method. */
 class ControllerMethodWriter {
-
   private final MethodReader method;
   private final Append writer;
   private final ControllerReader reader;
   private final WebMethod webMethod;
   private final boolean useJsonB;
+  private final boolean useJstachio;
   private final boolean instrumentContext;
   private final boolean isFilter;
 
@@ -31,6 +29,7 @@ class ControllerMethodWriter {
     this.webMethod = method.webMethod();
     this.instrumentContext = method.instrumentContext();
     this.isFilter = webMethod == CoreWebMethod.FILTER;
+    this.useJstachio = ProcessingContext.isJstacheTemplate(method.returnType());
     if (isFilter) {
       validateFilter();
     }
@@ -102,6 +101,7 @@ class ControllerMethodWriter {
     Void,
     Json,
     Text,
+    Jstachio,
     Templating,
     InputStream,
     Other
@@ -117,9 +117,15 @@ class ControllerMethodWriter {
     if (producesJson()) {
       return ResponseMode.Json;
     }
+
     if (useTemplating()) {
       return ResponseMode.Templating;
     }
+
+    if (useJstachio) {
+      return ResponseMode.Jstachio;
+    }
+
     if (producesText()) {
       return ResponseMode.Text;
     }
@@ -132,11 +138,12 @@ class ControllerMethodWriter {
 
   private boolean producesJson() {
     return !"byte[]".equals(method.returnType().toString())
-      && (method.produces() == null || method.produces().toLowerCase().contains("json"));
+        && !useJstachio
+        && (method.produces() == null || method.produces().toLowerCase().contains("json"));
   }
 
   private boolean producesText() {
-    return  (method.produces() != null && method.produces().toLowerCase().contains("text"));
+    return (method.produces() != null && method.produces().toLowerCase().contains("text"));
   }
 
   private boolean useContentCache() {
@@ -245,16 +252,25 @@ class ControllerMethodWriter {
       if (includeNoContent) {
         writer.append("    if (result != null) {").eol();
       }
-      if (responseMode == ResponseMode.Templating) {
-        writer.append(indent).append("var content = renderer.render(result);").eol();
-        if (withContentCache) {
-          writer.append(indent).append("contentCache.contentPut(key, content);").eol();
+      switch (responseMode) {
+        case Templating -> {
+          writer.append(indent).append("var content = renderer.render(result);").eol();
+          if (withContentCache) {
+            writer.append(indent).append("contentCache.contentPut(key, content);").eol();
+          }
+          writer.append(indent);
+          writeContextReturn(responseMode, "content");
         }
-        writer.append(indent);
-        writeContextReturn(responseMode, "content");
-      } else {
-        writer.append(indent);
-        writeContextReturn(responseMode, "result");
+        case Jstachio -> {
+          var renderer = ProcessingContext.jstacheRenderer(method.returnType());
+          writer.append(indent).append("var content = %sresult);", renderer).eol();
+          writer.append(indent);
+          writeContextReturn(responseMode, "content");
+        }
+        default -> {
+          writer.append(indent);
+          writeContextReturn(responseMode, "result");
+        }
       }
       if (includeNoContent) {
         writer.append("    }").eol();
@@ -270,7 +286,10 @@ class ControllerMethodWriter {
       return;
     }
 
-    final var produces = method.produces();
+    var produces = method.produces();
+    if (produces == null && useJstachio) {
+      produces = MediaType.TEXT_HTML.getValue();
+    }
     switch (responseMode) {
       case Void -> {}
       case Json -> writeJsonReturn(produces);
