@@ -15,7 +15,7 @@ class ControllerWriter extends BaseControllerWriter {
   private static final String AT_GENERATED = "@Generated(\"avaje-jex-generator\")";
   private static final String API_CONTEXT = "io.avaje.jex.http.Context";
   private static final String API_ROUTING = "io.avaje.jex.Routing";
-  private final boolean useJsonB;
+  private boolean useJsonB;
   private final Map<String, UType> jsonTypes;
 
   ControllerWriter(ControllerReader reader, boolean jsonb) throws IOException {
@@ -41,10 +41,14 @@ class ControllerWriter extends BaseControllerWriter {
       }
     }
     if (useJsonB) {
+      this.jsonTypes = JsonBUtil.jsonTypes(reader);
+      if (this.jsonTypes.isEmpty()) {
+        useJsonB = false;
+        return;
+      }
       reader.addImportType("io.avaje.jsonb.Jsonb");
       reader.addImportType("io.avaje.jsonb.JsonType");
       reader.addImportType("io.avaje.jsonb.Types");
-      this.jsonTypes = JsonBUtil.jsonTypes(reader);
       jsonTypes.values().stream().map(UType::importTypes).forEach(reader::addImportTypes);
     } else {
       this.jsonTypes = Map.of();

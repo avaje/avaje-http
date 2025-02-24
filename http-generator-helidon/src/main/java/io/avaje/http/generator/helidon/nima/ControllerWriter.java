@@ -21,24 +21,12 @@ class ControllerWriter extends BaseControllerWriter {
   private static final String JSON_JsonOutput = "io.avaje.json.stream.JsonOutput";
   private static final String JSONB_JsonOutput = "io.avaje.jsonb.stream.JsonOutput";
 
-  private final boolean useJsonB;
+  private boolean useJsonB;
   private final Map<String, UType> jsonTypes;
 
   ControllerWriter(ControllerReader reader, boolean jsonb) throws IOException {
     super(reader);
     this.useJsonB = jsonb;
-    if (useJsonB) {
-      reader.addImportType("io.avaje.jsonb.Jsonb");
-      reader.addImportType("io.avaje.jsonb.JsonType");
-      reader.addImportType("io.avaje.jsonb.Types");
-      reader.addImportType(jsonOutputType());
-      this.jsonTypes = JsonBUtil.jsonTypes(reader);
-      jsonTypes.values().stream()
-          .map(UType::importTypes)
-          .forEach(reader::addImportTypes);
-    } else {
-      this.jsonTypes = Map.of();
-    }
     reader.addImportType("io.helidon.common.media.type.MediaTypes");
     reader.addImportType("io.helidon.common.parameters.Parameters");
     reader.addImportType("io.helidon.webserver.http.HttpRouting");
@@ -69,6 +57,20 @@ class ControllerWriter extends BaseControllerWriter {
       if (reader.hasContentCache()) {
         reader.addImportType("io.avaje.htmx.nima.TemplateContentCache");
       }
+    }
+    if (useJsonB) {
+      this.jsonTypes = JsonBUtil.jsonTypes(reader);
+      if (this.jsonTypes.isEmpty()) {
+        useJsonB = false;
+        return;
+      }
+      reader.addImportType("io.avaje.jsonb.Jsonb");
+      reader.addImportType("io.avaje.jsonb.JsonType");
+      reader.addImportType("io.avaje.jsonb.Types");
+      reader.addImportType(jsonOutputType());
+      jsonTypes.values().stream().map(UType::importTypes).forEach(reader::addImportTypes);
+    } else {
+      this.jsonTypes = Map.of();
     }
   }
 
