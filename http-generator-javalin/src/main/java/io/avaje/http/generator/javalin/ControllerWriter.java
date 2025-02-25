@@ -20,13 +20,15 @@ import io.avaje.http.generator.core.UType;
 class ControllerWriter extends BaseControllerWriter {
 
   private static final String AT_GENERATED = "@Generated(\"avaje-javalin-generator\")";
-  private boolean useJsonB;
+  private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
   private final boolean javalin6 = ProcessingContext.javalin6();
 
   ControllerWriter(ControllerReader reader, boolean jsonb) throws IOException {
     super(reader);
-    this.useJsonB = jsonb;
+    final var detectJsonB = JsonBUtil.detect(jsonb, reader);
+    this.useJsonB = detectJsonB.useJsonB();
+    this.jsonTypes = detectJsonB.jsonTypes();
 
     reader.addImportType("io.javalin.plugin.Plugin");
     if (javalin6) {
@@ -35,19 +37,6 @@ class ControllerWriter extends BaseControllerWriter {
       reader.addImportType("io.avaje.http.api.AvajeJavalinPlugin");
     } else {
       reader.addImportType("io.javalin.Javalin");
-    }
-    if (useJsonB) {
-      this.jsonTypes = JsonBUtil.jsonTypes(reader);
-      if (this.jsonTypes.isEmpty()) {
-        useJsonB = false;
-        return;
-      }
-      reader.addImportType("io.avaje.jsonb.Jsonb");
-      reader.addImportType("io.avaje.jsonb.JsonType");
-      reader.addImportType("io.avaje.jsonb.Types");
-      jsonTypes.values().stream().map(UType::importTypes).forEach(reader::addImportTypes);
-    } else {
-      this.jsonTypes = Map.of();
     }
   }
 
