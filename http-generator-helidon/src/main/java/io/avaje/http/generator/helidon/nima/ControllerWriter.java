@@ -26,18 +26,11 @@ class ControllerWriter extends BaseControllerWriter {
 
   ControllerWriter(ControllerReader reader, boolean jsonb) throws IOException {
     super(reader);
-    this.useJsonB = jsonb;
+    final var detectJsonB = JsonBUtil.detect(jsonb, reader);
+    this.useJsonB = detectJsonB.useJsonB();
+    this.jsonTypes = detectJsonB.jsonTypes();
     if (useJsonB) {
-      reader.addImportType("io.avaje.jsonb.Jsonb");
-      reader.addImportType("io.avaje.jsonb.JsonType");
-      reader.addImportType("io.avaje.jsonb.Types");
       reader.addImportType(jsonOutputType());
-      this.jsonTypes = JsonBUtil.jsonTypes(reader);
-      jsonTypes.values().stream()
-          .map(UType::importTypes)
-          .forEach(reader::addImportTypes);
-    } else {
-      this.jsonTypes = Map.of();
     }
     reader.addImportType("io.helidon.common.media.type.MediaTypes");
     reader.addImportType("io.helidon.common.parameters.Parameters");

@@ -20,7 +20,9 @@ class ControllerWriter extends BaseControllerWriter {
 
   ControllerWriter(ControllerReader reader, boolean jsonb) throws IOException {
     super(reader);
-    this.useJsonB = jsonb;
+    final var detectJsonB = JsonBUtil.detect(jsonb, reader);
+    this.useJsonB = detectJsonB.useJsonB();
+    this.jsonTypes = detectJsonB.jsonTypes();
     reader.addImportType(API_CONTEXT);
     reader.addImportType(API_ROUTING);
     reader.addImportType("java.io.IOException");
@@ -39,15 +41,6 @@ class ControllerWriter extends BaseControllerWriter {
       if (reader.hasContentCache()) {
         reader.addImportType("io.avaje.jex.htmx.TemplateContentCache");
       }
-    }
-    if (useJsonB) {
-      reader.addImportType("io.avaje.jsonb.Jsonb");
-      reader.addImportType("io.avaje.jsonb.JsonType");
-      reader.addImportType("io.avaje.jsonb.Types");
-      this.jsonTypes = JsonBUtil.jsonTypes(reader);
-      jsonTypes.values().stream().map(UType::importTypes).forEach(reader::addImportTypes);
-    } else {
-      this.jsonTypes = Map.of();
     }
   }
 
