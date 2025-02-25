@@ -7,14 +7,49 @@ import java.util.stream.Collectors;
 
 public final class JsonBUtil {
 
+  private static final JsonBDetect NO_JSONB = new JsonBDetect();
+  /**
+   * Detect JsonB use and handle imports as needed.
+   */
+  public static final class JsonBDetect {
+    private final Map<String, UType> jsonTypes;
+
+    private JsonBDetect() {
+      this.jsonTypes = Map.of();
+    }
+
+    private JsonBDetect(ControllerReader reader) {
+      this.jsonTypes = JsonBUtil.jsonTypes(reader);
+      addImports(reader);
+    }
+
+    private void addImports(ControllerReader reader) {
+      reader.addImportType("io.avaje.jsonb.Jsonb");
+      reader.addImportType("io.avaje.jsonb.JsonType");
+      reader.addImportType("io.avaje.jsonb.Types");
+      jsonTypes.values().stream().map(UType::importTypes).forEach(reader::addImportTypes);
+    }
+
+    public boolean useJsonB() {
+      return !jsonTypes.isEmpty();
+    }
+
+    public Map<String, UType> jsonTypes() {
+      return jsonTypes;
+    }
+  }
+
   private JsonBUtil() {}
 
   public static boolean isJsonMimeType(String producesMimeType) {
     return producesMimeType == null || producesMimeType.toLowerCase().contains("application/json");
   }
 
-  public static Map<String, UType> jsonTypes(ControllerReader reader) {
+  public static JsonBDetect detect(boolean jsonb, ControllerReader reader) {
+    return !jsonb ? NO_JSONB : new JsonBDetect(reader);
+  }
 
+  public static Map<String, UType> jsonTypes(ControllerReader reader) {
     final Map<String, UType> jsonTypes = new LinkedHashMap<>();
     final Consumer<UType> addToMap = uType -> jsonTypes.put(uType.full(), uType);
 
