@@ -1,10 +1,19 @@
 package io.avaje.http.generator.sigma;
 
-import static io.avaje.http.generator.core.ProcessingContext.*;
+import static io.avaje.http.generator.core.ProcessingContext.isAssignable2Interface;
+import static io.avaje.http.generator.core.ProcessingContext.logError;
+import static io.avaje.http.generator.core.ProcessingContext.platform;
 
 import java.util.List;
 
-import io.avaje.http.generator.core.*;
+import io.avaje.http.generator.core.Append;
+import io.avaje.http.generator.core.CoreWebMethod;
+import io.avaje.http.generator.core.JsonBUtil;
+import io.avaje.http.generator.core.MethodParam;
+import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.PathSegments;
+import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.WebMethod;
 import io.avaje.http.generator.core.openapi.MediaType;
 
 /** Write code to register Web route for a given controller method. */
@@ -15,6 +24,7 @@ class ControllerMethodWriter {
   private final WebMethod webMethod;
   private final boolean instrumentContext;
   private final boolean isFilter;
+  private boolean useJstachio;
 
   ControllerMethodWriter(MethodReader method, Append writer) {
     this.method = method;
@@ -22,6 +32,7 @@ class ControllerMethodWriter {
     this.webMethod = method.webMethod();
     this.instrumentContext = method.instrumentContext();
     this.isFilter = webMethod == CoreWebMethod.FILTER;
+    this.useJstachio = ProcessingContext.isJstacheTemplate(method.returnType());
     if (isFilter) {
       validateFilter();
     }
@@ -122,6 +133,11 @@ class ControllerMethodWriter {
 
   private void writeContextReturn() {
     var produces = method.produces();
+
+    if (useJstachio && produces == null) {
+      produces = MediaType.TEXT_HTML.getValue();
+    }
+
     boolean applicationJson =
         produces == null || MediaType.APPLICATION_JSON.getValue().equalsIgnoreCase(produces);
     if (applicationJson || JsonBUtil.isJsonMimeType(produces)) {
@@ -130,6 +146,9 @@ class ControllerMethodWriter {
       } else {
         writer.append("      ctx.contentType(\"%s\").result(result);", produces);
       }
+    } else if (useJstachio) {
+      var renderer = ProcessingContext.jstacheRenderer(method.returnType());
+      writer.append("      ctx.contentType(\"%s\").result(%s(result));", produces, renderer);
     } else if (MediaType.TEXT_HTML.getValue().equalsIgnoreCase(produces)) {
       writer.append("      ctx.html(result);");
     } else if (MediaType.TEXT_PLAIN.getValue().equalsIgnoreCase(produces)) {
