@@ -24,10 +24,12 @@ public final class JsonBUtil {
     }
 
     private void addImports(ControllerReader reader) {
-      reader.addImportType("io.avaje.jsonb.Jsonb");
-      reader.addImportType("io.avaje.jsonb.JsonType");
-      reader.addImportType("io.avaje.jsonb.Types");
-      jsonTypes.values().stream().map(UType::importTypes).forEach(reader::addImportTypes);
+      if (useJsonB()) {
+        reader.addImportType("io.avaje.jsonb.Jsonb");
+        reader.addImportType("io.avaje.jsonb.JsonType");
+        reader.addImportType("io.avaje.jsonb.Types");
+        jsonTypes.values().stream().map(UType::importTypes).forEach(reader::addImportTypes);
+      }
     }
 
     public boolean useJsonB() {
