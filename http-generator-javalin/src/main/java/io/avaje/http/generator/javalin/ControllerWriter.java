@@ -26,16 +26,10 @@ class ControllerWriter extends BaseControllerWriter {
 
   ControllerWriter(ControllerReader reader, boolean jsonb) throws IOException {
     super(reader);
-    this.useJsonB = jsonb;
-    if (useJsonB) {
-      reader.addImportType("io.avaje.jsonb.Jsonb");
-      reader.addImportType("io.avaje.jsonb.JsonType");
-      reader.addImportType("io.avaje.jsonb.Types");
-      this.jsonTypes = JsonBUtil.jsonTypes(reader);
-      jsonTypes.values().stream().map(UType::importTypes).forEach(reader::addImportTypes);
-    } else {
-      this.jsonTypes = Map.of();
-    }
+    final var detectJsonB = JsonBUtil.detect(jsonb, reader);
+    this.useJsonB = detectJsonB.useJsonB();
+    this.jsonTypes = detectJsonB.jsonTypes();
+
     reader.addImportType("io.javalin.plugin.Plugin");
     if (javalin6) {
       reader.addImportType("io.javalin.config.JavalinConfig");
