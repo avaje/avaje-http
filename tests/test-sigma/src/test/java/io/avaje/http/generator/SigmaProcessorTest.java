@@ -50,7 +50,9 @@ class SigmaProcessorTest {
             new PrintWriter(System.out),
             null,
             null,
-            List.of("--release=11", "-AdisableDirectWrites=true"),
+            List.of(
+                "--release=" + Integer.getInteger("java.specification.version"),
+                "-AdisableDirectWrites=true"),
             null,
             files);
     task.setProcessors(List.of(new SigmaProcessor()));
@@ -75,7 +77,7 @@ class SigmaProcessorTest {
             null,
             null,
             List.of(
-                "--release=11",
+                "--release=" + Integer.getInteger("java.specification.version"),
                 "-AuseJavax=false",
                 "-AuseSingleton=true",
                 "-AdisableDirectWrites=true"),
