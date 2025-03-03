@@ -28,7 +28,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-sigma</artifactId>
-      <version>0.4</version>
+      <version>1.0</version>
     </dependency>
 
     <dependency>
