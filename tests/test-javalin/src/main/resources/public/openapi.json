@@ -750,6 +750,7 @@
 				],
 				"summary" : "Return the Hello DTO",
 				"description" : "",
+				"operationId" : "helloByDate",
 				"parameters" : [
 					{
 						"name" : "id",

@@ -39,9 +39,7 @@ public class MethodDocBuilder {
       return;
     }
 
-    //operation.setOperationId();
-    operation.setSummary(javadoc.getSummary());
-    operation.setDescription(javadoc.getDescription());
+    methodReader.readOperation(operation, javadoc);
     operation.setTags(methodReader.tags());
 
     if (javadoc.isDeprecated()

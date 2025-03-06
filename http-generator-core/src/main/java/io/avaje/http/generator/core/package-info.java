@@ -23,6 +23,7 @@
 @GeneratePrism(value = io.avaje.http.api.InstrumentServerContext.class)
 @GeneratePrism(value = io.avaje.http.api.ExceptionHandler.class)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.OpenAPIDefinition.class, publicAccess = true)
+@GeneratePrism(value = io.swagger.v3.oas.annotations.Operation.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.tags.Tag.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.tags.Tags.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecurityScheme.class, publicAccess = true)
