@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.example.myapp.service.MyService;
 
 import io.avaje.http.api.BeanParam;
@@ -61,6 +62,7 @@ class HelloController {
    */
   @Deprecated
 @Roles({AppRoles.ADMIN, AppRoles.BASIC_USER})
+  @Operation(operationId = "helloByDate")
   @Get("/{id}/{date}")
   HelloDto hello(int id, LocalDate date, String otherParam) {
     return new HelloDto(id, date.toString(), otherParam);

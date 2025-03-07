@@ -22,6 +22,7 @@ import javax.lang.model.type.TypeMirror;
 
 import io.avaje.http.generator.core.javadoc.Javadoc;
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
+import io.swagger.v3.oas.models.Operation;
 
 public class MethodReader {
 
@@ -267,6 +268,25 @@ public class MethodReader {
     final var responses = Stream.concat(methodResponses, superMethodResponses).collect(Collectors.toList());
     responses.addAll(bean.openApiResponses());
     return responses;
+  }
+
+  public void readOperation(Operation operation, Javadoc javadoc) {
+    OperationPrism.getOptionalOn(element).ifPresent(an -> {
+      operation.setOperationId(emptyToNull(an.operationId()));
+      operation.setDeprecated(an.deprecated());
+      operation.setSummary(emptyToNull(an.summary()));
+      operation.setDescription(emptyToNull(an.description()));
+    });
+    if (operation.getDescription() == null) {
+      operation.setDescription(javadoc.getDescription());
+    }
+    if (operation.getSummary() == null) {
+      operation.setSummary(javadoc.getSummary());
+    }
+  }
+
+  private static String emptyToNull(String val) {
+    return val.isEmpty() ? null : val;
   }
 
   public <A> Optional<A> findAnnotation(Function<Element, Optional<A>> prismFunc) {
