@@ -351,6 +351,7 @@
 				],
 				"summary" : "Find Hellos by name",
 				"description" : "",
+				"operationId" : "findByName",
 				"parameters" : [
 					{
 						"name" : "name",

@@ -76,6 +76,7 @@ class HelloController {
    * @return The Hellos that we found.
    */
   @Roles(AppRoles.ADMIN)
+  @Operation(operationId = "findByName")
   @Get("/findbyname/{name}")
   List<HelloDto> findByName(String name, @QueryParam("my-param") @Default("one") String myParam) {
     return new ArrayList<>();

@@ -273,9 +273,12 @@ public class MethodReader {
   public void readOperation(Operation operation, Javadoc javadoc) {
     OperationPrism.getOptionalOn(element).ifPresent(an -> {
       operation.setOperationId(emptyToNull(an.operationId()));
-      operation.setDeprecated(an.deprecated());
       operation.setSummary(emptyToNull(an.summary()));
       operation.setDescription(emptyToNull(an.description()));
+      if (Boolean.TRUE.equals(an.deprecated())) {
+        // leave deprecated false as NULL to reduce openapi noise
+        operation.setDeprecated(true);
+      }
     });
     if (operation.getDescription() == null) {
       operation.setDescription(javadoc.getDescription());
