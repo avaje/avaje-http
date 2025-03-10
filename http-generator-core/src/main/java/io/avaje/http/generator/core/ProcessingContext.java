@@ -54,6 +54,7 @@ public final class ProcessingContext {
     private final String diAnnotation;
     private final boolean instrumentAllMethods;
     private final boolean disableDirectWrites;
+    private final boolean disableJsonB;
     private final boolean javalin6;
     private final Set<String> clientFQN = new HashSet<>();
 
@@ -73,6 +74,7 @@ public final class ProcessingContext {
       final var singletonOverride = options.get("useSingleton");
       this.instrumentAllMethods = Boolean.parseBoolean(options.get("instrumentRequests"));
       this.disableDirectWrites = Boolean.parseBoolean(options.get("disableDirectWrites"));
+      this.disableJsonB = Boolean.parseBoolean(options.get("disableJsonB"));
       if (singletonOverride != null) {
         useComponent = !Boolean.parseBoolean(singletonOverride);
       } else {
@@ -202,6 +204,10 @@ public final class ProcessingContext {
   }
 
   public static boolean useJsonb() {
+    return isJsonbInClasspath() && !CTX.get().disableJsonB;
+  }
+
+  private static boolean isJsonbInClasspath() {
     try {
       return CTX.get().elementUtils.getTypeElement("io.avaje.jsonb.Jsonb") != null
         || Class.forName("io.avaje.jsonb.Jsonb") != null;

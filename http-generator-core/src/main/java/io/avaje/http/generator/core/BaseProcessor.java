@@ -27,7 +27,7 @@ import io.avaje.prism.GenerateModuleInfoReader;
 
 @GenerateAPContext
 @GenerateModuleInfoReader
-@SupportedOptions({"useJavax", "useSingleton", "instrumentRequests","disableDirectWrites"})
+@SupportedOptions({"useJavax", "useSingleton", "instrumentRequests","disableDirectWrites","disableJsonB"})
 public abstract class BaseProcessor extends AbstractProcessor {
 
   protected String contextPathString;
