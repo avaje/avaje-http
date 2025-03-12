@@ -56,6 +56,9 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+    if (round.errorRaised()) {
+      return false;
+    }
     var pathElements = round.getElementsAnnotatedWith(typeElement(PathPrism.PRISM_TYPE));
     APContext.setProjectModuleElement(annotations, round);
     if (contextPathString == null) {
