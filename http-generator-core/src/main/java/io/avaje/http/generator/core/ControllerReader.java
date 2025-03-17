@@ -311,7 +311,7 @@ public final class ControllerReader {
     if (superclass.getKind() != TypeKind.NONE) {
       final DeclaredType declaredType = (DeclaredType) superclass;
       final TypeElement superElement = asElement(superclass);
-      if (!"java.lang.Object".equals(superElement.toString())) {
+      if (!"java.lang.Object".equals(superElement.getQualifiedName().toString())) {
         for (final Element element : superElement.getEnclosedElements()) {
           if (element.getKind() == ElementKind.METHOD) {
             readMethod((ExecutableElement) element, declaredType);

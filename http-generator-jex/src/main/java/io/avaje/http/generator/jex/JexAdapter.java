@@ -1,6 +1,7 @@
 package io.avaje.http.generator.jex;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.Constants;
@@ -9,6 +10,7 @@ import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
 import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.UType;
+import io.avaje.http.generator.core.Util;
 
 class JexAdapter implements PlatformAdapter {
 
@@ -38,10 +40,52 @@ class JexAdapter implements PlatformAdapter {
       return "ctx.body()";
     } else if ("byte[]".equals(type.full())) {
       return "ctx.bodyAsBytes()";
+    } else if (type.isGeneric() && ProcessingContext.useJsonb()) {
+      return "ctx.<%s>bodyAsType(%s)".formatted(type.shortType(), writeJsonbType(type));
     } else if (ProcessingContext.useJsonb()) {
-      return type.shortName() + "JsonType.fromJson(ctx.bodyAsInputStream())";
+      return "ctx.bodyAsClass(%s.class)".formatted(type.shortType());
     }
     return "ctx.bodyAsClass(" + type.mainType() + ".class)";
+  }
+
+  public static String writeJsonbType(UType type) {
+    var writer = new StringBuilder();
+
+    switch (type.mainType()) {
+      case "java.util.List":
+        writeType(type.paramRaw(), writer);
+        writer.append(".list()");
+        break;
+      case "java.util.Set":
+        writeType(type.paramRaw(), writer);
+        writer.append(".set()");
+        break;
+      case "java.util.Map":
+        writeType(type.paramRaw(), writer);
+        writer.append(".map()");
+        break;
+      default:
+        {
+          if (type.mainType().contains("java.util")) {
+            throw new UnsupportedOperationException(
+                "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
+          }
+          writeType(type, writer);
+        }
+    }
+    return writer.toString();
+  }
+
+  static void writeType(UType type, StringBuilder writer) {
+    final var params =
+        type.params().stream()
+            .map(Util::shortName)
+            .map(s -> "?".equals(s) ? "Object" : s)
+            .collect(Collectors.joining(".class, "));
+
+    writer.append(
+        "Types.newParameterizedType(%s.class, %s.class)"
+            .formatted(Util.shortName(type.mainType()), params));
   }
 
   @Override
