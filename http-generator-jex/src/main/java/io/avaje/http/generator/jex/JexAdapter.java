@@ -33,7 +33,6 @@ class JexAdapter implements PlatformAdapter {
 
   @Override
   public String bodyAsClass(UType type) {
-
     if ("java.io.InputStream".equals(type.full())) {
       return "ctx.bodyAsInputStream()";
     } else if ("java.lang.String".equals(type.full())) {
@@ -64,28 +63,27 @@ class JexAdapter implements PlatformAdapter {
         writeType(type.paramRaw(), writer);
         writer.append(".map()");
         break;
-      default:
-        {
-          if (type.mainType().contains("java.util")) {
-            throw new UnsupportedOperationException(
-                "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
-          }
-          writeType(type, writer);
+      default: {
+        if (type.mainType().contains("java.util")) {
+          throw new UnsupportedOperationException(
+            "Only java.util Map, Set and List are supported JsonB Controller Collection Types");
         }
+        writeType(type, writer);
+      }
     }
     return writer.toString();
   }
 
   static void writeType(UType type, StringBuilder writer) {
     final var params =
-        type.params().stream()
-            .map(Util::shortName)
-            .map(s -> "?".equals(s) ? "Object" : s)
-            .collect(Collectors.joining(".class, "));
+      type.params().stream()
+        .map(Util::shortName)
+        .map(s -> "?".equals(s) ? "Object" : s)
+        .collect(Collectors.joining(".class, "));
 
     writer.append(
-        "Types.newParameterizedType(%s.class, %s.class)"
-            .formatted(Util.shortName(type.mainType()), params));
+      "Types.newParameterizedType(%s.class, %s.class)"
+        .formatted(Util.shortName(type.mainType()), params));
   }
 
   @Override
