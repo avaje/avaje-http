@@ -928,6 +928,48 @@
 				}
 			}
 		},
+		"/jstache/hello" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloWorldZeroDependency"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/jstache/helloRuntime" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloWorld"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/openapi/get" : {
 			"get" : {
 				"tags" : [
@@ -2006,6 +2048,34 @@
 					}
 				}
 			},
+			"HelloWorld" : {
+				"type" : "object",
+				"properties" : {
+					"message" : {
+						"type" : "string"
+					},
+					"people" : {
+						"type" : "array",
+						"items" : {
+							"$ref" : "#/components/schemas/Person"
+						}
+					}
+				}
+			},
+			"HelloWorldZeroDependency" : {
+				"type" : "object",
+				"properties" : {
+					"message" : {
+						"type" : "string"
+					},
+					"people" : {
+						"type" : "array",
+						"items" : {
+							"$ref" : "#/components/schemas/Person"
+						}
+					}
+				}
+			},
 			"MyForm" : {
 				"type" : "object",
 				"properties" : {
@@ -2023,13 +2093,12 @@
 			"Person" : {
 				"type" : "object",
 				"properties" : {
-					"id" : {
-						"type" : "integer",
-						"format" : "int64",
-						"nullable" : false
-					},
 					"name" : {
 						"type" : "string"
+					},
+					"birthday" : {
+						"type" : "string",
+						"format" : "date"
 					}
 				}
 			}
