@@ -184,6 +184,9 @@ final class ControllerMethodWriter {
     for (final PathSegments.Segment matrixSegment : segments.matrixSegments()) {
       matrixSegment.writeCreateSegment(writer, platform());
     }
+    if (usesQueryParams()) {
+      writer.append("    var queryParams = req.query();").eol();
+    }
     final var params = method.params();
     for (final MethodParam param : params) {
       if (!isExceptionOrFilterChain(param)) {
@@ -369,6 +372,10 @@ final class ControllerMethodWriter {
 
   private boolean usesFormParams() {
     return method.params().stream().anyMatch(p -> p.isForm() || ParamType.FORMPARAM.equals(p.paramType()));
+  }
+
+  private boolean usesQueryParams() {
+    return method.params().stream().anyMatch(p -> ParamType.QUERYPARAM.equals(p.paramType()));
   }
 
   private void writeContextReturn(String indent) {

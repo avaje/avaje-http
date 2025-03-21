@@ -2,6 +2,7 @@ package org.example;
 
 import io.avaje.http.api.BeanParam;
 import io.avaje.http.api.Controller;
+import io.avaje.http.api.Default;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Produces;
 
@@ -24,7 +25,7 @@ public class HelloController {
   @Roles({AppRoles.ADMIN, AppRoles.BASIC_USER})
   @Produces("text/plain")
   @Get("other/{name}")
-  String name(String name) {
+  String name(String name, String sortBy, @Default("0") long max) {
     return "hi " + name;
   }
 
