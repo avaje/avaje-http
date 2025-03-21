@@ -375,7 +375,9 @@ final class ControllerMethodWriter {
   }
 
   private boolean usesQueryParams() {
-    return method.params().stream().anyMatch(p -> ParamType.QUERYPARAM.equals(p.paramType()));
+    return method.params().stream().anyMatch(p ->
+      ParamType.QUERYPARAM.equals(p.paramType())
+        || ParamType.BEANPARAM.equals(p.paramType()));
   }
 
   private void writeContextReturn(String indent) {
