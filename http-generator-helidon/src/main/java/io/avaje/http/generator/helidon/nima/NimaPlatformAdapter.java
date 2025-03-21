@@ -71,12 +71,11 @@ class NimaPlatformAdapter implements PlatformAdapter {
     switch (paramType) {
       case PATHPARAM -> writer.append("pathParams.contains(\"%s\") ? pathParams.get(\"%s\") : null", paramName, paramName);
 
-      case QUERYPARAM -> writer.append("req.query().contains(\"%s\") ? req.query().get(\"%s\") : null", paramName, paramName);
+      case QUERYPARAM -> writer.append("queryParams.contains(\"%s\") ? queryParams.get(\"%s\") : null", paramName, paramName);
 
       case FORMPARAM -> writer.append("formParams.contains(\"%s\") ? formParams.get(\"%s\") : null", paramName, paramName);
 
-      case HEADER -> writer.append(
-          "req.headers().value(HeaderNames.create(\"%s\")).orElse(null)", paramName);
+      case HEADER -> writer.append("req.headers().value(HeaderNames.create(\"%s\")).orElse(null)", paramName);
 
       case COOKIE -> writer.append("req.headers().cookies().contains(\"%s\") ? req.headers().cookies().get(\"%s\") : null", paramName, paramName);
 
@@ -91,7 +90,7 @@ class NimaPlatformAdapter implements PlatformAdapter {
           "pathParams.contains(\"%s\") ? pathParams.get(\"%s\") : \"%s\"", paramName, paramName, paramDefault);
 
       case QUERYPARAM -> writer.append(
-          "req.query().contains(\"%s\") ? req.query().get(\"%s\") : \"%s\"", paramName, paramName, paramDefault);
+          "queryParams.contains(\"%s\") ? queryParams.get(\"%s\") : \"%s\"", paramName, paramName, paramDefault);
 
       case FORMPARAM -> writer.append(
           "formParams.contains(\"%s\") ? formParams.get(\"%s\") : \"%s\"", paramName, paramName, paramDefault);
@@ -109,18 +108,17 @@ class NimaPlatformAdapter implements PlatformAdapter {
   @Override
   public void writeReadMapParameter(Append writer, ParamType paramType) {
     switch (paramType) {
-      case QUERYPARAM -> writer.append("req.query().toMap()");
+      case QUERYPARAM -> writer.append("queryParams.toMap()");
       case FORM, FORMPARAM -> writer.append("formParams.toMap()");
       case COOKIE -> writer.append("req.headers().cookies().toMap()");
-      default -> throw new UnsupportedOperationException(
-          "Only Form/Query/Cookie Multi-Value Maps are supported");
+      default -> throw new UnsupportedOperationException("Only Form/Query/Cookie Multi-Value Maps are supported");
     }
   }
 
   @Override
   public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
     switch (paramType) {
-      case QUERYPARAM -> writer.append("req.query().all(\"%s\")", paramName);
+      case QUERYPARAM -> writer.append("queryParams.all(\"%s\")", paramName);
       case FORMPARAM -> writer.append("formParams.all(\"%s\")", paramName);
 
       case HEADER -> writer.append(
@@ -139,7 +137,7 @@ class NimaPlatformAdapter implements PlatformAdapter {
       Append writer, ParamType paramType, String paramName, List<String> paramDefault) {
     switch (paramType) {
       case QUERYPARAM -> writer.append(
-          "req.query().all(\"%s\", () -> java.util.List.of(\"%s\"))",
+          "queryParams.all(\"%s\", () -> java.util.List.of(\"%s\"))",
           paramName, String.join(",", paramDefault));
 
       case FORMPARAM -> writer.append(
