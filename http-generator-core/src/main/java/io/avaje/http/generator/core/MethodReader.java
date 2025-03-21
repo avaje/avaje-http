@@ -60,7 +60,7 @@ public class MethodReader {
     this.bean = bean;
     this.element = element;
     this.actualExecutable = actualExecutable;
-    this.actualParams = (actualExecutable == null) ? null : actualExecutable.getParameterTypes();
+    this.actualParams = actualExecutable == null ? null : actualExecutable.getParameterTypes();
     this.isVoid = element.getReturnType().getKind() == TypeKind.VOID;
     this.methodRoles = Util.findRoles(element);
     this.producesAnnotation =
@@ -327,7 +327,7 @@ public class MethodReader {
     }
     // non-path parameters default to form or query parameters based on the
     // existence of @Form annotation on the method
-    final ParamType defaultParamType = (formMarker) ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
+    final ParamType defaultParamType = formMarker ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
 
     final List<? extends VariableElement> parameters = element.getParameters();
     for (int i = 0; i < parameters.size(); i++) {
@@ -342,6 +342,15 @@ public class MethodReader {
       final UType type = Util.parse(typeMirror.toString());
       final MethodParam param = new MethodParam(p, type, rawType, defaultParamType, formMarker);
       params.add(param);
+
+      if (CoreWebMethod.GET.equals(webMethod)
+          && param.isBody()
+          && !"java.util.Map".equals(param.utype().mainType())
+          && !"ClientPlatformAdapter"
+              .equals(ProcessingContext.platform().getClass().getSimpleName())) {
+        logError(p, "Missing @BeanParam annotation");
+      }
+
       param.addImports(bean);
     }
   }
