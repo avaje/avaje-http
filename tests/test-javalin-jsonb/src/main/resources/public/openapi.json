@@ -1268,7 +1268,7 @@
 			}
 		},
 		"/test/byteArray" : {
-			"get" : {
+			"post" : {
 				"tags" : [
 					
 				],
@@ -1286,7 +1286,7 @@
 					"required" : true
 				},
 				"responses" : {
-					"200" : {
+					"201" : {
 						"description" : "",
 						"content" : {
 							"application/json" : {
@@ -1730,7 +1730,7 @@
 			}
 		},
 		"/test/inputStream" : {
-			"get" : {
+			"post" : {
 				"tags" : [
 					
 				],
@@ -1748,7 +1748,7 @@
 					"required" : true
 				},
 				"responses" : {
-					"200" : {
+					"201" : {
 						"description" : "",
 						"content" : {
 							"application/json" : {
