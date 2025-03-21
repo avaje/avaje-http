@@ -49,13 +49,13 @@ public class TestController2 {
     return strings.toString();
   }
 
-  @Get("/inputStream")
+  @Post("/inputStream")
   @Consumes("application/bson")
   String stream(InputStream stream) {
     return stream.toString();
   }
 
-  @Get("/byteArray")
+  @Post("/byteArray")
   String bytes(byte[] array) {
     return array.toString();
   }
