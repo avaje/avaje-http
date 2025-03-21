@@ -1,5 +1,6 @@
 package org.example;
 
+import io.avaje.http.api.BeanParam;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Default;
 import io.avaje.http.api.Get;
@@ -26,5 +27,10 @@ public class HelloController {
   @Get("other/{name}")
   String name(String name, String sortBy, @Default("0") long max) {
     return "hi " + name;
+  }
+
+  @Get("banana")
+  Person getP(@BeanParam Person person) {
+    return person;
   }
 }

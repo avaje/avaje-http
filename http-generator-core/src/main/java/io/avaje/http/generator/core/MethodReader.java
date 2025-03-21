@@ -5,6 +5,7 @@ import static io.avaje.http.generator.core.ProcessingContext.docComment;
 import static io.avaje.http.generator.core.ProcessingContext.platform;
 import static io.avaje.http.generator.core.ProcessingContext.superMethods;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -343,16 +344,21 @@ public class MethodReader {
       final MethodParam param = new MethodParam(p, type, rawType, defaultParamType, formMarker);
       params.add(param);
 
-      if (CoreWebMethod.GET.equals(webMethod)
-          && param.isBody()
-          && !"java.util.Map".equals(param.utype().mainType())
-          && !"ClientPlatformAdapter"
-              .equals(ProcessingContext.platform().getClass().getSimpleName())) {
-        logError(p, "Missing @BeanParam annotation");
+      if (CoreWebMethod.GET.equals(webMethod) && isBodyParam(param)) {
+        logError(p, MessageFormat.format("Unsure how to populate {0} parameter for this @Get request. " +
+            "Perhaps it should be a @Post instead? or otherwise add @BeanParam to {0} to populate it from path parameters.",
+          param.name()));
       }
 
       param.addImports(bean);
     }
+  }
+
+  private static boolean isBodyParam(MethodParam param) {
+    return param.isBody()
+      && !"java.util.Map".equals(param.utype().mainType())
+      && !"ClientPlatformAdapter"
+      .equals(ProcessingContext.platform().getClass().getSimpleName());
   }
 
   public void buildApiDoc() {
