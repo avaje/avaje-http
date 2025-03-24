@@ -15,7 +15,7 @@
     <junit.version>5.12.1</junit.version>
     <assertj.version>3.27.3</assertj.version>
     <jackson.version>2.18.3</jackson.version>
-    <jex.version>3.0-RC22</jex.version>
+    <jex.version>3.0-RC23</jex.version>
     <avaje-inject.version>11.3</avaje-inject.version>
     <helidon.version>4.2.0</helidon.version>
     <javalin.version>6.5.0</javalin.version>
