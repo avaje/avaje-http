@@ -15,7 +15,8 @@ public final class PrimitiveUtil {
           "short", "Short",
           "double", "Double",
           "float", "Float",
-          "boolean", "Boolean");
+          "boolean", "Boolean",
+          "void", "Void");
 
   public static String wrap(String shortName) {
     final var wrapped = wrapperMap.get(shortName);

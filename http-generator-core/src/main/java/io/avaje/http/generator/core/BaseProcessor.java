@@ -4,6 +4,7 @@ import static io.avaje.http.generator.core.ProcessingContext.doc;
 import static io.avaje.http.generator.core.ProcessingContext.elements;
 import static io.avaje.http.generator.core.ProcessingContext.isOpenApiAvailable;
 import static io.avaje.http.generator.core.ProcessingContext.logError;
+import static io.avaje.http.generator.core.ProcessingContext.logWarn;
 import static io.avaje.http.generator.core.ProcessingContext.typeElement;
 import static java.util.stream.Collectors.toMap;
 
@@ -131,6 +132,13 @@ public abstract class BaseProcessor extends AbstractProcessor {
         writeControllerAdapter(reader);
       } catch (final Throwable e) {
         logError(reader.beanType(), "Failed to write $Route class " + e);
+      }
+      try {
+        if (((TypeElement) controller).getInterfaces().isEmpty()) {
+          new TestClientWriter(reader).write();
+        }
+      } catch (Exception e) {
+        logWarn(reader.beanType(), "Failed to write test class " + e);
       }
     }
   }
