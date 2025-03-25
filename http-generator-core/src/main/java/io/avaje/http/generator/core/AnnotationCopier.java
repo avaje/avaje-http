@@ -30,7 +30,10 @@ final class AnnotationCopier {
       final var type = annotationMirror.getAnnotationType().asElement().asType().toString();
       if (!type.contains("io.avaje.http.api.")
           || type.contains("Produces")
-          || type.contains("Consumes")) {
+          || type.contains("Consumes")
+          || type.contains("InstrumentServerContext")
+          || type.contains("Default")
+          || type.contains("OpenAPI")) {
         continue;
       }
 

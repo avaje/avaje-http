@@ -1,12 +1,14 @@
 package io.avaje.http.generator.core;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-
 
 public class TestClientWriter {
 
@@ -18,6 +20,7 @@ public class TestClientWriter {
   private String packageName;
   private String fullName;
   private Append writer;
+  private List<MethodReader> methods;
 
   TestClientWriter(ControllerReader reader) throws IOException {
 
@@ -27,6 +30,17 @@ public class TestClientWriter {
     this.shortName = origin.getSimpleName().toString();
     this.packageName = initPackageName(originName);
     this.fullName = packageName + "." + shortName + "$TestAPI";
+    this.methods =
+        reader.methods().stream()
+            .filter(MethodReader::isWebMethod)
+            .filter(
+                m ->
+                    m.webMethod() instanceof CoreWebMethod
+                        && m.webMethod() != CoreWebMethod.ERROR
+                        && m.webMethod() != CoreWebMethod.FILTER
+                        && m.webMethod() != CoreWebMethod.OTHER)
+            .collect(toList());
+    if (methods.isEmpty()) return;
     writer = new Append(APContext.createSourceFile(fullName, reader.beanType()).openWriter());
   }
 
@@ -36,6 +50,7 @@ public class TestClientWriter {
   }
 
   void write() {
+    if (methods.isEmpty()) return;
     writePackage();
     writeImports();
     writeClassStart();
@@ -50,18 +65,14 @@ public class TestClientWriter {
 
   protected void writeImports() {
     importTypes.add("java.net.http.HttpResponse");
+    importTypes.add("io.avaje.http.api.*");
 
-    reader
-        .methods()
-        .forEach(
-            m -> {
-              importTypes.addAll(UType.parse(m.returnType()).importTypes());
-              m.params()
-                  .forEach(
-                      p -> importTypes.addAll(UType.parse(p.element().asType()).importTypes()));
-            });
-
-    importTypes.addAll(reader.importTypes());
+    methods.forEach(
+        m -> {
+          importTypes.addAll(UType.parse(m.returnType()).importTypes());
+          m.params()
+              .forEach(p -> importTypes.addAll(UType.parse(p.element().asType()).importTypes()));
+        });
 
     importTypes.removeIf(
         i ->
@@ -82,15 +93,7 @@ public class TestClientWriter {
 
   private void writeAddRoutes() {
 
-    reader.methods().stream()
-        .filter(MethodReader::isWebMethod)
-        .filter(
-            m ->
-                m.webMethod() instanceof CoreWebMethod
-                    && m.webMethod() != CoreWebMethod.ERROR
-                    && m.webMethod() != CoreWebMethod.FILTER
-                    && m.webMethod() != CoreWebMethod.OTHER)
-        .forEach(this::writeRoute);
+    methods.forEach(this::writeRoute);
 
     writer.append("}").eol();
     writer.close();
@@ -102,6 +105,12 @@ public class TestClientWriter {
     AnnotationCopier.copyAnnotations(writer, method.element(), true);
 
     var returnTypeStr = PrimitiveUtil.wrap(UType.parse(returnType).shortType());
+
+    if (returnTypeStr.contains("CompletableFuture")) {
+      returnTypeStr =
+          returnTypeStr.substring(0, returnTypeStr.length() - 1).replace("CompletableFuture<", "");
+    }
+
     writer.append(
         "HttpResponse<%s> %s(", isJstache ? "String" : returnTypeStr, method.simpleName());
     boolean first = true;
