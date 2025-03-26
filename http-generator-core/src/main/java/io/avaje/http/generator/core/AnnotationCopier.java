@@ -33,7 +33,8 @@ final class AnnotationCopier {
           || type.contains("Consumes")
           || type.contains("InstrumentServerContext")
           || type.contains("Default")
-          || type.contains("OpenAPI")) {
+          || type.contains("OpenAPI")
+          || type.contains("Valid")) {
         continue;
       }
 

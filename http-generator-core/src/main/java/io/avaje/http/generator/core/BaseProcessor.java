@@ -39,13 +39,12 @@ import io.avaje.prism.GenerateModuleInfoReader;
 })
 public abstract class BaseProcessor extends AbstractProcessor {
 
-  private static final String HTTP_CONTROLLERS_TXT = "controllers.txt";
-
+  private static final String HTTP_CONTROLLERS_TXT = "testAPI/controllers.txt";
   protected String contextPathString;
 
   protected Map<String, String> packagePaths = new HashMap<>();
 
-  private final Set<String> controllerFQNs = new HashSet<>();
+  private final Set<String> clientFQNs = new HashSet<>();
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -68,10 +67,12 @@ public abstract class BaseProcessor extends AbstractProcessor {
       var txtFilePath = APContext.getBuildResource(HTTP_CONTROLLERS_TXT);
 
       if (txtFilePath.toFile().exists()) {
-        Files.lines(txtFilePath).forEach(controllerFQNs::add);
+        Files.lines(txtFilePath).forEach(clientFQNs::add);
       }
       if (APContext.isTestCompilation()) {
-        controllerFQNs.stream().map(APContext::typeElement).forEach(this::writeClientAdapter);
+        for (var path : clientFQNs) {
+          TestClientWriter.writeActual(path);
+        }
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -124,7 +125,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
         try {
           Files.write(
               APContext.getBuildResource(HTTP_CONTROLLERS_TXT),
-              controllerFQNs,
+              clientFQNs,
               StandardOpenOption.CREATE,
               StandardOpenOption.WRITE);
         } catch (IOException e) {
@@ -175,26 +176,22 @@ public abstract class BaseProcessor extends AbstractProcessor {
     try {
 
       writeControllerAdapter(reader);
-      controllerFQNs.add(controller.getQualifiedName().toString());
+      writeClientAdapter(reader);
 
     } catch (final Throwable e) {
       logError(reader.beanType(), "Failed to write $Route class " + e);
     }
   }
 
-  private void writeClientAdapter(TypeElement controller) {
-    final var packageFQN = elements().getPackageOf(controller).getQualifiedName().toString();
-    final var contextPath = Util.combinePath(contextPathString, packagePath(packageFQN));
-    final var reader = new ControllerReader(controller, contextPath);
-    reader.read(true);
-    try {
-      if (controller.getInterfaces().isEmpty()
-          && "java.lang.Object".equals(controller.getSuperclass().toString())) {
-        new TestClientWriter(reader).write();
-      }
-      writeControllerAdapter(reader);
+  private void writeClientAdapter(ControllerReader reader) {
 
-    } catch (final Throwable e) {
+    try {
+      if (reader.beanType().getInterfaces().isEmpty()
+          && "java.lang.Object".equals(reader.beanType().getSuperclass().toString())) {
+        new TestClientWriter(reader).write();
+        clientFQNs.add(reader.beanType().getQualifiedName().toString() + "$TestAPI");
+      }
+    } catch (final IOException e) {
       logError(reader.beanType(), "Failed to write $Route class " + e);
     }
   }

@@ -2,7 +2,9 @@ package io.avaje.http.generator.core;
 
 import static java.util.stream.Collectors.toList;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -19,7 +21,6 @@ public class TestClientWriter {
   private String originName;
   private String shortName;
   private String packageName;
-  private String fullName;
   private Append writer;
   private List<MethodReader> methods;
 
@@ -30,7 +31,6 @@ public class TestClientWriter {
     this.originName = origin.getQualifiedName().toString();
     this.shortName = origin.getSimpleName().toString();
     this.packageName = initPackageName(originName);
-    this.fullName = packageName + "." + shortName + "$TestAPI";
     this.methods =
         reader.methods().stream()
             .filter(MethodReader::isWebMethod)
@@ -42,7 +42,11 @@ public class TestClientWriter {
                         && m.webMethod() != CoreWebMethod.OTHER)
             .collect(toList());
     if (methods.isEmpty()) return;
-    writer = new Append(APContext.createSourceFile(fullName, reader.beanType()).openWriter());
+
+    writer =
+        new Append(
+            new FileWriter(
+                APContext.getBuildResource("testAPI/" + originName + "$TestAPI.txt").toFile()));
   }
 
   protected String initPackageName(String originName) {
@@ -143,5 +147,15 @@ public class TestClientWriter {
 
     writer.eol();
     writer.eol();
+  }
+
+  static void writeActual(String controller) throws IOException {
+
+    try (var out = APContext.createSourceFile(controller).openOutputStream();
+        var in =
+            Files.newInputStream(APContext.getBuildResource("testAPI/" + controller + ".txt")); ) {
+
+      in.transferTo(out);
+    }
   }
 }
