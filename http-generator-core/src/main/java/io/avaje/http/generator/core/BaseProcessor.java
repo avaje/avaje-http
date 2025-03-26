@@ -131,7 +131,8 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
         writeControllerAdapter(reader);
         TypeElement typeElement = (TypeElement) controller;
-        if (typeElement.getInterfaces().isEmpty()
+        if (APContext.isTestCompilation()
+            && typeElement.getInterfaces().isEmpty()
             && "java.lang.Object".equals(typeElement.getSuperclass().toString())) {
           new TestClientWriter(reader).write();
         }
