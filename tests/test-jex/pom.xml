@@ -96,6 +96,17 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-jex-generator</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-client-generator</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -119,6 +130,11 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-http-jex-generator</artifactId>
+              <version>${project.version}</version>
+            </path>
+            <path>
+              <groupId>io.avaje</groupId>
+              <artifactId>avaje-http-client-generator</artifactId>
               <version>${project.version}</version>
             </path>
             <path>

@@ -16,7 +16,7 @@ import io.avaje.jsonb.Json.Import;
 @Import(Violation.class)
 class HelloControllerTest extends BaseWebTest {
 
-  final static HttpClient client = client();
+  static final HttpClient client = client();
 
   @Test
   void getHello() {
@@ -27,7 +27,23 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void getHelloClient() {
+    final HelloDto hello = client.create(HelloControllerTestAPI.class).getHello().body();
+
+    assertEquals(42, hello.id);
+    assertEquals("rob", hello.name);
+  }
+
+  @Test
   void getPlain() {
+    final HttpResponse<String> res = client.create(HelloControllerTestAPI.class).getText();
+
+    assertEquals("something", res.body());
+    assertThat(res.headers().firstValue("content-type").orElseThrow()).startsWith("text/plain;");
+  }
+
+  @Test
+  void getPlainClient() {
     final HttpResponse<String> res = client.request().path("plain").GET().asString();
 
     assertEquals("something", res.body());

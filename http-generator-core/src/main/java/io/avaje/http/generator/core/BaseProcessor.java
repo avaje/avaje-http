@@ -8,7 +8,10 @@ import static io.avaje.http.generator.core.ProcessingContext.typeElement;
 import static java.util.stream.Collectors.toMap;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -27,12 +30,21 @@ import io.avaje.prism.GenerateModuleInfoReader;
 
 @GenerateAPContext
 @GenerateModuleInfoReader
-@SupportedOptions({"useJavax", "useSingleton", "instrumentRequests","disableDirectWrites","disableJsonB"})
+@SupportedOptions({
+  "useJavax",
+  "useSingleton",
+  "instrumentRequests",
+  "disableDirectWrites",
+  "disableJsonB"
+})
 public abstract class BaseProcessor extends AbstractProcessor {
 
+  private static final String HTTP_CONTROLLERS_TXT = "testAPI/controllers.txt";
   protected String contextPathString;
 
   protected Map<String, String> packagePaths = new HashMap<>();
+
+  private final Set<String> clientFQNs = new HashSet<>();
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -41,7 +53,8 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
-    return Set.of(PathPrism.PRISM_TYPE, ControllerPrism.PRISM_TYPE, OpenAPIDefinitionPrism.PRISM_TYPE);
+    return Set.of(
+        PathPrism.PRISM_TYPE, ControllerPrism.PRISM_TYPE, OpenAPIDefinitionPrism.PRISM_TYPE);
   }
 
   @Override
@@ -49,6 +62,22 @@ public abstract class BaseProcessor extends AbstractProcessor {
     super.init(processingEnv);
     APContext.init(processingEnv);
     ProcessingContext.init(processingEnv, providePlatformAdapter());
+
+    try {
+      var txtFilePath = APContext.getBuildResource(HTTP_CONTROLLERS_TXT);
+
+      if (txtFilePath.toFile().exists()) {
+        Files.lines(txtFilePath).forEach(clientFQNs::add);
+      }
+      if (APContext.isTestCompilation()) {
+        for (var path : clientFQNs) {
+          TestClientWriter.writeActual(path);
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+      // not worth failing over
+    }
   }
 
   /** Provide the platform specific adapter to use for Javalin, Helidon etc. */
@@ -82,19 +111,34 @@ public abstract class BaseProcessor extends AbstractProcessor {
       readSecuritySchemes(round);
     }
 
-    for (final Element controller : round.getElementsAnnotatedWith(typeElement(ControllerPrism.PRISM_TYPE))) {
+    for (final var controller :
+        ElementFilter.typesIn(
+            round.getElementsAnnotatedWith(typeElement(ControllerPrism.PRISM_TYPE)))) {
       writeAdapter(controller);
     }
 
     if (round.processingOver()) {
       writeOpenAPI();
       ProcessingContext.validateModule();
+
+      if (!APContext.isTestCompilation()) {
+        try {
+          Files.write(
+              APContext.getBuildResource(HTTP_CONTROLLERS_TXT),
+              clientFQNs,
+              StandardOpenOption.CREATE,
+              StandardOpenOption.WRITE);
+        } catch (IOException e) {
+          // not worth failing over
+        }
+      }
     }
     return false;
   }
 
   private void readOpenApiDefinition(RoundEnvironment round) {
-    for (final Element element : round.getElementsAnnotatedWith(typeElement(OpenAPIDefinitionPrism.PRISM_TYPE))) {
+    for (final Element element :
+        round.getElementsAnnotatedWith(typeElement(OpenAPIDefinitionPrism.PRISM_TYPE))) {
       doc().readApiDefinition(element);
     }
   }
@@ -103,16 +147,19 @@ public abstract class BaseProcessor extends AbstractProcessor {
     for (final Element element : round.getElementsAnnotatedWith(typeElement(TagPrism.PRISM_TYPE))) {
       doc().addTagDefinition(element);
     }
-    for (final Element element : round.getElementsAnnotatedWith(typeElement(TagsPrism.PRISM_TYPE))) {
+    for (final Element element :
+        round.getElementsAnnotatedWith(typeElement(TagsPrism.PRISM_TYPE))) {
       doc().addTagsDefinition(element);
     }
   }
 
   private void readSecuritySchemes(RoundEnvironment round) {
-    for (final Element element : round.getElementsAnnotatedWith(typeElement(SecuritySchemePrism.PRISM_TYPE))) {
+    for (final Element element :
+        round.getElementsAnnotatedWith(typeElement(SecuritySchemePrism.PRISM_TYPE))) {
       doc().addSecurityScheme(element);
     }
-    for (final Element element : round.getElementsAnnotatedWith(typeElement(SecuritySchemesPrism.PRISM_TYPE))) {
+    for (final Element element :
+        round.getElementsAnnotatedWith(typeElement(SecuritySchemesPrism.PRISM_TYPE))) {
       doc().addSecuritySchemes(element);
     }
   }
@@ -121,31 +168,42 @@ public abstract class BaseProcessor extends AbstractProcessor {
     doc().writeApi();
   }
 
-  private void writeAdapter(Element controller) {
-    if (controller instanceof TypeElement) {
-      final var packageFQN = elements().getPackageOf(controller).getQualifiedName().toString();
-      final var contextPath = Util.combinePath(contextPathString, packagePath(packageFQN));
-      final var reader = new ControllerReader((TypeElement) controller, contextPath);
-      reader.read(true);
-      try {
-        writeControllerAdapter(reader);
-      } catch (final Throwable e) {
-        logError(reader.beanType(), "Failed to write $Route class " + e);
+  private void writeAdapter(TypeElement controller) {
+    final var packageFQN = elements().getPackageOf(controller).getQualifiedName().toString();
+    final var contextPath = Util.combinePath(contextPathString, packagePath(packageFQN));
+    final var reader = new ControllerReader(controller, contextPath);
+    reader.read(true);
+    try {
+
+      writeControllerAdapter(reader);
+      writeClientAdapter(reader);
+
+    } catch (final Throwable e) {
+      logError(reader.beanType(), "Failed to write $Route class " + e);
+    }
+  }
+
+  private void writeClientAdapter(ControllerReader reader) {
+
+    try {
+      if (reader.beanType().getInterfaces().isEmpty()
+          && "java.lang.Object".equals(reader.beanType().getSuperclass().toString())) {
+        new TestClientWriter(reader).write();
+        clientFQNs.add(reader.beanType().getQualifiedName().toString() + "TestAPI");
       }
+    } catch (final IOException e) {
+      logError(reader.beanType(), "Failed to write $Route class " + e);
     }
   }
 
   private String packagePath(String packageFQN) {
     return packagePaths.entrySet().stream()
-      .filter(k -> packageFQN.startsWith(k.getKey()))
-      .map(Entry::getValue)
-      .reduce(Util::combinePath)
-      .orElse(null);
+        .filter(k -> packageFQN.startsWith(k.getKey()))
+        .map(Entry::getValue)
+        .reduce(Util::combinePath)
+        .orElse(null);
   }
 
-  /**
-   * Write the adapter code for the given controller.
-   */
+  /** Write the adapter code for the given controller. */
   public abstract void writeControllerAdapter(ControllerReader reader) throws IOException;
-
 }

@@ -43,6 +43,11 @@
       <artifactId>helidon-http-media-jsonb</artifactId>
       <version>${helidon.version}</version>
     </dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-helidon-generator</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
