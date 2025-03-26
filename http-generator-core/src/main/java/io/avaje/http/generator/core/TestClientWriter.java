@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -88,7 +89,12 @@ public class TestClientWriter {
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
     writer.append("@Client(\"%s\")", reader.path()).eol();
-    writer.append("public interface %s$TestAPI {", shortName).eol().eol();
+    writer
+        .append(
+            "%sinterface %s$TestAPI {",
+            reader.beanType().getModifiers().contains(Modifier.PUBLIC) ? "public " : "", shortName)
+        .eol()
+        .eol();
   }
 
   private void writeAddRoutes() {
@@ -102,6 +108,7 @@ public class TestClientWriter {
   private void writeRoute(MethodReader method) {
     TypeMirror returnType = method.returnType();
     var isJstache = ProcessingContext.isJstacheTemplate(returnType);
+    writer.append("  ");
     AnnotationCopier.copyAnnotations(writer, method.element(), true);
 
     var returnTypeStr = PrimitiveUtil.wrap(UType.parse(returnType).shortType());
@@ -112,7 +119,7 @@ public class TestClientWriter {
     }
 
     writer.append(
-        "HttpResponse<%s> %s(", isJstache ? "String" : returnTypeStr, method.simpleName());
+        "  HttpResponse<%s> %s(", isJstache ? "String" : returnTypeStr, method.simpleName());
     boolean first = true;
     for (var param : method.params()) {
 
