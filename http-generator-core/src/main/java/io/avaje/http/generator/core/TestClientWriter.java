@@ -106,6 +106,12 @@ public class TestClientWriter {
   }
 
   private void writeRoute(MethodReader method) {
+
+    // TODO handle Contexts later
+    if (method.params().stream().anyMatch(p -> p.paramType() == ParamType.CONTEXT)) {
+      return;
+    }
+
     TypeMirror returnType = method.returnType();
     var isJstache = ProcessingContext.isJstacheTemplate(returnType);
     writer.append("  ");
