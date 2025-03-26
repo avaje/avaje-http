@@ -46,7 +46,7 @@ public class TestClientWriter {
     writer =
         new Append(
             new FileWriter(
-                APContext.getBuildResource("testAPI/" + originName + "$TestAPI.txt").toFile()));
+                APContext.getBuildResource("testAPI/" + originName + "TestAPI.txt").toFile()));
   }
 
   protected String initPackageName(String originName) {
@@ -95,7 +95,7 @@ public class TestClientWriter {
     writer.append("@Client(\"%s\")", reader.path()).eol();
     writer
         .append(
-            "%sinterface %s$TestAPI {",
+            "%sinterface %sTestAPI {",
             reader.beanType().getModifiers().contains(Modifier.PUBLIC) ? "public " : "", shortName)
         .eol()
         .eol();
@@ -118,8 +118,7 @@ public class TestClientWriter {
 
     TypeMirror returnType = method.returnType();
     var isJstache = ProcessingContext.isJstacheTemplate(returnType);
-    writer.append("  ");
-    AnnotationCopier.copyAnnotations(writer, method.element(), true);
+    AnnotationCopier.copyAnnotations(writer, method.element(), "  ", true);
 
     var returnTypeStr = PrimitiveUtil.wrap(UType.parse(returnType).shortType());
 

@@ -189,7 +189,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
       if (reader.beanType().getInterfaces().isEmpty()
           && "java.lang.Object".equals(reader.beanType().getSuperclass().toString())) {
         new TestClientWriter(reader).write();
-        clientFQNs.add(reader.beanType().getQualifiedName().toString() + "$TestAPI");
+        clientFQNs.add(reader.beanType().getQualifiedName().toString() + "TestAPI");
       }
     } catch (final IOException e) {
       logError(reader.beanType(), "Failed to write $Route class " + e);
