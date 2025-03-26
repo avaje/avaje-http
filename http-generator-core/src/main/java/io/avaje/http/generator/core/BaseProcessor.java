@@ -71,7 +71,6 @@ public abstract class BaseProcessor extends AbstractProcessor {
         Files.lines(txtFilePath).forEach(controllerFQNs::add);
       }
       if (APContext.isTestCompilation()) {
-        System.out.println("Trying to read: " + controllerFQNs + "from path:" + txtFilePath);
         controllerFQNs.stream().map(APContext::typeElement).forEach(this::writeClientAdapter);
       }
     } catch (IOException e) {
