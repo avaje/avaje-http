@@ -129,16 +129,16 @@ WebServer.builder()
 ```
 ## Generated sources
 
-### (Javalin) The generated WidgetController$Route.java is:
+### (Javalin) The generated WidgetControllerHttpRoute.java is:
 
 ```java
 @Generated("avaje-javalin-generator")
 @Singleton
-public class WidgetController$Route implements Plugin {
+public class WidgetControllerHttpRoute implements Plugin {
 
   private final WidgetController controller;
 
-  public WidgetController$Route(WidgetController controller) {
+  public WidgetControllerHttpRoute(WidgetController controller) {
     this.controller = controller;
   }
 
@@ -162,16 +162,16 @@ public class WidgetController$Route implements Plugin {
 }
 ```
 
-### (Helidon SE) The generated WidgetController$Route.java is:
+### (Helidon SE) The generated WidgetControllerHttpRoute.java is:
 
 ```java
 @Generated("avaje-helidon-generator")
 @Component
-public class WidgetController$Route implements HttpFeature {
+public class WidgetControllerHttpRoute implements HttpFeature {
 
   private final WidgetController controller;
 
-  public WidgetController$Route(WidgetController controller) {
+  public WidgetControllerHttpRoute(WidgetController controller) {
     this.controller = controller;
   }
 
@@ -201,17 +201,17 @@ public class WidgetController$Route implements HttpFeature {
 ## Generated sources ([Avaje-Jsonb](https://github.com/avaje/avaje-jsonb))
 If [Avaje-Jsonb](https://github.com/avaje/avaje-jsonb) is detected, http generators with support will use it for faster Json message processing.
 
-### (Javalin) The generated WidgetController$Route.java is:
+### (Javalin) The generated WidgetControllerHttpRoute.java is:
 ```java
 @Generated("avaje-javalin-generator")
 @Component
-public class WidgetController$Route implements Plugin {
+public class WidgetControllerHttpRoute implements Plugin {
 
   private final WidgetController controller;
   private final JsonType<List<Widget>> listWidgetJsonType;
   private final JsonType<Widget> widgetJsonType;
 
-  public WidgetController$Route(WidgetController controller, Jsonb jsonB) {
+  public WidgetControllerHttpRoute(WidgetController controller, Jsonb jsonB) {
     this.controller = controller;
     this.listWidgetJsonType = jsonB.type(Widget.class).list();
     this.widgetJsonType = jsonB.type(Widget.class);
@@ -237,18 +237,18 @@ public class WidgetController$Route implements Plugin {
 }
 ```
 
-### (Helidon SE) The generated WidgetController$Route.java is:
+### (Helidon SE) The generated WidgetControllerHttpRoute.java is:
 
 ```java
 @Generated("avaje-helidon-generator")
 @Component
-public class WidgetController$Route implements HttpFeature {
+public class WidgetControllerHttpRoute implements HttpFeature {
 
   private final WidgetController controller;
   private final JsonType<WidgetController.Widget> widgetController$WidgetJsonType;
   private final JsonType<List<WidgetController.Widget>> listWidgetController$WidgetJsonType;
 
-  public WidgetController$Route(WidgetController controller, Jsonb jsonb) {
+  public WidgetControllerHttpRoute(WidgetController controller, Jsonb jsonb) {
     this.controller = controller;
     this.widgetController$WidgetJsonType = jsonb.type(WidgetController.Widget.class);
     this.listWidgetController$WidgetJsonType = jsonb.type(WidgetController.Widget.class).list();

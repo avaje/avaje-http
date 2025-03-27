@@ -44,16 +44,16 @@ public class TestPair {
     Jsonb jsonb = Jsonb.builder().build();
 
     var ec = new ErrorController();
-    var ecRoute = new ErrorController$Route(ec, jsonb);
+    var ecRoute = new ErrorControllerHttpRoute(ec, jsonb);
     routing.addFeature(ecRoute);
 
     var hc = new HelloController();
-    var hello = new HelloController$Route(hc, beanValidator, jsonb);
+    var hello = new HelloControllerHttpRoute(hc, beanValidator, jsonb);
     routing.addFeature(hello);
 
     var cr = new ThreadLocalRequestContextResolver();
     var tc = new TestController();
-    TestController$Route tcr = new TestController$Route(tc, (a,b,c)->{}, jsonb, cr);
+    TestControllerHttpRoute tcr = new TestControllerHttpRoute(tc, (a,b,c)->{}, jsonb, cr);
 
     routing.addFeature(tcr);
     return routing;

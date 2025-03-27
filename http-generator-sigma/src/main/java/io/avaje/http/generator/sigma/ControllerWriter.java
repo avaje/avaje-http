@@ -53,11 +53,11 @@ class ControllerWriter extends BaseControllerWriter {
     writer.append(AT_GENERATED).eol();
     writer.append(diAnnotation()).eol();
     writer
-      .append("public class ")
-      .append(shortName)
-      .append("$Route implements HttpService {")
-      .eol()
-      .eol();
+        .append("public class ")
+        .append(shortName)
+        .append("HttpRoute implements HttpService {")
+        .eol()
+        .eol();
 
     var controllerName = "controller";
     var controllerType = shortName;
@@ -72,7 +72,7 @@ class ControllerWriter extends BaseControllerWriter {
     }
     writer.eol();
 
-    writer.append("  public %s$Route(%s %s", shortName, controllerType, controllerName);
+    writer.append("  public %sHttpRoute(%s %s", shortName, controllerType, controllerName);
     if (reader.isIncludeValidator()) {
       writer.append(", Validator validator");
     }

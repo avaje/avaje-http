@@ -21,12 +21,12 @@ public abstract class BaseControllerWriter {
   protected boolean instrumentContext;
 
   protected BaseControllerWriter(ControllerReader reader) throws IOException {
-    this(reader, "$Route");
+    this(reader, "HttpRoute");
   }
 
   protected BaseControllerWriter(ControllerReader reader, String suffix) throws IOException {
     this.reader = reader;
-    this.router = "$Route".equals(suffix);
+    this.router = "HttpRoute".equals(suffix);
     final TypeElement origin = reader.beanType();
     this.originName = origin.getQualifiedName().toString();
     this.shortName = origin.getSimpleName().toString();

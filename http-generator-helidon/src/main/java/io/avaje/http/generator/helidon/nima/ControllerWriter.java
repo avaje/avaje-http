@@ -118,7 +118,7 @@ class ControllerWriter extends BaseControllerWriter {
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
     writer.append(diAnnotation()).eol();
-    writer.append("public final class %s$Route implements HttpFeature {", shortName).eol().eol();
+    writer.append("public final class %sHttpRoute implements HttpFeature {", shortName).eol().eol();
 
     var controllerName = "controller";
     var controllerType = shortName;
@@ -157,7 +157,7 @@ class ControllerWriter extends BaseControllerWriter {
     }
     writer.eol();
 
-    writer.append("  public %s$Route(%s %s", shortName, controllerType, controllerName);
+    writer.append("  public %sHttpRoute(%s %s", shortName, controllerType, controllerName);
     if (reader.isIncludeValidator()) {
       writer.append(", Validator validator");
     }
