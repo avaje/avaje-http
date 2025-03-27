@@ -59,7 +59,7 @@ class SigmaProcessorTest {
 
     assertThat(task.call()).isTrue();
     assert Files.readString(
-            Paths.get("org/example/myapp/web/BarController$Route.java").toAbsolutePath())
+            Paths.get("org/example/myapp/web/BarControllerHttpRoute.java").toAbsolutePath())
         .contains("io.avaje.inject.Component");
   }
 
@@ -88,7 +88,7 @@ class SigmaProcessorTest {
     assertThat(task.call()).isTrue();
 
     assert Files.readString(
-            Paths.get("org/example/myapp/web/BarController$Route.java").toAbsolutePath())
+            Paths.get("org/example/myapp/web/BarControllerHttpRoute.java").toAbsolutePath())
         .contains("jakarta.inject.Singleton");
   }
 

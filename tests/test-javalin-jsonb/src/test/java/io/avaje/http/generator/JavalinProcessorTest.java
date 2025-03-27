@@ -61,7 +61,7 @@ class JavalinProcessorTest {
 
     assertThat(task.call()).isTrue();
     assert Files.readString(
-            Paths.get("org/example/myapp/web/BarController$Route.java").toAbsolutePath())
+            Paths.get("org/example/myapp/web/BarControllerHttpRoute.java").toAbsolutePath())
         .contains("io.avaje.inject.Component");
   }
 
@@ -80,7 +80,7 @@ class JavalinProcessorTest {
 
     assertThat(task.call()).isTrue();
     assert Files.readString(
-            Paths.get("org/example/myapp/web/BarController$Route.java").toAbsolutePath())
+            Paths.get("org/example/myapp/web/BarControllerHttpRoute.java").toAbsolutePath())
         .contains("io.avaje.jsonb.Jsonb");
   }
 
@@ -109,7 +109,7 @@ class JavalinProcessorTest {
     assertThat(task.call()).isFalse();
 
     assert Files.readString(
-            Paths.get("org/example/myapp/web/BarController$Route.java").toAbsolutePath())
+            Paths.get("org/example/myapp/web/BarControllerHttpRoute.java").toAbsolutePath())
         .contains("javax.inject.Singleton");
   }
 
@@ -138,7 +138,7 @@ class JavalinProcessorTest {
     assertThat(task.call()).isTrue();
 
     assert Files.readString(
-            Paths.get("org/example/myapp/web/BarController$Route.java").toAbsolutePath())
+            Paths.get("org/example/myapp/web/BarControllerHttpRoute.java").toAbsolutePath())
         .contains("jakarta.inject.Singleton");
   }
 
