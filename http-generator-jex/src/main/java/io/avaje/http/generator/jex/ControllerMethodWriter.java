@@ -43,7 +43,10 @@ class ControllerMethodWriter {
 
   void writeRouting() {
     final PathSegments segments = method.pathSegments();
-    final String fullPath = segments.fullPath();
+    String fullPath = segments.fullPath();
+    if (fullPath.isEmpty()) {
+      fullPath = "/";
+    }
 
     if (method.isErrorMethod()) {
       writer.append("    routing.error(%s.class, this::_%s", method.exceptionShortName(), method.simpleName());
