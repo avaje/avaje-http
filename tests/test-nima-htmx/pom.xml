@@ -103,7 +103,7 @@
       <plugin>
         <groupId>io.avaje</groupId>
         <artifactId>avaje-inject-maven-plugin</artifactId>
-        <version>11.3</version>
+        <version>11.4</version>
         <executions>
           <execution>
             <phase>process-sources</phase>
