@@ -13,6 +13,8 @@ final class OpenAPISerializer {
           "BINARY_STRING_CONVERSION_PROPERTY",
           "COMPONENTS_SCHEMAS_REF",
           "APPLY_SCHEMA_RESOLUTION_PROPERTY",
+          "EXPLICIT_OBJECT_SCHEMA_PROPERTY",
+          "USE_ARBITRARY_SCHEMA_PROPERTY",
           "exampleSetFlag",
           "types",
           "specVersion");
