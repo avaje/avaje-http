@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpResponse;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AuthTokenTest {
 
@@ -39,6 +42,15 @@ public class AuthTokenTest {
 
       return AuthToken.of(res.access_token, validUntil);
     }
+  }
+
+  @Test
+  void expiration() {
+    Instant plus = Instant.now().plus(120, ChronoUnit.SECONDS);
+    AuthToken authToken = AuthToken.of("foo", plus);
+
+    assertThat(authToken.isExpired()).isFalse();
+    assertThat(authToken.expiration().toSeconds()).isBetween(118L, 120L);
   }
 
   @Disabled
