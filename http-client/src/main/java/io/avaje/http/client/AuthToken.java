@@ -1,5 +1,6 @@
 package io.avaje.http.client;
 
+import java.time.Duration;
 import java.time.Instant;
 
 /**
@@ -18,6 +19,11 @@ public interface AuthToken {
    * Return true if the token has expired or is no longer valid.
    */
   boolean isExpired();
+
+  /**
+   * Return the duration until expiry.
+   */
+  Duration expiration();
 
   /**
    * Create an return a AuthToken with the given token and time it is valid until.
@@ -50,6 +56,11 @@ public interface AuthToken {
     @Override
     public boolean isExpired() {
       return Instant.now().isAfter(validUntil);
+    }
+
+    @Override
+    public Duration expiration() {
+      return Duration.between(Instant.now(), validUntil);
     }
   }
 }
