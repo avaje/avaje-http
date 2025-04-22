@@ -1,6 +1,5 @@
 package io.avaje.http.client;
 
-import org.example.github.BasicClientInterface;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -9,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class DHttpClientContextTest {
 
-  private final DHttpClientContext context = new DHttpClientContext(null, null, null, null, null, null, null, null, null);
+  private final DHttpClientContext context = new DHttpClientContext(null, null, null, null, null, null, null, null, null, null);
 
   @Test
   void gzip_gzipDecode() {

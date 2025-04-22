@@ -1,5 +1,9 @@
 package io.avaje.http.client;
 
+import io.avaje.inject.BeanScope;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
 import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.ProxySelector;
@@ -7,11 +11,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLParameters;
-
-import io.avaje.inject.BeanScope;
 
 /**
  * The HTTP client context that we use to build and process requests.
@@ -226,6 +225,15 @@ public interface HttpClient extends AutoCloseable {
      * on all requests (not marked with skipAuthToken()).
      */
     Builder authTokenProvider(AuthTokenProvider authTokenProvider);
+
+    /**
+     * Duration before token expiry where a background task will refresh the token. Defaults to 5 minutes.
+     * <p>
+     * Set to null to disable background token refresh.
+     *
+     * @param backgroundTokenRefresh The duration before token expiry that triggers a background refresh.
+     */
+    Builder backgroundTokenRefresh(Duration backgroundTokenRefresh);
 
     /**
      * Set the underlying HttpClient to use.

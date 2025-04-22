@@ -11,6 +11,7 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.ProxySelector;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +37,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
   private RetryHandler retryHandler;
   private Function<HttpException, RuntimeException> errorHandler;
   private AuthTokenProvider authTokenProvider;
+  private Duration backgroundRefreshDuration = Duration.of(5, ChronoUnit.MINUTES);
 
   private CookieHandler cookieHandler = new CookieManager();
   private java.net.http.HttpClient.Redirect redirect = java.net.http.HttpClient.Redirect.NORMAL;
@@ -185,6 +187,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
       errorHandler,
       buildListener(),
       authTokenProvider,
+      backgroundRefreshDuration,
       buildIntercept());
   }
 
@@ -254,6 +257,12 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
   @Override
   public HttpClient.Builder authTokenProvider(AuthTokenProvider authTokenProvider) {
     this.authTokenProvider = authTokenProvider;
+    return this;
+  }
+
+  @Override
+  public HttpClient.Builder backgroundTokenRefresh(Duration backgroundRefreshDuration) {
+    this.backgroundRefreshDuration = backgroundRefreshDuration;
     return this;
   }
 

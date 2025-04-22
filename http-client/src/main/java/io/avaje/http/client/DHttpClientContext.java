@@ -1,5 +1,7 @@
 package io.avaje.http.client;
 
+import io.avaje.applog.AppLog;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Type;
@@ -7,6 +9,7 @@ import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +21,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.System.Logger.Level.WARNING;
+
 final class DHttpClientContext implements HttpClient, SpiHttpClient {
+
+  private static final System.Logger log = AppLog.getLogger("io.avaje.http.client");
 
   static final String AUTHORIZATION = "Authorization";
   private static final String BEARER = "Bearer ";
@@ -33,6 +40,8 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   private final boolean withAuthToken;
   private final AuthTokenProvider authTokenProvider;
   private final AtomicReference<AuthToken> tokenRef = new AtomicReference<>();
+  private final AtomicReference<Instant> backgroundRefreshLease = new AtomicReference<>();
+  private final Duration backgroundRefreshDuration;
 
   private final LongAdder metricResTotal = new LongAdder();
   private final LongAdder metricResError = new LongAdder();
@@ -50,6 +59,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
       Function<HttpException, RuntimeException> errorHandler,
       RequestListener requestListener,
       AuthTokenProvider authTokenProvider,
+      Duration backgroundRefreshDuration,
       RequestIntercept intercept) {
     this.httpClient = httpClient;
     this.baseUrl = baseUrl;
@@ -59,6 +69,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     this.errorHandler = errorHandler;
     this.requestListener = requestListener;
     this.authTokenProvider = authTokenProvider;
+    this.backgroundRefreshDuration = backgroundRefreshDuration;
     this.withAuthToken = authTokenProvider != null;
     this.requestIntercept = intercept;
   }
@@ -328,12 +339,43 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   }
 
   private String authToken() {
-    AuthToken authToken = tokenRef.get();
-    if (authToken == null || authToken.isExpired()) {
-      authToken = authTokenProvider.obtainToken(request().skipAuthToken());
-      tokenRef.set(authToken);
+    final AuthToken authToken = tokenRef.get();
+    if (authToken == null) {
+      return obtainNewAuthToken();
+    }
+    final Duration expiration = authToken.expiration();
+    if (expiration.isNegative()) {
+      return obtainNewAuthToken();
+    }
+    if (backgroundRefreshDuration != null && expiration.compareTo(backgroundRefreshDuration) < 0) {
+      backgroundTokenRequest();
     }
     return authToken.token();
+  }
+
+  private String obtainNewAuthToken() {
+    final AuthToken authToken = authTokenProvider.obtainToken(request().skipAuthToken());
+    tokenRef.set(authToken);
+    return authToken.token();
+  }
+
+  private void backgroundTokenRequest() {
+    final Instant lease = backgroundRefreshLease.get();
+    if (lease != null && Instant.now().isBefore(lease)) {
+      // a refresh is already in progress
+      return;
+    }
+    // other requests should not trigger a refresh for the next 10 seconds
+    backgroundRefreshLease.set(Instant.now().plusMillis(10_000));
+    BGInvoke.invoke(this::backgroundNewTokenTask);
+  }
+
+  private void backgroundNewTokenTask() {
+    try {
+      obtainNewAuthToken();
+    } catch (Exception e) {
+      log.log(WARNING, "Error refreshing AuthToken in background", e);
+    }
   }
 
   String maxResponseBody(String body) {
