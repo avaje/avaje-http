@@ -187,8 +187,8 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
     try {
       if (reader.beanType().getInterfaces().isEmpty()
-          && "java.lang.Object".equals(reader.beanType().getSuperclass().toString())) {
-        new TestClientWriter(reader).write();
+          && "java.lang.Object".equals(reader.beanType().getSuperclass().toString())
+          && new TestClientWriter(reader).write()) {
         clientFQNs.add(reader.beanType().getQualifiedName().toString() + "TestAPI");
       }
     } catch (final IOException e) {

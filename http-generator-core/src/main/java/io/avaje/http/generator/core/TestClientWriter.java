@@ -54,12 +54,13 @@ public class TestClientWriter {
     return dp > -1 ? originName.substring(0, dp) : null;
   }
 
-  void write() {
-    if (methods.isEmpty()) return;
+  boolean write() {
+    if (methods.isEmpty()) return false;
     writePackage();
     writeImports();
     writeClassStart();
     writeAddRoutes();
+    return true;
   }
 
   protected void writePackage() {
