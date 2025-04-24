@@ -13,6 +13,7 @@ import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
+import io.avaje.http.api.QueryParam;
 import io.javalin.http.Context;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -102,8 +103,8 @@ public class OpenAPIController {
     return "only partial info";
   }
 
-  @Delete("/delete/{path}")
-  String testPathParam(String path, String query, @Header String header) {
+  @Delete("/delete/{type}")
+  String testPathParam(String type, @QueryParam String lastName, @Header String header) {
 
     return "only partial info";
   }
