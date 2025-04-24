@@ -3,7 +3,9 @@ package org.example.myapp.web.test;
 import java.util.List;
 
 import io.avaje.http.api.Controller;
+import io.avaje.http.api.Delete;
 import io.avaje.http.api.Get;
+import io.avaje.http.api.Header;
 import io.avaje.http.api.MediaType;
 import io.avaje.http.api.OpenAPIResponse;
 import io.avaje.http.api.OpenAPIResponses;
@@ -93,10 +95,16 @@ public class OpenAPIController {
   @Produces(value = MediaType.TEXT_PLAIN, statusCode = 203)
   @OpenAPIResponse(responseCode = 204, type = String.class)
   String testDefaultStatus(Context ctx) {
-    if (ctx.contentType().equals(MediaType.APPLICATION_PDF)) {
+    if (MediaType.APPLICATION_PDF.equals(ctx.contentType())) {
       ctx.status(204);
       return "";
     }
+    return "only partial info";
+  }
+
+  @Delete("/delete/{path}")
+  String testPathParam(String path, String query, @Header String header) {
+
     return "only partial info";
   }
 }
