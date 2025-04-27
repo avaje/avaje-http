@@ -2,7 +2,7 @@
 	"openapi" : "3.0.1",
 	"info" : {
 		"title" : "Example service",
-		"description" : "Example Javalin controllers with Java and Maven",
+		"description" : "Example Helidon controllers with Java and Maven",
 		"version" : ""
 	},
 	"servers" : [
@@ -66,7 +66,7 @@
 		"/openapi/get" : {
 			"get" : {
 				"tags" : [
-
+					
 				],
 				"summary" : "Example of Open API Get (up to the first period is the summary)",
 				"description" : "When using Javalin Context only This Javadoc description is added to the generated openapi.json",
@@ -142,7 +142,7 @@
 		"/openapi/post1" : {
 			"post" : {
 				"tags" : [
-
+					
 				],
 				"summary" : "Standard Post",
 				"description" : "The Deprecated annotation adds \"deprecacted:true\" to the generated json",
@@ -191,7 +191,7 @@
 		"/openapi/put" : {
 			"put" : {
 				"tags" : [
-
+					
 				],
 				"summary" : "",
 				"description" : "",

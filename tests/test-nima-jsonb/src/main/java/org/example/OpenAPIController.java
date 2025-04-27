@@ -1,4 +1,4 @@
-package org.example.myapp.web.test;
+package org.example;
 
 import java.util.List;
 
@@ -14,7 +14,8 @@ import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
 import io.avaje.http.api.QueryParam;
-import io.javalin.http.Context;
+import io.helidon.webserver.http.ServerRequest;
+import io.helidon.webserver.http.ServerResponse;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -26,7 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
     info =
         @Info(
             title = "Example service",
-            description = "Example Javalin controllers with Java and Maven"))
+            description = "Example Helidon controllers with Java and Maven"))
 @Controller
 @Path("openapi/")
 @SecurityScheme(
@@ -48,9 +49,7 @@ public class OpenAPIController {
   @Get("/get")
   @Produces(MediaType.TEXT_PLAIN)
   @OpenAPIResponse(responseCode = 200, type = String.class)
-  void ctxEndpoint(Context ctx) {
-    ctx.contentType(MediaType.TEXT_PLAIN).result("healthlmao");
-  }
+  void ctxEndpoint(ServerRequest req, ServerResponse res) {}
 
   /**
    * Standard Post. uses tag annotation to add tags to openapi json
@@ -71,6 +70,12 @@ public class OpenAPIController {
       type = ErrorResponse.class)
   Person testPost(Person b) {
     return new Person(0, "baby");
+  }
+
+  public static class ErrorResponse {
+
+    public String id;
+    public String text;
   }
 
   /**
@@ -95,11 +100,8 @@ public class OpenAPIController {
   @Put("/put")
   @Produces(value = MediaType.TEXT_PLAIN, statusCode = 203)
   @OpenAPIResponse(responseCode = 204, type = String.class)
-  String testDefaultStatus(Context ctx) {
-    if (MediaType.APPLICATION_PDF.equals(ctx.contentType())) {
-      ctx.status(204);
-      return "";
-    }
+  String testDefaultStatus() {
+
     return "only partial info";
   }
 

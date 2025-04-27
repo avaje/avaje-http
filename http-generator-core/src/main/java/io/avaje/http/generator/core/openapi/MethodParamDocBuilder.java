@@ -81,7 +81,7 @@ public class MethodParamDocBuilder {
     if (schema instanceof StringSchema) {
       return APP_TXT;
     }
-    boolean asForm = (paramType == ParamType.FORM);
+    boolean asForm = paramType == ParamType.FORM;
     return asForm ? APP_FORM : APP_JSON;
   }
 

@@ -99,6 +99,9 @@ class ControllerWriter extends BaseControllerWriter {
     writeRoutes(methods);
     for (final ControllerMethodWriter methodWriter : methods) {
       methodWriter.writeHandler(isRequestScoped());
+      if (!reader.isDocHidden()) {
+        methodWriter.buildApiDocumentation();
+      }
     }
   }
 
@@ -108,9 +111,6 @@ class ControllerWriter extends BaseControllerWriter {
 
     for (final ControllerMethodWriter methodWriter : methods) {
       methodWriter.writeRule();
-      if (!reader.isDocHidden()) {
-        methodWriter.buildApiDocumentation();
-      }
     }
     writer.append("  }").eol().eol();
   }
