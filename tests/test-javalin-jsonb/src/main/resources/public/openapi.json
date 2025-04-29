@@ -970,6 +970,65 @@
 				}
 			}
 		},
+		"/openapi/delete/{type}" : {
+			"delete" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "type",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "lastName",
+						"in" : "query",
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "param2",
+						"in" : "query",
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "contentLength",
+						"in" : "header",
+						"schema" : {
+							"type" : "string"
+						}
+					},
+					{
+						"name" : "otherHeader",
+						"in" : "header",
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/openapi/get" : {
 			"get" : {
 				"tags" : [

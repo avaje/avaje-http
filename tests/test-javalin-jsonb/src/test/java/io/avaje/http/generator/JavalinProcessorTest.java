@@ -170,9 +170,11 @@ class JavalinProcessorTest {
     final var mapper = new ObjectMapper();
     final var expectedOpenApiJson =
         mapper.readTree(new File("src/test/resources/expectedOpenApi.json"));
-    final var generatedOpenApi = mapper.readTree(new File("openapi.json"));
+    File file = new File("openapi.json");
+    // Files.copy(file.toPath(), Paths.get("other.json"));
+    final var generatedOpenApi = mapper.readTree(file);
 
-    assert expectedOpenApiJson.equals(generatedOpenApi);
+    assertThat(generatedOpenApi).isEqualTo(expectedOpenApiJson);
   }
 
   @Test

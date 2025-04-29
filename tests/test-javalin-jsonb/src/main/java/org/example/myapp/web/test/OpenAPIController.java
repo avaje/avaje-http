@@ -104,8 +104,7 @@ public class OpenAPIController {
   }
 
   @Delete("/delete/{type}")
-  String testPathParam(String type, @QueryParam String lastName, @Header String header) {
-
+  String testPathParam(String type, @QueryParam String lastName, @QueryParam("q-2") String param2, @Header String contentLength, @Header("x-oh") String otherHeader) {
     return "only partial info";
   }
 }
