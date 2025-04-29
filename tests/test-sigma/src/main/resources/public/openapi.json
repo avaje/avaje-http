@@ -393,7 +393,7 @@
 						}
 					},
 					{
-						"name" : "myParam",
+						"name" : "my-param",
 						"in" : "query",
 						"schema" : {
 							"type" : "string"
@@ -779,7 +779,7 @@
 						}
 					},
 					{
-						"name" : "head",
+						"name" : "Head",
 						"in" : "header",
 						"schema" : {
 							"type" : "string"
@@ -1584,7 +1584,7 @@
 				"description" : "",
 				"parameters" : [
 					{
-						"name" : "head",
+						"name" : "Head",
 						"in" : "header",
 						"schema" : {
 							"type" : "string"
