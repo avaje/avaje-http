@@ -363,7 +363,7 @@
 						}
 					},
 					{
-						"name" : "myParam",
+						"name" : "my-param",
 						"in" : "query",
 						"schema" : {
 							"type" : "string"

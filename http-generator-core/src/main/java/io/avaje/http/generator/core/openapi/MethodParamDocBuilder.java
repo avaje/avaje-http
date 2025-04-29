@@ -51,7 +51,7 @@ public class MethodParamDocBuilder {
 
     } else {
       Parameter param = new Parameter();
-      param.setName(varName);
+      param.setName(paramName);
       param.setDescription(javadoc.getParams().get(paramName));
 
       Schema<?> schema = ctx.toSchema(rawType, element);

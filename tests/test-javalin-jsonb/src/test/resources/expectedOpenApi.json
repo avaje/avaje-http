@@ -42,21 +42,21 @@
             }
           },
           {
-            "name" : "param2",
+            "name" : "q-2",
             "in" : "query",
             "schema" : {
               "type" : "string"
             }
           },
           {
-            "name" : "contentLength",
+            "name" : "Content-Length",
             "in" : "header",
             "schema" : {
               "type" : "string"
             }
           },
           {
-            "name" : "otherHeader",
+            "name" : "x-oh",
             "in" : "header",
             "schema" : {
               "type" : "string"
