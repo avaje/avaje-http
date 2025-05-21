@@ -1,6 +1,6 @@
 package io.avaje.http.client;
 
-import io.avaje.applog.AppLog;
+import static java.lang.System.Logger.Level.WARNING;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -21,7 +21,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.lang.System.Logger.Level.WARNING;
+import io.avaje.applog.AppLog;
 
 final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
@@ -75,8 +75,8 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   }
 
   @Override
-  public <T> T create(Class<T> clientInterface) {
-    return DHttpApi.get(clientInterface, this);
+  public <T> T create(Class<T> clientInterface, ClassLoader classLoader) {
+    return DHttpApi.get(clientInterface, this, classLoader);
   }
 
   @Override
@@ -192,7 +192,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
       }
       return BodyContent.of(contentType, sb.toString());
     }
-    final String type = (body == null) ? "null" : body.getClass().toString();
+    final String type = body == null ? "null" : body.getClass().toString();
     throw new IllegalStateException("Unable to translate response body to bytes? Maybe use HttpResponse directly instead?  Response body type: " + type);
   }
 

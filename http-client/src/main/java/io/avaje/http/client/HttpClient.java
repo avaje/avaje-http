@@ -1,9 +1,5 @@
 package io.avaje.http.client;
 
-import io.avaje.inject.BeanScope;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLParameters;
 import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.ProxySelector;
@@ -11,6 +7,11 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+
+import io.avaje.inject.BeanScope;
 
 /**
  * The HTTP client context that we use to build and process requests.
@@ -57,10 +58,22 @@ public interface HttpClient extends AutoCloseable {
    * Return the http client API implementation.
    *
    * @param clientInterface A <code>@Client</code> interface with annotated API methods.
-   * @param <T>             The service type.
+   * @param <T> The service type.
    * @return The http client API implementation.
    */
-  <T> T create(Class<T> clientInterface);
+  default <T> T create(Class<T> clientInterface) {
+    return create(clientInterface, Thread.currentThread().getContextClassLoader());
+  }
+
+  /**
+   * Return the http client API implementation.
+   *
+   * @param clientInterface A <code>@Client</code> interface with annotated API methods.
+   * @param classLoader A custom classloader to load the generated interface
+   * @param <T> The service type.
+   * @return The http client API implementation.
+   */
+  <T> T create(Class<T> clientInterface, ClassLoader classLoader);
 
   /**
    * Create a new request.
