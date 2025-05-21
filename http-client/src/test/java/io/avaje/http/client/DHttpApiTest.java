@@ -25,7 +25,7 @@ class DHttpApiTest {
 
     DHttpApi httpApi = new DHttpApi();
     httpApi.addProvider(Simple.class, Simple$HttpClient::new);
-    final Simple simple = httpApi.provideFor(Simple.class, clientContext);
+    final Simple simple = httpApi.provideFor(Simple.class, clientContext, Thread.currentThread().getContextClassLoader());
 
     final List<Repo> repos = simple.listRepos("rbygrave", "junk");
     assertThat(repos).isNotEmpty();
@@ -46,7 +46,7 @@ class DHttpApiTest {
 
     DHttpApi httpApi = new DHttpApi();
     httpApi.addProvider(Simple.class, Simple$HttpClient::new);
-    final Simple simple = httpApi.provideFor(Simple.class, client);
+    final Simple simple = httpApi.provideFor(Simple.class, client, Thread.currentThread().getContextClassLoader());
 
     final List<Repo> repos = simple.listRepos("rbygrave", "junk");
     assertThat(repos).isNotEmpty();

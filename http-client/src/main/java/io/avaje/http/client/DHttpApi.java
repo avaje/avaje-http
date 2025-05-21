@@ -1,29 +1,27 @@
 package io.avaje.http.client;
 
-import io.avaje.applog.AppLog;
-import io.avaje.http.client.HttpClient.GeneratedComponent;
+import static java.lang.System.Logger.Level.DEBUG;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import static java.lang.System.Logger.Level.*;
+import io.avaje.applog.AppLog;
+import io.avaje.http.client.HttpClient.GeneratedComponent;
 
 /** Service loads the HttpApiProvider for HttpApi. */
 final class DHttpApi {
 
   private static final System.Logger log = AppLog.getLogger("io.avaje.http.client");
-
   private static final DHttpApi INSTANCE = new DHttpApi();
-
   private final Map<Class<?>, HttpApiProvider<?>> providerMap = new HashMap<>();
 
   DHttpApi() {
-    init();
+    init(Thread.currentThread().getContextClassLoader());
   }
 
-  void init() {
-    for (final var apiProvider : ServiceLoader.load(GeneratedComponent.class)) {
+  void init(ClassLoader loader) {
+    for (final var apiProvider : ServiceLoader.load(GeneratedComponent.class, loader)) {
       apiProvider.register(providerMap);
     }
     log.log(DEBUG, "providers for {0}", providerMap.keySet());
@@ -34,8 +32,14 @@ final class DHttpApi {
   }
 
   @SuppressWarnings("unchecked")
-  <T> T provideFor(Class<T> type, HttpClient httpClient) {
-    final var apiProvider = (HttpApiProvider<T>) providerMap.get(type);
+  <T> T provideFor(Class<T> type, HttpClient httpClient, ClassLoader classLoader) {
+    var apiProvider = (HttpApiProvider<T>) providerMap.get(type);
+
+    if (apiProvider == null) {
+      init(classLoader);
+      apiProvider = (HttpApiProvider<T>) providerMap.get(type);
+    }
+
     if (apiProvider == null) {
       throw new IllegalArgumentException("No registered HttpApiProvider for type: " + type);
     }
@@ -43,7 +47,7 @@ final class DHttpApi {
   }
 
   /** Return the client implementation via service loading. */
-  static <T> T get(Class<T> type, HttpClient httpClient) {
-    return INSTANCE.provideFor(type, httpClient);
+  static <T> T get(Class<T> type, HttpClient httpClient, ClassLoader classLoader) {
+    return INSTANCE.provideFor(type, httpClient, classLoader);
   }
 }
