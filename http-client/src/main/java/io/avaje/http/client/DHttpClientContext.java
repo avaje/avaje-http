@@ -80,6 +80,11 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   }
 
   @Override
+  public <T> T create(Class<T> clientInterface, ClassLoader classLoader) {
+    return DHttpApi.get(clientInterface, this, classLoader);
+  }
+
+  @Override
   public HttpClientRequest request() {
     return retryHandler == null
       ? new DHttpClientRequest(this, requestTimeout)

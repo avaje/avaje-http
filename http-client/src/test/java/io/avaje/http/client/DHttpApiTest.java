@@ -18,14 +18,14 @@ class DHttpApiTest {
   @Test
   void test_github_listRepos() {
 
-    final var clientContext = HttpClient.builder()
+    final var client = HttpClient.builder()
       .baseUrl("https://api.github.com")
       .bodyAdapter(new JacksonBodyAdapter())
       .build();
 
     DHttpApi httpApi = new DHttpApi();
     httpApi.addProvider(Simple.class, Simple$HttpClient::new);
-    final Simple simple = httpApi.provideFor(Simple.class, clientContext);
+    final Simple simple = httpApi.provideFor(Simple.class, client);
 
     final List<Repo> repos = simple.listRepos("rbygrave", "junk");
     assertThat(repos).isNotEmpty();
@@ -44,7 +44,7 @@ class DHttpApiTest {
       .bodyAdapter(new JsonbBodyAdapter(jsonb))
       .build();
 
-    DHttpApi httpApi = new DHttpApi();
+    DHttpApi httpApi = new DHttpApi(Thread.currentThread().getContextClassLoader());
     httpApi.addProvider(Simple.class, Simple$HttpClient::new);
     final Simple simple = httpApi.provideFor(Simple.class, client);
 

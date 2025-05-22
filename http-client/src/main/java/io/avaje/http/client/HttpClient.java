@@ -63,6 +63,16 @@ public interface HttpClient extends AutoCloseable {
   <T> T create(Class<T> clientInterface);
 
   /**
+   * Return the http client API implementation using the given ClassLoader.
+   *
+   * @param clientInterface A <code>@Client</code> interface with annotated API methods.
+   * @param classLoader     The ClassLoader to use to service load the implementation
+   * @param <T>             The service type.
+   * @return The http client API implementation.
+   */
+  <T> T create(Class<T> clientInterface, ClassLoader classLoader);
+
+  /**
    * Create a new request.
    */
   HttpClientRequest request();
