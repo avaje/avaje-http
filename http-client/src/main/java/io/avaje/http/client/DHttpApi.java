@@ -19,11 +19,11 @@ final class DHttpApi {
   private final Map<Class<?>, HttpApiProvider<?>> providerMap = new HashMap<>();
 
   DHttpApi() {
-    init();
+    this(Thread.currentThread().getContextClassLoader());
   }
 
-  void init() {
-    for (final var apiProvider : ServiceLoader.load(GeneratedComponent.class)) {
+  DHttpApi(ClassLoader classLoader) {
+    for (final var apiProvider : ServiceLoader.load(GeneratedComponent.class, classLoader)) {
       apiProvider.register(providerMap);
     }
     log.log(DEBUG, "providers for {0}", providerMap.keySet());
@@ -46,4 +46,9 @@ final class DHttpApi {
   static <T> T get(Class<T> type, HttpClient httpClient) {
     return INSTANCE.provideFor(type, httpClient);
   }
+
+  static <T> T get(Class<T> clientInterface, HttpClient httpClient, ClassLoader classLoader) {
+    return new DHttpApi(classLoader).provideFor(clientInterface, httpClient);
+  }
+
 }
