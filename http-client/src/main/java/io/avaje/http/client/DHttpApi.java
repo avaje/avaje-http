@@ -42,7 +42,7 @@ final class DHttpApi {
               + type
               + "\nPossible Causes: \n"
               + "1. Missing @Client or @Client.Import annotation.\n"
-              + "2. The avaje-http-client-generator depedency was not available during compilation\n");
+              + "2. The avaje-http-client-generator dependency was not available during compilation\n");
     }
     return apiProvider.provide(httpClient);
   }
