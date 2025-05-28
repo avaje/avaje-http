@@ -1,8 +1,9 @@
 package io.avaje.http.api;
 
-/**
- * Marker for generated code.
- */
+import java.lang.annotation.Documented;
+
+/** Marker for generated code. */
+@Documented
 public @interface Generated {
 
   /**
