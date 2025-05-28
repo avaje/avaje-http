@@ -1,13 +1,13 @@
 package io.avaje.http.client;
 
-import io.avaje.applog.AppLog;
-import io.avaje.http.client.HttpClient.GeneratedComponent;
+import static java.lang.System.Logger.Level.DEBUG;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import static java.lang.System.Logger.Level.*;
+import io.avaje.applog.AppLog;
+import io.avaje.http.client.HttpClient.GeneratedComponent;
 
 /** Service loads the HttpApiProvider for HttpApi. */
 final class DHttpApi {
@@ -37,7 +37,12 @@ final class DHttpApi {
   <T> T provideFor(Class<T> type, HttpClient httpClient) {
     final var apiProvider = (HttpApiProvider<T>) providerMap.get(type);
     if (apiProvider == null) {
-      throw new IllegalArgumentException("No registered HttpApiProvider for type: " + type);
+      throw new IllegalArgumentException(
+          "No registered HttpApiProvider for type: "
+              + type
+              + "\nPossible Causes: \n"
+              + "1. Missing @Client annotation on the type.\n"
+              + "2. The avaje-http-client-generator depedency was not available during compilation\n");
     }
     return apiProvider.provide(httpClient);
   }
