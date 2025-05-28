@@ -41,7 +41,7 @@ final class DHttpApi {
           "No registered HttpApiProvider for type: "
               + type
               + "\nPossible Causes: \n"
-              + "1. Missing @Client annotation on the type.\n"
+              + "1. Missing @Client or @Client.Import annotation.\n"
               + "2. The avaje-http-client-generator depedency was not available during compilation\n");
     }
     return apiProvider.provide(httpClient);
