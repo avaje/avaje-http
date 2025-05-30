@@ -118,8 +118,8 @@ class NimaPlatformAdapter implements PlatformAdapter {
   @Override
   public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
     switch (paramType) {
-      case QUERYPARAM -> writer.append("queryParams.all(\"%s\")", paramName);
-      case FORMPARAM -> writer.append("formParams.all(\"%s\")", paramName);
+      case QUERYPARAM -> writer.append("queryParams.all(\"%s\", () -> java.util.List.of())", paramName);
+      case FORMPARAM -> writer.append("formParams.all(\"%s\", () -> java.util.List.of())", paramName);
 
       case HEADER -> writer.append(
           "req.headers().all(\"%s\", () -> java.util.List.of())", paramName);
