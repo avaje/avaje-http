@@ -6,6 +6,8 @@ import io.avaje.http.api.Default;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Produces;
 
+import java.util.List;
+
 @Controller
 public class HelloController {
 
@@ -32,5 +34,11 @@ public class HelloController {
   @Get("banana")
   Person getP(@BeanParam Person person) {
     return person;
+  }
+
+  @Produces("text/plain")
+  @Get("listParams")
+  String listParam(List<String> codes) {
+    return "codes:" + codes;
   }
 }
