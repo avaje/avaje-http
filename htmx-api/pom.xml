@@ -6,13 +6,11 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.3</version>
+    <version>3.4-RC1</version>
   </parent>
 
   <artifactId>avaje-htmx-api</artifactId>
-
-  <properties>
-  </properties>
+  <name>avaje-htmx-api</name>
 
   <dependencies>
     <dependency>

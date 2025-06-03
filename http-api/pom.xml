@@ -4,11 +4,12 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.3</version>
+    <version>3.4-RC1</version>
     <relativePath>..</relativePath>
   </parent>
 
   <artifactId>avaje-http-api</artifactId>
+  <name>avaje-http-api</name>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>

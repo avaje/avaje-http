@@ -4,15 +4,16 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.3</version>
+    <version>3.4-RC1</version>
   </parent>
 
   <artifactId>avaje-http-jex-generator</artifactId>
-  
+  <name>avaje-http-jex-generator</name>
+
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
   </properties>
-  
+
   <dependencies>
 
     <dependency>
@@ -20,13 +21,13 @@
       <artifactId>avaje-http-generator-core</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-prisms</artifactId>
       <version>${avaje.prisms.version}</version>
       <scope>provided</scope>
     </dependency>
- 
+
   </dependencies>
 </project>

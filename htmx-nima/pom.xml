@@ -6,10 +6,11 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.3</version>
+    <version>3.4-RC1</version>
   </parent>
 
   <artifactId>avaje-htmx-nima</artifactId>
+  <name>avaje-htmx-nima</name>
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
@@ -21,7 +22,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-htmx-api</artifactId>
-      <version>3.3</version>
+      <version>3.4-RC1</version>
     </dependency>
     <dependency>
       <groupId>io.helidon.webserver</groupId>

@@ -4,10 +4,11 @@
   <parent>
     <artifactId>avaje-http-parent</artifactId>
     <groupId>io.avaje</groupId>
-    <version>3.3</version>
+    <version>3.4-RC1</version>
   </parent>
 
   <artifactId>avaje-http-helidon-generator</artifactId>
+  <name>avaje-http-helidon-generator</name>
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>

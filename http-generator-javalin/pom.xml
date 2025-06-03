@@ -4,10 +4,11 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.3</version>
+    <version>3.4-RC1</version>
   </parent>
 
   <artifactId>avaje-http-javalin-generator</artifactId>
+  <name>avaje-http-javalin-generator</name>
 
   <dependencies>
 
@@ -23,7 +24,7 @@
       <version>${avaje.prisms.version}</version>
       <scope>provided</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api-javalin</artifactId>

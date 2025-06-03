@@ -4,10 +4,11 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.3</version>
+    <version>3.4-RC1</version>
   </parent>
 
   <artifactId>avaje-http-generator-core</artifactId>
+  <name>avaje-http-generator-core</name>
 
   <dependencies>
     <dependency>
