@@ -13,7 +13,7 @@
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
-    <swagger.version>2.2.32</swagger.version>
+    <swagger.version>2.2.33</swagger.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.useModulePath>false</surefire.useModulePath>
   </properties>
