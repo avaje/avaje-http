@@ -1,10 +1,11 @@
 package io.avaje.http.generator.client;
 
-import io.avaje.http.generator.core.*;
-import io.avaje.http.generator.core.PathSegments.Segment;
+import static io.avaje.http.generator.core.ProcessingContext.isAssignable2Interface;
+import static io.avaje.http.generator.core.ProcessingContext.logError;
+import static io.avaje.http.generator.core.ProcessingContext.typeElement;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.ElementFilter;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,9 +14,23 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.avaje.http.generator.core.ProcessingContext.*;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.ElementFilter;
+
+import io.avaje.http.generator.core.APContext;
+import io.avaje.http.generator.core.Append;
+import io.avaje.http.generator.core.BeanParamReader;
+import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.MethodParam;
+import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.ParamType;
+import io.avaje.http.generator.core.PathSegments;
+import io.avaje.http.generator.core.PathSegments.Segment;
+import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.RequestTimeoutPrism;
+import io.avaje.http.generator.core.UType;
+import io.avaje.http.generator.core.Util;
+import io.avaje.http.generator.core.WebMethod;
 
 /**
  * Write code to register Web route for a given controller method.
@@ -399,16 +414,36 @@ final class ClientMethodWriter {
     if (!segments.isEmpty()) {
       writer.append("      ");
     }
-    for (PathSegments.Segment segment : segments) {
+
+    StringBuilder combinedLiterals = new StringBuilder();
+
+    for (var segment : segments) {
       if (segment.isLiteral()) {
-        writer.append(".path(\"").append(segment.literalSection()).append("\")");
-      } else if (segment.isProperty()) {
-        writer.append(".path(").append(segmentPropertyMap.get(segment.name())).append(")");
+        // Accumulate literal segments with "/" delimiter
+        if (combinedLiterals.length() > 0) {
+          combinedLiterals.append("/");
+        }
+        combinedLiterals.append(segment.literalSection());
       } else {
-        writer.append(".path(").append(segment.name()).append(")");
-        // TODO: matrix params
+        // If we have accumulated literals, write them out first
+        if (combinedLiterals.length() > 0) {
+          writer.append(".path(\"").append(combinedLiterals.toString()).append("\")");
+          combinedLiterals.setLength(0); // Clear the buffer
+        }
+        // Write the non-literal segment
+        if (segment.isProperty()) {
+          writer.append(".path(").append(segmentPropertyMap.get(segment.name())).append(")");
+        } else {
+          writer.append(".path(").append(segment.name()).append(")");
+        }
       }
     }
+
+    // Write any remaining accumulated literals
+    if (combinedLiterals.length() > 0) {
+      writer.append(".path(\"").append(combinedLiterals.toString()).append("\")");
+    }
+
     if (!segments.isEmpty()) {
       writer.eol();
     }

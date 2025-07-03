@@ -12,4 +12,7 @@ public interface ApiClient {
 
   @Get("/mapped")
   String mapped(@Header("Accept") String accept) throws MappedException;
+
+  @Get("/consecutive/paths/{accept}/generate")
+  String consecutive(String accept);
 }
