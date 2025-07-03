@@ -399,16 +399,36 @@ final class ClientMethodWriter {
     if (!segments.isEmpty()) {
       writer.append("      ");
     }
-    for (PathSegments.Segment segment : segments) {
+
+    StringBuilder combinedLiterals = new StringBuilder();
+
+    for (var segment : segments) {
       if (segment.isLiteral()) {
-        writer.append(".path(\"").append(segment.literalSection()).append("\")");
-      } else if (segment.isProperty()) {
-        writer.append(".path(").append(segmentPropertyMap.get(segment.name())).append(")");
+        // Accumulate literal segments with "/" delimiter
+        if (combinedLiterals.length() > 0) {
+          combinedLiterals.append("/");
+        }
+        combinedLiterals.append(segment.literalSection());
       } else {
-        writer.append(".path(").append(segment.name()).append(")");
-        // TODO: matrix params
+        // If we have accumulated literals, write them out first
+        if (combinedLiterals.length() > 0) {
+          writer.append(".path(\"").append(combinedLiterals.toString()).append("\")");
+          combinedLiterals.setLength(0); // Clear the buffer
+        }
+        // Write the non-literal segment
+        if (segment.isProperty()) {
+          writer.append(".path(").append(segmentPropertyMap.get(segment.name())).append(")");
+        } else {
+          writer.append(".path(").append(segment.name()).append(")");
+        }
       }
     }
+
+    // Write any remaining accumulated literals
+    if (!combinedLiterals.isEmpty()) {
+      writer.append(".path(\"").append(combinedLiterals.toString()).append("\")");
+    }
+
     if (!segments.isEmpty()) {
       writer.eol();
     }
