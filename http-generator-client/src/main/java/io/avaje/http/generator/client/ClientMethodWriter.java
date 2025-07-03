@@ -425,7 +425,7 @@ final class ClientMethodWriter {
     }
 
     // Write any remaining accumulated literals
-    if (!combinedLiterals.isEmpty()) {
+    if (combinedLiterals.length() > 1) {
       writer.append(".path(\"").append(combinedLiterals.toString()).append("\")");
     }
 
