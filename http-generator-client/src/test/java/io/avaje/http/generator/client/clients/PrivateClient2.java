@@ -9,5 +9,4 @@ public interface PrivateClient2 {
 
   @Get("/private")
   String apiCall(@Header("Accept") String accept);
-
 }
