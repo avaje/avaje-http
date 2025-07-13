@@ -644,33 +644,14 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return new HttpWrapperResponse<>(response);
   }
 
-  protected <E> HttpResponse<E> asyncBean(Class<E> type, HttpResponse<byte[]> response) {
+  protected <E> HttpResponse<E> asyncBean(Type type, HttpResponse<byte[]> response) {
     afterAsyncEncoded(response);
     return new HttpWrapperResponse<>(context.readBean(type, encodedResponseBody), httpResponse);
-  }
-
-  protected <E> E asyncBean(Type type, HttpResponse<byte[]> response) {
-    afterAsyncEncoded(response);
-    return context.readBean(type, encodedResponseBody);
-  }
-
-  protected <E> HttpResponse<List<E>> asyncList(Class<E> type, HttpResponse<byte[]> response) {
-    afterAsyncEncoded(response);
-    return new HttpWrapperResponse<>(context.readList(type, encodedResponseBody), httpResponse);
   }
 
   protected <E> HttpResponse<List<E>> asyncList(Type type, HttpResponse<byte[]> response) {
     afterAsyncEncoded(response);
     return new HttpWrapperResponse<>(context.readList(type, encodedResponseBody), httpResponse);
-  }
-
-  protected <E> HttpResponse<Stream<E>> asyncStream(Class<E> type, HttpResponse<Stream<String>> response) {
-    responseTimeNanos = System.nanoTime() - startAsyncNanos;
-    httpResponse = response;
-    context.afterResponse(this);
-    checkResponse(response);
-    final BodyReader<E> bodyReader = context.beanReader(type);
-    return new HttpWrapperResponse<>(response.body().map(bodyReader::readBody), httpResponse);
   }
 
   protected <E> HttpResponse<Stream<E>> asyncStream(Type type, HttpResponse<Stream<String>> response) {
@@ -853,7 +834,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
         return context.maxResponseBody(new String(encodedResponseBody.content(), StandardCharsets.UTF_8));
       } else if (httpResponse != null && loggableResponseBody) {
         final var responseBody = httpResponse.body();
-        return (responseBody == null) ? null : context.maxResponseBody(responseBody.toString());
+        return responseBody == null ? null : context.maxResponseBody(responseBody.toString());
       }
       return null;
     }
