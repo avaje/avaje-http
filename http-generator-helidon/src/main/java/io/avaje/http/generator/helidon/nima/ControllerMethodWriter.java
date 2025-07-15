@@ -392,12 +392,9 @@ final class ControllerMethodWriter {
     if (producesOp.isEmpty() && !useJsonB && !useJstachio) {
       return;
     }
-    final var produces =
-      producesOp
-        .map(MediaType::parse)
-        .orElse(useJstachio
-          ? MediaType.HTML_UTF8
-          : streaming ? MediaType.APPLICATION_STREAM_JSON : MediaType.APPLICATION_JSON);
+    final var produces = producesOp
+      .map(MediaType::parse)
+      .orElse(defaultMediaType(streaming));
     final var contentTypeString = "res.headers().contentType(MediaTypes.";
     writer.append(indent);
     switch (produces) {
@@ -408,6 +405,12 @@ final class ControllerMethodWriter {
       case TEXT_PLAIN -> writer.append(contentTypeString).append("TEXT_PLAIN);").eol();
       case UNKNOWN -> writer.append(contentTypeString + "create(\"%s\"));", producesOp.orElse("UNKNOWN")).eol();
     }
+  }
+
+  private MediaType defaultMediaType(boolean streaming) {
+    return useJstachio
+      ? MediaType.HTML_UTF8
+      : streaming ? MediaType.APPLICATION_STREAM_JSON : MediaType.APPLICATION_JSON;
   }
 
   private String lookupStatusCode(int statusCode) {
