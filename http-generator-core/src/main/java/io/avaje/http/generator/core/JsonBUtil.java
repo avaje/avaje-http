@@ -109,9 +109,13 @@ public final class JsonBUtil {
           writeType(type.paramRaw(), writer);
           writer.append(".map()");
           break;
+        case "java.util.stream.Stream":
+          writeType(type.paramRaw(), writer);
+          writer.append(".streamAsLines()");
+          break;
         default: {
           if (type.mainType().contains("java.util")) {
-            throw new UnsupportedOperationException("Only java.util Map, Set and List are supported JsonB Controller Collection Types");
+            throw new UnsupportedOperationException("Only java.util Map, Set, List and Stream are supported JsonB Controller Collection Types");
           }
           writeType(type, writer);
         }

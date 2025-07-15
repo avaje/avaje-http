@@ -109,6 +109,37 @@
 				}
 			}
 		},
+		"/bars/find/{code}/stream" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "code",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/Bar>"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/bars/{id}" : {
 			"get" : {
 				"tags" : [
@@ -1272,6 +1303,27 @@
 				}
 			}
 		},
+		"/stream" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloDto>"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/test/enumQuery" : {
 			"get" : {
 				"tags" : [
@@ -1495,6 +1547,9 @@
 					}
 				}
 			},
+			"Bar>" : {
+				"type" : "object"
+			},
 			"Baz" : {
 				"type" : "object",
 				"properties" : {
@@ -1535,6 +1590,9 @@
 						]
 					}
 				}
+			},
+			"HelloDto>" : {
+				"type" : "object"
 			},
 			"HelloForm" : {
 				"required" : [

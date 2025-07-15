@@ -48,8 +48,7 @@
       <artifactId>swagger-annotations</artifactId>
       <version>${swagger.version}</version>
     </dependency>
-    
-    
+
     <dependency>
       <groupId>io.jstach</groupId>
       <artifactId>jstachio</artifactId>
@@ -58,13 +57,13 @@
 
 
     <!-- java annotation processors -->
-    
+
     <dependency>
       <groupId>io.jstach</groupId>
       <artifactId>jstachio-apt</artifactId>
       <version>1.3.7</version>
     </dependency>
-    
+
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject-generator</artifactId>
@@ -82,12 +81,12 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>3.5</version>
+      <version>3.6-RC2</version>
     </dependency>
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb-generator</artifactId>
-      <version>3.5</version>
+      <version>3.6-RC2</version>
       <scope>provided</scope>
     </dependency>
 

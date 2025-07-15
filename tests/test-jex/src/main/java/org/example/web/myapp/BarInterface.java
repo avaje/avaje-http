@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.links.Link;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Path("/bars")
 public interface BarInterface {
@@ -18,6 +19,9 @@ public interface BarInterface {
 
   @Get("/find/:code")
   List<Bar> findByCode(String code);
+
+  @Get("/find/:code/stream")
+  Stream<Bar> findByCodeStream(String code);
 
   @Produces(MediaType.TEXT_PLAIN)
   @Get

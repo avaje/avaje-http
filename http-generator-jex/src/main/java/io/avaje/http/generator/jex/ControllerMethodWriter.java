@@ -208,7 +208,7 @@ class ControllerMethodWriter {
       writer.append(");").eol();
       writer.append("    var cacheContent = contentCache.content(key);").eol();
       writer.append("    if (cacheContent != null) {").eol();
-      writeContextReturn(responseMode, "cacheContent");
+      writeContextReturn(responseMode, "cacheContent", "");
       writer.append("      return;").eol();
       writer.append("    }").eol();
     }
@@ -258,18 +258,15 @@ class ControllerMethodWriter {
           if (withContentCache) {
             writer.append(indent).append("contentCache.contentPut(key, content);").eol();
           }
-          writer.append(indent);
-          writeContextReturn(responseMode, "content");
+          writeContextReturn(responseMode, "content", indent);
         }
         case Jstachio -> {
           var renderer = ProcessingContext.jstacheRenderer(method.returnType());
           writer.append(indent).append("var content = %s(result);", renderer).eol();
-          writer.append(indent);
-          writeContextReturn(responseMode, "content");
+          writeContextReturn(responseMode, "content", indent);
         }
         default -> {
-          writer.append(indent);
-          writeContextReturn(responseMode, "result");
+          writeContextReturn(responseMode, "result", indent);
         }
       }
       if (includeNoContent) {
@@ -278,7 +275,8 @@ class ControllerMethodWriter {
     }
   }
 
-  private void writeContextReturn(ResponseMode responseMode, String resultVariable) {
+  private void writeContextReturn(ResponseMode responseMode, String resultVariable, String indent) {
+    writer.append(indent);
     final UType type = UType.parse(method.returnType());
     if ("java.util.concurrent.CompletableFuture".equals(type.mainType())) {
       logError(method.element(), "CompletableFuture is not a supported return type.");
@@ -293,7 +291,7 @@ class ControllerMethodWriter {
     }
     switch (responseMode) {
       case Void -> {}
-      case Json -> writeJsonReturn(produces);
+      case Json -> writeJsonReturn(produces, indent);
       case Text -> writer.append("ctx.text(%s);", resultVariable);
       case Templating -> writer.append("ctx.html(%s);", resultVariable);
       default -> writer.append("ctx.contentType(\"%s\").write(%s);", produces, resultVariable);
@@ -301,20 +299,32 @@ class ControllerMethodWriter {
     writer.eol();
   }
 
-  private void writeJsonReturn(String produces) {
-    if (produces == null) {
-      produces = MediaType.APPLICATION_JSON.getValue();
-    }
+  private void writeJsonReturn(String produces, String indent) {
     var uType = UType.parse(method.returnType());
+    boolean streaming = useJsonB && streamingContent(uType);
+    if (produces == null) {
+      produces = streaming
+        ? MediaType.APPLICATION_STREAM_JSON.getValue()
+        : MediaType.APPLICATION_JSON.getValue();
+    }
     if ("java.lang.String".equals(method.returnType().toString())) {
       writer.append("ctx.contentType(\"%s\").write(result); // raw json", produces);
       return;
     }
     if (useJsonB) {
-      writer.append("ctx.jsonb(%sJsonType, result);", uType.shortName());
+      if (streaming) {
+        writer.append("ctx.contentType(\"%s\");", produces).eol();
+        writer.append(indent).append("%sJsonType.toJson(result, io.avaje.jex.core.json.JsonbOutput.of(ctx));", uType.shortName());
+      } else {
+        writer.append("ctx.jsonb(%sJsonType, result);", uType.shortName());
+      }
     } else {
       writer.append("ctx.json(result);");
     }
+  }
+
+  private static boolean streamingContent(UType uType) {
+    return uType.mainType().equals("java.util.stream.Stream");
   }
 
   private static boolean isExceptionOrFilterChain(MethodParam param) {

@@ -27,6 +27,19 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void stream() {
+    final HttpResponse<String> res = client.request()
+      .path("stream")
+      .GET()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.headers().firstValue("Content-Type").orElse("Junk"))
+      .isEqualTo("application/stream+json");
+    assertThat(res.body()).isEqualTo("{\"id\":1,\"name\":\"a\"}\n{\"id\":2,\"name\":\"b\"}\n");
+  }
+
+  @Test
   void getHelloClient() {
     final HelloDto hello = client.create(HelloControllerTestAPI.class).getHello().body();
 

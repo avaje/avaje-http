@@ -1,6 +1,7 @@
 package org.example.web;
 
 import java.math.BigInteger;
+import java.util.stream.Stream;
 
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Default;
@@ -15,6 +16,11 @@ import io.avaje.jex.http.Context;
 @Controller
 @Path("/")
 public class HelloController {
+
+  @Get("stream")
+  Stream<HelloDto> stream() {
+    return Stream.of(new HelloDto(1,"a"), new HelloDto(2, "b"));
+  }
 
   @Get
   HelloDto getHello() {
