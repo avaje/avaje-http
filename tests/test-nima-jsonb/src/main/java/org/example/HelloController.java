@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Form;
@@ -98,6 +99,15 @@ public class HelloController {
   @Get("person/{sortBy}/list")
   List<Person> personList(String sortBy) {
     return List.of(new Person(42, "fooList"), new Person(43, "barList"));
+  }
+
+  @Get("person/{ignored}/stream")
+  Stream<Person> personStream(String ignored) {
+    return Stream.of(
+      new Person(42, ignored),
+      new Person(43, "bar"),
+      new Person(44, "baz"),
+      new Person(44, "bax"));
   }
 
   // curl -v localhost:8081/person/foo/set
