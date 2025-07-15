@@ -111,7 +111,7 @@ public final class JsonBUtil {
           break;
         case "java.util.stream.Stream":
           writeType(type.paramRaw(), writer);
-          writer.append(".stream()");
+          writer.append(".streamAsLines()");
           break;
         default: {
           if (type.mainType().contains("java.util")) {

@@ -50,7 +50,7 @@ public class HelloControllerTest {
 
     assertThat(res.statusCode()).isEqualTo(200);
     String contentType = res.headers().firstValue("Content-Type").orElse("Junk");
-    assertThat(res.body()).isEqualTo("[{\"id\":42,\"name\":\"ignoreMe\"},{\"id\":43,\"name\":\"bar\"},{\"id\":44,\"name\":\"baz\"},{\"id\":44,\"name\":\"bax\"}]");
-    assertThat(contentType).isEqualTo("application/json");
+    assertThat(res.body()).isEqualTo("{\"id\":42,\"name\":\"ignoreMe\"}\n{\"id\":43,\"name\":\"bar\"}\n{\"id\":44,\"name\":\"baz\"}\n{\"id\":44,\"name\":\"bax\"}\n");
+    assertThat(contentType).isEqualTo("application/stream+json");
   }
 }

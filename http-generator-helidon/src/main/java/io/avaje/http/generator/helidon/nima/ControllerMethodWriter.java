@@ -258,15 +258,14 @@ final class ControllerMethodWriter {
         writer.append(indent).append("res.send(content);").eol();
 
       } else {
-        writeContextReturn(indent);
+        final var uType = UType.parse(method.returnType());
+        writeContextReturn(indent, streamingResponse(uType));
         if (responseMode == ResponseMode.InputStream) {
-          final var uType = UType.parse(method.returnType());
           writer.append(indent).append("result.transferTo(res.outputStream());", uType.shortName()).eol();
         } else if (responseMode == ResponseMode.Json) {
           if (returnTypeString()) {
             writer.append(indent).append("res.send(result); // send raw JSON").eol();
           } else {
-            final var uType = UType.parse(method.returnType());
             writer.append(indent).append("%sJsonType.toJson(result, JsonOutput.of(res));", uType.shortName()).eol();
           }
         } else {
@@ -278,6 +277,10 @@ final class ControllerMethodWriter {
       }
     }
     writer.append("  }").eol().eol();
+  }
+
+  private static boolean streamingResponse(UType uType) {
+    return uType.mainType().equals("java.util.stream.Stream");
   }
 
   enum ResponseMode {
@@ -381,6 +384,10 @@ final class ControllerMethodWriter {
   }
 
   private void writeContextReturn(String indent) {
+    writeContextReturn(indent, false);
+  }
+
+  private void writeContextReturn(String indent, boolean streaming) {
     final var producesOp = Optional.ofNullable(method.produces());
     if (producesOp.isEmpty() && !useJsonB && !useJstachio) {
       return;
@@ -388,12 +395,15 @@ final class ControllerMethodWriter {
     final var produces =
       producesOp
         .map(MediaType::parse)
-        .orElse(useJstachio ? MediaType.HTML_UTF8 : MediaType.APPLICATION_JSON);
+        .orElse(useJstachio
+          ? MediaType.HTML_UTF8
+          : streaming ? MediaType.APPLICATION_STREAM_JSON : MediaType.APPLICATION_JSON);
     final var contentTypeString = "res.headers().contentType(MediaTypes.";
     writer.append(indent);
     switch (produces) {
       case HTML_UTF8 -> writer.append("res.headers().contentType(HTML_UTF8);").eol();
       case APPLICATION_JSON -> writer.append(contentTypeString).append("APPLICATION_JSON);").eol();
+      case APPLICATION_STREAM_JSON -> writer.append(contentTypeString).append("APPLICATION_STREAM_JSON);").eol();
       case TEXT_HTML -> writer.append(contentTypeString).append("TEXT_HTML);").eol();
       case TEXT_PLAIN -> writer.append(contentTypeString).append("TEXT_PLAIN);").eol();
       case UNKNOWN -> writer.append(contentTypeString + "create(\"%s\"));", producesOp.orElse("UNKNOWN")).eol();

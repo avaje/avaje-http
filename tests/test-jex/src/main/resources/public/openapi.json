@@ -109,6 +109,37 @@
 				}
 			}
 		},
+		"/bars/find/{code}/stream" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "code",
+						"in" : "path",
+						"required" : true,
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/Bar>"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/bars/{id}" : {
 			"get" : {
 				"tags" : [
@@ -1494,6 +1525,9 @@
 						"type" : "string"
 					}
 				}
+			},
+			"Bar>" : {
+				"type" : "object"
 			},
 			"Baz" : {
 				"type" : "object",
