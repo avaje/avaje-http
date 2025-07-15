@@ -1303,6 +1303,27 @@
 				}
 			}
 		},
+		"/stream" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/HelloDto>"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/test/enumQuery" : {
 			"get" : {
 				"tags" : [
@@ -1569,6 +1590,9 @@
 						]
 					}
 				}
+			},
+			"HelloDto>" : {
+				"type" : "object"
 			},
 			"HelloForm" : {
 				"required" : [

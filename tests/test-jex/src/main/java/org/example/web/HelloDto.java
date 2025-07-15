@@ -11,4 +11,12 @@ public class HelloDto {
   @NotNull
   public String name;
   public ServerType serverType;
+
+  public HelloDto() {
+  }
+
+  public HelloDto(int id, String name) {
+    this.id = id;
+    this.name = name;
+  }
 }
