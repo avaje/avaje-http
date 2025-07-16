@@ -272,6 +272,18 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void get_stream_as_when_empty() {
+    final HttpResponse<Stream<SimpleData>> res = clientContext.request()
+      .path("hello").path("streamEmpty")
+      .GET()
+      .asStream(SimpleData.class);
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    final List<SimpleData> data = res.body().collect(Collectors.toList());
+    assertThat(data).isEmpty();
+  }
+
+  @Test
   void get_stream_NotFoundException() {
     clientContext.metrics(true);
     final HttpException httpException = assertThrows(HttpException.class, () ->

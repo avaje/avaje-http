@@ -52,6 +52,11 @@ public class HelloController$Route extends AvajeJavalinPlugin {
       controller.stream(ctx);
     });
 
+    cfg.get("/hello/streamEmpty", ctx -> {
+      ctx.status(200);
+      controller.streamEmpty(ctx);
+    });
+
     cfg.get("/hello/{id}/{date}", ctx -> {
       ctx.status(200);
       final int id = asInt(ctx.pathParam("id"));
