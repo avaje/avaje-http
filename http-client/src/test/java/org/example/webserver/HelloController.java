@@ -63,6 +63,13 @@ class HelloController {
     context.result(content);
   }
 
+  @Get("streamEmpty")
+  void streamEmpty(Context context) {
+    // simulate x-json-stream response with empty stream
+    context.header("content-type", "application/x-json-stream");
+    context.result("\n");
+  }
+
   /**
    * Return the Hello DTO.
    *

@@ -585,7 +585,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     final HttpResponse<Stream<String>> res = handler(HttpResponse.BodyHandlers.ofLines());
     this.httpResponse = res;
     checkResponse(res);
-    return res.body().map(bodyReader::readBody);
+    return res.body().filter(line -> !line.isEmpty()).map(bodyReader::readBody);
   }
 
   @Override
