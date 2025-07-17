@@ -1,11 +1,7 @@
 package io.avaje.http.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.avaje.inject.BeanScope;
-import io.avaje.jsonb.Jsonb;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLParameters;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -21,15 +17,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 
-import static java.util.Objects.requireNonNull;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.avaje.inject.BeanScope;
+import io.avaje.jsonb.Jsonb;
 
 final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder.State {
 
   private java.net.http.HttpClient client;
-  private String baseUrl;
+  private String baseUrl = "";
   private boolean requestLogging = true;
   private Duration connectionTimeout = Duration.ofSeconds(20);
   private Duration requestTimeout = Duration.ofSeconds(20);
@@ -168,8 +167,6 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
   }
 
   private DHttpClientContext buildClient() {
-    requireNonNull(baseUrl, "baseUrl is not specified");
-    requireNonNull(requestTimeout, "requestTimeout is not specified");
     final var httpClient = client != null ? client : defaultClient();
     if (requestLogging) {
       // register the built-in request/response logging
