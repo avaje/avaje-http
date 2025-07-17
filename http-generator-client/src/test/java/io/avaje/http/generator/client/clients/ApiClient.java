@@ -15,4 +15,7 @@ public interface ApiClient {
 
   @Get("/consecutive/paths/{accept}/generate")
   String consecutive(String accept);
+
+  @Get("http://localhost:6969/test")
+  String staticUrl();
 }

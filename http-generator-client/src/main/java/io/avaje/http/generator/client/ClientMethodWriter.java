@@ -427,7 +427,7 @@ final class ClientMethodWriter {
       } else {
         // If we have accumulated literals, write them out first
         if (combinedLiterals.length() > 0) {
-          writer.append(".path(\"").append(combinedLiterals.toString()).append("\")");
+          writeLiteral(combinedLiterals);
           combinedLiterals.setLength(0); // Clear the buffer
         }
         // Write the non-literal segment
@@ -441,12 +441,21 @@ final class ClientMethodWriter {
 
     // Write any remaining accumulated literals
     if (combinedLiterals.length() > 0) {
-      writer.append(".path(\"").append(combinedLiterals.toString()).append("\")");
+      writeLiteral(combinedLiterals);
     }
 
     if (!segments.isEmpty()) {
       writer.eol();
     }
+  }
+
+  private void writeLiteral(StringBuilder combinedLiterals) {
+    String path =
+        combinedLiterals.toString().replace("http:/", "http://").replace("https:/", "https://");
+    writer
+        .append(path.startsWith("http:") || path.startsWith("https:") ? ".url(\"" : ".path(\"")
+        .append(path)
+        .append("\")");
   }
 
   private boolean isMap(MethodParam param) {

@@ -98,6 +98,10 @@ public class Util {
       if (!webMethodPath.isEmpty() && !webMethodPath.startsWith("/")) {
         sb.append("/");
       }
+
+      if (webMethodPath.startsWith("https:") || webMethodPath.startsWith("http:")) {
+        return webMethodPath;
+      }
       sb.append(trimTrailingSlash(webMethodPath));
     }
     return sb.toString();
