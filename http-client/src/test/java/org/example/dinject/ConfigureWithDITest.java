@@ -20,7 +20,7 @@ class ConfigureWithDITest {
 
       HttpClient.Builder builder = HttpClient.builder();
       HttpClient.Builder.State state = builder.state();
-      assertThat(state.baseUrl()).isNull();
+      assertThat(state.baseUrl()).isEmpty();
       assertThat(state.bodyAdapter()).isNull();
       assertThat(state.client()).isNull();
       assertThat(state.requestLogging()).isTrue();
