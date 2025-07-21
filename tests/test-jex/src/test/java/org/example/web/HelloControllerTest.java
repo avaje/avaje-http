@@ -36,7 +36,7 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(res.statusCode()).isEqualTo(200);
     assertThat(res.headers().firstValue("Content-Type").orElse("Junk"))
       .isEqualTo("application/stream+json");
-    assertThat(res.body()).isEqualTo("{\"id\":1,\"name\":\"a\"}\n{\"id\":2,\"name\":\"b\"}\n");
+    assertThat(res.body()).isEqualTo("{\"id\":1,\"name\":\"a\"}\n{\"id\":2,\"name\":\"b\"}\n\n");
   }
 
   @Test
