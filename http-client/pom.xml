@@ -51,7 +51,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject</artifactId>
-      <version>11.5</version>
+      <version>11.6</version>
       <optional>true</optional>
     </dependency>
 
@@ -121,7 +121,7 @@
                 <path>
                   <groupId>io.avaje</groupId>
                   <artifactId>avaje-inject-generator</artifactId>
-                  <version>11.5</version>
+                  <version>11.6</version>
                 </path>
               </annotationProcessorPaths>
             </configuration>
@@ -160,7 +160,7 @@
       <plugin>
         <groupId>io.avaje</groupId>
         <artifactId>avaje-inject-maven-plugin</artifactId>
-        <version>11.5</version>
+        <version>11.6</version>
         <executions>
           <execution>
             <?m2e execute?>
