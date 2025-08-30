@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.ElementFilter;
 
 import io.avaje.http.generator.core.APContext;
@@ -28,13 +29,15 @@ import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.PathSegments.Segment;
 import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.RequestTimeoutPrism;
-import io.avaje.http.generator.core.UType;
 import io.avaje.http.generator.core.Util;
 import io.avaje.http.generator.core.WebMethod;
+import io.avaje.prism.GenerateUtils;
+import io.avaje.http.generator.client.UType;
 
 /**
  * Write code to register Web route for a given controller method.
  */
+@GenerateUtils
 final class ClientMethodWriter {
   private static final KnownResponse KNOWN_RESPONSE = new KnownResponse();
   private static final String BODY_HANDLER = "java.net.http.HttpResponse.BodyHandler";
@@ -61,7 +64,7 @@ final class ClientMethodWriter {
     this.method = method;
     this.writer = writer;
     this.webMethod = method.webMethod();
-    this.returnType = Util.parseType(method.returnType());
+    this.returnType = UType.parse(method.returnType());
     this.timeout = method.timeout();
     this.useConfig = ProcessingContext.typeElement("io.avaje.config.Config") != null;
 
@@ -89,12 +92,12 @@ final class ClientMethodWriter {
   }
 
   void addImportTypes(ControllerReader reader) {
-    if (useJsonb) {
+    if (useInject) {
+      reader.addImportType("io.avaje.inject.spi.GenericType");
+    } else if (useJsonb) {
       reader.addImportType("io.avaje.jsonb.Types");
     } else if (useJackson) {
       reader.addImportType("com.fasterxml.jackson.core.type.TypeReference");
-    } else if (useInject) {
-      reader.addImportType("io.avaje.inject.spi.GenericType");
     }
     reader.addImportTypes(returnType.importTypes());
     method.throwsList().stream()
@@ -195,7 +198,7 @@ final class ClientMethodWriter {
   private void writeEnd() {
     final var webMethod = method.webMethod();
     writer.append("      .%s()", webMethod.name()).eol();
-    if (returnType == UType.VOID) {
+    if (returnType.kind() == TypeKind.VOID) {
       writer.append("      .asVoid();").eol();
     } else {
       String known = KNOWN_RESPONSE.get(returnType.full());
@@ -219,17 +222,17 @@ final class ClientMethodWriter {
 
   private void writeAsyncResponse() {
     writer.append("      .async()");
-    writeResponse(returnType.paramRaw());
+    writeResponse(returnType.param0());
   }
 
   private void writeCallResponse() {
     writer.append("      .call()");
-    writeResponse(returnType.paramRaw());
+    writeResponse(returnType.param0());
   }
 
   private void writeResponse(UType type) {
     final var mainType = type.mainType();
-    final var param1 = type.paramRaw();
+    final var param1 = type.param0();
     if (isList(mainType)) {
       writer.append(".list(");
       writeGeneric(param1);
@@ -240,13 +243,13 @@ final class ClientMethodWriter {
       writer.append(");").eol();
     } else if (isHttpResponse(mainType)) {
       if (bodyHandlerParam == null) {
-        final UType paramType = type.paramRaw();
+        final UType paramType = type.param0();
         if ("java.util.List".equals(paramType.mainType())) {
           writer.append(".asList(");
-          writeGeneric(paramType.paramRaw());
+          writeGeneric(paramType.param0());
         } else if ("java.util.stream.Stream".equals(paramType.mainType())) {
           writer.append(".asStream(");
-          writeGeneric(paramType.paramRaw());
+          writeGeneric(paramType.param0());
         } else {
           writer.append(".as(");
           writeGeneric(paramType);
@@ -263,21 +266,30 @@ final class ClientMethodWriter {
   }
 
   void writeGeneric(UType type) {
-    if (type.isGeneric() && useJsonb) {
-      final var params =
-        type.importTypes().stream()
-          .skip(1)
-          .map(Util::shortName)
-          .collect(Collectors.joining(".class, "));
-
-      writer.append("Types.newParameterizedType(%s.class, %s.class)", Util.shortName(type.mainType()), params);
+    if (type.isGeneric() && useInject) {
+      writer.append("new GenericType<%s>() {}.type()", type.shortType());
+    } else if (type.isGeneric() && useJsonb) {
+      writer.append(jsonbGeneric(type));
     } else if (type.isGeneric() && useJackson) {
       writer.append("new TypeReference<%s>() {}.getType()", type.shortType());
-    } else if (type.isGeneric() && useInject) {
-      writer.append("new GenericType<%s>() {}.getType()", type.shortType());
     } else {
       writer.append("%s.class", Util.shortName(type.mainType()));
     }
+  }
+
+  private String jsonbGeneric(UType type) {
+    final var params =
+      type.componentTypes().stream()
+        .map(c -> {
+          if (c.isGeneric()) {
+            return jsonbGeneric(c);
+          } else {
+            return c.shortWithoutAnnotations() + ".class";
+          }
+        })
+        .collect(Collectors.joining(", "));
+
+    return String.format("Types.newParameterizedType(%s.class, %s)", Util.shortName(type.mainType()), params);
   }
 
   private void writeQueryParams(PathSegments pathSegments) {
@@ -371,7 +383,7 @@ final class ClientMethodWriter {
           writer.append("      .body(%s)", param.name()).eol();
         } else {
           writer.append("      .body(%s, ", param.name());
-          writeGeneric(param.utype());
+          writeGeneric(UType.parse(param.element().asType()));
           writer.append(")").eol();
         }
         return;
