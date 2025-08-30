@@ -89,12 +89,12 @@ final class ClientMethodWriter {
   }
 
   void addImportTypes(ControllerReader reader) {
-    if (useJsonb) {
+    if (useInject) {
+      reader.addImportType("io.avaje.inject.spi.GenericType");
+    } else if (useJsonb) {
       reader.addImportType("io.avaje.jsonb.Types");
     } else if (useJackson) {
       reader.addImportType("com.fasterxml.jackson.core.type.TypeReference");
-    } else if (useInject) {
-      reader.addImportType("io.avaje.inject.spi.GenericType");
     }
     reader.addImportTypes(returnType.importTypes());
     method.throwsList().stream()
@@ -263,18 +263,20 @@ final class ClientMethodWriter {
   }
 
   void writeGeneric(UType type) {
-    if (type.isGeneric() && useJsonb) {
+    if (type.isGeneric() && useInject) {
+      writer.append("new GenericType<%s>() {}.type()", type.shortType());
+    } else if (type.isGeneric() && useJsonb) {
       final var params =
-        type.importTypes().stream()
-          .skip(1)
-          .map(Util::shortName)
-          .collect(Collectors.joining(".class, "));
+          type.importTypes().stream()
+              .skip(1)
+              .map(Util::shortName)
+              .collect(Collectors.joining(".class, "));
 
-      writer.append("Types.newParameterizedType(%s.class, %s.class)", Util.shortName(type.mainType()), params);
+      writer.append(
+          "Types.newParameterizedType(%s.class, %s.class)",
+          Util.shortName(type.mainType()), params);
     } else if (type.isGeneric() && useJackson) {
       writer.append("new TypeReference<%s>() {}.getType()", type.shortType());
-    } else if (type.isGeneric() && useInject) {
-      writer.append("new GenericType<%s>() {}.getType()", type.shortType());
     } else {
       writer.append("%s.class", Util.shortName(type.mainType()));
     }
