@@ -279,19 +279,17 @@ final class ClientMethodWriter {
 
   private String jsonbGeneric(UType type) {
     final var params =
-        type.componentTypes().stream()
-            .map(
-                c -> {
-                  if (c.isGeneric()) {
-                    return jsonbGeneric(c);
-                  } else {
-                    return c.shortWithoutAnnotations() + ".class";
-                  }
-                })
-            .collect(Collectors.joining(", "));
+      type.componentTypes().stream()
+        .map(c -> {
+          if (c.isGeneric()) {
+            return jsonbGeneric(c);
+          } else {
+            return c.shortWithoutAnnotations() + ".class";
+          }
+        })
+        .collect(Collectors.joining(", "));
 
-    return String.format(
-        "Types.newParameterizedType(%s.class, %s)", Util.shortName(type.mainType()), params);
+    return String.format("Types.newParameterizedType(%s.class, %s)", Util.shortName(type.mainType()), params);
   }
 
   private void writeQueryParams(PathSegments pathSegments) {
