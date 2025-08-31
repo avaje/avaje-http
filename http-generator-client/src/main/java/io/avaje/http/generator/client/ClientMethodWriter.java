@@ -18,6 +18,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.ElementFilter;
 
+import io.avaje.http.api.SupressLogging;
 import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.BeanParamReader;
@@ -31,13 +32,14 @@ import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.RequestTimeoutPrism;
 import io.avaje.http.generator.core.Util;
 import io.avaje.http.generator.core.WebMethod;
+import io.avaje.prism.GeneratePrism;
 import io.avaje.prism.GenerateUtils;
-import io.avaje.http.generator.client.UType;
 
 /**
  * Write code to register Web route for a given controller method.
  */
 @GenerateUtils
+@GeneratePrism(SupressLogging.class)
 final class ClientMethodWriter {
   private static final KnownResponse KNOWN_RESPONSE = new KnownResponse();
   private static final String BODY_HANDLER = "java.net.http.HttpResponse.BodyHandler";
@@ -59,6 +61,7 @@ final class ClientMethodWriter {
   private final Map<String, String> segmentPropertyMap;
   private final Set<String> propertyConstants;
   private final List<Entry<String, String>> presetHeaders;
+  private boolean suppressLogging;
 
   ClientMethodWriter(MethodReader method, Append writer, Set<String> propertyConstants) {
     this.method = method;
@@ -67,7 +70,9 @@ final class ClientMethodWriter {
     this.returnType = UType.parse(method.returnType());
     this.timeout = method.timeout();
     this.useConfig = ProcessingContext.typeElement("io.avaje.config.Config") != null;
-
+    this.suppressLogging =
+      SupressLoggingPrism.isPresent(method.element())
+        || SupressLoggingPrism.isPresent(method.element().getEnclosingElement());
     this.segmentPropertyMap =
       method.pathSegments().segments().stream()
         .filter(Segment::isProperty)
@@ -180,6 +185,9 @@ final class ClientMethodWriter {
     PathSegments pathSegments = method.pathSegments();
     Set<PathSegments.Segment> segments = pathSegments.segments();
 
+    if (suppressLogging) {
+      writer.append("      .suppressLogging()").eol();
+    }
     writeHeaders();
     writePaths(segments);
     writeQueryParams(pathSegments);
