@@ -71,8 +71,8 @@ final class ClientMethodWriter {
     this.timeout = method.timeout();
     this.useConfig = ProcessingContext.typeElement("io.avaje.config.Config") != null;
     this.suppressLogging =
-        SupressLoggingPrism.isPresent(method.element())
-            || SupressLoggingPrism.isPresent(method.element().getEnclosingElement());
+      SupressLoggingPrism.isPresent(method.element())
+        || SupressLoggingPrism.isPresent(method.element().getEnclosingElement());
     this.segmentPropertyMap =
       method.pathSegments().segments().stream()
         .filter(Segment::isProperty)
