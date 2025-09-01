@@ -18,7 +18,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.ElementFilter;
 
-import io.avaje.http.api.SupressLogging;
+import io.avaje.http.api.SuppressLogging;
 import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.BeanParamReader;
@@ -35,11 +35,9 @@ import io.avaje.http.generator.core.WebMethod;
 import io.avaje.prism.GeneratePrism;
 import io.avaje.prism.GenerateUtils;
 
-/**
- * Write code to register Web route for a given controller method.
- */
+/** Write code to register Web route for a given controller method. */
 @GenerateUtils
-@GeneratePrism(SupressLogging.class)
+@GeneratePrism(SuppressLogging.class)
 final class ClientMethodWriter {
   private static final KnownResponse KNOWN_RESPONSE = new KnownResponse();
   private static final String BODY_HANDLER = "java.net.http.HttpResponse.BodyHandler";
@@ -71,8 +69,8 @@ final class ClientMethodWriter {
     this.timeout = method.timeout();
     this.useConfig = ProcessingContext.typeElement("io.avaje.config.Config") != null;
     this.suppressLogging =
-      SupressLoggingPrism.isPresent(method.element())
-        || SupressLoggingPrism.isPresent(method.element().getEnclosingElement());
+        SuppressLoggingPrism.isPresent(method.element())
+            || SuppressLoggingPrism.isPresent(method.element().getEnclosingElement());
     this.segmentPropertyMap =
       method.pathSegments().segments().stream()
         .filter(Segment::isProperty)
