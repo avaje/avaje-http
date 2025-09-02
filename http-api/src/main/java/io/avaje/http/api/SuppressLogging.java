@@ -17,11 +17,11 @@ import java.lang.annotation.Target;
  * interface CustomerApi {
  *   ...
  *   @Get("/{id}")
- *   @SupressLogging
+ *   @SuppressLogging
  *   Customer getById(long id);
  *
  *   @Post
- *   @SupressLogging
+ *   @SuppressLogging
  *   long save(Customer customer);
  * }
  *
@@ -29,4 +29,4 @@ import java.lang.annotation.Target;
  */
 @Retention(SOURCE)
 @Target({ElementType.TYPE, ElementType.METHOD})
-public @interface SupressLogging {}
+public @interface SuppressLogging {}
