@@ -12,7 +12,7 @@
     <maven.compiler.release>21</maven.compiler.release>
     <maven.deploy.skip>true</maven.deploy.skip>
     <main.class>org.example.myapp.Main</main.class>
-    <swagger.version>2.2.36</swagger.version>
+    <swagger.version>2.2.37</swagger.version>
   </properties>
 
   <dependencies>
@@ -116,7 +116,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.14.0</version>
+        <version>3.14.1</version>
         <configuration>
 <!--          <compilerArgs>-->
 <!--            <arg>-AdisableJsonB=true</arg>-->
@@ -145,7 +145,7 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-validator-generator</artifactId>
-              <version>2.13</version>
+              <version>2.14</version>
             </path>
             <path>
               <groupId>io.jstach</groupId>
