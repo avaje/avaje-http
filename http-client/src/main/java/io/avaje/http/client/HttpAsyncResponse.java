@@ -10,29 +10,6 @@ import java.util.stream.Stream;
 /**
  * Async processing of the request with responses as CompletableFuture.
  *
- * <h4>Testing and .join()</h4>
- * <p>
- * Note that when testing with async requests we frequently use {@code .join()}
- * on the {@code CompletableFuture} such that the main thread waits for the async
- * processing to complete. After that various asserts can run knowing that the
- * async callback code has been executed.
- *
- * <h4>Example using .join() for testing purposes</h4>
- * <pre>{@code
- *
- *    client.request()
- *       ...
- *       .POST().async()
- *       .bean(HelloDto.class)
- *       .whenComplete((helloDto, throwable) -> {
- *         ...
- *       }).join(); // wait for async processing to complete
- *
- *       // can assert now ...
- *       assertThat(...)
- *
- * }</pre>
- *
  * <h4>Example async().bean()</h4>
  * <p>
  * In this example POST async that will return a bean converted from json response.
@@ -62,44 +39,38 @@ import java.util.stream.Stream;
 public interface HttpAsyncResponse {
 
   /**
-   * Process the response with check for 200 range status code
-   * returning as {@literal HttpResponse<Void>}.
-   * <p>
-   * Unlike {@link #asDiscarding()} this request will read any response
-   * content as bytes with the view that the response content can be
-   * an error message that could be read via for example
+   * Process the response with check for 200 range status code returning as {@literal
+   * HttpResponse<Void>}.
+   *
+   * <p>Unlike {@link #asDiscarding()}, this request will read any response content as bytes with
+   * the view that the response content can be an error message that could be read via for example
    * {@link HttpException#bean(Class)}.
-   * <p>
-   * Will throw an HttpException if the status code is in the
-   * error range allowing the caller to access the error message
-   * body via for example {@link HttpException#bean(Class)}
-   * <p>
-   * This is intended to be used for POST, PUT, DELETE requests
-   * where the caller is only interested in the response body
-   * when an error occurs (status code not in 200 range).
    *
-   * <pre>{@code
+   * @throws HttpException if the status code is in the error range allowing the caller to access
+   *     the error message body via for example {@link HttpException#bean(Class)}
+   *     <p>This is intended to be used for POST, PUT, DELETE requests where the caller is only
+   *     interested in the response body when an error occurs (status code not in 200 range).
+   *     <pre>{@code
+   * client.request()
+   *     .path("hello/world")
+   *     .GET()
+   *     .async().asVoid()
+   *     .whenComplete((hres, throwable) -> {
    *
-   *   client.request()
-   *       .path("hello/world")
-   *       .GET()
-   *       .async().asVoid()
-   *       .whenComplete((hres, throwable) -> {
+   *       if (throwable != null) {
    *
-   *         if (throwable != null) {
+   *         // if throwable.getCause() is a HttpException for status code >= 300
+   *         HttpException httpException = (HttpException) throwable.getCause();
+   *         int status = httpException.statusCode();
    *
-   *           // if throwable.getCause() is a HttpException for status code >= 300
-   *           HttpException httpException = (HttpException) throwable.getCause();
-   *           int status = httpException.statusCode();
-   *
-   *           // convert json error response body to a bean
-   *           ErrorResponse errorResponse = httpException.bean(ErrorResponse.class);
-   *           ...
-   *         } else {
-   *           int statusCode = hres.statusCode();
-   *           ...
-   *         }
-   *       });
+   *         // convert json error response body to a bean
+   *         ErrorResponse errorResponse = httpException.bean(ErrorResponse.class);
+   *         ...
+   *       } else {
+   *         int statusCode = hres.statusCode();
+   *         ...
+   *       }
+   *     });
    *
    * }</pre>
    */
