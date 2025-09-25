@@ -10,6 +10,29 @@ import java.util.stream.Stream;
 /**
  * Async processing of the request with responses as CompletableFuture.
  *
+ * <h4>Testing and .join()</h4>
+ * <p>
+ * Note that when testing with async requests we frequently use {@code .join()}
+ * on the {@code CompletableFuture} such that the main thread waits for the async
+ * processing to complete. After that various asserts can run knowing that the
+ * async callback code has been executed.
+ *
+ * <h4>Example using .join() for testing purposes</h4>
+ * <pre>{@code
+ *
+ *    client.request()
+ *       ...
+ *       .POST().async()
+ *       .bean(HelloDto.class)
+ *       .whenComplete((helloDto, throwable) -> {
+ *         ...
+ *       }).join(); // wait for async processing to complete
+ *
+ *       // can assert now ...
+ *       assertThat(...)
+ *
+ * }</pre>
+ *
  * <h4>Example async().bean()</h4>
  * <p>
  * In this example POST async that will return a bean converted from json response.
