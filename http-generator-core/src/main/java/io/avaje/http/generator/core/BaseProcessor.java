@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -22,9 +23,11 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 
+import io.avaje.http.generator.core.TypeMap.CustomHandler;
 import io.avaje.prism.GenerateAPContext;
 import io.avaje.prism.GenerateModuleInfoReader;
 
@@ -54,7 +57,11 @@ public abstract class BaseProcessor extends AbstractProcessor {
   @Override
   public Set<String> getSupportedAnnotationTypes() {
     return Set.of(
-        PathPrism.PRISM_TYPE, ControllerPrism.PRISM_TYPE, OpenAPIDefinitionPrism.PRISM_TYPE);
+        PathPrism.PRISM_TYPE,
+        ControllerPrism.PRISM_TYPE,
+        OpenAPIDefinitionPrism.PRISM_TYPE,
+        MappedParamPrism.PRISM_TYPE,
+        MapImportPrism.PRISM_TYPE);
   }
 
   @Override
@@ -88,6 +95,20 @@ public abstract class BaseProcessor extends AbstractProcessor {
     if (round.errorRaised()) {
       return false;
     }
+
+    for (final var type : ElementFilter.typesIn(getElements(round, MappedParamPrism.PRISM_TYPE))) {
+      var prism = MappedParamPrism.getInstanceOn(type);
+
+      registerParamMapping(type, prism.factoryMethod());
+    }
+
+    for (final var type : getElements(round, MapImportPrism.PRISM_TYPE)) {
+
+      var prism = MapImportPrism.getInstanceOn(type);
+
+      registerParamMapping(APContext.asTypeElement(prism.value()), prism.factoryMethod());
+    }
+
     var pathElements = round.getElementsAnnotatedWith(typeElement(PathPrism.PRISM_TYPE));
     APContext.setProjectModuleElement(annotations, round);
     if (contextPathString == null) {
@@ -135,6 +156,37 @@ public abstract class BaseProcessor extends AbstractProcessor {
     }
     return false;
   }
+
+  private Set<? extends Element> getElements(RoundEnvironment round, String name) {
+    return Optional.ofNullable(typeElement(name))
+        .map(round::getElementsAnnotatedWith)
+        .orElse(Set.of());
+  }
+
+  private final void registerParamMapping(final TypeElement type, String factoryMethod) {
+    if (factoryMethod.isBlank()) {
+      Util.stringConstructor(type)
+          .ifPresentOrElse(
+              c -> TypeMap.add(new CustomHandler(UType.parse(type.asType()), "")),
+              () -> logError(type, "Missing constructor %s(String s)"));
+
+    } else {
+      ElementFilter.methodsIn(type.getEnclosedElements()).stream()
+          .filter(
+              m ->
+                  m.getSimpleName().contentEquals(factoryMethod)
+                      && m.getModifiers().contains(Modifier.STATIC)
+                      && m.getParameters().size() == 1
+                      && m.getParameters()
+                          .get(0)
+                          .asType()
+                          .toString()
+                          .equals(String.class.getTypeName()))
+          .findAny()
+          .ifPresentOrElse(
+              c -> TypeMap.add(new CustomHandler(UType.parse(type.asType()), factoryMethod)),
+              () -> logError(type, "Missing static factory method %s(String s)", factoryMethod));
+    }}
 
   private void readOpenApiDefinition(RoundEnvironment round) {
     for (final Element element :

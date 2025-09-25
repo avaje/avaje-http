@@ -14,6 +14,7 @@ import java.util.Set;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeMirror;
 
+import io.avaje.http.generator.core.TypeMap.CustomHandler;
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 import io.avaje.http.generator.core.openapi.MethodParamDocBuilder;
 
@@ -76,7 +77,9 @@ public class ElementReader {
     if (!contextType) {
       readAnnotations(element, defaultType);
       useValidation = useValidation();
-      HttpValidPrism.getOptionalOn(element.getEnclosingElement()).map(HttpValidPrism::groups).stream()
+      HttpValidPrism.getOptionalOn(element.getEnclosingElement())
+          .map(HttpValidPrism::groups)
+          .stream()
           .flatMap(List::stream)
           .map(TypeMirror::toString)
           .forEach(validationGroups::add);
@@ -101,8 +104,33 @@ public class ElementReader {
   }
 
   TypeHandler initTypeHandler() {
+
+    var handler = TypeMap.get(rawType);
+
+    final var typeOp =
+        Optional.ofNullable(type).or(() -> Optional.of(UType.parse(element.asType())));
+
+    var customType = typeOp.orElseThrow();
+    var actual = customType.isGeneric() ? UType.parse(customType.param0()) : customType;
+
+    if (handler == null) {
+      Optional.ofNullable(APContext.typeElement(customType.full()))
+          .flatMap(MappedParamPrism::getOptionalOn)
+          .ifPresent(p -> TypeMap.add(new CustomHandler(actual, p.factoryMethod())));
+
+      handler = TypeMap.get(rawType);
+    }
+
+    if (handler == null && ParamPrism.isPresent(element)) {
+
+      handler =
+          Optional.ofNullable(APContext.typeElement(customType.full()))
+              .flatMap(Util::stringConstructor)
+              .map(m -> new CustomHandler(actual, ""))
+              .orElse(null);
+    }
+
     if (specialParam) {
-      final var typeOp = Optional.ofNullable(type).or(() -> Optional.of(UType.parse(element.asType())));
 
       final var mainTypeEnum =
           typeOp
@@ -119,7 +147,8 @@ public class ElementReader {
       final var isMap =
           !isCollection && typeOp.filter(t -> t.mainType().startsWith("java.util.Map")).isPresent();
 
-      final var isOptional = typeOp.filter(t -> t.mainType().startsWith("java.util.Optional")).isPresent();
+      final var isOptional =
+          typeOp.filter(t -> t.mainType().startsWith("java.util.Optional")).isPresent();
 
       if (mainTypeEnum) {
         return TypeMap.enumParamHandler(typeOp.orElseThrow());
@@ -142,7 +171,7 @@ public class ElementReader {
       }
     }
 
-    return TypeMap.get(rawType);
+    return handler;
   }
 
   private boolean useValidation() {
@@ -191,6 +220,14 @@ public class ElementReader {
     if (headerParam != null) {
       this.paramName = nameFrom(headerParam.value(), Util.initcapSnake(snakeName));
       this.paramType = ParamType.HEADER;
+      this.paramDefault = null;
+      return;
+    }
+
+    final var pathVar = PathVariablePrism.getInstanceOn(element);
+    if (pathVar != null) {
+      this.paramName = nameFrom(pathVar.value(), Util.initcapSnake(snakeName));
+      this.paramType = ParamType.PATHPARAM;
       this.paramDefault = null;
       return;
     }
@@ -312,7 +349,7 @@ public class ElementReader {
   }
 
   void writeCtxGet(Append writer, PathSegments segments) {
-    if (isPlatformContext() || (paramType == ParamType.BODY && platform().isBodyMethodParam())) {
+    if (isPlatformContext() || paramType == ParamType.BODY && platform().isBodyMethodParam()) {
       // body passed as method parameter (Helidon)
       return;
     }
@@ -347,9 +384,9 @@ public class ElementReader {
         // path or matrix parameter
         final boolean requiredParam = segment.isRequired(varName);
         final String asMethod =
-            (typeHandler == null)
+            typeHandler == null
                 ? null
-                : (requiredParam) ? typeHandler.asMethod() : typeHandler.toMethod();
+                : requiredParam ? typeHandler.asMethod() : typeHandler.toMethod();
         if (asMethod != null) {
           writer.append(asMethod);
         }
@@ -362,7 +399,7 @@ public class ElementReader {
       }
     }
 
-    final String asMethod = (typeHandler == null) ? null : typeHandler.toMethod();
+    final String asMethod = typeHandler == null ? null : typeHandler.toMethod();
     if (asMethod != null) {
       writer.append(asMethod);
     }
@@ -382,7 +419,8 @@ public class ElementReader {
     } else if (hasParamDefault()) {
       platform().writeReadParameter(writer, paramType, paramName, paramDefault.get(0));
     } else {
-      final var checkNull = notNullKotlin || (paramType == ParamType.FORMPARAM && typeHandler.isPrimitive());
+      final var checkNull =
+          notNullKotlin || paramType == ParamType.FORMPARAM && typeHandler.isPrimitive();
       if (checkNull) {
         writer.append("checkNull(");
       }
@@ -398,9 +436,11 @@ public class ElementReader {
     return true;
   }
 
-  private void writeForm(Append writer, String shortType, String varName, ParamType defaultParamType) {
+  private void writeForm(
+      Append writer, String shortType, String varName, ParamType defaultParamType) {
     final TypeElement formBeanType = typeElement(rawType);
-    final BeanParamReader form = new BeanParamReader(formBeanType, varName, shortType, defaultParamType);
+    final BeanParamReader form =
+        new BeanParamReader(formBeanType, varName, shortType, defaultParamType);
     form.write(writer);
   }
 
