@@ -6,10 +6,10 @@ import java.util.Map;
 import io.avaje.http.api.Client;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Headers;
-import io.avaje.http.api.SupressLogging;
+import io.avaje.http.api.SuppressLogging;
 
 @Client
-@SupressLogging
+@SuppressLogging
 @Headers("Content-Type: applicaton/json")
 public interface TitanFall {
 
