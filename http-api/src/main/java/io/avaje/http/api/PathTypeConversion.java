@@ -98,6 +98,12 @@ public final class PathTypeConversion {
     }
   }
 
+  /** Convert to type. */
+  public static <T> T asType(Function<String, T> typeConversion, String value) {
+    checkNull(value);
+    return typeConversion.apply(value);
+  }
+
   /**
    * Convert to enum.
    */
@@ -288,9 +294,15 @@ public final class PathTypeConversion {
     }
   }
 
-  /**
-   * Convert to enum of the given type.
-   */
+  /** Convert to type (not nullable) */
+  public static <T> T toType(Function<String, T> typeConversion, String value) {
+    if (isNullOrEmpty(value)) {
+      return null;
+    }
+    return typeConversion.apply(value);
+  }
+
+  /** Convert to enum of the given type. */
   @SuppressWarnings({"rawtypes"})
   public static <T> Enum toEnum(Class<T> clazz, String value) {
     if (isNullOrEmpty(value)) {

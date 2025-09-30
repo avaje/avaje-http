@@ -14,7 +14,7 @@ final class TypeMap {
 
   private static final Map<String, TypeHandler> types = new HashMap<>();
 
-  private static void add(TypeHandler h) {
+  static void add(TypeHandler h) {
     types.put(h.importTypes().get(0), h);
   }
 
@@ -342,13 +342,12 @@ final class TypeMap {
       this.importTypes.add("io.avaje.http.api.PathTypeConversion");
       this.shortName = handler.shortName();
       String _toMethod =
-        (set ? "set" : "list")
-          + "("
-          + (isEnum
-              ? "qp -> " + handler.toMethod() + " qp)"
-              : "PathTypeConversion::as" + shortName)
-          + ", ";
-
+          (set ? "set" : "list")
+              + "("
+              + (isEnum || handler instanceof CustomHandler
+                  ? "qp -> " + handler.toMethod() + " qp)"
+                  : "PathTypeConversion::as" + shortName)
+              + ", ";
       this.toMethod = _toMethod.replace("PathTypeConversion::asString", "Object::toString");
     }
 
@@ -397,7 +396,7 @@ final class TypeMap {
     }
 
     static String buildToMethod(TypeHandler handler, boolean isEnum) {
-      if (isEnum) {
+      if (isEnum || handler instanceof CustomHandler) {
         return "optional(qp -> " + handler.toMethod() + " qp), ";
       }
       if ("String".equals(handler.shortName())) {
@@ -430,6 +429,31 @@ final class TypeMap {
     @Override
     public String toMethod() {
       return toMethod;
+    }
+  }
+
+  static final class CustomHandler extends ObjectHandler {
+    private final UType type;
+    private final String factory;
+
+    CustomHandler(UType type, String factory) {
+      super(type.mainType(), type.shortName());
+      this.type = type;
+      this.factory = factory;
+    }
+
+    @Override
+    public String toMethod() {
+      return "toType("
+          + type.shortTypeNested()
+          + "::"
+          + (factory.isBlank() ? "new" : factory)
+          + ", ";
+    }
+
+    @Override
+    public String asMethod() {
+      return "asType(" + type.shortTypeNested() + "::" + (factory.isBlank() ? "new" : factory);
     }
   }
 
