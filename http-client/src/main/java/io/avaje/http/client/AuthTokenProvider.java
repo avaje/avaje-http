@@ -1,7 +1,7 @@
 package io.avaje.http.client;
 
 /**
- * Use to obtain an Authorization bearer token that is expected to be used.
+ * Use to obtain an Authorization bearer token used for authenticated requests.
  *
  * <pre>{@code
  *
@@ -33,7 +33,7 @@ public interface AuthTokenProvider {
   /**
    * Obtain a new Authorization token.
    *
-   * @param tokenRequest A new request to obtain an Authorisation token
+   * @param tokenRequest A new request to obtain an Authorization token
    */
   AuthToken obtainToken(HttpClientRequest tokenRequest);
 

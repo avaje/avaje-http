@@ -1,7 +1,7 @@
 package io.avaje.http.client;
 
 /**
- * Content of request or response body used for adapting to beans.
+ * Content of request or response body.
  * <p>
  * This is not used for streaming content.
  */
