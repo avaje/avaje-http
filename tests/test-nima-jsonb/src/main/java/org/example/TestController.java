@@ -182,7 +182,7 @@ public class TestController {
   @MappedParam(factoryMethod = "build")
   record Static(String name) {
     static Static build(String name) {
-      return null;
+      return new Static(name);
     }
   }
 

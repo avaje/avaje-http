@@ -1,10 +1,6 @@
 package io.avaje.http.generator.core;
 
-import static io.avaje.http.generator.core.ProcessingContext.doc;
-import static io.avaje.http.generator.core.ProcessingContext.elements;
-import static io.avaje.http.generator.core.ProcessingContext.isOpenApiAvailable;
-import static io.avaje.http.generator.core.ProcessingContext.logError;
-import static io.avaje.http.generator.core.ProcessingContext.typeElement;
+import static io.avaje.http.generator.core.ProcessingContext.*;
 import static java.util.stream.Collectors.toMap;
 
 import java.io.IOException;
@@ -23,6 +19,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
@@ -57,11 +54,11 @@ public abstract class BaseProcessor extends AbstractProcessor {
   @Override
   public Set<String> getSupportedAnnotationTypes() {
     return Set.of(
-        PathPrism.PRISM_TYPE,
-        ControllerPrism.PRISM_TYPE,
-        OpenAPIDefinitionPrism.PRISM_TYPE,
-        MappedParamPrism.PRISM_TYPE,
-        MapImportPrism.PRISM_TYPE);
+      PathPrism.PRISM_TYPE,
+      ControllerPrism.PRISM_TYPE,
+      OpenAPIDefinitionPrism.PRISM_TYPE,
+      MappedParamPrism.PRISM_TYPE,
+      MapImportPrism.PRISM_TYPE);
   }
 
   @Override
@@ -72,7 +69,6 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
     try {
       var txtFilePath = APContext.getBuildResource(HTTP_CONTROLLERS_TXT);
-
       if (txtFilePath.toFile().exists()) {
         Files.lines(txtFilePath).forEach(clientFQNs::add);
       }
@@ -82,8 +78,8 @@ public abstract class BaseProcessor extends AbstractProcessor {
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
       // not worth failing over
+      logWarn("Error reading test controllers %s", e);
     }
   }
 
@@ -98,14 +94,11 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
     for (final var type : ElementFilter.typesIn(getElements(round, MappedParamPrism.PRISM_TYPE))) {
       var prism = MappedParamPrism.getInstanceOn(type);
-
       registerParamMapping(type, prism.factoryMethod());
     }
 
     for (final var type : getElements(round, MapImportPrism.PRISM_TYPE)) {
-
       var prism = MapImportPrism.getInstanceOn(type);
-
       registerParamMapping(APContext.asTypeElement(prism.value()), prism.factoryMethod());
     }
 
@@ -132,9 +125,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
       readSecuritySchemes(round);
     }
 
-    for (final var controller :
-        ElementFilter.typesIn(
-            round.getElementsAnnotatedWith(typeElement(ControllerPrism.PRISM_TYPE)))) {
+    for (final var controller : ElementFilter.typesIn(round.getElementsAnnotatedWith(typeElement(ControllerPrism.PRISM_TYPE)))) {
       writeAdapter(controller);
     }
 
@@ -159,38 +150,40 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   private Set<? extends Element> getElements(RoundEnvironment round, String name) {
     return Optional.ofNullable(typeElement(name))
-        .map(round::getElementsAnnotatedWith)
-        .orElse(Set.of());
+      .map(round::getElementsAnnotatedWith)
+      .orElse(Set.of());
   }
 
   private final void registerParamMapping(final TypeElement type, String factoryMethod) {
     if (factoryMethod.isBlank()) {
       Util.stringConstructor(type)
-          .ifPresentOrElse(
-              c -> TypeMap.add(new CustomHandler(UType.parse(type.asType()), "")),
-              () -> logError(type, "Missing constructor %s(String s)"));
+        .ifPresentOrElse(
+          c -> TypeMap.add(new CustomHandler(UType.parse(type.asType()), "")),
+          () -> logError(type, "Missing constructor %s(String s)"));
 
     } else {
       ElementFilter.methodsIn(type.getEnclosedElements()).stream()
-          .filter(
-              m ->
-                  m.getSimpleName().contentEquals(factoryMethod)
-                      && m.getModifiers().contains(Modifier.STATIC)
-                      && m.getParameters().size() == 1
-                      && m.getParameters()
-                          .get(0)
-                          .asType()
-                          .toString()
-                          .equals(String.class.getTypeName()))
-          .findAny()
-          .ifPresentOrElse(
-              c -> TypeMap.add(new CustomHandler(UType.parse(type.asType()), factoryMethod)),
-              () -> logError(type, "Missing static factory method %s(String s)", factoryMethod));
-    }}
+        .filter(m -> m.getSimpleName().contentEquals(factoryMethod)
+              && m.getModifiers().contains(Modifier.STATIC)
+              && m.getParameters().size() == 1
+              && firstParamIsString(m))
+        .findAny()
+        .ifPresentOrElse(
+          c -> TypeMap.add(new CustomHandler(UType.parse(type.asType()), factoryMethod)),
+          () -> logError(type, "Missing static factory method %s(String s)", factoryMethod));
+    }
+  }
+
+  private static boolean firstParamIsString(ExecutableElement m) {
+    return m.getParameters()
+      .get(0)
+      .asType()
+      .toString()
+      .equals(String.class.getTypeName());
+  }
 
   private void readOpenApiDefinition(RoundEnvironment round) {
-    for (final Element element :
-        round.getElementsAnnotatedWith(typeElement(OpenAPIDefinitionPrism.PRISM_TYPE))) {
+    for (final Element element : round.getElementsAnnotatedWith(typeElement(OpenAPIDefinitionPrism.PRISM_TYPE))) {
       doc().readApiDefinition(element);
     }
   }
@@ -199,19 +192,16 @@ public abstract class BaseProcessor extends AbstractProcessor {
     for (final Element element : round.getElementsAnnotatedWith(typeElement(TagPrism.PRISM_TYPE))) {
       doc().addTagDefinition(element);
     }
-    for (final Element element :
-        round.getElementsAnnotatedWith(typeElement(TagsPrism.PRISM_TYPE))) {
+    for (final Element element : round.getElementsAnnotatedWith(typeElement(TagsPrism.PRISM_TYPE))) {
       doc().addTagsDefinition(element);
     }
   }
 
   private void readSecuritySchemes(RoundEnvironment round) {
-    for (final Element element :
-        round.getElementsAnnotatedWith(typeElement(SecuritySchemePrism.PRISM_TYPE))) {
+    for (final Element element : round.getElementsAnnotatedWith(typeElement(SecuritySchemePrism.PRISM_TYPE))) {
       doc().addSecurityScheme(element);
     }
-    for (final Element element :
-        round.getElementsAnnotatedWith(typeElement(SecuritySchemesPrism.PRISM_TYPE))) {
+    for (final Element element : round.getElementsAnnotatedWith(typeElement(SecuritySchemesPrism.PRISM_TYPE))) {
       doc().addSecuritySchemes(element);
     }
   }
@@ -226,7 +216,6 @@ public abstract class BaseProcessor extends AbstractProcessor {
     final var reader = new ControllerReader(controller, contextPath);
     reader.read(true);
     try {
-
       writeControllerAdapter(reader);
       writeClientAdapter(reader);
 
@@ -236,7 +225,6 @@ public abstract class BaseProcessor extends AbstractProcessor {
   }
 
   private void writeClientAdapter(ControllerReader reader) {
-
     try {
       if (reader.beanType().getInterfaces().isEmpty()
           && "java.lang.Object".equals(reader.beanType().getSuperclass().toString())

@@ -433,6 +433,7 @@ final class TypeMap {
   }
 
   static final class CustomHandler extends ObjectHandler {
+
     private final UType type;
     private final String factory;
 
@@ -445,10 +446,10 @@ final class TypeMap {
     @Override
     public String toMethod() {
       return "toType("
-          + type.shortTypeNested()
-          + "::"
-          + (factory.isBlank() ? "new" : factory)
-          + ", ";
+        + type.shortTypeNested()
+        + "::"
+        + (factory.isBlank() ? "new" : factory)
+        + ", ";
     }
 
     @Override

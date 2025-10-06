@@ -19,7 +19,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.SimpleAnnotationValueVisitor8;
 
-public class Util {
+public final class Util {
   // whitespace not in quotes
   private static final Pattern WHITE_SPACE_REGEX =
       Pattern.compile("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
@@ -274,14 +274,17 @@ public class Util {
 
   static Optional<ExecutableElement> stringConstructor(TypeElement typeElement) {
     return ElementFilter.constructorsIn(typeElement.getEnclosedElements()).stream()
-        .filter(
-            m ->
-                m.getParameters().size() == 1
-                    && m.getParameters()
-                        .get(0)
-                        .asType()
-                        .toString()
-                        .equals(String.class.getTypeName()))
-        .findAny();
+      .filter(m ->
+        m.getParameters().size() == 1
+          && firstParamIsString(m))
+      .findAny();
+  }
+
+  private static boolean firstParamIsString(ExecutableElement m) {
+    return m.getParameters()
+      .get(0)
+      .asType()
+      .toString()
+      .equals(String.class.getTypeName());
   }
 }

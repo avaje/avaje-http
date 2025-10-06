@@ -104,63 +104,58 @@ public class ElementReader {
   }
 
   TypeHandler initTypeHandler() {
-
     var handler = TypeMap.get(rawType);
-
-    final var typeOp =
-        Optional.ofNullable(type).or(() -> Optional.of(UType.parse(element.asType())));
+    final var typeOp = Optional.ofNullable(type).or(() -> Optional.of(UType.parse(element.asType())));
 
     var customType = typeOp.orElseThrow();
     var actual = customType.isGeneric() ? UType.parse(customType.param0()) : customType;
 
     if (handler == null) {
       Optional.ofNullable(APContext.typeElement(customType.full()))
-          .flatMap(MappedParamPrism::getOptionalOn)
-          .ifPresent(p -> TypeMap.add(new CustomHandler(actual, p.factoryMethod())));
+        .flatMap(MappedParamPrism::getOptionalOn)
+        .ifPresent(p -> TypeMap.add(new CustomHandler(actual, p.factoryMethod())));
 
       handler = TypeMap.get(rawType);
     }
 
     if (handler == null && ParamPrism.isPresent(element)) {
-
       handler =
-          Optional.ofNullable(APContext.typeElement(customType.full()))
-              .flatMap(Util::stringConstructor)
-              .map(m -> new CustomHandler(actual, ""))
-              .orElse(null);
+        Optional.ofNullable(APContext.typeElement(customType.full()))
+          .flatMap(Util::stringConstructor)
+          .map(m -> new CustomHandler(actual, ""))
+          .orElse(null);
     }
 
     if (specialParam) {
-
       final var mainTypeEnum =
-          typeOp
-              .flatMap(t -> Optional.ofNullable(typeElement(t.mainType())))
-              .map(TypeElement::getKind)
-              .filter(ElementKind.ENUM::equals)
-              .isPresent();
+        typeOp
+          .flatMap(t -> Optional.ofNullable(typeElement(t.mainType())))
+          .map(TypeElement::getKind)
+          .filter(ElementKind.ENUM::equals)
+          .isPresent();
 
       final var isCollection =
-          typeOp
-              .filter(t -> t.isGeneric() && !t.mainType().startsWith("java.util.Map"))
-              .isPresent();
+        typeOp
+          .filter(t -> t.isGeneric() && !t.mainType().startsWith("java.util.Map"))
+          .isPresent();
 
       final var isMap =
-          !isCollection && typeOp.filter(t -> t.mainType().startsWith("java.util.Map")).isPresent();
+        !isCollection && typeOp.filter(t -> t.mainType().startsWith("java.util.Map")).isPresent();
 
       final var isOptional =
-          typeOp.filter(t -> t.mainType().startsWith("java.util.Optional")).isPresent();
+        typeOp.filter(t -> t.mainType().startsWith("java.util.Optional")).isPresent();
 
       if (mainTypeEnum) {
         return TypeMap.enumParamHandler(typeOp.orElseThrow());
       } else if (isCollection || isOptional) {
         final var isEnumContainer =
-            typeOp
-                .flatMap(t -> Optional.ofNullable(typeElement(t.param0())))
-                .map(TypeElement::getKind)
-                .filter(ElementKind.ENUM::equals)
-                .isPresent();
+          typeOp
+            .flatMap(t -> Optional.ofNullable(typeElement(t.param0())))
+            .map(TypeElement::getKind)
+            .filter(ElementKind.ENUM::equals)
+            .isPresent();
 
-        if (isOptional) {//Needs to be checked first, as 'isCollection' is too broad
+        if (isOptional) { // needs to be checked first, as 'isCollection' is too broad
           return TypeMap.optionalHandler(typeOp.orElseThrow(), isEnumContainer);
         }
         this.isParamCollection = true;
@@ -376,9 +371,9 @@ public class ElementReader {
         // path or matrix parameter
         final boolean requiredParam = segment.isRequired(varName);
         final String asMethod =
-            typeHandler == null
-                ? null
-                : requiredParam ? typeHandler.asMethod() : typeHandler.toMethod();
+          typeHandler == null
+            ? null
+            : requiredParam ? typeHandler.asMethod() : typeHandler.toMethod();
         if (asMethod != null) {
           writer.append(asMethod);
         }
@@ -428,11 +423,9 @@ public class ElementReader {
     return true;
   }
 
-  private void writeForm(
-      Append writer, String shortType, String varName, ParamType defaultParamType) {
+  private void writeForm(Append writer, String shortType, String varName, ParamType defaultParamType) {
     final TypeElement formBeanType = typeElement(rawType);
-    final BeanParamReader form =
-        new BeanParamReader(formBeanType, varName, shortType, defaultParamType);
+    final BeanParamReader form = new BeanParamReader(formBeanType, varName, shortType, defaultParamType);
     form.write(writer);
   }
 

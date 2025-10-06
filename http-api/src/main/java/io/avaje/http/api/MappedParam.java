@@ -11,7 +11,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/** Marks a type to be mapped. */
+/**
+ * Marks a type to be mapped.
+ * <p>
+ * The type needs to have a single constructor argument that is a String type,
+ * or have a factory method that has a single argument that is a String type.
+ */
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.TYPE})
 public @interface MappedParam {
@@ -19,6 +24,12 @@ public @interface MappedParam {
   /** Factory method name used to construct the type. Empty means use a constructor */
   String factoryMethod() default "";
 
+  /**
+   * Import a type to be mapped.
+   * <p>
+   * The type needs to have a single constructor argument that is a String type,
+   * or have a factory method that has a single argument that is a String type.
+   */
   @Repeatable(MappedParam.Import.Imports.class)
   @Retention(SOURCE)
   @Target({TYPE, PACKAGE, MODULE})
