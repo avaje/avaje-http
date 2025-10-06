@@ -224,14 +224,6 @@ public class ElementReader {
       return;
     }
 
-    final var pathVar = PathVariablePrism.getInstanceOn(element);
-    if (pathVar != null) {
-      this.paramName = nameFrom(pathVar.value(), Util.initcapSnake(snakeName));
-      this.paramType = ParamType.PATHPARAM;
-      this.paramDefault = null;
-      return;
-    }
-
     final var matrixParam = MatrixParamPrism.getInstanceOn(element);
     if (matrixParam != null) {
       this.matrixParamName = nameFrom(matrixParam.value(), varName);
