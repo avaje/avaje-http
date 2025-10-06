@@ -1,20 +1,25 @@
 package io.avaje.http.generator.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.SimpleAnnotationValueVisitor8;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class Util {
+public final class Util {
   // whitespace not in quotes
   private static final Pattern WHITE_SPACE_REGEX =
       Pattern.compile("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
@@ -265,5 +270,23 @@ public class Util {
       fullRoles.add(roleEnum.asType() + "." + roleEnum.getSimpleName());
       return fullRoles;
     }
+  }
+
+  static Optional<ExecutableElement> stringConstructor(TypeElement typeElement) {
+    return ElementFilter.constructorsIn(typeElement.getEnclosedElements()).stream()
+      .filter(Util::singleStringParam)
+      .findAny();
+  }
+
+  static boolean singleStringParam(ExecutableElement m) {
+    return m.getParameters().size() == 1 && firstParamIsString(m);
+  }
+
+  static boolean firstParamIsString(ExecutableElement m) {
+    return m.getParameters()
+      .get(0)
+      .asType()
+      .toString()
+      .equals(String.class.getTypeName());
   }
 }

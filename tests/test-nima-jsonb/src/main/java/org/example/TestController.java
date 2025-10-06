@@ -1,7 +1,10 @@
 package org.example;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import io.avaje.http.api.BodyString;
 import io.avaje.http.api.Controller;
@@ -12,6 +15,7 @@ import io.avaje.http.api.Form;
 import io.avaje.http.api.FormParam;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.InstrumentServerContext;
+import io.avaje.http.api.MappedParam;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
@@ -161,5 +165,46 @@ public class TestController {
   @Get("/maybeList/{maybe}")
   List<Person> maybePersonList(boolean maybe) {
     return maybe ? List.of(new Person(9, "hi")) : null; // Collections.emptyList();
+  }
+
+  @MappedParam
+  @MappedParam.Import(Simple2.class)
+  record Simple(String name) {}
+
+  record Simple2(String name) {}
+
+  @Form
+  @Get("/typeForm")
+  String typeForm(Simple s, Simple2 type) {
+    return type.name();
+  }
+
+  @MappedParam(factoryMethod = "build")
+  record Static(String name) {
+    static Static build(String name) {
+      return new Static(name);
+    }
+  }
+
+  @Get("/typeFormParam")
+  String typeFormParam(@FormParam String s, @FormParam Static type) {
+    return type.name();
+  }
+
+  @Get("/typeQuery")
+  String typeQuery(@QueryParam @Default("FFA") Static type) {
+    return type.name();
+  }
+
+  @Get("/typeQuery2")
+  String typeMultiQuery(@QueryParam @Default({"FFA", "PROXY"}) Set<Simple> type) {
+    return type.toString();
+  }
+
+  record Implied(String name) {}
+
+  @Post("/typeQueryImplied")
+  String typeQueryImplied(String s, @QueryParam Implied type) {
+    return type.name();
   }
 }

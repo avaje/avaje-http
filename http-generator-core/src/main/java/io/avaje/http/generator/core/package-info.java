@@ -1,18 +1,15 @@
-/** Generate the prisms to access annotation info */
+/**
+ * Generate the prisms to access annotation info
+ */
 @GeneratePrism(value = io.avaje.http.api.Controller.class, publicAccess = true, superInterfaces = WebAPIPrism.class)
 @GeneratePrism(value = io.avaje.http.api.Client.class, publicAccess = true, superInterfaces = WebAPIPrism.class)
 @GeneratePrism(value = io.avaje.http.api.BeanParam.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Ignore.class, publicAccess = true)
-@GeneratePrism(value = io.avaje.http.api.QueryParam.class, publicAccess = true)
-@GeneratePrism(value = io.avaje.http.api.Cookie.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.BodyString.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Default.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Delete.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Form.class, publicAccess = true)
-@GeneratePrism(value = io.avaje.http.api.FormParam.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Get.class, publicAccess = true)
-@GeneratePrism(value = io.avaje.http.api.Header.class, publicAccess = true)
-@GeneratePrism(value = io.avaje.http.api.MatrixParam.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Patch.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Path.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Post.class, publicAccess = true)
@@ -22,6 +19,8 @@
 @GeneratePrism(value = io.avaje.http.api.Filter.class)
 @GeneratePrism(value = io.avaje.http.api.InstrumentServerContext.class)
 @GeneratePrism(value = io.avaje.http.api.ExceptionHandler.class)
+@GeneratePrism(value = io.avaje.http.api.MappedParam.class)
+@GeneratePrism(value = io.avaje.http.api.MappedParam.Import.class, name = "MapImportPrism")
 @GeneratePrism(value = io.swagger.v3.oas.annotations.OpenAPIDefinition.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.Operation.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.tags.Tag.class, publicAccess = true)
