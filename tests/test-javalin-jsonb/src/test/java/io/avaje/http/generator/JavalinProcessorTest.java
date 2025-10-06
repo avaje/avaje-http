@@ -178,6 +178,41 @@ class JavalinProcessorTest {
   }
 
   @Test
+  public void testOpenAPIGenerationMarkdown() throws Exception {
+    final var source = Paths.get("src").toAbsolutePath().toString();
+    // OpenAPIController
+    final var files = getSourceFiles(source);
+
+    Iterable<JavaFileObject> openAPIController = null;
+    for (final var file : files) {
+      if (file.isNameCompatible("OpenAPIControllerMarkdown", Kind.SOURCE))
+        openAPIController = List.of(file);
+    }
+    final var compiler = ToolProvider.getSystemJavaCompiler();
+
+    final var task =
+        compiler.getTask(
+            new PrintWriter(System.out),
+            null,
+            null,
+            List.of("--release=11", "-AdisableDirectWrites=true"),
+            null,
+            openAPIController);
+    task.setProcessors(List.of(new JavalinProcessor(), new JsonbProcessor()));
+
+    assertThat(task.call()).isTrue();
+
+    final var mapper = new ObjectMapper();
+    final var expectedOpenApiJson =
+        mapper.readTree(new File("src/test/resources/expectedOpenApi.json"));
+    File file = new File("openapi.json");
+    // Files.copy(file.toPath(), Paths.get("other.json"));
+    final var generatedOpenApi = mapper.readTree(file);
+
+    assertThat(generatedOpenApi).isEqualTo(expectedOpenApiJson);
+  }
+
+  @Test
   public void testInheritableOpenAPIGeneration() throws Exception {
     final var source = Paths.get("src").toAbsolutePath().toString();
     // OpenAPIController

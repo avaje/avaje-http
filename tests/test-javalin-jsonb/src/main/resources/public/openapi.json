@@ -19,6 +19,10 @@
 		{
 			"name" : "tag1",
 			"description" : "this is added to openapi tags"
+		},
+		{
+			"name" : "tag1",
+			"description" : "this is added to openapi tags"
 		}
 	],
 	"paths" : {
@@ -1034,11 +1038,11 @@
 				"tags" : [
 					
 				],
-				"summary" : "Example of Open API Get (up to the first period is the summary)",
-				"description" : "When using Javalin Context only This Javadoc description is added to the generated openapi.json",
+				"summary" : "",
+				"description" : "",
 				"responses" : {
 					"200" : {
-						"description" : "funny phrase (this part of the javadoc is added to the response desc)",
+						"description" : "No content",
 						"content" : {
 							"text/plain" : {
 								"schema" : {
@@ -1055,10 +1059,9 @@
 				"tags" : [
 					"tag1"
 				],
-				"summary" : "Standard Post",
-				"description" : "uses tag annotation to add tags to openapi json",
+				"summary" : "",
+				"description" : "",
 				"requestBody" : {
-					"description" : "the body (this is used for generated request body desc)",
 					"content" : {
 						"application/json" : {
 							"schema" : {
@@ -1080,7 +1083,7 @@
 						}
 					},
 					"201" : {
-						"description" : "the response body (from javadoc)",
+						"description" : "",
 						"content" : {
 							"application/json" : {
 								"schema" : {
@@ -1110,10 +1113,9 @@
 				"tags" : [
 					
 				],
-				"summary" : "Standard Post",
-				"description" : "The Deprecated annotation adds \"deprecacted:true\" to the generated json",
+				"summary" : "",
+				"description" : "",
 				"requestBody" : {
-					"description" : "the body",
 					"content" : {
 						"application/json" : {
 							"schema" : {
@@ -1141,7 +1143,7 @@
 						}
 					},
 					"201" : {
-						"description" : "the response body (from javadoc)",
+						"description" : "",
 						"content" : {
 							"application/json" : {
 								"schema" : {
