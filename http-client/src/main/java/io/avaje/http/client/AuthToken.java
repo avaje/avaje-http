@@ -5,28 +5,26 @@ import java.time.Instant;
 
 /**
  * Represents an Authorization Bearer token that can be held on the context.
- * <p>
- * Typically the token will be valid for a period and then expire.
  */
 public interface AuthToken {
 
   /**
-   * Return the Authorization bearer token.
+   * The Authorization bearer token.
    */
   String token();
 
   /**
-   * Return true if the token has expired or is no longer valid.
+   * Whether the token has expired or no longer valid.
    */
   boolean isExpired();
 
   /**
-   * Return the duration until expiry.
+   * Duration until expiration.
    */
   Duration expiration();
 
   /**
-   * Create an return a AuthToken with the given token and time it is valid until.
+   * Create an AuthToken with the given token and when it expires.
    */
   static AuthToken of(String token, Instant validUntil) {
     return new Basic(token, validUntil);
