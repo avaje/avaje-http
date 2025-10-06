@@ -98,7 +98,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /** Convert to type. */
+  /** Convert to type (not nullable). */
   public static <T> T asType(Function<String, T> typeConversion, String value) {
     checkNull(value);
     return typeConversion.apply(value);
@@ -294,7 +294,7 @@ public final class PathTypeConversion {
     }
   }
 
-  /** Convert to type (not nullable) */
+  /** Convert to type */
   public static <T> T toType(Function<String, T> typeConversion, String value) {
     if (isNullOrEmpty(value)) {
       return null;
