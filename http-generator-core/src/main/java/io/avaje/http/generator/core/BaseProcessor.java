@@ -165,21 +165,12 @@ public abstract class BaseProcessor extends AbstractProcessor {
       ElementFilter.methodsIn(type.getEnclosedElements()).stream()
         .filter(m -> m.getSimpleName().contentEquals(factoryMethod)
               && m.getModifiers().contains(Modifier.STATIC)
-              && m.getParameters().size() == 1
-              && firstParamIsString(m))
+              && Util.singleStringParam(m))
         .findAny()
         .ifPresentOrElse(
           c -> TypeMap.add(new CustomHandler(UType.parse(type.asType()), factoryMethod)),
           () -> logError(type, "Missing static factory method %s(String s)", factoryMethod));
     }
-  }
-
-  private static boolean firstParamIsString(ExecutableElement m) {
-    return m.getParameters()
-      .get(0)
-      .asType()
-      .toString()
-      .equals(String.class.getTypeName());
   }
 
   private void readOpenApiDefinition(RoundEnvironment round) {

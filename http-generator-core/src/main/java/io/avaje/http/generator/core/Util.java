@@ -274,13 +274,15 @@ public final class Util {
 
   static Optional<ExecutableElement> stringConstructor(TypeElement typeElement) {
     return ElementFilter.constructorsIn(typeElement.getEnclosedElements()).stream()
-      .filter(m ->
-        m.getParameters().size() == 1
-          && firstParamIsString(m))
+      .filter(Util::singleStringParam)
       .findAny();
   }
 
-  private static boolean firstParamIsString(ExecutableElement m) {
+  static boolean singleStringParam(ExecutableElement m) {
+    return m.getParameters().size() == 1 && firstParamIsString(m);
+  }
+
+  static boolean firstParamIsString(ExecutableElement m) {
     return m.getParameters()
       .get(0)
       .asType()
