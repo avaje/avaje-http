@@ -30,6 +30,7 @@ module io.avaje.http.client {
   requires static com.fasterxml.jackson.core;
   requires static io.avaje.jsonb;
   requires static io.avaje.inject;
+  requires static jdk.httpserver;
 
   exports io.avaje.http.client;
 }
