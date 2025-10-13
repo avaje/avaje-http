@@ -62,8 +62,8 @@ final class OutputStreamBodyPublisher implements HttpRequest.BodyPublisher {
               () -> {
                 try {
                   writer.write(outputStream);
-                } catch (Exception e) {
-                  subscriber.onError(e);
+                } catch (Throwable t) {
+                  subscriber.onError(t);
                 } finally {
                   try {
                     outputStream.close();
