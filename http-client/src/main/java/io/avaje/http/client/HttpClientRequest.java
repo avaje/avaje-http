@@ -429,7 +429,7 @@ public interface HttpClientRequest {
   * @param writer Callback to write data to the request body output stream
   * @return The request being built
   */
-  HttpClientRequest body(OutputStreamWriter writer);
+  HttpClientRequest body(OutputStreamBodyWriter writer);
 
   /**
    * Set the body content using http BodyPublisher.

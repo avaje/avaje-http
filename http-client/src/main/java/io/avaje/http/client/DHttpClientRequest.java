@@ -364,7 +364,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
-  public HttpClientRequest body(OutputStreamWriter writer) {
+  public HttpClientRequest body(OutputStreamBodyWriter writer) {
     this.body =
         new OutputStreamBodyPublisher(writer, context.httpClient().executor().orElseThrow());
     return this;

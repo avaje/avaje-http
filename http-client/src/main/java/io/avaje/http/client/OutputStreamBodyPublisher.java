@@ -22,9 +22,9 @@ final class OutputStreamBodyPublisher implements HttpRequest.BodyPublisher {
   private final int bufferSize;
   private final AtomicBoolean streamClosed = new AtomicBoolean(false);
   private final Executor executor;
-  private final OutputStreamWriter writer;
+  private final OutputStreamBodyWriter writer;
 
-  OutputStreamBodyPublisher(OutputStreamWriter writer, Executor executor) {
+  OutputStreamBodyPublisher(OutputStreamBodyWriter writer, Executor executor) {
     this.bufferSize = 8192;
     this.writer = writer;
     this.outputStream = new PipedOutputStream();
