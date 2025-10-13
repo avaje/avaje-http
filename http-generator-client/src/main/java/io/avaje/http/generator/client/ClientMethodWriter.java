@@ -425,7 +425,8 @@ final class ClientMethodWriter {
       || "java.util.function.Supplier<?extendsjava.io.InputStream>".equals(type)
       || "java.util.function.Supplier<java.io.InputStream>".equals(type)
       || "java.nio.file.Path".equals(type)
-      || "io.avaje.http.client.BodyContent".equals(type);
+      || "io.avaje.http.client.BodyContent".equals(type)
+      || "io.avaje.http.client.OutputStreamWriter".equals(type);
   }
 
   private void writePaths(Set<PathSegments.Segment> segments) {

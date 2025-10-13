@@ -364,6 +364,12 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   @Override
+  public HttpClientRequest body(OutputStreamWriter writer) {
+    this.body = new OutputStreamBodyPublisher(writer, context.httpClient().executor().orElse(null));
+    return this;
+  }
+
+  @Override
   public HttpClientRequest errorMapper(Function<HttpException, RuntimeException> errorMapper) {
     this.errorMapper = errorMapper;
     return this;
