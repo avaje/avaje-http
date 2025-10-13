@@ -13,7 +13,7 @@
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
     <maven.deploy.skip>true</maven.deploy.skip>
-    <swagger.version>2.2.38</swagger.version>
+    <swagger.version>2.2.39</swagger.version>
     <kotlin.version>1.3.71</kotlin.version>
   </properties>
 
