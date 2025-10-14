@@ -49,6 +49,9 @@ public class RequestLogger implements RequestListener {
     this(delimiter, List.of());
   }
 
+  /**
+   * Create with a given line delimiter and set of headers to suppress.
+   */
   public RequestLogger(String delimiter, Collection<String> suppressedHeaders) {
     this.delimiter = delimiter;
     this.suppressedHeaders.add(DHttpClientContext.AUTHORIZATION);
