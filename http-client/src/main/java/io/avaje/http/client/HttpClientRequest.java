@@ -403,6 +403,34 @@ public interface HttpClientRequest {
    */
   HttpClientRequest body(Path file);
 
+
+ /**
+  * Set the body content using a callback that writes to an {@link java.io.OutputStream}.
+  * <p>
+  * This allows streaming large or dynamically generated content directly to the HTTP request body,
+  * without buffering the entire payload in memory. The provided {@code OutputStreamWriter} is called
+  * with an {@link java.io.OutputStream} that writes to the request body. Data written to the stream
+  * is sent as the request body.
+  * <p>
+  * Example usage:
+  * <pre>{@code
+  *   client.request()
+  *     .url("http://example.com/upload")
+  *     .body(outputStream -> {
+  *       // Write data in chunks
+  *       for (byte[] chunk : getChunks()) {
+  *         outputStream.write(chunk);
+  *       }
+  *     })
+  *     .POST()
+  *     .asPlainString();
+  * }</pre>
+  *
+  * @param writer Callback to write data to the request body output stream
+  * @return The request being built
+  */
+  HttpClientRequest body(OutputStreamBodyWriter writer);
+
   /**
    * Set the body content using http BodyPublisher.
    *
