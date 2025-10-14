@@ -10,8 +10,10 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,6 +52,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
 
   private final List<RequestIntercept> interceptors = new ArrayList<>();
   private final List<RequestListener> listeners = new ArrayList<>();
+  private final Set<String> suppressed = new HashSet<>();
 
   private void configureRetryHandler(BeanScope beanScope) {
     beanScope.getOptional(RetryHandler.class)
@@ -170,7 +173,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
     final var httpClient = client != null ? client : defaultClient();
     if (requestLogging) {
       // register the built-in request/response logging
-      this.listeners.add(new RequestLogger());
+      this.listeners.add(new RequestLogger("\n", suppressed));
     }
     if (bodyAdapter == null) {
       bodyAdapter = defaultBodyAdapter();
@@ -314,6 +317,12 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
   @Override
   public HttpClient.Builder priority(int priority) {
     this.priority = priority;
+    return this;
+  }
+
+  @Override
+  public HttpClient.Builder suppressHeader(String header) {
+    this.suppressed.add(header);
     return this;
   }
 

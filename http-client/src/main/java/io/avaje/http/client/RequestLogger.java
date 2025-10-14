@@ -1,14 +1,16 @@
 package io.avaje.http.client;
 
-import io.avaje.applog.AppLog;
-
 import java.lang.System.Logger.Level;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import io.avaje.applog.AppLog;
 
 /**
  * Logs request and response details for debug logging purposes using <code>System.Logger</code>.
@@ -31,6 +33,7 @@ public class RequestLogger implements RequestListener {
   private static final System.Logger log = AppLog.getLogger("io.avaje.http.client.RequestLogger");
 
   private final String delimiter;
+  private final Set<String> suppressedHeaders = new HashSet<>();
 
   /**
    * Create using the {@literal \n} new line character.
@@ -43,7 +46,16 @@ public class RequestLogger implements RequestListener {
    * Create with a given line delimiter.
    */
   public RequestLogger(String delimiter) {
+    this(delimiter, List.of());
+  }
+
+  /**
+   * Create with a given line delimiter and set of headers to suppress.
+   */
+  public RequestLogger(String delimiter, Collection<String> suppressedHeaders) {
     this.delimiter = delimiter;
+    this.suppressedHeaders.add(DHttpClientContext.AUTHORIZATION);
+    this.suppressedHeaders.addAll(suppressedHeaders);
   }
 
   @Override
@@ -91,6 +103,6 @@ public class RequestLogger implements RequestListener {
   }
 
   boolean obfuscate(String key) {
-    return DHttpClientContext.AUTHORIZATION.equals(key);
+    return suppressedHeaders.contains(key);
   }
 }
