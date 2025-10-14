@@ -322,6 +322,13 @@ public interface HttpClient extends AutoCloseable {
     Builder configureWith(BeanScope beanScope);
 
     /**
+     * Suppress logging of the given header name.
+     *
+     * <p>Authorization headers are suppressed by default.
+     */
+    Builder suppressHeader(String header);
+
+    /**
      * Return the state of the builder.
      */
     Builder.State state();
