@@ -50,6 +50,8 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   private final LongAccumulator metricResMaxMicros = new LongAccumulator(Math::max, 0);
   private final Function<HttpException, RuntimeException> errorHandler;
 
+  private boolean closed;
+
   DHttpClientContext(
       java.net.http.HttpClient httpClient,
       String baseUrl,
@@ -86,6 +88,9 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
   @Override
   public HttpClientRequest request() {
+    if (closed) {
+      throw new IllegalStateException("HttpClient is closed");
+    }
     return retryHandler == null
       ? new DHttpClientRequest(this, requestTimeout)
       : new DHttpClientRequestWithRetry(this, requestTimeout, retryHandler);
@@ -389,6 +394,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
   @Override
   public void close() {
+    this.closed = true;
     if (Integer.getInteger("java.specification.version") >= 21) {
       try {
         MethodHandles.lookup()
