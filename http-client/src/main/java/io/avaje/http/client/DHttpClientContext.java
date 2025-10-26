@@ -88,11 +88,9 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
   @Override
   public HttpClientRequest request() {
-
     if (closed) {
       throw new IllegalStateException("HttpClient is closed");
     }
-
     return retryHandler == null
       ? new DHttpClientRequest(this, requestTimeout)
       : new DHttpClientRequestWithRetry(this, requestTimeout, retryHandler);
