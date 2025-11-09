@@ -42,7 +42,7 @@ Use source code generation to adapt annotated REST controllers `@Path, @Get, @Po
 <dependency>
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-{javalin/helidon}-generator</artifactId>
-  <version>${avaje-http.version}</version>
+  <version>${avaje.http.version}</version>
   <scope>provided</scope>
 </dependency>
 ```
