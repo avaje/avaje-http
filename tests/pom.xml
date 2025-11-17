@@ -17,7 +17,7 @@
     <jackson.version>2.20.1</jackson.version>
     <jex.version>3.3</jex.version>
     <avaje-inject.version>12.0</avaje-inject.version>
-    <helidon.version>4.3.1</helidon.version>
+    <helidon.version>4.3.2</helidon.version>
     <javalin.version>6.7.0</javalin.version>
   </properties>
 
