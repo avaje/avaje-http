@@ -31,7 +31,12 @@ import java.util.function.Supplier;
  *
  * @see HttpClient
  */
-public interface HttpClientRequest {
+public interface HttpClientRequest extends Cloneable {
+
+  /**
+   * Return a copy of the HttpClientRequest.
+   */
+  HttpClientRequest clone();
 
   /**
    * For this request skip using an Authorization token.

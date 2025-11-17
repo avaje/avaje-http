@@ -5,12 +5,22 @@ import java.util.Map;
 
 final class DUrlBuilder implements UrlBuilder {
 
-  private final StringBuilder buffer = new StringBuilder(100);
-
+  private final StringBuilder buffer;
   private boolean hasParams;
 
   DUrlBuilder(String base) {
-    buffer.append(base);
+    this.buffer = new StringBuilder(100);
+    this.buffer.append(base);
+  }
+
+  private DUrlBuilder(DUrlBuilder source) {
+    this.hasParams = source.hasParams;
+    this.buffer = new StringBuilder(source.buffer.toString());
+  }
+
+  @Override
+  public UrlBuilder clone() {
+    return new DUrlBuilder(this);
   }
 
   @Override

@@ -24,6 +24,54 @@ class DHttpClientRequestTest {
   }
 
   @Test
+  void clone_expect_deepCopiesOfOriginalRequest() {
+    final DHttpClientRequest request = new DHttpClientRequest(context, Duration.ZERO);
+    request.suppressLogging();
+    request.path("patha");
+    request.queryParam("queryParam", "b");
+    request.header("aheader", "orig");
+    request.body("SomeBody");
+    request.setAttribute("foo", "one");
+    request.formParam("fp", "1");
+    request.formParam("fp", "2");
+
+    HttpClientRequest req0 = request.clone();
+    HttpClientRequest req1 = request.clone();
+
+    request.queryParam("orig", "x");
+    req0.queryParam("req0", "y");
+    req1.queryParam("req1", "z");
+
+    request.header("aheader", "x");
+    req0.header("aheader", "y");
+    req0.formParam("fp2", "5");
+
+    req1.header("aheader", "z");
+    req1.header("req1", "2");
+    req1.setAttribute("bar", "two");
+    req1.formParam("fp", "3");
+
+    assertThat(request.url()).isEqualTo("null/patha?queryParam=b&orig=x");
+    assertThat(req0.url()).isEqualTo("null/patha?queryParam=b&req0=y");
+    assertThat(req1.url()).isEqualTo("null/patha?queryParam=b&req1=z");
+
+    assertThat(request.headers()).containsOnlyKeys("aheader");
+    assertThat(request.header("aheader")).containsOnly("orig", "x");
+
+    assertThat(req0.headers()).containsOnlyKeys("aheader");
+    assertThat(req0.header("aheader")).containsOnly("orig", "y");
+
+    assertThat(req1.headers()).containsOnlyKeys("aheader", "req1");
+    assertThat(req1.header("aheader")).containsOnly("orig", "z");
+
+    assertThat((String)req0.getAttribute("foo")).isEqualTo("one");
+    assertThat((String)req0.getAttribute("bar")).isNull();
+
+    assertThat((String)req1.getAttribute("foo")).isEqualTo("one");
+    assertThat((String)req1.getAttribute("bar")).isEqualTo("two");
+  }
+
+  @Test
   void assertHeader() {
     final var request = new DHttpClientRequest(context, Duration.ZERO);
 
