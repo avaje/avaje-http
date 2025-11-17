@@ -69,6 +69,41 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     this.errorMapper = context.errorMapper();
   }
 
+  private DHttpClientRequest(DHttpClientRequest source) {
+    this.context = source.context;
+    this.url = source.url.clone();
+    this.requestTimeout = source.requestTimeout;
+    this.gzip = source.gzip;
+    this.encodedRequestBody = source.encodedRequestBody;
+    this.body = source.body;
+    this.httpRequest = source.httpRequest;
+    this.bodyFormEncoded = source.bodyFormEncoded;
+    this.loggableResponseBody = source.loggableResponseBody;
+    this.skipAuthToken = source.skipAuthToken;
+    this.suppressLogging = source.suppressLogging;
+    this.label = source.label;
+    this.errorMapper = source.errorMapper;
+    this.isRetry = source.isRetry;
+    this.method = source.method;
+    if (source.formParams != null) {
+      this.formParams = new LinkedHashMap<>();
+      source.formParams.forEach((k,v) -> formParams.put(k, new ArrayList<>(v)));
+    }
+    if (source.headers != null) {
+      this.headers = new LinkedHashMap<>();
+      source.headers.forEach((k,v) -> headers.put(k, new ArrayList<>(v)));
+    }
+    if (source.customAttributes != null) {
+      // note that the values are not being deep copied here
+      this.customAttributes = new HashMap<>(source.customAttributes);
+    }
+  }
+
+  @Override
+  public HttpClientRequest clone() {
+    return new DHttpClientRequest(this);
+  }
+
   @Override
   public String method() {
     return method;

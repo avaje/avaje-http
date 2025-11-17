@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Build a URL typically using a base url and adding path and query parameters.
  */
-public interface UrlBuilder {
+public interface UrlBuilder extends Cloneable {
 
   /**
    * URL encode the value.
@@ -22,6 +22,11 @@ public interface UrlBuilder {
   static UrlBuilder of(String baseUrl) {
     return new DUrlBuilder(baseUrl);
   }
+
+  /**
+   * Return a copy of the UrlBuilder.
+   */
+  UrlBuilder clone();
 
   /**
    * Set the url. This effectively replaces a base url.

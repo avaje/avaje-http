@@ -1053,6 +1053,28 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void post_bean_clone() {
+    final BodyWriter from = clientContext.bodyAdapter().beanWriter(HelloDto.class);
+    final BodyReader<HelloDto> toDto = clientContext.bodyAdapter().beanReader(HelloDto.class);
+
+    final HelloDto dto0 = new HelloDto(12, "rob", "other");
+    HttpClientRequest origReq = clientContext.request()
+      .path("hello")
+      .body(from.write(dto0));
+
+    final HelloDto dto1 = new HelloDto(13, "bor", "rehto");
+    HttpClientRequest copyReq = origReq.clone().body(from.write(dto1));
+
+    var res0 = origReq.POST().read(toDto);
+    var res1 = copyReq.POST().read(toDto);
+
+    assertEquals("posted", res0.name);
+    assertEquals(12, res0.id);
+    assertEquals("posted", res1.name);
+    assertEquals(13, res1.id);
+  }
+
+  @Test
   void post_bean_returningVoid() {
 
     final HelloDto dto = new HelloDto(12, "rob", "other");

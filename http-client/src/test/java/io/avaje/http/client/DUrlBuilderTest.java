@@ -7,6 +7,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DUrlBuilderTest {
 
   @Test
+  void clone_expect_copyOfOriginal() {
+    var uriBuilder = UrlBuilder.of("http://foo")
+      .path("more");
+
+    UrlBuilder copy = uriBuilder.clone();
+    copy.queryParam("a", "a");
+
+    uriBuilder.queryParam("b", "b");
+    assertThat(uriBuilder.build()).isEqualTo("http://foo/more?b=b");
+    assertThat(copy.build()).isEqualTo("http://foo/more?a=a");
+  }
+
+  @Test
+  void clone_hasParams_expect_copyOfOriginal() {
+    var uriBuilder = UrlBuilder.of("http://foo").path("more").queryParam("orig",1);
+
+    UrlBuilder copy = uriBuilder.clone();
+    copy.queryParam("a", "a");
+
+    uriBuilder.queryParam("b", "b");
+    assertThat(uriBuilder.build()).isEqualTo("http://foo/more?orig=1&b=b");
+    assertThat(copy.build()).isEqualTo("http://foo/more?orig=1&a=a");
+  }
+
+  @Test
   void url() {
     var uri = UrlBuilder.of("http://foo")
       .path("more")
