@@ -1666,20 +1666,10 @@
 				}
 			},
 			"Long>" : {
-				"type" : "object",
-				"properties" : {
-					"value" : {
-						"$ref" : "#/components/schemas/T"
-					}
-				}
+				"type" : "object"
 			},
 			"NestedEnum>" : {
-				"type" : "object",
-				"properties" : {
-					"value" : {
-						"$ref" : "#/components/schemas/T"
-					}
-				}
+				"type" : "object"
 			},
 			"Person" : {
 				"type" : "object",
@@ -1694,14 +1684,6 @@
 				}
 			},
 			"String>" : {
-				"type" : "object",
-				"properties" : {
-					"value" : {
-						"$ref" : "#/components/schemas/T"
-					}
-				}
-			},
-			"T" : {
 				"type" : "object"
 			},
 			"ViewHome" : {

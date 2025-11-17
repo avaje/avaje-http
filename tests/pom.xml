@@ -4,7 +4,7 @@
   <parent>
     <artifactId>avaje-http-parent</artifactId>
     <groupId>io.avaje</groupId>
-    <version>3.6-SNAPSHOT</version>
+    <version>3.6-RC1</version>
   </parent>
 
   <artifactId>tests</artifactId>
