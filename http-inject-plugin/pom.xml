@@ -38,6 +38,28 @@
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
+    <dependency>
+      <groupId>io.javalin</groupId>
+      <artifactId>javalin</artifactId>
+      <version>6.7.0</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-jex</artifactId>
+      <version>3.4-RC1</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>io.helidon.webserver</groupId>
+      <artifactId>helidon-webserver</artifactId>
+      <version>4.3.2</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+
   </dependencies>
 
   <build>
