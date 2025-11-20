@@ -1,9 +1,5 @@
 package io.avaje.http.inject;
 
-import static java.util.stream.Collectors.joining;
-
-import java.util.List;
-
 import io.avaje.http.api.AvajeJavalinPlugin;
 import io.avaje.http.api.ValidationException;
 import io.javalin.config.JavalinConfig;
@@ -17,26 +13,7 @@ public class JavalinHandler extends AvajeJavalinPlugin {
 
   private void handler(ValidationException ex, Context ctx) {
 
-    var json = ctx.status(ex.getStatus()).jsonMapper();
-
-    List<ValidationException.Violation> violations = ex.getErrors();
-    if (json == null) {
-      int violationCount = violations.size();
-      String violationList =
-          violations.stream()
-              .map(violation -> "'" + violation.getField() + "' " + violation.getMessage())
-              .collect(joining("\n"));
-
-      // return a plain-text error message
-      ctx.result(
-          String.format(
-              "Bad Request [%s validation violations: \n%s]", violationCount, violationList));
-      return;
-    }
     ctx.contentType("application/problem+json")
-        .result(
-            json.toJsonString(
-                new ValidationResponse(ex.getStatus(), violations, ctx.path()),
-                ValidationResponse.class));
+        .result(new ValidationResponse(ex.getStatus(), ex.getErrors(), ctx.path()).toJson());
   }
 }
