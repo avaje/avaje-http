@@ -7,11 +7,17 @@ import io.avaje.http.api.ValidationException.Violation;
 public class ValidationResponse {
 
   private static String type = "https://avaje.io/http/#bean-validation";
-  private static String title = "Failed Constraints";
-  private List<Violation> errors;
+  private static String title = "Request Failed Validation";
+  private static String detail =
+      "You tried to call this endpoint, but your data failed the vibe check";
+  private final int status;
+  private final List<Violation> errors;
+  private final String instance;
 
-  public ValidationResponse(List<Violation> errors) {
+  public ValidationResponse(int status, List<Violation> errors, String instance) {
+    this.status = status;
     this.errors = errors;
+    this.instance = instance;
   }
 
   public String type() {
@@ -20,6 +26,18 @@ public class ValidationResponse {
 
   public String title() {
     return title;
+  }
+
+  public String detail() {
+    return detail;
+  }
+
+  public String instance() {
+    return instance;
+  }
+
+  public int status() {
+    return status;
   }
 
   public List<Violation> errors() {

@@ -33,6 +33,10 @@ public class JavalinHandler extends AvajeJavalinPlugin {
               "Bad Request [%s validation violations: \n%s]", violationCount, violationList));
       return;
     }
-    ctx.json(new ValidationResponse(violations));
+    ctx.contentType("application/problem+json")
+        .result(
+            json.toJsonString(
+                new ValidationResponse(ex.getStatus(), violations, ctx.path()),
+                ValidationResponse.class));
   }
 }

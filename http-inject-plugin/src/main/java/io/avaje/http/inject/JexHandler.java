@@ -35,6 +35,7 @@ public class JexHandler implements HttpService {
               "Bad Request [%s validation violations: \n%s]", violationCount, violationList));
       return;
     }
-    ctx.json(new ValidationResponse(violations));
+    ctx.contentType("application/problem+json")
+        .write(json.toJsonString(new ValidationResponse(ex.getStatus(), violations, ctx.path())));
   }
 }
