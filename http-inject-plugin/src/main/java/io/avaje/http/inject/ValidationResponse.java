@@ -9,7 +9,7 @@ public class ValidationResponse {
   private static String type = "https://avaje.io/http/#bean-validation";
   private static String title = "Request Failed Validation";
   private static String detail =
-      "You tried to call this endpoint, but your data failed the vibe check";
+      "You tried to call this endpoint, but your data failed validation";
   private final int status;
   private final List<Violation> errors;
   private final String instance;
