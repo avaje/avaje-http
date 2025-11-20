@@ -54,13 +54,13 @@ public final class HttpValidatorHandler implements InjectPlugin {
     }
     switch (type) {
       case HELIDON:
-        builder.bean(HttpFeature.class, new HelidonHandler());
+        builder.provideDefault(HttpFeature.class, HelidonHandler::new);
         break;
       case JAVALIN:
-        builder.bean(AvajeJavalinPlugin.class, new JavalinHandler());
+        builder.provideDefault(AvajeJavalinPlugin.class, JavalinHandler::new);
         break;
       case JEX:
-        builder.bean(HttpService.class, new JexHandler());
+        builder.provideDefault(HttpService.class, JexHandler::new);
         break;
     }
   }
