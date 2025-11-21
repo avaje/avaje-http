@@ -22,31 +22,7 @@ public class ValidationResponse {
     this.errors = errors;
     this.instance = instance;
   }
-
-  public String type() {
-    return type;
-  }
-
-  public String title() {
-    return title;
-  }
-
-  public String detail() {
-    return detail;
-  }
-
-  public String instance() {
-    return instance;
-  }
-
-  public int status() {
-    return status;
-  }
-
-  public List<Violation> errors() {
-    return errors;
-  }
-
+  
   // custom serialize as this is a simple class
   public void toJson(OutputStream os) throws IOException {
     try (Writer writer = new OutputStreamWriter(os, "UTF-8")) {
