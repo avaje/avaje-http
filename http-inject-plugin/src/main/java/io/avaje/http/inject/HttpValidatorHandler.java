@@ -22,9 +22,7 @@ public final class HttpValidatorHandler implements InjectPlugin {
     HELIDON("io.helidon.webserver.http.HttpFeature"),
     JAVALIN("io.javalin.plugin.Plugin"),
     JEX("io.avaje.jex.Routing.HttpService");
-
     String register;
-
     Server(String register) {
       this.register = register;
     }
@@ -33,17 +31,14 @@ public final class HttpValidatorHandler implements InjectPlugin {
   private static final Server type = server();
 
   private static Server server() {
-
     for (var register : Server.values()) {
-
       try {
         Class.forName(register.register);
         return register;
       } catch (ClassNotFoundException e) {
-        continue;
+        // nothing
       }
     }
-
     return null;
   }
 

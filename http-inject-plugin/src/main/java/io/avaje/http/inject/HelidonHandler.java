@@ -11,7 +11,7 @@ import io.helidon.webserver.http.ServerRequest;
 import io.helidon.webserver.http.ServerResponse;
 
 @Weight(-67) // execute first so that it can be overridden by a custom error handler.
-public class HelidonHandler implements HttpFeature {
+final class HelidonHandler implements HttpFeature {
 
   @Override
   public void setup(Builder routing) {

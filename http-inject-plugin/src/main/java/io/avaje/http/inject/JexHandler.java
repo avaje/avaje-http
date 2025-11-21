@@ -8,7 +8,7 @@ import io.avaje.jex.Routing;
 import io.avaje.jex.Routing.HttpService;
 import io.avaje.jex.http.Context;
 
-public class JexHandler implements HttpService {
+final class JexHandler implements HttpService {
 
   @Override
   public void add(Routing arg0) {
