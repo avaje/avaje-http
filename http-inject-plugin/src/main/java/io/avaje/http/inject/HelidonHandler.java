@@ -1,5 +1,8 @@
 package io.avaje.http.inject;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+
 import io.avaje.http.api.ValidationException;
 import io.helidon.webserver.http.HttpFeature;
 import io.helidon.webserver.http.HttpRouting.Builder;
@@ -15,8 +18,13 @@ public class HelidonHandler implements HttpFeature {
   }
 
   private void handle(ServerRequest req, ServerResponse res, ValidationException ex) {
-
-    res.status(ex.getStatus()).header("Content-Type", "application/problem+json")
-        .send(new ValidationResponse(ex.getStatus(), ex.getErrors(), req.path().rawPath()).toJson());
+    try (var os =
+        res.status(ex.getStatus())
+            .header("Content-Type", "application/problem+json")
+            .outputStream()) {
+      new ValidationResponse(ex.getStatus(), ex.getErrors(), req.path().rawPath()).toJson(os);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 }

@@ -1,5 +1,8 @@
 package io.avaje.http.inject;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+
 import io.avaje.http.api.AvajeJavalinPlugin;
 import io.avaje.http.api.ValidationException;
 import io.javalin.config.JavalinConfig;
@@ -12,8 +15,11 @@ public class JavalinHandler extends AvajeJavalinPlugin {
   }
 
   private void handler(ValidationException ex, Context ctx) {
-
-    ctx.contentType("application/problem+json")
-        .result(new ValidationResponse(ex.getStatus(), ex.getErrors(), ctx.path()).toJson());
+    try (var os =
+        ctx.contentType("application/problem+json").status(ex.getStatus()).outputStream()) {
+      new ValidationResponse(ex.getStatus(), ex.getErrors(), ctx.path()).toJson(os);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 }
