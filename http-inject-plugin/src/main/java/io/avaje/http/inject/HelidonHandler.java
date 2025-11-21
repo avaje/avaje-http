@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 import io.avaje.http.api.ValidationException;
+import io.helidon.common.Weight;
 import io.helidon.webserver.http.HttpFeature;
 import io.helidon.webserver.http.HttpRouting.Builder;
 import io.helidon.webserver.http.ServerRequest;
 import io.helidon.webserver.http.ServerResponse;
 
+@Weight(-67) // execute first so that it can be overridden by a custom error handler.
 public class HelidonHandler implements HttpFeature {
 
   @Override
