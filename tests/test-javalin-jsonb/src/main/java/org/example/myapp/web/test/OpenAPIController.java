@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Delete;
+import io.avaje.http.api.Form;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Header;
 import io.avaje.http.api.MediaType;
@@ -105,6 +106,12 @@ public class OpenAPIController {
 
   @Delete("/delete/{type}")
   String testPathParam(String type, @QueryParam String lastName, @QueryParam("q-2") String param2, @Header String contentLength, @Header("x-oh") String otherHeader) {
+    return "only partial info";
+  }
+
+  @Form
+  @Post("/form")
+  String testForm(MyForm form) {
     return "only partial info";
   }
 }
