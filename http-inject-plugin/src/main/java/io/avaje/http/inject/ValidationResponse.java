@@ -10,7 +10,7 @@ import io.avaje.http.api.ValidationException.Violation;
 
 public class ValidationResponse {
 
-  private static String type = "tag:io.avaje.http.api.Validator";
+  private static String type = "tag:io.avaje.http.api.ValidationException";
   private static String title = "Request Failed Validation";
   private static String detail = "You tried to call this endpoint, but your data failed validation";
   private final int status;
