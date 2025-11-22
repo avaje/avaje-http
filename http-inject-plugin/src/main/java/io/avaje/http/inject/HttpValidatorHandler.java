@@ -5,11 +5,9 @@ import io.avaje.inject.BeanScopeBuilder;
 import io.avaje.inject.spi.InjectPlugin;
 import io.avaje.inject.spi.PluginProvides;
 import io.avaje.jex.Routing.HttpService;
-import io.avaje.spi.ServiceProvider;
 import io.helidon.webserver.http.HttpFeature;
 
 /** Plugin for avaje inject that provides a default Validator Handler */
-@ServiceProvider
 @PluginProvides(
     providesStrings = {
       "io.helidon.webserver.http.HttpFeature",
@@ -18,45 +16,19 @@ import io.helidon.webserver.http.HttpFeature;
     })
 public final class HttpValidatorHandler implements InjectPlugin {
 
-  enum Server {
-    HELIDON("io.helidon.webserver.http.HttpFeature"),
-    JAVALIN("io.javalin.plugin.Plugin"),
-    JEX("io.avaje.jex.Routing.HttpService");
-    String register;
-    Server(String register) {
-      this.register = register;
-    }
-  }
-
-  private static final Server type = server();
-
-  private static Server server() {
-    for (var register : Server.values()) {
-      try {
-        Class.forName(register.register);
-        return register;
-      } catch (ClassNotFoundException e) {
-        // nothing
-      }
-    }
-    return null;
-  }
-
   @Override
   public void apply(BeanScopeBuilder builder) {
-    if (type == null) {
-      return;
+    try {
+      builder.provideDefault(HttpFeature.class, HelidonHandler::new);
+    } catch (NoClassDefFoundError e) {
     }
-    switch (type) {
-      case HELIDON:
-        builder.provideDefault(HttpFeature.class, HelidonHandler::new);
-        break;
-      case JAVALIN:
-        builder.provideDefault(AvajeJavalinPlugin.class, JavalinHandler::new);
-        break;
-      case JEX:
-        builder.provideDefault(HttpService.class, JexHandler::new);
-        break;
+    try {
+      builder.provideDefault(AvajeJavalinPlugin.class, JavalinHandler::new);
+    } catch (NoClassDefFoundError e) {
+    }
+    try {
+      builder.provideDefault(HttpService.class, JexHandler::new);
+    } catch (NoClassDefFoundError e) {
     }
   }
 }
