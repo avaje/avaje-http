@@ -19,7 +19,6 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
@@ -54,11 +53,12 @@ public abstract class BaseProcessor extends AbstractProcessor {
   @Override
   public Set<String> getSupportedAnnotationTypes() {
     return Set.of(
-      PathPrism.PRISM_TYPE,
-      ControllerPrism.PRISM_TYPE,
-      OpenAPIDefinitionPrism.PRISM_TYPE,
-      MappedParamPrism.PRISM_TYPE,
-      MapImportPrism.PRISM_TYPE);
+        PathPrism.PRISM_TYPE,
+        ControllerPrism.PRISM_TYPE,
+        OpenAPIDefinitionPrism.PRISM_TYPE,
+        MappedParamPrism.PRISM_TYPE,
+        MapImportPrism.PRISM_TYPE,
+        HttpValidPrism.PRISM_TYPE);
   }
 
   @Override
@@ -91,7 +91,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
     if (round.errorRaised()) {
       return false;
     }
-
+    getElements(round, HttpValidPrism.PRISM_TYPE).forEach(this::warnValid);
     for (final var type : ElementFilter.typesIn(getElements(round, MappedParamPrism.PRISM_TYPE))) {
       var prism = MappedParamPrism.getInstanceOn(type);
       registerParamMapping(type, prism.factoryMethod());
@@ -146,6 +146,12 @@ public abstract class BaseProcessor extends AbstractProcessor {
       }
     }
     return false;
+  }
+
+  private void warnValid(Element e) {
+    if (!ControllerPrism.isPresent(e) && !ControllerPrism.isPresent(e.getEnclosingElement())) {
+      logWarn(e, "%s should only be used in Controller Classes", HttpValidPrism.PRISM_TYPE);
+    }
   }
 
   private Set<? extends Element> getElements(RoundEnvironment round, String name) {
