@@ -32,19 +32,19 @@ public class MethodParam {
   }
 
   public void buildApiDocumentation(MethodDocBuilder methodDoc) {
-    if (elementParam.paramType() != ParamType.BEANPARAM) {
+    if (elementParam.paramType() != ParamType.BEANPARAM && elementParam.paramType() != ParamType.FORM) {
       elementParam.buildApiDocumentation(methodDoc);
     } else {
       asElement(elementParam.element().asType()).getEnclosedElements().stream()
           .filter(e -> e.getKind() == ElementKind.FIELD)
           .map(VariableElement.class::cast)
-          .forEach(e -> buildDoc(methodDoc, e));
+          .forEach(e -> buildDoc(methodDoc, e, elementParam.paramType() == ParamType.FORM));
     }
   }
 
-  private static void buildDoc(MethodDocBuilder methodDoc, VariableElement e) {
+  private static void buildDoc(MethodDocBuilder methodDoc, VariableElement e, boolean form) {
     final var typeMirror = e.asType();
-    new ElementReader(e, Util.parse(typeMirror.toString()), Util.typeDef(typeMirror), ParamType.QUERYPARAM, false)
+    new ElementReader(e, Util.parse(typeMirror.toString()), Util.typeDef(typeMirror), form ? ParamType.FORMPARAM : ParamType.QUERYPARAM, form)
       .buildApiDocumentation(methodDoc);
   }
 

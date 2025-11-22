@@ -1,75 +1,73 @@
 {
-  "openapi" : "3.0.1",
-  "info" : {
-    "title" : "Example service",
-    "description" : "Example Javalin controllers with Java and Maven",
-    "version" : ""
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Example service",
+    "description": "Example Javalin controllers with Java and Maven",
+    "version": ""
   },
-  "servers" : [
+  "servers": [
     {
-      "url" : "localhost:8080",
-      "description" : "local testing"
+      "url": "localhost:8080",
+      "description": "local testing"
     }
   ],
-  "tags" : [
+  "tags": [
     {
-      "name" : "tag1",
-      "description" : "this is added to openapi tags"
+      "name": "tag1",
+      "description": "this is added to openapi tags"
     }
   ],
-  "paths" : {
-    "/openapi/delete/{type}" : {
-      "delete" : {
-        "tags" : [
-
-        ],
-        "summary" : "",
-        "description" : "",
-        "parameters" : [
+  "paths": {
+    "/openapi/delete/{type}": {
+      "delete": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "parameters": [
           {
-            "name" : "type",
-            "in" : "path",
-            "required" : true,
-            "schema" : {
-              "type" : "string"
+            "name": "type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           },
           {
-            "name" : "lastName",
-            "in" : "query",
-            "schema" : {
-              "type" : "string"
+            "name": "lastName",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           },
           {
-            "name" : "q-2",
-            "in" : "query",
-            "schema" : {
-              "type" : "string"
+            "name": "q-2",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           },
           {
-            "name" : "Content-Length",
-            "in" : "header",
-            "schema" : {
-              "type" : "string"
+            "name": "Content-Length",
+            "in": "header",
+            "schema": {
+              "type": "string"
             }
           },
           {
-            "name" : "x-oh",
-            "in" : "header",
-            "schema" : {
-              "type" : "string"
+            "name": "x-oh",
+            "in": "header",
+            "schema": {
+              "type": "string"
             }
           }
         ],
-        "responses" : {
-          "200" : {
-            "description" : "",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "string"
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -77,20 +75,48 @@
         }
       }
     },
-    "/openapi/get" : {
-      "get" : {
-        "tags" : [
-
+    "/openapi/form": {
+      "post": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "parameters": [
+          {
+            "name": "Head-String",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
-        "summary" : "Example of Open API Get (up to the first period is the summary)",
-        "description" : "When using Javalin Context only This Javadoc description is added to the generated openapi.json",
-        "responses" : {
-          "200" : {
-            "description" : "funny phrase (this part of the javadoc is added to the response desc)",
-            "content" : {
-              "text/plain" : {
-                "schema" : {
-                  "type" : "string"
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -98,54 +124,73 @@
         }
       }
     },
-    "/openapi/post" : {
-      "post" : {
-        "tags" : [
+    "/openapi/get": {
+      "get": {
+        "tags": [],
+        "summary": "Example of Open API Get (up to the first period is the summary)",
+        "description": "When using Javalin Context only This Javadoc description is added to the generated openapi.json",
+        "responses": {
+          "200": {
+            "description": "funny phrase (this part of the javadoc is added to the response desc)",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi/post": {
+      "post": {
+        "tags": [
           "tag1"
         ],
-        "summary" : "Standard Post",
-        "description" : "uses tag annotation to add tags to openapi json",
-        "requestBody" : {
-          "description" : "the body (this is used for generated request body desc)",
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/Person"
+        "summary": "Standard Post",
+        "description": "uses tag annotation to add tags to openapi json",
+        "requestBody": {
+          "description": "the body (this is used for generated request body desc)",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Person"
               }
             }
           },
-          "required" : true
+          "required": true
         },
-        "responses" : {
-          "200" : {
-            "description" : "overrides @return javadoc description",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Person"
+        "responses": {
+          "200": {
+            "description": "overrides @return javadoc description",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Person"
                 }
               }
             }
           },
-          "201" : {
-            "description" : "the response body (from javadoc)",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Person"
+          "201": {
+            "description": "the response body (from javadoc)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Person"
                 }
               }
             }
           },
-          "400" : {
-            "description" : "User not found (Will not have an associated response schema)"
+          "400": {
+            "description": "User not found (Will not have an associated response schema)"
           },
-          "500" : {
-            "description" : "Some other Error (Will have this error class as the response class)",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
+          "500": {
+            "description": "Some other Error (Will have this error class as the response class)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -153,79 +198,75 @@
         }
       }
     },
-    "/openapi/post1" : {
-      "post" : {
-        "tags" : [
-
-        ],
-        "summary" : "Standard Post",
-        "description" : "The Deprecated annotation adds \"deprecacted:true\" to the generated json",
-        "requestBody" : {
-          "description" : "the body",
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/Person"
+    "/openapi/post1": {
+      "post": {
+        "tags": [],
+        "summary": "Standard Post",
+        "description": "The Deprecated annotation adds \"deprecacted:true\" to the generated json",
+        "requestBody": {
+          "description": "the body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Person"
                 }
               }
             }
           },
-          "required" : true
+          "required": true
         },
-        "responses" : {
-          "400" : {
-            "description" : "User not found"
-          },
-          "500" : {
-            "description" : "Some other Error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
+        "responses": {
+          "201": {
+            "description": "the response body (from javadoc)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Person"
                 }
               }
             }
           },
-          "201" : {
-            "description" : "the response body (from javadoc)",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Person"
+          "400": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Some other Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
           }
         },
-        "deprecated" : true
+        "deprecated": true
       }
     },
-    "/openapi/put" : {
-      "put" : {
-        "tags" : [
-
-        ],
-        "summary" : "",
-        "description" : "",
-        "responses" : {
-          "204" : {
-            "description" : "",
-            "content" : {
-              "text/plain" : {
-                "schema" : {
-                  "type" : "string"
+    "/openapi/put": {
+      "put": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "responses": {
+          "203": {
+            "description": "",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
           },
-          "203" : {
-            "description" : "",
-            "content" : {
-              "text/plain" : {
-                "schema" : {
-                  "type" : "string"
+          "204": {
+            "description": "",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -234,39 +275,39 @@
       }
     }
   },
-  "components" : {
-    "schemas" : {
-      "ErrorResponse" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string"
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
           },
-          "text" : {
-            "type" : "string"
+          "text": {
+            "type": "string"
           }
         }
       },
-      "Person" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "integer",
-            "format" : "int64",
-            "nullable" : false
+      "Person": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": false
           },
-          "name" : {
-            "type" : "string"
+          "name": {
+            "type": "string"
           }
         }
       }
     },
-    "securitySchemes" : {
-      "JWT" : {
-        "type" : "apiKey",
-        "description" : "JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.",
-        "name" : "access_token",
-        "in" : "query"
+    "securitySchemes": {
+      "JWT": {
+        "type": "apiKey",
+        "description": "JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.",
+        "name": "access_token",
+        "in": "query"
       }
     }
   }
