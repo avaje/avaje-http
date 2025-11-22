@@ -107,6 +107,7 @@ class ControllerMethodWriter {
     Jstachio,
     Templating,
     InputStream,
+    StreamingOutput,
     Other
   }
 
@@ -116,6 +117,9 @@ class ControllerMethodWriter {
     }
     if (isInputStream(method.returnType())) {
       return ResponseMode.InputStream;
+    }
+    if (isStreamingOutput(method.returnType())) {
+      return ResponseMode.StreamingOutput;
     }
     if (producesJson()) {
       return ResponseMode.Json;
@@ -134,6 +138,10 @@ class ControllerMethodWriter {
 
   private boolean isInputStream(TypeMirror type) {
     return isAssignable2Interface(type.toString(), "java.io.InputStream");
+  }
+
+  private boolean isStreamingOutput(TypeMirror type) {
+    return isAssignable2Interface(type.toString(), "io.avaje.http.api.StreamingOutput");
   }
 
   private boolean producesJson() {
@@ -294,9 +302,15 @@ class ControllerMethodWriter {
       case Json -> writeJsonReturn(produces, indent);
       case Text -> writer.append("ctx.text(%s);", resultVariable);
       case Templating -> writer.append("ctx.html(%s);", resultVariable);
+      case StreamingOutput -> writeStreamingOutputReturn(produces, resultVariable, indent);
       default -> writer.append("ctx.contentType(\"%s\").write(%s);", produces, resultVariable);
     }
     writer.eol();
+  }
+
+  private void writeStreamingOutputReturn(String produces, String resultVariable, String indent) {
+    writer.append("ctx.contentType(\"%s\");", produces).eol();
+    writer.append(indent).append("%s.write(ctx.outputStream());", resultVariable);
   }
 
   private void writeJsonReturn(String produces, String indent) {
