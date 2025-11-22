@@ -48,6 +48,7 @@
     <module>http-generator-javalin</module>
     <module>http-generator-sigma</module>
     <module>http-generator-client</module>
+    <module>http-hibernate-validator</module>
   </modules>
 
   <profiles>

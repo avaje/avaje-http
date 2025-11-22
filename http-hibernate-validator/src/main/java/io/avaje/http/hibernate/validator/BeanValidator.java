@@ -1,22 +1,27 @@
 package io.avaje.http.hibernate.validator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import io.avaje.http.api.ValidationException;
 import io.avaje.http.api.ValidationException.Violation;
 import io.avaje.http.api.Validator;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
-import jakarta.validation.ValidatorFactory;
 
 public class BeanValidator implements Validator {
 
-  private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+  private jakarta.validation.Validator validator;
+
+  void postConstruct(jakarta.validation.Validator validator) {
+    this.validator = validator;
+  }
 
   @Override
-  public void validate(Object bean, String acceptLanguage, Class<?>... groups) throws ValidationException {
-    final Set<ConstraintViolation<Object>> violations = factory.getValidator().validate(bean, groups);
+  public void validate(Object bean, String acceptLanguage, Class<?>... groups)
+      throws ValidationException {
+    final Set<ConstraintViolation<Object>> violations = validator.validate(bean, groups);
     if (!violations.isEmpty()) {
       throwExceptionWith(violations);
     }
