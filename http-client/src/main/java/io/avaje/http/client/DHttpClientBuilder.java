@@ -144,29 +144,24 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
    * Create a reasonable default BodyAdapter if avaje-jsonb or Jackson are present.
    */
   private BodyAdapter defaultBodyAdapter() {
-    if (detectJsonb()) {
-      bodyAdapter = new JsonbBodyAdapter();
-    } else if (detectJackson()) {
-      bodyAdapter = new JacksonBodyAdapter();
+    var module = ModuleLayer.boot();
+    if (module.findModule("io.avaje.jsonb").isPresent()) {
+      return new JsonbBodyAdapter();
+    }
+    try {
+      return new JsonbBodyAdapter();
+    } catch (NoClassDefFoundError e) {
+      // I guess it don't exist
+    }
+    if (module.findModule("com.fasterxml.jackson.core").isPresent()) {
+      return new JacksonBodyAdapter();
+    }
+    try {
+      return new JacksonBodyAdapter();
+    } catch (NoClassDefFoundError e) {
+      // I guess it don't exist
     }
     return bodyAdapter;
-  }
-
-  private boolean detectJsonb() {
-    return detectTypeExists("io.avaje.jsonb.Jsonb");
-  }
-
-  private boolean detectJackson() {
-    return detectTypeExists("com.fasterxml.jackson.databind.ObjectMapper");
-  }
-
-  private boolean detectTypeExists(String className) {
-    try {
-      Class.forName(className);
-      return true;
-    } catch (ClassNotFoundException | IllegalAccessError e) {
-      return false;
-    }
   }
 
   private DHttpClientContext buildClient() {
