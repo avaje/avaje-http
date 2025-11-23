@@ -153,7 +153,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
     } catch (NoClassDefFoundError e) {
       // I guess it don't exist
     }
-    if (module.findModule("com.fasterxml.jackson.core").isPresent()) {
+    if (module.findModule("com.fasterxml.jackson.databind").isPresent()) {
       return new JacksonBodyAdapter();
     }
     try {
