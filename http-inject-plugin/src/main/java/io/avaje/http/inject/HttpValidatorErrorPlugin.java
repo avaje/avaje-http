@@ -21,33 +21,36 @@ public final class HttpValidatorErrorPlugin implements InjectPlugin {
 
     ModuleLayer bootLayer = ModuleLayer.boot();
 
-    if (bootLayer.findModule("io.avaje.jex").isPresent()) {
-      builder.provideDefault(HttpService.class, JexHandler::new);
-      return;
-    } else if (bootLayer.findModule("io.helidon.webserver").isPresent()) {
-      builder.provideDefault(HttpFeature.class, HelidonHandler::new);
-      return;
-    } else if (bootLayer.findModule("io.javalin").isPresent()) {
-      builder.provideDefault(AvajeJavalinPlugin.class, JavalinHandler::new);
-      return;
-    }
-
-    try {
-      builder.provideDefault(HttpService.class, JexHandler::new);
-      return;
-    } catch (NoClassDefFoundError e) {
-      // not present
-    }
-    try {
-      builder.provideDefault(HttpFeature.class, HelidonHandler::new);
-      return;
-    } catch (NoClassDefFoundError e) {
-      // not present
-    }
-    try {
-      builder.provideDefault(AvajeJavalinPlugin.class, JavalinHandler::new);
-    } catch (NoClassDefFoundError e) {
-      // not present
-    }
+    bootLayer
+        .findModule("io.avaje.http.plugin")
+        .ifPresentOrElse(
+            m -> {
+              if (bootLayer.findModule("io.avaje.jex").isPresent()) {
+                builder.provideDefault(HttpService.class, JexHandler::new);
+              } else if (bootLayer.findModule("io.helidon.webserver").isPresent()) {
+                builder.provideDefault(HttpFeature.class, HelidonHandler::new);
+              } else if (bootLayer.findModule("io.javalin").isPresent()) {
+                builder.provideDefault(AvajeJavalinPlugin.class, JavalinHandler::new);
+              }
+            },
+            () -> {
+              try {
+                builder.provideDefault(HttpService.class, JexHandler::new);
+                return;
+              } catch (NoClassDefFoundError e) {
+                // not present
+              }
+              try {
+                builder.provideDefault(HttpFeature.class, HelidonHandler::new);
+                return;
+              } catch (NoClassDefFoundError e) {
+                // not present
+              }
+              try {
+                builder.provideDefault(AvajeJavalinPlugin.class, JavalinHandler::new);
+              } catch (NoClassDefFoundError e) {
+                // not present
+              }
+            });
   }
 }
