@@ -164,13 +164,11 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
               } catch (NoClassDefFoundError e) {
                 // I guess it don't exist
               }
-
               try {
                 return new JacksonBodyAdapter();
               } catch (NoClassDefFoundError e) {
-                // I guess it don't exist
+                return bodyAdapter;
               }
-              return bodyAdapter;
             });
     }
 
