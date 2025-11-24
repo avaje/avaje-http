@@ -490,7 +490,23 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/HelloForm"
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string",
+										"nullable" : false
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									},
+									"startDate" : {
+										"type" : "string",
+										"format" : "date"
+									}
+								}
 							}
 						}
 					},
@@ -549,7 +565,23 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/HelloForm"
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string",
+										"nullable" : false
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									},
+									"startDate" : {
+										"type" : "string",
+										"format" : "date"
+									}
+								}
 							}
 						}
 					},
@@ -872,28 +904,6 @@
 					"whenAction" : {
 						"type" : "string",
 						"format" : "date-time"
-					}
-				}
-			},
-			"HelloForm" : {
-				"required" : [
-					"name"
-				],
-				"type" : "object",
-				"properties" : {
-					"name" : {
-						"type" : "string",
-						"nullable" : false
-					},
-					"email" : {
-						"type" : "string"
-					},
-					"url" : {
-						"type" : "string"
-					},
-					"startDate" : {
-						"type" : "string",
-						"format" : "date"
 					}
 				}
 			}

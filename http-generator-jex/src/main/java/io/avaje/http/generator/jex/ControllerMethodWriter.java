@@ -310,7 +310,9 @@ class ControllerMethodWriter {
 
   private void writeStreamingOutputReturn(String produces, String resultVariable, String indent) {
     writer.append("ctx.contentType(\"%s\");", produces).eol();
-    writer.append(indent).append("%s.write(ctx.outputStream());", resultVariable);
+    writer.append(indent).append("java.io.OutputStream ctxOutputStream = ctx.outputStream();").eol();
+    writer.append(indent).append("%s.write(ctxOutputStream);", resultVariable).eol();
+    writer.append(indent).append("ctxOutputStream.flush();", resultVariable);
   }
 
   private void writeJsonReturn(String produces, String indent) {

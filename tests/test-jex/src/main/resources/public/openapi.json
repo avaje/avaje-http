@@ -590,7 +590,23 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/HelloForm"
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string",
+										"nullable" : false
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									},
+									"startDate" : {
+										"type" : "string",
+										"format" : "date"
+									}
+								}
 							}
 						}
 					},
@@ -649,7 +665,23 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/HelloForm"
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string",
+										"nullable" : false
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									},
+									"startDate" : {
+										"type" : "string",
+										"format" : "date"
+									}
+								}
 							}
 						}
 					},
@@ -1345,6 +1377,27 @@
 				}
 			}
 		},
+		"/streamBytes" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/html" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/StreamingOutput"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/test/enumQuery" : {
 			"get" : {
 				"tags" : [
@@ -1615,28 +1668,6 @@
 			"HelloDto>" : {
 				"type" : "object"
 			},
-			"HelloForm" : {
-				"required" : [
-					"name"
-				],
-				"type" : "object",
-				"properties" : {
-					"name" : {
-						"type" : "string",
-						"nullable" : false
-					},
-					"email" : {
-						"type" : "string"
-					},
-					"url" : {
-						"type" : "string"
-					},
-					"startDate" : {
-						"type" : "string",
-						"format" : "date"
-					}
-				}
-			},
 			"HelloWorld" : {
 				"type" : "object",
 				"properties" : {
@@ -1682,6 +1713,9 @@
 						"format" : "date"
 					}
 				}
+			},
+			"StreamingOutput" : {
+				"type" : "object"
 			},
 			"String>" : {
 				"type" : "object"
