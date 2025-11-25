@@ -9,10 +9,9 @@ import java.util.List;
 import io.avaje.http.api.ValidationException.Violation;
 
 public class ValidationResponse {
-
-  private static String type = "tag:io.avaje.http.api.ValidationException";
+  
   private static String title = "Request Failed Validation";
-  private static String detail = "You tried to call this endpoint, but your data failed validation";
+  private static String detail = "You tried to call this endpoint, but a io.avaje.http.api.ValidationException was thrown";
   private final int status;
   private final List<Violation> errors;
   private final String instance;
@@ -32,8 +31,6 @@ public class ValidationResponse {
 
   private void writeJsonInternal(Writer writer) throws IOException {
     writer.write('{');
-    writeKeyValue("type", type, writer);
-    writer.write(',');
     writeKeyValue("title", title, writer);
     writer.write(',');
     writeKeyValue("detail", detail, writer);
