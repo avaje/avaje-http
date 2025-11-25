@@ -12,7 +12,7 @@
     <maven.compiler.release>21</maven.compiler.release>
     <maven.deploy.skip>true</maven.deploy.skip>
     <main.class>org.example.myapp.Main</main.class>
-    <swagger.version>2.2.40</swagger.version>
+    <swagger.version>2.2.41</swagger.version>
   </properties>
 
   <dependencies>
@@ -85,7 +85,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>junit</artifactId>
-      <version>1.6</version>
+      <version>1.7</version>
       <scope>test</scope>
     </dependency>
 
