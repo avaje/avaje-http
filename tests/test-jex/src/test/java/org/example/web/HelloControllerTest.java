@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.http.HttpResponse;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -203,6 +204,21 @@ class HelloControllerTest extends BaseWebTest {
 
     assertThat(res.statusCode()).isEqualTo(200);
     assertThat(res.body()).isEqualTo("takesOptionalString-Optional[foo]");
+  }
+
+  @Test
+  void streamBytesTest() {
+    HttpResponse<String> res = client.request()
+      .path("streamBytes")
+      .GET()
+      .asString();
+
+    Optional<String> contentTypeHeaderValueOptional = res.headers().firstValue("Content-Type");
+
+    assertThat(contentTypeHeaderValueOptional.isPresent()).isEqualTo(true);
+    assertThat(contentTypeHeaderValueOptional.get()).isEqualTo("text/html");
+    assertThat(res.body()).isEqualTo("Avaje");
+    assertThat(res.statusCode()).isEqualTo(200);
   }
 
 }

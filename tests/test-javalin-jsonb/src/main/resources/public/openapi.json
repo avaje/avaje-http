@@ -520,7 +520,23 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/HelloForm"
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string",
+										"nullable" : false
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									},
+									"startDate" : {
+										"type" : "string",
+										"format" : "date"
+									}
+								}
 							}
 						}
 					},
@@ -579,7 +595,23 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/HelloForm"
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string",
+										"nullable" : false
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									},
+									"startDate" : {
+										"type" : "string",
+										"format" : "date"
+									}
+								}
 							}
 						}
 					},
@@ -1017,6 +1049,57 @@
 				],
 				"responses" : {
 					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/openapi/form" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "Head-String",
+						"in" : "header",
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string"
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									}
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
 						"description" : "",
 						"content" : {
 							"application/json" : {
@@ -1653,11 +1736,31 @@
 				],
 				"summary" : "",
 				"description" : "",
+				"parameters" : [
+					{
+						"name" : "Head-String",
+						"in" : "header",
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
 				"requestBody" : {
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/MyForm"
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string"
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									}
+								}
 							}
 						}
 					},
@@ -2238,42 +2341,6 @@
 					"whenAction" : {
 						"type" : "string",
 						"format" : "date-time"
-					}
-				}
-			},
-			"HelloForm" : {
-				"required" : [
-					"name"
-				],
-				"type" : "object",
-				"properties" : {
-					"name" : {
-						"type" : "string",
-						"nullable" : false
-					},
-					"email" : {
-						"type" : "string"
-					},
-					"url" : {
-						"type" : "string"
-					},
-					"startDate" : {
-						"type" : "string",
-						"format" : "date"
-					}
-				}
-			},
-			"MyForm" : {
-				"type" : "object",
-				"properties" : {
-					"name" : {
-						"type" : "string"
-					},
-					"email" : {
-						"type" : "string"
-					},
-					"url" : {
-						"type" : "string"
 					}
 				}
 			},
