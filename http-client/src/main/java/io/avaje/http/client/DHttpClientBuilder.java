@@ -146,31 +146,29 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
   private BodyAdapter defaultBodyAdapter() {
     ModuleLayer bootLayer = ModuleLayer.boot();
     return bootLayer
-        .findModule("io.avaje.http.client")
-        .map(
-            m -> {
-              if (bootLayer.findModule("io.avaje.jsonb").isPresent()) {
-                return new JsonbBodyAdapter();
-              }
-              if (bootLayer.findModule("com.fasterxml.jackson.databind").isPresent()) {
-                return new JacksonBodyAdapter();
-              }
-              return bodyAdapter;
-            })
-        .orElseGet(
-            () -> {
-              try {
-                return new JsonbBodyAdapter();
-              } catch (NoClassDefFoundError e) {
-                // I guess it don't exist
-              }
-              try {
-                return new JacksonBodyAdapter();
-              } catch (NoClassDefFoundError e) {
-                return bodyAdapter;
-              }
-            });
-    }
+      .findModule("io.avaje.http.client")
+      .map(m -> {
+        if (bootLayer.findModule("io.avaje.jsonb").isPresent()) {
+          return new JsonbBodyAdapter();
+        }
+        if (bootLayer.findModule("com.fasterxml.jackson.databind").isPresent()) {
+          return new JacksonBodyAdapter();
+        }
+        return bodyAdapter;
+      })
+      .orElseGet(() -> {
+        try {
+          return new JsonbBodyAdapter();
+        } catch (NoClassDefFoundError e) {
+          // I guess it don't exist
+        }
+        try {
+          return new JacksonBodyAdapter();
+        } catch (NoClassDefFoundError e) {
+          return bodyAdapter;
+        }
+      });
+  }
 
   private DHttpClientContext buildClient() {
     final var httpClient = client != null ? client : defaultClient();
