@@ -42,7 +42,8 @@ final class DHttpApi {
               + type
               + "\nPossible Causes: \n"
               + "1. Missing @Client or @Client.Import annotation.\n"
-              + "2. The avaje-http-client-generator dependency was not available during compilation\n");
+              + "2. The avaje-http-client-generator dependency was not available during compilation\n"
+              + "3. Using JDK 23+, and need to set property <maven.compiler.proc>full</maven.compiler.proc>\n");
     }
     return apiProvider.provide(httpClient);
   }
