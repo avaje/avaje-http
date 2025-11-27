@@ -17,6 +17,7 @@ import javax.lang.model.type.TypeMirror;
  */
 final class ControllerMethodWriter {
 
+  private static final String FILTER_CHAIN = "FilterChain";
   private static final Map<Integer,String> statusMap = new HashMap<>();
   static {
     statusMap.put(200, "OK_200");
@@ -78,7 +79,7 @@ final class ControllerMethodWriter {
   }
 
   private void validateMethod() {
-    if (method.params().stream().map(MethodParam::shortType).noneMatch("FilterChain"::equals)) {
+    if (method.params().stream().map(MethodParam::shortType).noneMatch(FILTER_CHAIN::equals)) {
       logError(method.element(), "Filters must contain a FilterChain Parameter");
     }
   }
@@ -223,7 +224,7 @@ final class ControllerMethodWriter {
       final var param = params.get(i);
       if (isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")) {
         writer.append("ex");
-      } else if ("FilterChain".equals(param.shortType())) {
+      } else if (FILTER_CHAIN.equals(param.shortType())) {
         writer.append("chain");
       } else {
         param.buildParamName(writer);
@@ -242,34 +243,42 @@ final class ControllerMethodWriter {
         writer.append("      res.status(NO_CONTENT_204).send();").eol();
         writer.append("    } else {").eol();
       }
+      final var uType = UType.parse(method.returnType());
       String indent = includeNoContent ? "      " : "    ";
-      if (responseMode == ResponseMode.Templating) {
-        writer.append(indent).append("var content = renderer.render(result);").eol();
-        if (withContentCache) {
-          writer.append(indent).append("contentCache.contentPut(key, content);").eol();
-        }
-        writeContextReturn(indent);
-        writer.append(indent).append("res.send(content);").eol();
-
-      } else if (responseMode == ResponseMode.Jstachio) {
-        var renderer = ProcessingContext.jstacheRenderer(method.returnType());
-        writer.append(indent).append("var content = %s(result);", renderer).eol();
-        writeContextReturn(indent);
-        writer.append(indent).append("res.send(content);").eol();
-
-      } else {
-        final var uType = UType.parse(method.returnType());
-        writeContextReturn(indent, streamingResponse(uType));
-        if (responseMode == ResponseMode.InputStream) {
-          writer.append(indent).append("result.transferTo(res.outputStream());", uType.shortName()).eol();
-        } else if (responseMode == ResponseMode.Json) {
-          if (returnTypeString()) {
-            writer.append(indent).append("res.send(result); // send raw JSON").eol();
-          } else {
-            writer.append(indent).append("%sJsonType.toJson(result, JsonOutput.of(res));", uType.shortName()).eol();
+      switch (responseMode) {
+        case ResponseMode.Templating -> {
+          writer.append(indent).append("var content = renderer.render(result);").eol();
+          if (withContentCache) {
+            writer.append(indent).append("contentCache.contentPut(key, content);").eol();
           }
-        } else {
-          writer.append(indent).append("res.send(result);").eol();
+          writeContextReturn(indent);
+          writer.append(indent).append("res.send(content);").eol();
+
+        }
+        case ResponseMode.Jstachio -> {
+          var renderer = ProcessingContext.jstacheRenderer(method.returnType());
+          writer.append(indent).append("var content = %s(result);", renderer).eol();
+          writeContextReturn(indent);
+          writer.append(indent).append("res.send(content);").eol();
+
+        }
+        case ResponseMode.StreamingOutput -> {
+          writeContextReturn(indent, streamingResponse(uType));
+          writeStreamingOutputReturn(indent);
+        }
+        default -> {
+          writeContextReturn(indent, streamingResponse(uType));
+          if (responseMode == ResponseMode.InputStream) {
+            writer.append(indent).append("result.transferTo(res.outputStream());", uType.shortName()).eol();
+          } else if (responseMode == ResponseMode.Json) {
+            if (returnTypeString()) {
+              writer.append(indent).append("res.send(result); // send raw JSON").eol();
+            } else {
+              writer.append(indent).append("%sJsonType.toJson(result, JsonOutput.of(res));", uType.shortName()).eol();
+            }
+          } else {
+            writer.append(indent).append("res.send(result);").eol();
+          }
         }
       }
       if (includeNoContent) {
@@ -279,8 +288,14 @@ final class ControllerMethodWriter {
     writer.append("  }").eol().eol();
   }
 
+  private void writeStreamingOutputReturn(String indent) {
+    writer.append(indent).append("try (var responseOutputStream = res.outputStream()) {").eol();
+    writer.append(indent).append(indent).append("result.write(responseOutputStream);").eol();
+    writer.append(indent).append("}").eol();
+  }
+
   private static boolean streamingResponse(UType uType) {
-    return uType.mainType().equals("java.util.stream.Stream");
+    return "java.util.stream.Stream".equals(uType.mainType());
   }
 
   enum ResponseMode {
@@ -289,6 +304,7 @@ final class ControllerMethodWriter {
     Jstachio,
     Templating,
     InputStream,
+    StreamingOutput,
     Other
   }
 
@@ -298,6 +314,9 @@ final class ControllerMethodWriter {
     }
     if (isInputStream(method.returnType())) {
       return ResponseMode.InputStream;
+    }
+    if (isStreamingOutput(method.returnType())) {
+      return ResponseMode.StreamingOutput;
     }
     if (producesJson()) {
       return ResponseMode.Json;
@@ -323,7 +342,7 @@ final class ControllerMethodWriter {
 
   private static boolean isExceptionOrFilterChain(MethodParam param) {
     return isAssignable2Interface(param.utype().mainType(), "java.lang.Exception")
-      || "FilterChain".equals(param.shortType());
+      || FILTER_CHAIN.equals(param.shortType());
   }
 
   private boolean isInputStream(TypeMirror type) {
@@ -419,5 +438,9 @@ final class ControllerMethodWriter {
 
   public void buildApiDocumentation() {
     method.buildApiDoc();
+  }
+
+  private boolean isStreamingOutput(TypeMirror type) {
+    return isAssignable2Interface(type.toString(), "io.avaje.http.api.StreamingOutput");
   }
 }

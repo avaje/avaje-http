@@ -678,6 +678,27 @@
 				}
 			}
 		},
+		"/hello/streamBytes" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"text/html" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/StreamingOutput"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/hello/takesNestedEnum" : {
 			"get" : {
 				"tags" : [
@@ -2356,6 +2377,9 @@
 						"type" : "string"
 					}
 				}
+			},
+			"StreamingOutput" : {
+				"type" : "object"
 			},
 			"String,?>" : {
 				"type" : "object"
