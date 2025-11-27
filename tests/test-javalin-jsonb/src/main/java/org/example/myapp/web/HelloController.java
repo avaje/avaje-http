@@ -9,6 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
 import org.example.myapp.service.MyService;
+import org.example.myapp.web.other.Foo;
 
 import io.avaje.http.api.BeanParam;
 import io.avaje.http.api.Controller;
@@ -21,11 +22,11 @@ import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.QueryParam;
+import io.avaje.http.api.StreamingOutput;
 import io.avaje.http.api.Valid;
 import io.javalin.http.Context;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.inject.Inject;
-import org.example.myapp.web.other.Foo;
 
 /**
  * Hello resource manager.
@@ -152,7 +153,7 @@ class HelloController {
       // This also helps ensure that we aren't just getting lucky with timings.
       try {
         Thread.sleep(10L);
-      } catch (InterruptedException e) {
+      } catch (final InterruptedException e) {
         throw new RuntimeException(e);
       }
 
@@ -189,5 +190,13 @@ class HelloController {
   @Get("takesNestedEnum")
   String takesNestedEnum(Foo.NestedEnum myEnum) {
     return "takesNestedEnum-" + myEnum;
+  }
+
+  @Get("streamBytes")
+  @Produces(value = "text/html", statusCode = 200)
+  StreamingOutput streamBytes() {
+    return outputStream -> outputStream.write(new byte[]{
+      0x41, 0x76, 0x61, 0x6a, 0x65
+    });
   }
 }

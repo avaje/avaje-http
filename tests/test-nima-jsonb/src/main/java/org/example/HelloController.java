@@ -15,6 +15,7 @@ import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
 import io.avaje.http.api.QueryParam;
+import io.avaje.http.api.StreamingOutput;
 import io.avaje.http.api.Valid;
 import io.helidon.common.media.type.MediaTypes;
 import io.helidon.webserver.http.ServerRequest;
@@ -163,5 +164,11 @@ public class HelloController {
   @Get("/bigInt/{val}")
   String testBigInt(BigInteger val, BigInteger someQueryParam) {
     return "hi|" + val;
+  }
+
+  @Get("streamBytes")
+  @Produces(value = "text/html", statusCode = 200)
+  StreamingOutput streamBytes() {
+    return outputStream -> outputStream.write(new byte[] {0x41, 0x76, 0x61, 0x6a, 0x65});
   }
 }
