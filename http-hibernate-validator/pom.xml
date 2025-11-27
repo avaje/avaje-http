@@ -9,6 +9,7 @@
   </parent>
   
   <artifactId>avaje-http-hibernate-validator</artifactId>
+  <name>avaje-http-hibernate-validator</name>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
