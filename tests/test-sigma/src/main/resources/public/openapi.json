@@ -520,7 +520,23 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/HelloForm"
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string",
+										"nullable" : false
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									},
+									"startDate" : {
+										"type" : "string",
+										"format" : "date"
+									}
+								}
 							}
 						}
 					},
@@ -579,7 +595,23 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/HelloForm"
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string",
+										"nullable" : false
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									},
+									"startDate" : {
+										"type" : "string",
+										"format" : "date"
+									}
+								}
 							}
 						}
 					},
@@ -1516,7 +1548,18 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/MyForm"
+								"type" : "object",
+								"properties" : {
+									"name" : {
+										"type" : "string"
+									},
+									"email" : {
+										"type" : "string"
+									},
+									"url" : {
+										"type" : "string"
+									}
+								}
 							}
 						}
 					},
@@ -2026,28 +2069,6 @@
 					}
 				}
 			},
-			"HelloForm" : {
-				"required" : [
-					"name"
-				],
-				"type" : "object",
-				"properties" : {
-					"name" : {
-						"type" : "string",
-						"nullable" : false
-					},
-					"email" : {
-						"type" : "string"
-					},
-					"url" : {
-						"type" : "string"
-					},
-					"startDate" : {
-						"type" : "string",
-						"format" : "date"
-					}
-				}
-			},
 			"HelloWorld" : {
 				"type" : "object",
 				"properties" : {
@@ -2073,20 +2094,6 @@
 						"items" : {
 							"$ref" : "#/components/schemas/Person"
 						}
-					}
-				}
-			},
-			"MyForm" : {
-				"type" : "object",
-				"properties" : {
-					"name" : {
-						"type" : "string"
-					},
-					"email" : {
-						"type" : "string"
-					},
-					"url" : {
-						"type" : "string"
 					}
 				}
 			},

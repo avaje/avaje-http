@@ -10,6 +10,7 @@ import io.avaje.http.api.Path;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.Put;
 import io.avaje.http.api.Valid;
+import io.avaje.http.api.StreamingOutput;
 import io.avaje.jex.http.Context;
 
 // @Roles(AppRoles.BASIC_USER)
@@ -76,5 +77,13 @@ public class HelloController {
   @Get("rawJson")
   String rawJsonString() {
     return "{\"key\": 42 }";
+  }
+
+  @Get("streamBytes")
+  @Produces(value = "text/html", statusCode = 200)
+  StreamingOutput streamBytes() {
+    return outputStream -> outputStream.write(new byte[]{
+      0x41, 0x76, 0x61, 0x6a, 0x65
+    });
   }
 }

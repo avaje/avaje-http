@@ -159,10 +159,19 @@ class ControllerMethodWriter {
       produces = MediaType.TEXT_HTML.getValue();
     }
 
+    var uType = UType.parse(method.returnType());
+
     boolean applicationJson = produces == null || MediaType.APPLICATION_JSON.getValue().equalsIgnoreCase(produces);
-    if (applicationJson || JsonBUtil.isJsonMimeType(produces)) {
+
+    if (isAssignable2Interface(uType.mainType(), "io.avaje.http.api.StreamingOutput")) {
+      writer.append("      ctx.contentType(\"%s\");", produces).eol();
+      writer.append("      try (var ctxOutputStream = ctx.outputStream()) {").eol();
+      writer.append("            %s.write(ctxOutputStream);", resultVariableName).eol();
+      writer.append("      } catch (java.io.IOException e) {").eol();
+      writer.append("            throw new java.io.UncheckedIOException(e);").eol();
+      writer.append("      }").eol();
+    } else if (applicationJson || JsonBUtil.isJsonMimeType(produces)) {
       if (useJsonB) {
-        var uType = UType.parse(method.returnType());
         final boolean isfuture = "java.util.concurrent.CompletableFuture".equals(uType.mainType());
         if (isfuture || method.isErrorMethod()) {
           if (isfuture) {
