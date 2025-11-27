@@ -15,15 +15,14 @@ final class HelidonHandler implements HttpFeature {
 
   @Override
   public void setup(Builder routing) {
-
     routing.error(ValidationException.class, this::handle);
   }
 
   private void handle(ServerRequest req, ServerResponse res, ValidationException ex) {
     try (var os =
-        res.status(ex.getStatus())
-            .header("Content-Type", "application/problem+json")
-            .outputStream()) {
+           res.status(ex.getStatus())
+             .header("Content-Type", "application/problem+json")
+             .outputStream()) {
       new ValidationResponse(ex.getStatus(), ex.getErrors(), req.path().rawPath()).toJson(os);
     } catch (IOException e) {
       throw new UncheckedIOException(e);

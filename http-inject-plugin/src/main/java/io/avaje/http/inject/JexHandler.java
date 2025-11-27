@@ -16,7 +16,6 @@ final class JexHandler implements HttpService {
   }
 
   private void handler(Context ctx, ValidationException ex) {
-
     try (var os =
         ctx.contentType("application/problem+json").status(ex.getStatus()).outputStream()) {
       new ValidationResponse(ex.getStatus(), ex.getErrors(), ctx.path()).toJson(os);

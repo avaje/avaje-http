@@ -4,27 +4,28 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import io.avaje.http.api.ValidationException.Violation;
 
-public class ValidationResponse {
-  
-  private static String title = "Request Failed Validation";
-  private static String detail = "You tried to call this endpoint, but a io.avaje.http.api.ValidationException was thrown";
+final class ValidationResponse {
+
+  private static final String title = "Request Failed Validation";
+  private static final String detail = "You tried to call this endpoint, but a io.avaje.http.api.ValidationException was thrown";
   private final int status;
   private final List<Violation> errors;
   private final String instance;
 
-  public ValidationResponse(int status, List<Violation> errors, String instance) {
+  ValidationResponse(int status, List<Violation> errors, String instance) {
     this.status = status;
     this.errors = errors;
     this.instance = instance;
   }
-  
+
   // custom serialize as this is a simple class
-  public void toJson(OutputStream os) throws IOException {
-    try (Writer writer = new OutputStreamWriter(os, "UTF-8")) {
+  void toJson(OutputStream os) throws IOException {
+    try (Writer writer = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
       writeJsonInternal(writer);
     }
   }

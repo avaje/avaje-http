@@ -7,50 +7,49 @@ import io.avaje.inject.spi.PluginProvides;
 import io.avaje.jex.Routing.HttpService;
 import io.helidon.webserver.http.HttpFeature;
 
-/** Plugin for avaje inject that provides a default Validator Handler */
+/**
+ * Plugin for avaje inject that provides a default Validator Handler
+ */
 @PluginProvides(
-    providesStrings = {
-      "io.helidon.webserver.http.HttpFeature",
-      "io.avaje.http.api.AvajeJavalinPlugin",
-      "io.avaje.jex.Routing.HttpService",
-    })
+  providesStrings = {
+    "io.helidon.webserver.http.HttpFeature",
+    "io.avaje.http.api.AvajeJavalinPlugin",
+    "io.avaje.jex.Routing.HttpService",
+  })
 public final class HttpValidatorErrorPlugin implements InjectPlugin {
 
   @Override
   public void apply(BeanScopeBuilder builder) {
-
     ModuleLayer bootLayer = ModuleLayer.boot();
 
-    bootLayer
-        .findModule("io.avaje.http.plugin")
-        .ifPresentOrElse(
-            m -> {
-              if (bootLayer.findModule("io.avaje.jex").isPresent()) {
-                builder.provideDefault(HttpService.class, JexHandler::new);
-              } else if (bootLayer.findModule("io.helidon.webserver").isPresent()) {
-                builder.provideDefault(HttpFeature.class, HelidonHandler::new);
-              } else if (bootLayer.findModule("io.javalin").isPresent()) {
-                builder.provideDefault(AvajeJavalinPlugin.class, JavalinHandler::new);
-              }
-            },
-            () -> {
-              try {
-                builder.provideDefault(HttpService.class, JexHandler::new);
-                return;
-              } catch (NoClassDefFoundError e) {
-                // not present
-              }
-              try {
-                builder.provideDefault(HttpFeature.class, HelidonHandler::new);
-                return;
-              } catch (NoClassDefFoundError e) {
-                // not present
-              }
-              try {
-                builder.provideDefault(AvajeJavalinPlugin.class, JavalinHandler::new);
-              } catch (NoClassDefFoundError e) {
-                // not present
-              }
-            });
+    bootLayer.findModule("io.avaje.http.plugin")
+      .ifPresentOrElse(m -> {
+          if (bootLayer.findModule("io.avaje.jex").isPresent()) {
+            builder.provideDefault(HttpService.class, JexHandler::new);
+          } else if (bootLayer.findModule("io.helidon.webserver").isPresent()) {
+            builder.provideDefault(HttpFeature.class, HelidonHandler::new);
+          } else if (bootLayer.findModule("io.javalin").isPresent()) {
+            builder.provideDefault(AvajeJavalinPlugin.class, JavalinHandler::new);
+          }
+        },
+        () -> {
+          try {
+            builder.provideDefault(HttpService.class, JexHandler::new);
+            return;
+          } catch (NoClassDefFoundError e) {
+            // not present
+          }
+          try {
+            builder.provideDefault(HttpFeature.class, HelidonHandler::new);
+            return;
+          } catch (NoClassDefFoundError e) {
+            // not present
+          }
+          try {
+            builder.provideDefault(AvajeJavalinPlugin.class, JavalinHandler::new);
+          } catch (NoClassDefFoundError e) {
+            // not present
+          }
+        });
   }
 }

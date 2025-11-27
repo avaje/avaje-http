@@ -9,6 +9,7 @@ import io.javalin.config.JavalinConfig;
 import io.javalin.http.Context;
 
 final class JavalinHandler extends AvajeJavalinPlugin {
+
   @Override
   public void onStart(JavalinConfig config) {
     config.router.mount(r -> r.exception(ValidationException.class, this::handler));
