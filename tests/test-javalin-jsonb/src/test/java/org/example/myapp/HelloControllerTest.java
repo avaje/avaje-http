@@ -1,22 +1,27 @@
 package org.example.myapp;
 
-import io.avaje.http.client.*;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
-import org.example.myapp.web.HelloDto;
-import org.junit.jupiter.api.Test;
-
-import java.net.http.HttpResponse;
-import java.util.List;
-import java.util.Map;
-
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.net.http.HttpResponse;
+import java.util.List;
+import java.util.Optional;
+
+import org.example.myapp.web.HelloDto;
+import org.junit.jupiter.api.Test;
+
+import io.avaje.http.client.BodyReader;
+import io.avaje.http.client.BodyWriter;
+import io.avaje.http.client.HttpClient;
+import io.avaje.http.client.HttpException;
+import io.avaje.http.client.JacksonBodyAdapter;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 
 class HelloControllerTest extends BaseWebTest {
 
@@ -45,7 +50,7 @@ class HelloControllerTest extends BaseWebTest {
   @Test
   void hello2() {
 
-    TypeRef<List<HelloDto>> listDto = new TypeRef<>() { };
+    final TypeRef<List<HelloDto>> listDto = new TypeRef<>() { };
     final List<HelloDto> beans = given()
       .get(baseUrl + "/hello")
       .then()
@@ -64,7 +69,7 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void helloAsyncRequestHandling() {
-    TypeRef<List<HelloDto>> listDto = new TypeRef<>() { };
+    final TypeRef<List<HelloDto>> listDto = new TypeRef<>() { };
     final List<HelloDto> beans = given()
       .get(baseUrl + "/hello/async")
       .then()
@@ -106,7 +111,7 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void postIt() {
-    HelloDto dto = new HelloDto(12, "rob", "other");
+    final HelloDto dto = new HelloDto(12, "rob", "other");
 
     given().body(dto).post(baseUrl + "/hello")
       .then()
@@ -129,7 +134,7 @@ class HelloControllerTest extends BaseWebTest {
 
   @Test
   void saveBean() {
-    HelloDto dto = new HelloDto(12, "rob", "other");
+    final HelloDto dto = new HelloDto(12, "rob", "other");
 
     given().body(dto).post(baseUrl + "/hello/savebean/foo")
       .then()
@@ -217,7 +222,7 @@ class HelloControllerTest extends BaseWebTest {
         .POST()
         .asVoid();
 
-    } catch (HttpException e) {
+    } catch (final HttpException e) {
       assertEquals(422, e.statusCode());
 
       final HttpResponse<?> httpResponse = e.httpResponse();
@@ -331,4 +336,18 @@ class HelloControllerTest extends BaseWebTest {
     assertEquals("controlStatusCode", hres.body());
   }
 
+  @Test
+  void streamBytesTest() {
+    final HttpResponse<String> res = client.request()
+      .path("hello/streamBytes")
+      .GET()
+      .asString();
+
+    final Optional<String> contentTypeHeaderValueOptional = res.headers().firstValue("Content-Type");
+
+    assertThat(contentTypeHeaderValueOptional.isPresent()).isEqualTo(true);
+   // assertThat(contentTypeHeaderValueOptional.get()).isEqualTo("text/html");
+    assertThat(res.body()).isEqualTo("Avaje");
+    assertThat(res.statusCode()).isEqualTo(200);
+  }
 }

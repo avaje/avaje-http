@@ -310,9 +310,9 @@ class ControllerMethodWriter {
 
   private void writeStreamingOutputReturn(String produces, String resultVariable, String indent) {
     writer.append("ctx.contentType(\"%s\");", produces).eol();
-    writer.append(indent).append("try (java.io.OutputStream ctxOutputStream = ctx.outputStream()) {").eol();
+    writer.append(indent).append("try (var ctxOutputStream = ctx.outputStream()) {").eol();
     writer.append(indent).append(indent).append("%s.write(ctxOutputStream);", resultVariable).eol();
-    writer.append(indent).append("}", resultVariable);
+    writer.append(indent).append("}");
   }
 
   private void writeJsonReturn(String produces, String indent) {
@@ -340,7 +340,7 @@ class ControllerMethodWriter {
   }
 
   private static boolean streamingContent(UType uType) {
-    return uType.mainType().equals("java.util.stream.Stream");
+    return "java.util.stream.Stream".equals(uType.mainType());
   }
 
   private static boolean isExceptionOrFilterChain(MethodParam param) {

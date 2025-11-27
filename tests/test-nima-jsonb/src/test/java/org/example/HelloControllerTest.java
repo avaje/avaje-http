@@ -1,13 +1,15 @@
 package org.example;
 
-import io.avaje.http.client.HttpClient;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
+
+import io.avaje.http.client.HttpClient;
 
 public class HelloControllerTest {
 
@@ -52,5 +54,17 @@ public class HelloControllerTest {
     String contentType = res.headers().firstValue("Content-Type").orElse("Junk");
     assertThat(res.body()).isEqualTo("{\"id\":42,\"name\":\"ignoreMe\"}\n{\"id\":43,\"name\":\"bar\"}\n{\"id\":44,\"name\":\"baz\"}\n{\"id\":44,\"name\":\"bax\"}\n\n");
     assertThat(contentType).isEqualTo("application/stream+json");
+  }
+
+  @Test
+  void streamBytesTest() {
+    HttpResponse<String> res = client.request().path("streamBytes").GET().asString();
+
+    Optional<String> contentTypeHeaderValueOptional = res.headers().firstValue("Content-Type");
+
+    assertThat(contentTypeHeaderValueOptional.isPresent()).isEqualTo(true);
+    assertThat(contentTypeHeaderValueOptional.get()).isEqualTo("text/html");
+    assertThat(res.body()).isEqualTo("Avaje");
+    assertThat(res.statusCode()).isEqualTo(200);
   }
 }
