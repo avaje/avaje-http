@@ -265,7 +265,7 @@ final class ControllerMethodWriter {
         case ResponseMode.StreamingOutput -> {
           writeContextReturn(indent, streamingResponse(uType));
           writeStreamingOutputReturn(indent);
-		}
+        }
         default -> {
           writeContextReturn(indent, streamingResponse(uType));
           if (responseMode == ResponseMode.InputStream) {
@@ -289,8 +289,8 @@ final class ControllerMethodWriter {
   }
 
   private void writeStreamingOutputReturn(String indent) {
-    writer.append(indent).append("try (var heliOs = res.outputStream()) {").eol();
-    writer.append(indent).append(indent).append("result.write(heliOs);").eol();
+    writer.append(indent).append("try (var responseOutputStream = res.outputStream()) {").eol();
+    writer.append(indent).append(indent).append("result.write(responseOutputStream);").eol();
     writer.append(indent).append("}").eol();
   }
 
@@ -316,8 +316,8 @@ final class ControllerMethodWriter {
       return ResponseMode.InputStream;
     }
     if (isStreamingOutput(method.returnType())) {
-        return ResponseMode.StreamingOutput;
-      }
+      return ResponseMode.StreamingOutput;
+    }
     if (producesJson()) {
       return ResponseMode.Json;
     }
