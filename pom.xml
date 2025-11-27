@@ -44,7 +44,6 @@
     <module>http-client</module>
     <module>http-client-gson-adapter</module>
     <module>http-client-moshi-adapter</module>
-    <module>http-inject-plugin</module>
     <module>http-generator-core</module>
     <module>http-generator-javalin</module>
     <module>http-generator-sigma</module>
@@ -68,6 +67,7 @@
         <jdk>[21,)</jdk>
       </activation>
       <modules>
+        <module>http-inject-plugin</module>
         <module>htmx-nima</module>
         <module>htmx-nima-jstache</module>
         <module>http-generator-helidon</module>
