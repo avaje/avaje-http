@@ -39,6 +39,8 @@ public class ClientProcessor extends AbstractProcessor {
 
   private SimpleComponentWriter componentWriter;
   private boolean readModuleInfo;
+  private boolean generateComponent;
+  private int rounds;
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
@@ -56,6 +58,10 @@ public class ClientProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+    if (generateComponent || round.errorRaised()) {
+      return false;
+    }
+    generateComponent = rounds++ > 0;
     APContext.setProjectModuleElement(annotations, round);
     final var platform = platform();
     if (!(platform instanceof ClientPlatformAdapter)) {
@@ -65,13 +71,15 @@ public class ClientProcessor extends AbstractProcessor {
     for (final Element controller : round.getElementsAnnotatedWith(typeElement(ClientPrism.PRISM_TYPE))) {
       if (ClientPrism.getInstanceOn(controller).generate()) {
         writeClient(controller);
+        generateComponent = false;
       }
     }
     for (final var importedElement : round.getElementsAnnotatedWith(typeElement(ImportPrism.PRISM_TYPE))) {
       writeForImported(importedElement);
+      generateComponent = false;
     }
 
-    writeComponent(round.processingOver());
+    writeComponent(generateComponent);
     setPlatform(platform);
     return false;
   }
