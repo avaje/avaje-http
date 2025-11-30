@@ -5,10 +5,11 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.6-RC1</version>
+    <version>3.6-RC2</version>
   </parent>
   
   <artifactId>avaje-http-hibernate-validator</artifactId>
+  <name>avaje-http-hibernate-validator</name>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
@@ -32,7 +33,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>3.6-RC1</version>
+      <version>3.6-RC2</version>
       <scope>provided</scope>
     </dependency>
 
