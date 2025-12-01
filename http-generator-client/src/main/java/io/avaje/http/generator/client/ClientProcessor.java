@@ -5,12 +5,16 @@ import static io.avaje.http.generator.core.ProcessingContext.logError;
 import static io.avaje.http.generator.core.ProcessingContext.platform;
 import static io.avaje.http.generator.core.ProcessingContext.setPlatform;
 import static io.avaje.http.generator.core.ProcessingContext.typeElement;
+import static java.util.stream.Collectors.joining;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -54,6 +58,24 @@ public class ClientProcessor extends AbstractProcessor {
     APContext.init(processingEnv);
     ProcessingContext.init(processingEnv, new ClientPlatformAdapter(), false);
     this.componentWriter = new SimpleComponentWriter(metaData);
+
+    try {
+      var file = APContext.getBuildResource("avaje-processors.txt");
+      var addition = new StringBuilder();
+      if (file.toFile().exists()) {
+        var result =
+            Stream.concat(Files.lines(file), Stream.of("avaje-http-client-generator"))
+                .distinct()
+                .collect(joining("\n"));
+        addition.append(result);
+      } else {
+        addition.append("avaje-http-client-generator");
+      }
+      Files.writeString(file, addition, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+
+    } catch (IOException e) {
+      // not an issue worth failing over
+    }
   }
 
   @Override
