@@ -59,6 +59,9 @@ public class ClientProcessor extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
     if (generateComponent || round.errorRaised()) {
+      if (round.processingOver()) {
+        ProcessingContext.validateModule();
+      }
       return false;
     }
     generateComponent = rounds++ > 0;
@@ -143,7 +146,6 @@ public class ClientProcessor extends AbstractProcessor {
           writer.write();
         }
         writeMetaInf();
-        ProcessingContext.validateModule();
       } catch (final IOException e) {
         logError("Error writing component", e);
       }
