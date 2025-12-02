@@ -28,7 +28,8 @@ final class ComponentMetaData {
       String topPackage = TopPackage.of(generatedClients);
 
       var defaultPackage =
-          APContext.getProjectModuleElement().isUnnamed()
+          !topPackage.contains(".")
+              && APContext.getProjectModuleElement().isUnnamed()
               && APContext.elements().getPackageElement(topPackage) == null;
 
       System.err.println("ComponentMetaData detected top package: " + topPackage + " defaultPackage:" + defaultPackage);
