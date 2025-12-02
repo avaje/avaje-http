@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.javalin.JavalinProcessor;
 import io.avaje.jsonb.generator.JsonbProcessor;
 
@@ -31,7 +32,7 @@ class JavalinProcessorTest {
 
   @AfterEach
   void deleteGeneratedFiles() throws IOException {
-
+	APContext.clear();
     Paths.get("openapi.json").toAbsolutePath().toFile().delete();
     Paths.get("io.avaje.jsonb.Jsonb$GeneratedComponent").toAbsolutePath().toFile().delete();
 

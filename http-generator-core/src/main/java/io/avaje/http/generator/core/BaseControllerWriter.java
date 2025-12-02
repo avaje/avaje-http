@@ -30,8 +30,9 @@ public abstract class BaseControllerWriter {
     final TypeElement origin = reader.beanType();
     this.originName = origin.getQualifiedName().toString();
     this.shortName = origin.getSimpleName().toString();
-    this.packageName = initPackageName(originName);
-    this.fullName = packageName + "." + shortName + suffix;
+    this.packageName = initPackageName(origin);
+    this.fullName =
+        packageName.isBlank() ? shortName + suffix : packageName + "." + shortName + suffix;
 
     initWriter();
     this.instrumentContext = reader.methods().stream().anyMatch(MethodReader::instrumentContext);
@@ -45,9 +46,8 @@ public abstract class BaseControllerWriter {
     return reader.isRequestScoped();
   }
 
-  protected String initPackageName(String originName) {
-    final int dp = originName.lastIndexOf('.');
-    return dp > -1 ? originName.substring(0, dp) : null;
+  protected String initPackageName(TypeElement origin) {
+    return APContext.elements().getPackageOf(origin).getQualifiedName().toString();
   }
 
   protected void initWriter() throws IOException {

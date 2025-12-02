@@ -21,6 +21,7 @@ import javax.tools.ToolProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.sigma.SigmaProcessor;
 import io.avaje.jsonb.generator.JsonbProcessor;
 
@@ -29,6 +30,7 @@ class SigmaProcessorTest {
   @AfterEach
   void deleteGeneratedFiles() throws IOException {
 
+    APContext.clear();
     Paths.get("openapi.json").toAbsolutePath().toFile().delete();
 
     Files.walk(Paths.get("org").toAbsolutePath())
