@@ -246,21 +246,25 @@ public final class ProcessingContext {
 
   public static void validateModule() {
     var module = APContext.getProjectModuleElement();
-    if (module != null && !module.isUnnamed()) {
-      try (var bufferedReader = APContext.getModuleInfoReader()) {
-        var reader = new ModuleInfoReader(module, bufferedReader);
-        reader.requires().forEach(r -> {
-          if (!r.isStatic() && r.getDependency().getQualifiedName().contentEquals("io.avaje.http.api.javalin")) {
-            logWarn(module, "io.avaje.http.api.javalin only contains SOURCE retention annotations. It should added as `requires static`");
-          }
-        });
-
-        reader.validateServices("io.avaje.http.client.HttpClient.GeneratedComponent", CTX.get().clientFQN);
-
-      } catch (Exception e) {
-        // can't read module
-      }
-    }
+    APContext.moduleInfoReader()
+        .ifPresent(
+            moduleInfo -> {
+              moduleInfo
+                  .requires()
+                  .forEach(
+                      r -> {
+                        if (!r.isStatic()
+                            && r.getDependency()
+                                .getQualifiedName()
+                                .contentEquals("io.avaje.http.api.javalin")) {
+                          logWarn(
+                              module,
+                              "io.avaje.http.api.javalin only contains SOURCE retention annotations. It should added as `requires static`");
+                        }
+                      });
+              moduleInfo.validateServices(
+                  "io.avaje.http.client.HttpClient.GeneratedComponent", CTX.get().clientFQN);
+            });
   }
 
   static ModuleElement getModuleElement(Element e) {

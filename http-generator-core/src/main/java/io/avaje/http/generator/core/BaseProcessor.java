@@ -25,10 +25,8 @@ import javax.lang.model.util.ElementFilter;
 
 import io.avaje.http.generator.core.TypeMap.CustomHandler;
 import io.avaje.prism.GenerateAPContext;
-import io.avaje.prism.GenerateModuleInfoReader;
 
 @GenerateAPContext
-@GenerateModuleInfoReader
 @SupportedOptions({
   "useJavax",
   "useSingleton",
