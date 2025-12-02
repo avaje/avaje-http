@@ -2,6 +2,9 @@ package io.avaje.http.generator.client;
 
 import java.util.*;
 
+import io.avaje.http.generator.core.APContext;
+
+
 final class ComponentMetaData {
 
   private final Set<String> generatedClients = new HashSet<>();
@@ -23,7 +26,16 @@ final class ComponentMetaData {
   String fullName() {
     if (fullName == null) {
       String topPackage = TopPackage.of(generatedClients);
-      fullName = topPackage + "." + name(topPackage) + "HttpComponent";
+
+      var defaultPackage =
+          APContext.getProjectModuleElement().isUnnamed()
+              && APContext.elements().getPackageElement(topPackage) == null;
+
+      System.err.println("ComponentMetaData detected top package: " + topPackage + " defaultPackage:" + defaultPackage);
+      fullName =
+          defaultPackage
+              ? name(topPackage) + "HttpComponent"
+              : topPackage + "." + name(topPackage) + "HttpComponent";
     }
     return fullName;
   }
