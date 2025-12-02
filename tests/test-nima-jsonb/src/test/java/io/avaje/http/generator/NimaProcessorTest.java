@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.helidon.nima.HelidonProcessor;
 
 class NimaProcessorTest {
@@ -30,6 +31,7 @@ class NimaProcessorTest {
   @AfterEach
   void deleteGeneratedFiles() throws IOException {
 
+    APContext.clear();
     Paths.get("openapi.json").toAbsolutePath().toFile().delete();
     Files.walk(Paths.get("org").toAbsolutePath())
         .sorted(Comparator.reverseOrder())
