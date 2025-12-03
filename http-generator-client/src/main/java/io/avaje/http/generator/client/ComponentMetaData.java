@@ -35,7 +35,7 @@ final class ComponentMetaData {
       System.err.println("ComponentMetaData detected top package: " + topPackage + " defaultPackage:" + defaultPackage);
       fullName =
           defaultPackage
-              ? name(topPackage) + "HttpComponent"
+              ? "DefaultHttpComponent"
               : topPackage + "." + name(topPackage) + "HttpComponent";
     }
     return fullName;
