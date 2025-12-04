@@ -12,7 +12,5 @@ final class JDK21Functions {
     return Executors.newCachedThreadPool();
   }
 
-  static void closeClient(HttpClient client) {
-    client.close();
-  }
+  static void closeClient(HttpClient client) {}
 }
