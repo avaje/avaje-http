@@ -2,8 +2,6 @@ package io.avaje.http.client;
 
 import io.avaje.applog.AppLog;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Type;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
@@ -124,9 +122,8 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   public HttpClient.Metrics metrics(boolean reset) {
     if (reset) {
       return new DMetrics(metricResTotal.sumThenReset(), metricResError.sumThenReset(), metricResBytes.sumThenReset(), metricResMicros.sumThenReset(), metricResMaxMicros.getThenReset());
-    } else {
-      return new DMetrics(metricResTotal.sum(), metricResError.sum(), metricResBytes.sum(), metricResMicros.sum(), metricResMaxMicros.get());
     }
+    return new DMetrics(metricResTotal.sum(), metricResError.sum(), metricResBytes.sum(), metricResMicros.sum(), metricResMaxMicros.get());
   }
 
   void metricsString(int stringBody) {
@@ -395,14 +392,6 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   @Override
   public void close() {
     this.closed = true;
-    if (Integer.getInteger("java.specification.version") >= 21) {
-      try {
-        MethodHandles.lookup()
-            .findVirtual(java.net.http.HttpClient.class, "close", MethodType.methodType(void.class))
-            .invokeExact(httpClient);
-      } catch (Throwable t) {
-        throw new IllegalStateException("Failed to close java.net.http.HttpClient instance");
-      }
-    }
+    JDK21Functions.closeClient(httpClient);
   }
 }
