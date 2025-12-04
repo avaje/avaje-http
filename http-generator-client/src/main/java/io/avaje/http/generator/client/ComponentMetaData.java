@@ -31,8 +31,7 @@ final class ComponentMetaData {
           !topPackage.contains(".")
               && APContext.getProjectModuleElement().isUnnamed()
               && APContext.elements().getPackageElement(topPackage) == null;
-
-      System.err.println("ComponentMetaData detected top package: " + topPackage + " defaultPackage:" + defaultPackage);
+      
       fullName =
           defaultPackage
               ? "DefaultHttpComponent"
