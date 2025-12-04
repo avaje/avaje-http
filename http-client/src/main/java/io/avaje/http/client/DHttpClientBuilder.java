@@ -1,7 +1,5 @@
 package io.avaje.http.client;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.net.Authenticator;
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -15,8 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import javax.net.ssl.SSLContext;
@@ -55,8 +51,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
   private final Set<String> suppressed = new HashSet<>();
 
   private void configureRetryHandler(BeanScope beanScope) {
-    beanScope.getOptional(RetryHandler.class)
-      .ifPresent(this::setRetryHandler);
+    beanScope.getOptional(RetryHandler.class).ifPresent(this::setRetryHandler);
   }
 
   private void setRetryHandler(RetryHandler retryHandler) {
@@ -109,7 +104,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
     if (executor != null) {
       builder.executor(executor);
     } else if (Integer.getInteger("java.specification.version") >= 21) {
-      builder.executor(virtualThreadExecutor());
+      builder.executor(VirtualThreadExecutor.getVTExecutor());
     }
     if (proxy != null) {
       builder.proxy(proxy);
@@ -127,17 +122,6 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
       builder.priority(priority);
     }
     return builder.build();
-  }
-
-  private static ExecutorService virtualThreadExecutor() {
-    try {
-      return (ExecutorService)
-        MethodHandles.lookup()
-          .findStatic(Executors.class, "newVirtualThreadPerTaskExecutor", MethodType.methodType(ExecutorService.class))
-          .invokeExact();
-    } catch (Throwable e) {
-      return null;
-    }
   }
 
   /**
@@ -192,8 +176,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
       buildIntercept());
   }
 
-  DHttpClientBuilder() {
-  }
+  DHttpClientBuilder() {}
 
   @Override
   public HttpClient.Builder client(java.net.http.HttpClient client) {
@@ -377,5 +360,4 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
   public RetryHandler retryHandler() {
     return retryHandler;
   }
-
 }
