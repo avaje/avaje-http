@@ -28,14 +28,14 @@ final class ComponentMetaData {
       String topPackage = TopPackage.of(generatedClients);
 
       var defaultPackage =
-        !topPackage.contains(".")
-          && APContext.getProjectModuleElement().isUnnamed()
-          && APContext.elements().getPackageElement(topPackage) == null;
-
+          !topPackage.contains(".")
+              && APContext.getProjectModuleElement().isUnnamed()
+              && APContext.elements().getPackageElement(topPackage) == null;
+      
       fullName =
-        defaultPackage
-          ? name(topPackage) + "HttpComponent"
-          : topPackage + "." + name(topPackage) + "HttpComponent";
+          defaultPackage
+              ? "DefaultHttpComponent"
+              : topPackage + "." + name(topPackage) + "HttpComponent";
     }
     return fullName;
   }

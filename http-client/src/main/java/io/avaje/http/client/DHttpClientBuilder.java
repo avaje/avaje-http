@@ -143,12 +143,12 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
       .orElseGet(() -> {
         try {
           return new JsonbBodyAdapter();
-        } catch (NoClassDefFoundError e) {
+        } catch (Throwable e) {
           // I guess it don't exist
         }
         try {
           return new JacksonBodyAdapter();
-        } catch (NoClassDefFoundError e) {
+        } catch (Throwable e) {
           return bodyAdapter;
         }
       });

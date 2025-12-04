@@ -1,6 +1,5 @@
 package io.avaje.http.generator.client;
 
-import static io.avaje.http.generator.core.ProcessingContext.createMetaInfWriter;
 import static io.avaje.http.generator.core.ProcessingContext.createWriter;
 
 import java.io.IOException;
@@ -8,11 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 
 import io.avaje.http.generator.core.Append;
-import io.avaje.http.generator.core.Constants;
 import io.avaje.http.generator.core.Util;
 
 final class SimpleComponentWriter {
@@ -98,7 +95,8 @@ final class SimpleComponentWriter {
   }
 
   private void writePackage() {
-    final String packageName = TopPackage.packageOf(fullName);
+    final String packageName =
+        "DefaultHttpComponent".equals(fullName) ? "" : ProcessorUtils.packageOf(fullName);
     if (!packageName.isEmpty()) {
       writer.append("package %s;", packageName).eol().eol();
     }
