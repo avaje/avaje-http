@@ -103,8 +103,8 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
     }
     if (executor != null) {
       builder.executor(executor);
-    } else if (Integer.getInteger("java.specification.version") >= 21) {
-      builder.executor(VirtualThreadExecutor.getVTExecutor());
+    } else if (Runtime.version().feature() >= 21) {
+      builder.executor(HttpExecutor.getExecutor());
     }
     if (proxy != null) {
       builder.proxy(proxy);
