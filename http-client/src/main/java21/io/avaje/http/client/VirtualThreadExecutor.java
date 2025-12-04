@@ -5,7 +5,6 @@ import java.util.concurrent.Executors;
 
 final class VirtualThreadExecutor {
   private VirtualThreadExecutor() {}
-
   static ExecutorService getVTExecutor() {
     return Executors.newVirtualThreadPerTaskExecutor();
   }
