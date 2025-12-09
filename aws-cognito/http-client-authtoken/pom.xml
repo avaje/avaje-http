@@ -11,7 +11,8 @@
 
   <groupId>io.avaje.aws</groupId>
   <artifactId>avaje-cognito-client-token</artifactId>
-  <version>1.0</version>
+  <name>avaje-cognito-client-token</name>
+  <version>1.1</version>
 
   <dependencies>
     <dependency>
@@ -23,14 +24,14 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-json-core</artifactId>
-      <version>3.8</version>
+      <version>3.9</version>
     </dependency>
 
     <!-- test dependencies -->
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-json-node</artifactId>
-      <version>3.8</version>
+      <version>3.9</version>
       <scope>test</scope>
     </dependency>
 
