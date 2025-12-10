@@ -81,8 +81,10 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
-    writer.append(diAnnotation()).eol();
-    writer.append("@io.avaje.inject.BeanTypes({%s$Route.class, Routing.HttpService.class})", shortName).eol();
+    writer.append(diAnnotation()).eol();    
+    if (diAnnotation().equals("@Component")) {
+      writer.append("@io.avaje.inject.BeanTypes({%s$Route.class, Routing.HttpService.class})", shortName).eol();
+    }
     writer.append("public final class %s$Route implements Routing.HttpService {", shortName).eol().eol();
 
     String controllerName = "controller";
