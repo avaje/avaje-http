@@ -118,6 +118,7 @@ class ControllerWriter extends BaseControllerWriter {
   private void writeClassStart() {
     writer.append(AT_GENERATED).eol();
     writer.append(diAnnotation()).eol();
+    writer.append("@io.avaje.inject.BeanTypes({%s$Route.class, HttpFeature.class})", shortName).eol();
     writer.append("public final class %s$Route implements HttpFeature {", shortName).eol().eol();
 
     var controllerName = "controller";
