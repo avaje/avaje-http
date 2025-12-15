@@ -74,13 +74,13 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>3.8</version>
+      <version>3.9</version>
     </dependency>
 
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb-generator</artifactId>
-      <version>3.8</version>
+      <version>3.9</version>
       <scope>provided</scope>
     </dependency>
 
@@ -95,7 +95,7 @@
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
-      <version>5.5.6</version>
+      <version>6.0.0</version>
       <scope>test</scope>
     </dependency>
 
