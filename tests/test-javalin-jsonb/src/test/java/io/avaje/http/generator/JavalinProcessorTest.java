@@ -33,6 +33,7 @@ class JavalinProcessorTest {
   @AfterEach
   void deleteGeneratedFiles() throws IOException {
 	APContext.clear();
+    io.avaje.jsonb.generator.APContext.clear();
     Paths.get("openapi.json").toAbsolutePath().toFile().delete();
     Paths.get("io.avaje.jsonb.Jsonb$GeneratedComponent").toAbsolutePath().toFile().delete();
 
