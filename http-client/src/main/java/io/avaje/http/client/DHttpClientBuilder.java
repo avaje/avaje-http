@@ -138,6 +138,9 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
         if (bootLayer.findModule("com.fasterxml.jackson.databind").isPresent()) {
           return new JacksonBodyAdapter();
         }
+        if (bootLayer.findModule("tools.jackson.databind").isPresent()) {
+          return new Jackson3BodyAdapter();
+        }
         return bodyAdapter;
       })
       .orElseGet(() -> {
@@ -148,6 +151,11 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
         }
         try {
           return new JacksonBodyAdapter();
+        } catch (Throwable e) {
+          // I guess it don't exist
+        }
+        try {
+          return new Jackson3BodyAdapter();
         } catch (Throwable e) {
           return bodyAdapter;
         }
