@@ -28,9 +28,11 @@ module io.avaje.http.client {
   requires static com.fasterxml.jackson.databind;
   requires static com.fasterxml.jackson.annotation;
   requires static com.fasterxml.jackson.core;
+  requires static tools.jackson.databind;
   requires static io.avaje.jsonb;
   requires static io.avaje.inject;
   requires static jdk.httpserver;
 
   exports io.avaje.http.client;
+
 }
