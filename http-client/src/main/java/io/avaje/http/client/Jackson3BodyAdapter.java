@@ -41,98 +41,80 @@ public final class Jackson3BodyAdapter implements BodyAdapter {
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyWriter<T> beanWriter(Class<?> cls) {
-    return (BodyWriter<T>)
-        beanWriterCache.computeIfAbsent(
-            cls,
-            aClass -> {
-              try {
-                return new JWriter<>(mapper.writerFor(cls));
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            });
+    return (BodyWriter<T>) beanWriterCache.computeIfAbsent(cls, aClass -> {
+      try {
+        return new JWriter<>(mapper.writerFor(cls));
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyReader<T> beanReader(Class<T> cls) {
-    return (BodyReader<T>)
-        beanReaderCache.computeIfAbsent(
-            cls,
-            aClass -> {
-              try {
-                return new JReader<>(mapper.readerFor(cls));
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            });
+    return (BodyReader<T>) beanReaderCache.computeIfAbsent(cls, aClass -> {
+      try {
+        return new JReader<>(mapper.readerFor(cls));
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyWriter<T> beanWriter(Type cls) {
-    return (BodyWriter<T>)
-        beanWriterCache.computeIfAbsent(
-            cls,
-            aClass -> {
-              try {
-                return new JWriter<>(mapper.writerFor(mapper.getTypeFactory().constructType(cls)));
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            });
+    return (BodyWriter<T>) beanWriterCache.computeIfAbsent(cls, aClass -> {
+      try {
+        return new JWriter<>(mapper.writerFor(mapper.getTypeFactory().constructType(cls)));
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyReader<T> beanReader(Type cls) {
-    return (BodyReader<T>)
-        beanReaderCache.computeIfAbsent(
-            cls,
-            aClass -> {
-              try {
-                return new JReader<>(mapper.readerFor(mapper.getTypeFactory().constructType(cls)));
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            });
+    return (BodyReader<T>) beanReaderCache.computeIfAbsent(cls, aClass -> {
+      try {
+        return new JReader<>(mapper.readerFor(mapper.getTypeFactory().constructType(cls)));
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyReader<List<T>> listReader(Class<T> cls) {
-    return (BodyReader<List<T>>)
-        listReaderCache.computeIfAbsent(
-            cls,
-            aClass -> {
-              try {
-                final CollectionType collectionType =
-                    mapper.getTypeFactory().constructCollectionType(List.class, cls);
-                final ObjectReader reader = mapper.readerFor(collectionType);
-                return new JReader<>(reader);
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            });
+    return (BodyReader<List<T>>) listReaderCache.computeIfAbsent(cls, aClass -> {
+      try {
+        final CollectionType collectionType =
+          mapper.getTypeFactory().constructCollectionType(List.class, cls);
+        final ObjectReader reader = mapper.readerFor(collectionType);
+        return new JReader<>(reader);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public <T> BodyReader<List<T>> listReader(Type type) {
-    return (BodyReader<List<T>>)
-        listReaderCache.computeIfAbsent(
-            type,
-            aType -> {
-              try {
-                var javaType = mapper.getTypeFactory().constructType(aType);
-                final CollectionType collectionType =
-                    mapper.getTypeFactory().constructCollectionType(List.class, javaType);
-                final ObjectReader reader = mapper.readerFor(collectionType);
-                return new JReader<>(reader);
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            });
+    return (BodyReader<List<T>>) listReaderCache.computeIfAbsent(type, aType -> {
+      try {
+        var javaType = mapper.getTypeFactory().constructType(aType);
+        final CollectionType collectionType =
+          mapper.getTypeFactory().constructCollectionType(List.class, javaType);
+        final ObjectReader reader = mapper.readerFor(collectionType);
+        return new JReader<>(reader);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
   }
 
   private static final class JReader<T> implements BodyReader<T> {
@@ -158,7 +140,7 @@ public final class Jackson3BodyAdapter implements BodyAdapter {
 
     private final ObjectWriter writer;
 
-    public JWriter(ObjectWriter writer) {
+    JWriter(ObjectWriter writer) {
       this.writer = writer;
     }
 
