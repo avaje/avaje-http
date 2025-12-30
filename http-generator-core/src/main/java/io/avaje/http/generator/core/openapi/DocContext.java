@@ -2,8 +2,10 @@ package io.avaje.http.generator.core.openapi;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.annotation.processing.Filer;
@@ -36,19 +38,13 @@ import io.swagger.v3.oas.models.tags.Tag;
 
 /** Context for building the OpenAPI documentation. */
 public class DocContext {
-
+  private static final Set<String> TAGS = new HashSet<>();
   private final boolean openApiAvailable;
-
   private final Elements elements;
-
   private final Filer filer;
-
   private final Messager messager;
-
   private final Map<String, PathItem> pathMap = new TreeMap<>();
-
   private final SchemaDocBuilder schemaBuilder;
-
   private final OpenAPI openAPI;
 
   public DocContext(ProcessingEnvironment env, boolean openApiAvailable) {
@@ -84,14 +80,14 @@ public class DocContext {
   Schema toSchema(String rawType, Element element) {
     final var typeElement = elements.getTypeElement(rawType);
     final var varElement = elements.getTypeElement(Util.trimAnnotations(element.asType().toString()));
-    if (typeElement == null) {
+    if (typeElement == null){
       // primitive types etc
       return schemaBuilder.toSchema(element.asType());
-    } else if (varElement != null) {
-      return schemaBuilder.toSchema(element);
-    } else {
-      return schemaBuilder.toSchema(typeElement);
     }
+    if (varElement != null){
+      return schemaBuilder.toSchema(element);
+    }
+    return schemaBuilder.toSchema(typeElement);
   }
 
   Content createContent(TypeMirror returnType, String mediaType) {
@@ -154,8 +150,10 @@ public class DocContext {
     if (tags == null) {
       return;
     }
-    for(var tag : tags.value()){
-      openAPI.addTagsItem(createTagItem(tag));
+    for (var tag : tags.value()) {
+      if (TAGS.add(tag.name())) {
+        openAPI.addTagsItem(createTagItem(tag));
+      }
     }
   }
 

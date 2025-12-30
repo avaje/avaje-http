@@ -3,12 +3,14 @@ package org.example.myapp.web;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Path;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Controller
 @Path("/baz")
+@Tag(name = "test")
 class BazController extends BaseController<Baz, Long> {
 
   BazController(Repository<Baz, Long> repository) {
