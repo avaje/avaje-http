@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-@Mojo(name = "openapi", defaultPhase = LifecyclePhase.PROCESS_CLASSES)
+@Mojo(name = "openapi", defaultPhase = LifecyclePhase.PROCESS_CLASSES, threadSafe = true)
 public class OpenApiMojo extends AbstractMojo {
 
   /**
