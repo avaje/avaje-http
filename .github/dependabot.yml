@@ -12,6 +12,19 @@ updates:
     labels:
       - "dependencies"
     target-branch: "master"
+  # Since the plugin isn't part of the root pom, it isn't picked up by dependabot... I think...
+  - package-ecosystem: "maven"
+    directory: "/openapi-maven-plugin/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+    labels:
+      - "dependencies"
+    target-branch: "master"
 
   - package-ecosystem: "github-actions"
     directory: "/"
