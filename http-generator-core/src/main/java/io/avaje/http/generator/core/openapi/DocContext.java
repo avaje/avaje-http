@@ -80,11 +80,11 @@ public class DocContext {
   Schema toSchema(String rawType, Element element) {
     final var typeElement = elements.getTypeElement(rawType);
     final var varElement = elements.getTypeElement(Util.trimAnnotations(element.asType().toString()));
-    if (typeElement == null){
+    if (typeElement == null) {
       // primitive types etc
       return schemaBuilder.toSchema(element.asType());
     }
-    if (varElement != null){
+    if (varElement != null) {
       return schemaBuilder.toSchema(element);
     }
     return schemaBuilder.toSchema(typeElement);
