@@ -4,7 +4,8 @@
   <parent>
     <groupId>org.avaje</groupId>
     <artifactId>java11-oss</artifactId>
-    <version>3.9</version>
+    <version>5.1</version>
+    <relativePath /> <!-- Force lookup from central and do not attempt to use the parent folder -->
   </parent>
 
   <groupId>io.avaje</groupId>
@@ -13,6 +14,15 @@
   <packaging>maven-plugin</packaging>
   <name>openapi-maven-plugin</name>
   <url>https://avaje.io/http</url>
+
+  <properties>
+    <project.build.outputTimestamp>2025-12-10T18:46:56Z</project.build.outputTimestamp>
+    <!-- Dependency Versions -->
+    <maven-api.version>3.9.12</maven-api.version>
+    <maven-plugin-tools.version>3.15.2</maven-plugin-tools.version>
+    <javadoc-plugin.version>3.12.0</javadoc-plugin.version>
+    <junit.version>4.13.2</junit.version>
+  </properties>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
@@ -24,29 +34,30 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
-      <version>3.8.5</version>
+      <version>${maven-api.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
-      <version>3.8.5</version>
+      <version>${maven-api.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
-      <version>3.6.4</version>
+      <version>${maven-plugin-tools.version}</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.13.2</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -54,7 +65,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>${maven-plugin-tools.version}</version>
         <configuration>
           <goalPrefix>openapi</goalPrefix>
           <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
@@ -80,7 +91,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>${javadoc-plugin.version}</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -88,7 +99,7 @@
               <goal>jar</goal>
             </goals>
             <configuration>
-              <additionalparam>-Xdoclint:none</additionalparam>
+              <doclint>none</doclint>
             </configuration>
           </execution>
         </executions>
