@@ -13,6 +13,10 @@
 	],
 	"tags" : [
 		{
+			"name" : "test",
+			"description" : ""
+		},
+		{
 			"name" : "tag1",
 			"description" : "it's somethin"
 		},
@@ -167,7 +171,7 @@
 		"/baz/checkparams/{id}" : {
 			"get" : {
 				"tags" : [
-					
+					"test"
 				],
 				"summary" : "",
 				"description" : "",
@@ -236,7 +240,7 @@
 		"/baz/findbyname/{name}" : {
 			"get" : {
 				"tags" : [
-					
+					"test"
 				],
 				"summary" : "Find the baz by name",
 				"description" : "This is some more comments about this method.",
