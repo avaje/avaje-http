@@ -5,13 +5,13 @@ import static io.avaje.http.generator.core.ProcessingContext.diAnnotation;
 import java.io.IOException;
 import java.util.Map;
 
+import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.JsonBUtil;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.PrimitiveUtil;
-import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.UType;
 
 /**
@@ -22,7 +22,8 @@ class ControllerWriter extends BaseControllerWriter {
   private static final String AT_GENERATED = "@Generated(\"avaje-javalin-generator\")";
   private final boolean useJsonB;
   private final Map<String, UType> jsonTypes;
-  private final boolean javalin6 = ProcessingContext.javalin6();
+  private static final boolean javalin7 = APContext.typeElement("io.javalin.config.JavalinState") != null;
+  private static final boolean javalin6 = APContext.typeElement("io.javalin.config.RouterConfig") != null;
 
   ControllerWriter(ControllerReader reader, boolean jsonb) throws IOException {
     super(reader);
@@ -31,7 +32,11 @@ class ControllerWriter extends BaseControllerWriter {
     this.jsonTypes = detectJsonB.jsonTypes();
 
     reader.addImportType("io.javalin.plugin.Plugin");
-    if (javalin6) {
+    if (javalin7) {
+      reader.addImportType("io.javalin.config.JavalinState");
+      reader.addImportType("io.javalin.config.RoutesConfig");
+      reader.addImportType("io.avaje.http.api.AvajeJavalinPlugin");
+    } else if (javalin6) {
       reader.addImportType("io.javalin.config.JavalinConfig");
       reader.addImportType("io.javalin.router.JavalinDefaultRouting");
       reader.addImportType("io.avaje.http.api.AvajeJavalinPlugin");
@@ -50,7 +55,13 @@ class ControllerWriter extends BaseControllerWriter {
 
   private void writeAddRoutes() {
     writer.append("  @Override").eol();
-    if (javalin6) {
+
+    if (javalin7) {
+      writer.append("  public void onStart(JavalinState state) {").eol();
+      writer.append("    routes(state.routes);").eol();
+      writer.append("  }").eol().eol();
+      writer.append("  private void routes(RoutesConfig app) {").eol().eol();
+    } else if (javalin6) {
       writer.append("  public void onStart(JavalinConfig cfg) {").eol();
       writer.append("    cfg.router.mount(this::routes);").eol();
       writer.append("  }").eol().eol();

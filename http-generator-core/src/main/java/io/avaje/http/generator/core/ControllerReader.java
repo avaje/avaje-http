@@ -418,6 +418,6 @@ public final class ControllerReader {
   }
 
   private static String trimArrayBrackets(String type) {
-    return type.replaceAll("[^\\n\\r\\t $;\\w.]", "");
+    return type.replaceAll("[^\\n\\r\\t $;\\w.*]", "");
   }
 }
