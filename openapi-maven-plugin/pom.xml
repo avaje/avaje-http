@@ -10,13 +10,13 @@
 
   <groupId>io.avaje</groupId>
   <artifactId>openapi-maven-plugin</artifactId>
-  <version>1.0</version>
+  <version>1.1</version>
   <packaging>maven-plugin</packaging>
   <name>openapi-maven-plugin</name>
   <url>https://avaje.io/http</url>
 
   <properties>
-    <project.build.outputTimestamp>2025-12-10T18:46:56Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-01-06T00:11:17Z</project.build.outputTimestamp>
     <!-- Dependency Versions -->
     <maven-api.version>3.9.12</maven-api.version>
     <maven-plugin-tools.version>3.15.2</maven-plugin-tools.version>
