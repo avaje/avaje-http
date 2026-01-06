@@ -32,9 +32,13 @@ class ControllerWriter extends BaseControllerWriter {
     this.jsonTypes = detectJsonB.jsonTypes();
 
     reader.addImportType("io.javalin.plugin.Plugin");
-    if (javalin6 || javalin7) {
-      reader.addImportType("io.javalin.config.*");
-      reader.addImportType("io.javalin.router.*");
+    if (javalin7) {
+      reader.addImportType("io.javalin.config.JavalinState");
+      reader.addImportType("io.javalin.config.RoutesConfig");
+      reader.addImportType("io.avaje.http.api.AvajeJavalinPlugin");
+    } else if (javalin6) {
+      reader.addImportType("io.javalin.config.JavalinConfig");
+      reader.addImportType("io.javalin.router.JavalinDefaultRouting");
       reader.addImportType("io.avaje.http.api.AvajeJavalinPlugin");
     } else {
       reader.addImportType("io.javalin.Javalin");
