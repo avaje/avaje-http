@@ -55,7 +55,6 @@ public final class ProcessingContext {
     private final boolean instrumentAllMethods;
     private final boolean disableDirectWrites;
     private final boolean disableJsonB;
-    private final boolean javalin6;
     private final Set<String> clientFQN = new HashSet<>();
 
     Ctx(ProcessingEnvironment env, PlatformAdapter adapter, boolean generateOpenAPI) {
@@ -90,7 +89,6 @@ public final class ProcessingContext {
       } else {
         useJavax = (javax);
       }
-      this.javalin6 = elementUtils.getTypeElement("io.javalin.config.RouterConfig") != null;
     }
   }
 
@@ -218,10 +216,6 @@ public final class ProcessingContext {
 
   public static boolean disabledDirectWrites() {
     return CTX.get().disableDirectWrites;
-  }
-
-  public static boolean javalin6() {
-    return CTX.get().javalin6;
   }
 
   public static Filer filer() {
