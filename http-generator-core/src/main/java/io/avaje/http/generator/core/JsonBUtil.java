@@ -95,31 +95,11 @@ public final class JsonBUtil {
     writer.append("    this.%sJsonType = jsonb.type(", type.shortName());
     if (!type.isGeneric()) {
       writer.append("%s.class)", Util.shortName(PrimitiveUtil.wrap(type.full())));
+    } else if ("java.util.stream.Stream".equals(type.mainType())) {
+      writeType(type.paramRaw(), writer);
+      writer.append(".streamAsLines()");
     } else {
-      switch (type.mainType()) {
-        case "java.util.List":
-          writeType(type.paramRaw(), writer);
-          writer.append(".list()");
-          break;
-        case "java.util.Set":
-          writeType(type.paramRaw(), writer);
-          writer.append(".set()");
-          break;
-        case "java.util.Map":
-          writeType(type.paramRaw(), writer);
-          writer.append(".map()");
-          break;
-        case "java.util.stream.Stream":
-          writeType(type.paramRaw(), writer);
-          writer.append(".streamAsLines()");
-          break;
-        default: {
-          if (type.mainType().contains("java.util")) {
-            throw new UnsupportedOperationException("Only java.util Map, Set, List and Stream are supported JsonB Controller Collection Types");
-          }
-          writeType(type, writer);
-        }
-      }
+      writeType(type, writer);
     }
     writer.append(";").eol();
   }
