@@ -32,7 +32,7 @@ public class GenericController {
     return null;
   }
 
-  @Get("nested")
+  @Get("nestedMap")
   Map<String, List<String>> getMapDataNested() {
     return null;
   }
