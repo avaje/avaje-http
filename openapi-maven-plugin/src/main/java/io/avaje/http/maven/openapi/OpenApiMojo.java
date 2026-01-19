@@ -1,5 +1,6 @@
 package io.avaje.http.maven.openapi;
 
+import io.avaje.json.JsonWriter;
 import io.avaje.jsonb.JsonType;
 import io.avaje.jsonb.Jsonb;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -161,12 +162,13 @@ public class OpenApiMojo extends AbstractMojo {
     if (artifacts == null || artifacts.isEmpty()) {
       return;
     }
-    final JsonType<OpenAPI> openApiType = Jsonb.builder()
+    final Jsonb jsonb = Jsonb.builder()
       .serializeEmpty(true)
       .serializeNulls(false)
       .failOnNullPrimitives(false)
       .failOnUnknown(false)
-      .build()
+      .build();
+    final JsonType<OpenAPI> openApiType = jsonb
       .type(OpenAPI.class);
     final ArrayList<OpenAPI> definitions = new ArrayList<>();
     for (final Artifact artifact : artifacts) {
@@ -182,7 +184,7 @@ public class OpenApiMojo extends AbstractMojo {
       extractOpenApiDefinitionCurrentProject(currentProjectFile, openApiType, definitions);
     }
     if (definitions.isEmpty() || (currentProjectFile.exists() && definitions.size() == 1)) {
-      getLog().info("No OpenAPI definitions found in project or its dependencies");
+      getLog().info("No need to merge openAPI definitions");
       return;
     }
     final OpenAPI merged = OpenAPIMergerUtil.merge(definitions.toArray(OpenAPI[]::new));
@@ -191,7 +193,7 @@ public class OpenApiMojo extends AbstractMojo {
       if (!destDir.exists() && !destDir.mkdirs()) {
         getLog().error("Failed to make directory " + destDir);
       } else {
-        // This is the only way to output pretty print JSON ???
+        // This is the only way to output pretty print JSON
         final String output = openApiType.toJsonPretty(merged);
         try (final FileWriter fw = new FileWriter(currentProjectFile)) {
           fw.write(output);
