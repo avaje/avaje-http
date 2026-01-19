@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>tests</artifactId>
-    <version>3.7-RC2</version>
+    <version>3.7</version>
   </parent>
 
   <artifactId>test-client-generation</artifactId>
@@ -26,7 +26,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.5.24</version>
+      <version>1.5.25</version>
     </dependency>
 
     <dependency>
