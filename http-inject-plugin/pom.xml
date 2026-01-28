@@ -20,7 +20,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject-generator</artifactId>
-      <version>12.2</version>
+      <version>12.3</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -48,7 +48,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jex</artifactId>
-      <version>3.3</version>
+      <version>3.4</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
