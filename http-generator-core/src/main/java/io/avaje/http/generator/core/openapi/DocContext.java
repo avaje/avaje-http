@@ -38,8 +38,8 @@ import io.swagger.v3.oas.models.tags.Tag;
 
 /** Context for building the OpenAPI documentation. */
 public class DocContext {
-  private static final Set<String> TAGS_TOP_SET = new HashSet<>();
-  private static final Set<String> TAGS = new HashSet<>();
+  private final Set<String> TAGS_TOP_SET = new HashSet<>();
+  private final Set<String> TAGS = new HashSet<>();
   private final boolean openApiAvailable;
   private final Elements elements;
   private final Filer filer;
