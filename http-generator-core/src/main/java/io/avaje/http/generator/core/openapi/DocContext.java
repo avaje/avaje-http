@@ -38,6 +38,7 @@ import io.swagger.v3.oas.models.tags.Tag;
 
 /** Context for building the OpenAPI documentation. */
 public class DocContext {
+  private static final Set<String> TAGS_TOP_SET = new HashSet<>();
   private static final Set<String> TAGS = new HashSet<>();
   private final boolean openApiAvailable;
   private final Elements elements;
@@ -159,7 +160,9 @@ public class DocContext {
 
   public void addTagDefinition(Element element) {
     for (var tag : TagPrism.getAllInstancesOn(element)) {
-      openAPI.addTagsItem(createTagItem(tag));
+      if (TAGS_TOP_SET.add(tag.name())) {
+        openAPI.addTagsItem(createTagItem(tag));
+      }
     }
   }
 
