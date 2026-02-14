@@ -203,8 +203,6 @@ final class ControllerMethodWriter {
     writer.append("    ");
     if (!method.isVoid()) {
       writer.append("var result = ");
-    } else if (missingServerResponse(params)) {
-      logError(method.element(), "Void controller methods must have a ServerResponse parameter");
     }
 
     if (instrumentContext) {
@@ -235,7 +233,11 @@ final class ControllerMethodWriter {
     }
     writer.append(");").eol();
 
-    if (responseMode != ResponseMode.Void) {
+    if (responseMode == ResponseMode.Void) {
+      if (isSendNoContent(params)) {
+        writer.append("    res.send();").eol();
+      }
+    } else {
       TypeMirror typeMirror = method.returnType();
       boolean includeNoContent = !typeMirror.getKind().isPrimitive();
       if (includeNoContent) {
@@ -286,6 +288,10 @@ final class ControllerMethodWriter {
       }
     }
     writer.append("  }").eol().eol();
+  }
+
+  private boolean isSendNoContent(List<MethodParam> params) {
+    return !isFilter && method.isVoid() && missingServerResponse(params);
   }
 
   private void writeStreamingOutputReturn(String indent) {
