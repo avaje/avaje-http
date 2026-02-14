@@ -170,7 +170,6 @@ public class HelloController {
   @Produces("text/plain")
   @Delete("delete/two/{id}")
   String deleteTwo(long id) {
-    // returns a 204 NO CONTENT response
     return "deleteTwo:" + id;
   }
 }
