@@ -67,4 +67,25 @@ public class HelloControllerTest {
     assertThat(res.body()).isEqualTo("Avaje");
     assertThat(res.statusCode()).isEqualTo(200);
   }
+
+  @Test
+  void deleteOne() {
+    HttpResponse<Void> res = client.request()
+      .path("delete/one/1")
+      .DELETE()
+      .asVoid();
+
+    assertThat(res.statusCode()).isEqualTo(204);
+  }
+
+  @Test
+  void deleteTwo() {
+    HttpResponse<String> res = client.request()
+      .path("delete/two/1")
+      .DELETE()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("deleteTwo:1");
+  }
 }
