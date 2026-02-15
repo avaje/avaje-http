@@ -56,6 +56,7 @@ public class ClientProcessor extends AbstractProcessor {
     super.init(processingEnv);
     this.processingEnv = processingEnv;
     APContext.init(processingEnv);
+    io.avaje.http.generator.client.APContext.init(processingEnv);
     ProcessingContext.init(processingEnv, new ClientPlatformAdapter(), false);
     this.componentWriter = new SimpleComponentWriter(metaData);
 

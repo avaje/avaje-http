@@ -50,7 +50,7 @@ public final class JacksonBodyAdapter implements BodyAdapter {
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
       .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
       .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-      .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+      .setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY);
   }
 
   @SuppressWarnings("unchecked")

@@ -6,17 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import io.avaje.http.api.Controller;
-import io.avaje.http.api.Form;
-import io.avaje.http.api.Get;
-import io.avaje.http.api.Header;
-import io.avaje.http.api.MediaType;
-import io.avaje.http.api.Post;
-import io.avaje.http.api.Produces;
-import io.avaje.http.api.Put;
-import io.avaje.http.api.QueryParam;
-import io.avaje.http.api.StreamingOutput;
-import io.avaje.http.api.Valid;
+import io.avaje.http.api.*;
 import io.helidon.common.media.type.MediaTypes;
 import io.helidon.webserver.http.ServerRequest;
 import io.helidon.webserver.http.ServerResponse;
@@ -170,5 +160,16 @@ public class HelloController {
   @Produces(value = "text/html", statusCode = 200)
   StreamingOutput streamBytes() {
     return outputStream -> outputStream.write(new byte[] {0x41, 0x76, 0x61, 0x6a, 0x65});
+  }
+
+  @Delete("delete/one/{id}")
+  void deleteOne(long id) {
+    // returns a 204 NO CONTENT response
+  }
+
+  @Produces("text/plain")
+  @Delete("delete/two/{id}")
+  String deleteTwo(long id) {
+    return "deleteTwo:" + id;
   }
 }
