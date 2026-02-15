@@ -115,7 +115,7 @@
       <plugin>
         <groupId>io.avaje</groupId>
         <artifactId>openapi-maven-plugin</artifactId>
-        <version>1.1</version>
+        <version>${project.version}</version>
         <executions>
           <execution>
             <id>main</id>
@@ -123,6 +123,11 @@
             <goals>
               <goal>openapi</goal>
             </goals>
+            <configuration>
+              <additionalOpenApiJsonFiles>
+                <additionalOpenApiJsonFile>${project.basedir}/src/main/resources/moar-openapi.json</additionalOpenApiJsonFile>
+              </additionalOpenApiJsonFiles>
+            </configuration>
           </execution>
         </executions>
       </plugin>

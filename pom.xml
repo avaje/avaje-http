@@ -38,6 +38,7 @@
   </dependencies>
 
   <modules>
+    <module>openapi-maven-plugin</module>
     <module>htmx-api</module>
     <module>http-api</module>
     <module>http-api-javalin</module>

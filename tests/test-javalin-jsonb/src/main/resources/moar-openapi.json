@@ -1,0 +1,22 @@
+{
+  "components" : {
+    "schemas": {
+      "Bar": {
+        "type": "object",
+        "description": "But oh, what a description this schema has!",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": false,
+            "description": "This is a number ... I think?"
+          },
+          "name": {
+            "type": "string",
+            "description": "Hi there I'm a description~!"
+          }
+        }
+      }
+    }
+  }
+}

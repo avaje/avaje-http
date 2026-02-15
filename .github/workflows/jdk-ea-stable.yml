@@ -34,4 +34,4 @@ jobs:
     - name: Maven version
       run: mvn --version
     - name: Build with Maven
-      run: mvn clean verify package -Ptest
+      run: mvn clean verify package install -Ptest
