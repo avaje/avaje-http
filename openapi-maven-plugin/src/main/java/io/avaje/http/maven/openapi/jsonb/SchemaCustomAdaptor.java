@@ -38,7 +38,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
+/*
+ * Unfortunately, cannot be automatically generated because of the generics
+ *   applied to fields that are private (mixins cannot override those to be ignored)
+ */
 @CustomAdapter
 public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
   private final PropertyNames names;
