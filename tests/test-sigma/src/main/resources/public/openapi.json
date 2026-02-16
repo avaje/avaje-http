@@ -15,10 +15,6 @@
 		{
 			"name" : "tag1",
 			"description" : "it's somethin"
-		},
-		{
-			"name" : "tag1",
-			"description" : "this is added to openapi tags"
 		}
 	],
 	"paths" : {

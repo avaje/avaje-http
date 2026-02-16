@@ -59,7 +59,7 @@
       <artifactId>avaje-validator</artifactId>
       <version>2.16</version>
     </dependency>
-    
+
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations</artifactId>
@@ -113,7 +113,7 @@
       <plugin>
         <groupId>io.avaje</groupId>
         <artifactId>openapi-maven-plugin</artifactId>
-        <version>1.1</version>
+        <version>${project.version}</version>
         <executions>
           <execution>
             <id>main</id>
