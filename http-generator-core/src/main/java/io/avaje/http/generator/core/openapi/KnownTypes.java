@@ -14,8 +14,15 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.UUID;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
+import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.BooleanSchema;
 import io.swagger.v3.oas.models.media.DateSchema;
 import io.swagger.v3.oas.models.media.DateTimeSchema;
@@ -44,13 +51,13 @@ class KnownTypes {
     add(new BoolType(), boolean.class);
     add(new BooleanType(), Boolean.class);
     add(new IntType(), int.class);
-    add(new IntegerType(), Integer.class);
+    add(new IntegerType(), Integer.class, OptionalInt.class);
     add(new PLongType(), long.class);
-    add(new LongType(), Long.class);
+    add(new LongType(), Long.class, OptionalLong.class);
     add(new BytesType(), byte[].class, InputStream.class);
 
     add(new PNumberType(), double.class, float.class);
-    add(new NumberType(), Double.class, Float.class, BigDecimal.class, BigInteger.class);
+    add(new NumberType(), Double.class, Float.class, BigDecimal.class, BigInteger.class, OptionalDouble.class);
     add(new DateType(), LocalDate.class, java.sql.Date.class);
     add(new DateTimeType(), Instant.class, OffsetDateTime.class, ZonedDateTime.class, Timestamp.class, java.util.Date.class, LocalDateTime.class);
 
@@ -58,6 +65,9 @@ class KnownTypes {
     add(new URLType(), URL.class);
     add(new URIType(), URI.class);
     add(new FileType(), File.class);
+    add(new PLongArrayType(), LongStream.class);
+    add(new IntArrayType(), IntStream.class);
+    add(new PNumberArrayType(), DoubleStream.class);
   }
 
   /**
@@ -109,6 +119,13 @@ class KnownTypes {
     }
   }
 
+  private class IntArrayType implements KnownType {
+    @Override
+    public Schema<?> createSchema() {
+      return new ArraySchema().items(new IntegerSchema().nullable(Boolean.FALSE));
+    }
+  }
+
   private class IntegerType implements KnownType {
     @Override
     public Schema<?> createSchema() {
@@ -123,6 +140,13 @@ class KnownTypes {
     }
   }
 
+  private class PLongArrayType implements KnownType {
+    @Override
+    public Schema<?> createSchema() {
+      return new ArraySchema().items(new IntegerSchema().format("int64").nullable(Boolean.FALSE));
+    }
+  }
+
   private class LongType implements KnownType {
     @Override
     public Schema<?> createSchema() {
@@ -134,6 +158,13 @@ class KnownTypes {
     @Override
     public Schema<?> createSchema() {
       return new NumberSchema().nullable(Boolean.FALSE);
+    }
+  }
+
+  private class PNumberArrayType implements KnownType {
+    @Override
+    public Schema<?> createSchema() {
+      return new ArraySchema().items(new NumberSchema().nullable(Boolean.FALSE));
     }
   }
 
