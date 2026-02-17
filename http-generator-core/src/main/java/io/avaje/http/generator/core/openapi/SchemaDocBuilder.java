@@ -198,11 +198,14 @@ class SchemaDocBuilder {
 
   private Schema<?> buildIterableSchema(TypeMirror type) {
     Schema<?> itemSchema = new ObjectSchema().format("unknownIterableType");
-
     if (type.getKind() == TypeKind.DECLARED) {
       List<? extends TypeMirror> typeArguments = ((DeclaredType) type).getTypeArguments();
       if (typeArguments.size() == 1) {
-        itemSchema = toSchema(typeArguments.get(0));
+        TypeMirror typeMirror = typeArguments.get(0);
+        itemSchema = toSchema(typeMirror);
+        if (isNotNullable(typeMirror)) {
+          itemSchema.setNullable(Boolean.FALSE);
+        }
       }
     }
 
@@ -227,7 +230,11 @@ class SchemaDocBuilder {
       DeclaredType declaredType = (DeclaredType) type;
       List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
       if (typeArguments.size() == 2) {
-        valueSchema = toSchema(typeArguments.get(1));
+        TypeMirror valueType = typeArguments.get(1);
+        valueSchema = toSchema(valueType);
+        if (isNotNullable(valueType)) {
+          valueSchema.setNullable(Boolean.FALSE);
+        }
       }
     }
 
@@ -311,11 +318,38 @@ class SchemaDocBuilder {
   }
 
   private boolean isNotNullable(Element element) {
-    return element.getAnnotationMirrors().stream()
+    List<AnnotationMirror> annotationMirrors = new ArrayList<>();
+    if (element instanceof VariableElement) {
+      annotationMirrors.addAll(element.asType().getAnnotationMirrors());
+    } else {
+      annotationMirrors.addAll(element.getAnnotationMirrors());
+    }
+
+    if (isNullMarked(element)) {
+      for (AnnotationMirror annotationMirror : annotationMirrors) {
+        if ("org.jspecify.annotations.Nullable".equals(annotationMirror.getAnnotationType().asElement().toString())) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    return annotationMirrors.stream()
       .anyMatch(m -> m.toString().contains("@") &&
         Stream.of("NotNull", "NotEmpty", "NotBlank")
           .anyMatch(annotation -> m.toString().contains(annotation))
       );
+  }
+
+  private boolean isNotNullable(TypeMirror type) {
+    List<? extends AnnotationMirror> annotationMirrors = type.getAnnotationMirrors();
+
+    for (AnnotationMirror annotationMirror : annotationMirrors) {
+      if ("org.jspecify.annotations.Nullable".equals(annotationMirror.getAnnotationType().asElement().toString())) {
+      return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -374,4 +408,35 @@ class SchemaDocBuilder {
     return (modifiers.contains(Modifier.STATIC) || modifiers.contains(Modifier.TRANSIENT));
   }
 
+  private boolean isNullMarked(Element element) {
+    Element classElement;
+    // Because this is build with Java 11 records are not supported yet.
+    switch(element.getKind().toString()) {
+      case "CLASS":
+      case "RECORD":
+        classElement = element;
+      break;
+      case "FIELD":
+      case "ENUM":
+        classElement = element.getEnclosingElement();
+      break;
+      case "PARAMETER":
+        classElement = element.getEnclosingElement().getEnclosingElement();
+      break;
+      default:
+        classElement = null;
+    }
+
+    if (classElement == null) {
+      // "No class found for on top of element Type"
+      return false;
+    }
+
+    for (AnnotationMirror annotationMirror : classElement.getAnnotationMirrors()) {
+      if (annotationMirror.toString().contains("@org.jspecify.annotations.NullMarked")) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
