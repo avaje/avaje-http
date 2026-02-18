@@ -37,6 +37,8 @@
 @GeneratePrism(value = io.avaje.htmx.api.HxRequest.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.htmx.api.Html.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.htmx.api.ContentCache.class, publicAccess = true)
+@GeneratePrism(org.jspecify.annotations.NullMarked.class)
+@GeneratePrism(org.jspecify.annotations.NullUnmarked.class)
 package io.avaje.http.generator.core;
 
 import io.avaje.prism.GeneratePrism;
