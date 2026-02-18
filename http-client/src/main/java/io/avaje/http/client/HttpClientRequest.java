@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -504,7 +505,7 @@ public interface HttpClientRequest extends Cloneable {
    *     TRACE, HEAD)
    */
   default HttpClientResponse httpMethod(String method) {
-    switch (method.toUpperCase()) {
+    switch (Objects.requireNonNull(method).toUpperCase()) {
       case "GET":
         return GET();
       case "POST":
