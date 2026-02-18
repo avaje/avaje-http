@@ -20,7 +20,7 @@
 
   <properties>
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
-    <swagger.version>2.2.42</swagger.version>
+    <swagger.version>2.2.43</swagger.version>
     <jackson.version>2.14.2</jackson.version>
     <jex.version>3.0-RC10</jex.version>
     <avaje.prisms.version>2.1-RC2</avaje.prisms.version>
@@ -32,7 +32,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>junit</artifactId>
-      <version>1.7</version>
+      <version>1.8</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
