@@ -498,6 +498,33 @@ public interface HttpClientRequest extends Cloneable {
   HttpClientResponse HEAD();
 
   /**
+   * Execute the request using the given http method.
+   *
+   * @param method The http method to execute the request with (e.g. GET, POST, PUT, PATCH, DELETE,
+   *     TRACE, HEAD)
+   */
+  default HttpClientResponse httpMethod(String method) {
+    switch (method.toUpperCase()) {
+      case "GET":
+        return GET();
+      case "POST":
+        return POST();
+      case "PUT":
+        return PUT();
+      case "PATCH":
+        return PATCH();
+      case "DELETE":
+        return DELETE();
+      case "TRACE":
+        return TRACE();
+      case "HEAD":
+        return HEAD();
+      default:
+        throw new IllegalArgumentException("Unsupported HTTP method: " + method);
+    }
+  }
+
+  /**
    * After the response is returned this method returns the response time in microseconds.
    * <p>
    * This is useful for use in {@link RequestIntercept#afterResponse(HttpResponse, HttpClientRequest)}
