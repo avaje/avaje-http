@@ -12,11 +12,11 @@
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
-    <junit.version>6.0.2</junit.version>
+    <junit.version>6.0.3</junit.version>
     <assertj.version>3.27.7</assertj.version>
     <jackson.version>2.21.0</jackson.version>
     <jex.version>3.4</jex.version>
-    <avaje-inject.version>12.3</avaje-inject.version>
+    <avaje-inject.version>12.4</avaje-inject.version>
     <helidon.version>4.3.4</helidon.version>
     <javalin.version>7.0.0-beta.3</javalin.version>
   </properties>
