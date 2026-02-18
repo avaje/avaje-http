@@ -430,36 +430,4 @@ class SchemaDocBuilder {
     Set<Modifier> modifiers = field.getModifiers();
     return (modifiers.contains(Modifier.STATIC) || modifiers.contains(Modifier.TRANSIENT));
   }
-
-  private boolean isNullMarked(Element element) {
-    Element classElement;
-    // Because this is build with Java 11 records are not supported yet.
-    switch(element.getKind().toString()) {
-      case "CLASS":
-      case "RECORD":
-        classElement = element;
-      break;
-      case "FIELD":
-      case "ENUM":
-        classElement = element.getEnclosingElement();
-      break;
-      case "PARAMETER":
-        classElement = element.getEnclosingElement().getEnclosingElement();
-      break;
-      default:
-        classElement = null;
-    }
-
-    if (classElement == null) {
-      // "No class found for on top of element Type"
-      return false;
-    }
-
-    for (AnnotationMirror annotationMirror : classElement.getAnnotationMirrors()) {
-      if (annotationMirror.toString().contains("@org.jspecify.annotations.NullMarked")) {
-        return true;
-      }
-    }
-    return false;
-  }
 }
