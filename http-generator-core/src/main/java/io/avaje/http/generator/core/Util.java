@@ -289,4 +289,14 @@ public final class Util {
       .toString()
       .equals(String.class.getTypeName());
   }
+
+  public static boolean nullMarked(Element e) {
+    if (e == null || NullUnmarkedPrism.isPresent(e)) {
+      return false;
+    }
+    if (NullMarkedPrism.isPresent(e)) {
+      return true;
+    }
+    return nullMarked(e.getEnclosingElement());
+  }
 }

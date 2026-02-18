@@ -26,6 +26,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.HiddenPrism;
 import io.avaje.http.generator.core.Util;
 import io.avaje.prism.GeneratePrism;
@@ -325,9 +326,10 @@ class SchemaDocBuilder {
       annotationMirrors.addAll(element.getAnnotationMirrors());
     }
 
-    if (isNullMarked(element)) {
-      for (AnnotationMirror annotationMirror : annotationMirrors) {
-        if ("org.jspecify.annotations.Nullable".equals(annotationMirror.getAnnotationType().asElement().toString())) {
+    if (Util.nullMarked(element)) {
+      for (var mirror : annotationMirrors) {
+        if ("Nullable"
+            .equals(APContext.asTypeElement(mirror.getAnnotationType()).getSimpleName().toString())) {
           return false;
         }
       }
