@@ -2,6 +2,7 @@ package io.avaje.http.generator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -38,8 +39,12 @@ class VertxProcessorTest {
       Files.delete(Paths.get("controllers.txt"));
     }
 
-    if (Files.exists(Paths.get("org.example.myapp.web.VertxRolesFixtureControllerTestAPI.txt"))) {
-      Files.delete(Paths.get("org.example.myapp.web.VertxRolesFixtureControllerTestAPI.txt"));
+    try (var generatedTxt = Files.list(Paths.get("."))) {
+      for (var path : generatedTxt
+        .filter(p -> p.getFileName().toString().endsWith("TestAPI.txt"))
+        .toList()) {
+        Files.delete(path);
+      }
     }
 
     if (Files.exists(Paths.get("org"))) {
@@ -95,6 +100,11 @@ class VertxProcessorTest {
         .contains("controller.onIllegalState(ctx);")
         .contains("routes.route(\"/roles-test\").failureHandler(errorHandler);")
         .contains("routes.route(\"/roles-test/*\").failureHandler(errorHandler);");
+
+    final var mapper = new ObjectMapper();
+    final var expectedOpenApi = mapper.readTree(new File("src/test/resources/expectedOpenApi.json"));
+    final var generatedOpenApi = mapper.readTree(new File("openapi.json"));
+    assertThat(generatedOpenApi).isEqualTo(expectedOpenApi);
   }
 
   private Iterable<JavaFileObject> getSourceFiles(String source) throws Exception {
