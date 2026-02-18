@@ -132,7 +132,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"$ref" : "#/components/schemas/Bar>"
+									"type" : "array",
+									"items" : {
+										"$ref" : "#/components/schemas/Bar"
+									}
 								}
 							}
 						}
@@ -795,7 +798,9 @@
 						"name" : "myOptional",
 						"in" : "query",
 						"schema" : {
-							"$ref" : "#/components/schemas/Long>"
+							"type" : "integer",
+							"format" : "int64",
+							"nullable" : true
 						}
 					}
 				],
@@ -825,7 +830,13 @@
 						"name" : "myOptional",
 						"in" : "query",
 						"schema" : {
-							"$ref" : "#/components/schemas/NestedEnum>"
+							"type" : "string",
+							"nullable" : true,
+							"enum" : [
+								"A",
+								"B",
+								"C"
+							]
 						}
 					}
 				],
@@ -855,7 +866,8 @@
 						"name" : "myOptional",
 						"in" : "query",
 						"schema" : {
-							"$ref" : "#/components/schemas/String>"
+							"type" : "string",
+							"nullable" : true
 						}
 					}
 				],
@@ -1369,7 +1381,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"$ref" : "#/components/schemas/HelloDto>"
+									"type" : "array",
+									"items" : {
+										"$ref" : "#/components/schemas/HelloDto"
+									}
 								}
 							}
 						}
@@ -1621,9 +1636,6 @@
 					}
 				}
 			},
-			"Bar>" : {
-				"type" : "object"
-			},
 			"Baz" : {
 				"type" : "object",
 				"properties" : {
@@ -1665,9 +1677,6 @@
 					}
 				}
 			},
-			"HelloDto>" : {
-				"type" : "object"
-			},
 			"HelloWorld" : {
 				"type" : "object",
 				"properties" : {
@@ -1696,12 +1705,6 @@
 					}
 				}
 			},
-			"Long>" : {
-				"type" : "object"
-			},
-			"NestedEnum>" : {
-				"type" : "object"
-			},
 			"Person" : {
 				"type" : "object",
 				"properties" : {
@@ -1715,9 +1718,6 @@
 				}
 			},
 			"StreamingOutput" : {
-				"type" : "object"
-			},
-			"String>" : {
 				"type" : "object"
 			},
 			"ViewHome" : {

@@ -55,6 +55,8 @@ class SchemaDocBuilder {
   private final TypeMirror iterableType;
   private final TypeMirror mapType;
   private final TypeMirror completableFutureType;
+  private final TypeMirror optionalType;
+  private final TypeMirror streamType;
 
   private final Map<String, Schema> schemas = new TreeMap<>();
 
@@ -65,6 +67,8 @@ class SchemaDocBuilder {
     this.iterableType = types.erasure(elements.getTypeElement("java.lang.Iterable").asType());
     this.mapType = types.erasure(elements.getTypeElement("java.util.Map").asType());
     this.completableFutureType = types.erasure(elements.getTypeElement("java.util.concurrent.CompletableFuture").asType());
+    this.optionalType = types.erasure(elements.getTypeElement("java.util.Optional").asType());
+    this.streamType = types.erasure(elements.getTypeElement("java.util.stream.Stream").asType());
   }
 
   Map<String, Schema> getSchemas() {
@@ -151,13 +155,16 @@ class SchemaDocBuilder {
     if (schema != null) {
       return schema;
     }
+    if (types.isAssignable(type, optionalType)) {
+      return buildOptionalSchema(type);
+    }
     if (types.isAssignable(type, mapType)) {
       return buildMapSchema(type);
     }
     if (type.getKind() == TypeKind.ARRAY) {
       return buildArraySchema(type);
     }
-    if (types.isAssignable(type, iterableType)) {
+    if (types.isAssignable(type, iterableType) || types.isAssignable(type, streamType)) {
       return buildIterableSchema(type);
     }
     Element e = types.asElement(type);
@@ -195,6 +202,20 @@ class SchemaDocBuilder {
     Schema ref = new Schema();
     ref.$ref("#/components/schemas/" + objectSchemaKey);
     return ref;
+  }
+
+  private Schema<?> buildOptionalSchema(TypeMirror type) {
+    Schema<?> itemSchema = new ObjectSchema().format("unknownOptionalType");
+
+    if (type.getKind() == TypeKind.DECLARED) {
+      List<? extends TypeMirror> typeArguments = ((DeclaredType) type).getTypeArguments();
+      if (typeArguments.size() == 1) {
+        itemSchema = toSchema(typeArguments.get(0));
+      }
+    }
+    // Since it's explicitly optional, we should explicitly say it's nullable
+    itemSchema.nullable(Boolean.TRUE);
+    return itemSchema;
   }
 
   private Schema<?> buildIterableSchema(TypeMirror type) {
