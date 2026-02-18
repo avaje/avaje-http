@@ -47,10 +47,10 @@ final class VertxControllerMethodWriter {
     final String fullPath = toVertxPath(method.pathSegments().fullPath());
     writer.append("    {").eol();
     writer.append("      var route = routes.%s(\"%s\");", routeMethod, fullPath).eol();
-    writeRoleHandlers();
     if (requiresBodyHandler()) {
       writer.append("      route.handler(BodyHandler.create());").eol();
     }
+    writeRoleHandlers();
     writer.append("      route.handler(ctx -> {").eol();
     writer.append("      try {").eol();
 

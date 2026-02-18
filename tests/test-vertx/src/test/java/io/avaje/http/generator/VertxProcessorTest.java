@@ -75,6 +75,8 @@ class VertxProcessorTest {
 
     final var generatedSource =
         Files.readString(Paths.get("org/example/myapp/web/VertxRolesFixtureController$Route.java").toAbsolutePath());
+    final var helloGeneratedSource =
+        Files.readString(Paths.get("org/example/myapp/web/HelloController$Route.java").toAbsolutePath());
 
     assertThat(generatedSource)
         .contains("implements VertxRouteSet")
@@ -89,6 +91,19 @@ class VertxProcessorTest {
         .contains("ctx.response().end(Json.encode(result));")
         .contains(".addAuthorization(RoleBasedAuthorization.create(\"org.example.myapp.web.TestRole.ADMIN\"))")
         .contains(".addAuthorization(RoleBasedAuthorization.create(\"org.example.myapp.web.TestRole.AUDITOR\"))");
+
+    final var payloadRouteIndex = generatedSource.indexOf("var route = routes.post(\"/roles-test/payload\");");
+    final var payloadBodyHandlerIndex =
+        generatedSource.indexOf("route.handler(BodyHandler.create());", payloadRouteIndex);
+    final var payloadAuthHandlerIndex =
+        generatedSource.indexOf(
+            "route.handler(AuthorizationHandler.create(RoleBasedAuthorization.create(\"org.example.myapp.web.TestRole.ADMIN\")));",
+            payloadRouteIndex);
+    assertThat(payloadRouteIndex).isGreaterThan(-1);
+    assertThat(payloadBodyHandlerIndex).isGreaterThan(payloadRouteIndex);
+    assertThat(payloadAuthHandlerIndex).isGreaterThan(payloadRouteIndex);
+    assertThat(payloadBodyHandlerIndex).isLessThan(payloadAuthHandlerIndex);
+
     assertThat(generatedSource)
         .contains("io.vertx.core.Handler<RoutingContext> filterHandler = ctx -> {")
         .contains("controller.filter(ctx);")
@@ -105,6 +120,12 @@ class VertxProcessorTest {
         .contains("controller.onIllegalState(ctx);")
         .contains("routes.route(\"/roles-test\").failureHandler(errorHandler);")
         .contains("routes.route(\"/roles-test/*\").failureHandler(errorHandler);");
+
+    assertThat(helloGeneratedSource)
+        .contains("var route = routes.get(\"/hello/with-params/:id\");")
+        .contains("ctx.pathParam(\"id\")")
+        .contains("ctx.request().getParam(\"q\")")
+        .contains("ctx.request().getHeader(\"X-Trace\")");
 
     final var mapper = new ObjectMapper();
     final var expectedOpenApi = mapper.readTree(new File("src/test/resources/expectedOpenApi.json"));
