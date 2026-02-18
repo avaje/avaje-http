@@ -1,0 +1,109 @@
+package io.avaje.http.generator;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+
+import javax.tools.JavaFileObject;
+import javax.tools.JavaFileObject.Kind;
+import javax.tools.StandardLocation;
+import javax.tools.ToolProvider;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+
+import io.avaje.http.generator.core.APContext;
+import io.avaje.http.generator.vertx.VertxProcessor;
+
+class VertxProcessorTest {
+
+  @AfterEach
+  void deleteGeneratedFiles() throws IOException {
+    APContext.clear();
+
+    if (Files.exists(Paths.get("openapi.json"))) {
+      Files.delete(Paths.get("openapi.json"));
+    }
+
+    if (Files.exists(Paths.get("controllers.txt"))) {
+      Files.delete(Paths.get("controllers.txt"));
+    }
+
+    if (Files.exists(Paths.get("org.example.myapp.web.VertxRolesFixtureControllerTestAPI.txt"))) {
+      Files.delete(Paths.get("org.example.myapp.web.VertxRolesFixtureControllerTestAPI.txt"));
+    }
+
+    if (Files.exists(Paths.get("org"))) {
+      Files.walk(Paths.get("org").toAbsolutePath())
+          .sorted(Comparator.reverseOrder())
+          .map(Path::toFile)
+          .forEach(File::delete);
+    }
+  }
+
+  @Test
+  void runAnnotationProcessor() throws Exception {
+    final var source = Paths.get("src").toAbsolutePath().toString();
+    final var files = getSourceFiles(source);
+    final var compiler = ToolProvider.getSystemJavaCompiler();
+
+    final var task =
+        compiler.getTask(
+                new PrintWriter(System.out),
+                null,
+                null,
+                List.of("--release=" + Integer.getInteger("java.specification.version")),
+                null,
+                files);
+    task.setProcessors(List.of(new VertxProcessor()));
+
+    assertThat(task.call()).isTrue();
+
+    final var generatedSource =
+        Files.readString(Paths.get("org/example/myapp/web/VertxRolesFixtureController$Route.java").toAbsolutePath());
+
+    assertThat(generatedSource)
+        .contains("implements VertxRouteSet")
+        .contains("public void register(Router router)")
+        .contains("route.handler(AuthorizationHandler.create(RoleBasedAuthorization.create(\"org.example.myapp.web.TestRole.ADMIN\")));")
+        .contains("route.handler(AuthorizationHandler.create(OrAuthorization.create()");
+    assertThat(generatedSource)
+        .contains(".addAuthorization(RoleBasedAuthorization.create(\"org.example.myapp.web.TestRole.ADMIN\"))")
+        .contains(".addAuthorization(RoleBasedAuthorization.create(\"org.example.myapp.web.TestRole.AUDITOR\"))");
+    assertThat(generatedSource)
+        .contains("io.vertx.core.Handler<RoutingContext> filterHandler = ctx -> {")
+        .contains("controller.filter(ctx);")
+        .contains("if (!ctx.response().ended() && !ctx.failed()) {")
+        .contains("routes.route(\"/roles-test\").handler(filterHandler);")
+        .contains("routes.route(\"/roles-test/*\").handler(filterHandler);");
+    assertThat(generatedSource)
+        .contains("if (failure == null || !(failure instanceof IllegalArgumentException)) {")
+        .contains("var ex = (IllegalArgumentException) failure;")
+        .contains("Object result = controller.onIllegalArg(ex);");
+    assertThat(generatedSource)
+        .contains("if (failure == null || !(failure instanceof IllegalStateException)) {")
+        .contains("ctx.response().setStatusCode(503);")
+        .contains("controller.onIllegalState(ctx);")
+        .contains("routes.route(\"/roles-test\").failureHandler(errorHandler);")
+        .contains("routes.route(\"/roles-test/*\").failureHandler(errorHandler);");
+  }
+
+  private Iterable<JavaFileObject> getSourceFiles(String source) throws Exception {
+    final var compiler = ToolProvider.getSystemJavaCompiler();
+    final var files = compiler.getStandardFileManager(null, null, null);
+
+    files.setLocation(StandardLocation.SOURCE_PATH, List.of(new File(source)));
+
+    final Set<Kind> fileKinds = Collections.singleton(Kind.SOURCE);
+    return files.list(StandardLocation.SOURCE_PATH, "", fileKinds, true);
+  }
+}

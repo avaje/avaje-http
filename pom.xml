@@ -71,8 +71,10 @@
         <module>http-inject-plugin</module>
         <module>htmx-nima</module>
         <module>htmx-nima-jstache</module>
+        <module>http-api-vertx</module>
         <module>http-generator-helidon</module>
         <module>http-generator-jex</module>
+        <module>http-generator-vertx</module>
       </modules>
     </profile>
     <profile>
