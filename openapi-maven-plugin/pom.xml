@@ -20,7 +20,7 @@
     <maven-api.version>3.9.12</maven-api.version>
     <maven-plugin-tools.version>3.15.2</maven-plugin-tools.version>
     <javadoc-plugin.version>3.12.0</javadoc-plugin.version>
-    <swagger.version>2.2.41</swagger.version>
+    <swagger.version>2.2.43</swagger.version>
     <junit.version>4.13.2</junit.version>
     <jackson.version>2.20.1</jackson.version>
   </properties>
