@@ -6,6 +6,7 @@ import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.ParamType;
 import java.io.IOException;
 
 final class VertxControllerWriter extends BaseControllerWriter {
@@ -22,6 +23,9 @@ final class VertxControllerWriter extends BaseControllerWriter {
     reader.addImportType("io.vertx.core.json.JsonArray");
     reader.addImportType("io.vertx.core.json.JsonObject");
     reader.addImportType("io.vertx.core.buffer.Buffer");
+    if (hasBodyMethods()) {
+      reader.addImportType("io.vertx.ext.web.handler.BodyHandler");
+    }
     if (hasRoleProtectedMethods()) {
       reader.addImportType("io.vertx.ext.web.handler.AuthorizationHandler");
       reader.addImportType("io.vertx.ext.auth.authorization.RoleBasedAuthorization");
@@ -110,6 +114,21 @@ final class VertxControllerWriter extends BaseControllerWriter {
     for (MethodReader method : reader.methods()) {
       if (method.isWebMethod() && method.roles().size() > 1) {
         return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean hasBodyMethods() {
+    for (MethodReader method : reader.methods()) {
+      if (!method.isWebMethod()) {
+        continue;
+      }
+      for (var param : method.params()) {
+        final var paramType = param.paramType();
+        if (paramType == ParamType.BODY || paramType == ParamType.FORM || paramType == ParamType.FORMPARAM) {
+          return true;
+        }
       }
     }
     return false;

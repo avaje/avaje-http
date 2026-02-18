@@ -4,6 +4,7 @@ import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.CoreWebMethod;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
+import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.UType;
@@ -47,6 +48,9 @@ final class VertxControllerMethodWriter {
     writer.append("    {").eol();
     writer.append("      var route = routes.%s(\"%s\");", routeMethod, fullPath).eol();
     writeRoleHandlers();
+    if (requiresBodyHandler()) {
+      writer.append("      route.handler(BodyHandler.create());").eol();
+    }
     writer.append("      route.handler(ctx -> {").eol();
     writer.append("      try {").eol();
 
@@ -351,6 +355,16 @@ final class VertxControllerMethodWriter {
       writer.append("        .addAuthorization(RoleBasedAuthorization.create(\"%s\"))", escapeJava(role)).eol();
     }
     writer.append("      ));").eol();
+  }
+
+  private boolean requiresBodyHandler() {
+    for (MethodParam param : method.params()) {
+      final ParamType paramType = param.paramType();
+      if (paramType == ParamType.BODY || paramType == ParamType.FORM || paramType == ParamType.FORMPARAM) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private String escapeJava(String value) {

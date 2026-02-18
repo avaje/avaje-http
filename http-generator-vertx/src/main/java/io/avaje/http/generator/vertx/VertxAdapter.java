@@ -42,7 +42,7 @@ final class VertxAdapter implements PlatformAdapter {
     if (JSON_ARRAY.equals(fullType)) {
       return "ctx.body().asJsonArray()";
     }
-    return "ctx.body().asJsonObject().mapTo(" + type.mainType() + ".class)";
+    return "ctx.body().asPojo(" + type.mainType() + ".class)";
   }
 
   @Override

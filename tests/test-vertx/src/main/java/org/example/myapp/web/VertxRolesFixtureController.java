@@ -4,6 +4,7 @@ import io.avaje.http.api.Controller;
 import io.avaje.http.api.ExceptionHandler;
 import io.avaje.http.api.Filter;
 import io.avaje.http.api.Get;
+import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.vertx.ext.web.RoutingContext;
 
@@ -21,6 +22,13 @@ public class VertxRolesFixtureController {
   String explicit() {
     return "ok";
   }
+
+  @Post("/payload")
+  Payload payload(Payload payload) {
+    return new Payload("Returning " + payload.name());
+  }
+
+  record Payload(String name) {}
 
   @Filter
   void filter(RoutingContext ctx) {

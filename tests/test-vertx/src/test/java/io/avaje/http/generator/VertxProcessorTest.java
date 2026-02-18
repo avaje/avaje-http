@@ -78,10 +78,15 @@ class VertxProcessorTest {
 
     assertThat(generatedSource)
         .contains("implements VertxRouteSet")
+        .contains("import io.vertx.ext.web.handler.BodyHandler;")
         .contains("public void register(Router router)")
         .contains("route.handler(AuthorizationHandler.create(RoleBasedAuthorization.create(\"org.example.myapp.web.TestRole.ADMIN\")));")
         .contains("route.handler(AuthorizationHandler.create(OrAuthorization.create()");
     assertThat(generatedSource)
+        .contains("var route = routes.post(\"/roles-test/payload\");")
+        .contains("route.handler(BodyHandler.create());")
+        .contains("ctx.body().asPojo(org.example.myapp.web.VertxRolesFixtureController.Payload.class)")
+        .contains("ctx.response().end(Json.encode(result));")
         .contains(".addAuthorization(RoleBasedAuthorization.create(\"org.example.myapp.web.TestRole.ADMIN\"))")
         .contains(".addAuthorization(RoleBasedAuthorization.create(\"org.example.myapp.web.TestRole.AUDITOR\"))");
     assertThat(generatedSource)
