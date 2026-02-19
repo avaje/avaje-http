@@ -26,6 +26,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.HiddenPrism;
 import io.avaje.http.generator.core.Util;
 import io.avaje.prism.GeneratePrism;
@@ -219,11 +220,14 @@ class SchemaDocBuilder {
 
   private Schema<?> buildIterableSchema(TypeMirror type) {
     Schema<?> itemSchema = new ObjectSchema().format("unknownIterableType");
-
     if (type.getKind() == TypeKind.DECLARED) {
       List<? extends TypeMirror> typeArguments = ((DeclaredType) type).getTypeArguments();
       if (typeArguments.size() == 1) {
-        itemSchema = toSchema(typeArguments.get(0));
+        TypeMirror typeMirror = typeArguments.get(0);
+        itemSchema = toSchema(typeMirror);
+        if (isNotNullable(typeMirror)) {
+          itemSchema.setNullable(Boolean.FALSE);
+        }
       }
     }
 
@@ -248,7 +252,11 @@ class SchemaDocBuilder {
       DeclaredType declaredType = (DeclaredType) type;
       List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
       if (typeArguments.size() == 2) {
-        valueSchema = toSchema(typeArguments.get(1));
+        TypeMirror valueType = typeArguments.get(1);
+        valueSchema = toSchema(valueType);
+        if (isNotNullable(valueType)) {
+          valueSchema.setNullable(Boolean.FALSE);
+        }
       }
     }
 
@@ -332,11 +340,39 @@ class SchemaDocBuilder {
   }
 
   private boolean isNotNullable(Element element) {
-    return element.getAnnotationMirrors().stream()
+    List<AnnotationMirror> annotationMirrors = new ArrayList<>();
+    if (element instanceof VariableElement) {
+      annotationMirrors.addAll(element.asType().getAnnotationMirrors());
+    } else {
+      annotationMirrors.addAll(element.getAnnotationMirrors());
+    }
+
+    if (Util.nullMarked(element)) {
+      for (var mirror : annotationMirrors) {
+        if ("Nullable"
+            .equals(APContext.asTypeElement(mirror.getAnnotationType()).getSimpleName().toString())) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    return annotationMirrors.stream()
       .anyMatch(m -> m.toString().contains("@") &&
         Stream.of("NotNull", "NotEmpty", "NotBlank")
           .anyMatch(annotation -> m.toString().contains(annotation))
       );
+  }
+
+  private boolean isNotNullable(TypeMirror type) {
+    List<? extends AnnotationMirror> annotationMirrors = type.getAnnotationMirrors();
+
+    for (AnnotationMirror annotationMirror : annotationMirrors) {
+      if ("org.jspecify.annotations.Nullable".equals(annotationMirror.getAnnotationType().asElement().toString())) {
+      return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -394,5 +430,4 @@ class SchemaDocBuilder {
     Set<Modifier> modifiers = field.getModifiers();
     return (modifiers.contains(Modifier.STATIC) || modifiers.contains(Modifier.TRANSIENT));
   }
-
 }
