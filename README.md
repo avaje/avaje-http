@@ -24,7 +24,8 @@ A light (~80kb) wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.ne
 Use source code generation to adapt annotated REST controllers `@Path, @Get, @Post, etc` to Javalin, Helidon SE, and similar web routing HTTP servers.
 
 - Lightweight (65Kb library + generated source code)
-- Supports Full use of underlying Javalin or Helidon SE constructs as desired
+- Reflection free jax-rs style controllers  
+- Supports full use of underlying Javalin or Helidon SE constructs as desired
 - Bean Validation of request bodies (validation groups supported as well)
 
 ## Add dependencies
