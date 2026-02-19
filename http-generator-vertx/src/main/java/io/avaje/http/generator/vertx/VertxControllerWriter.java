@@ -5,22 +5,40 @@ import static io.avaje.http.generator.core.ProcessingContext.diAnnotation;
 import io.avaje.http.generator.core.BaseControllerWriter;
 import io.avaje.http.generator.core.Constants;
 import io.avaje.http.generator.core.ControllerReader;
+import io.avaje.http.generator.core.JsonBUtil;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.ParamType;
+import io.avaje.http.generator.core.PrimitiveUtil;
+import io.avaje.http.generator.core.ProcessingContext;
+import io.avaje.http.generator.core.UType;
+
 import java.io.IOException;
+import java.util.Map;
 
 final class VertxControllerWriter extends BaseControllerWriter {
 
   private static final String GENERATED = "@Generated(\"avaje-vertx-generator\")";
+  private final boolean useJsonB;
+  private final Map<String, UType> jsonTypes;
 
   VertxControllerWriter(ControllerReader reader) throws IOException {
     super(reader);
+
+    final var detectJsonB = JsonBUtil.detect(ProcessingContext.useJsonb(), reader);
+    this.useJsonB = detectJsonB.useJsonB();
+    this.jsonTypes = detectJsonB.jsonTypes();
     reader.addStaticImportType("io.avaje.http.api.vertx.VertxUtils.cookieValue");
     reader.addImportType("io.vertx.ext.web.Router");
     reader.addImportType("io.vertx.ext.web.RoutingContext");
     reader.addImportType("io.avaje.http.api.vertx.VertxRouteSet");
     reader.addImportType("io.avaje.http.api.Generated");
-    reader.addImportType("io.vertx.core.json.Json");
+
+    if (useJsonB) {
+      reader.addImportType("io.vertx.core.buffer.Buffer");
+    } else {
+      reader.addImportType("io.vertx.core.json.Json");
+    }
+
     if (hasBodyMethods()) {
       reader.addImportType("io.vertx.ext.web.handler.BodyHandler");
     }
@@ -62,16 +80,29 @@ final class VertxControllerWriter extends BaseControllerWriter {
     if (reader.isIncludeValidator()) {
       writer.append("  private final Validator validator;").eol();
     }
+
+    for (final UType type : jsonTypes.values()) {
+      final var typeString = PrimitiveUtil.wrap(type.shortType()).replace(",", ", ");
+      writer.append("  private final JsonType<%s> %sJsonType;", typeString, type.shortName()).eol();
+    }
     writer.eol();
 
     writer.append("  public %s$Route(%s %s", shortName, controllerType, controllerName);
     if (reader.isIncludeValidator()) {
       writer.append(", Validator validator");
     }
+    if (useJsonB) {
+      writer.append(", Jsonb jsonb");
+    }
     writer.append(") {").eol();
     writer.append("    this.%s = %s;", controllerName, controllerName).eol();
     if (reader.isIncludeValidator()) {
       writer.append("    this.validator = validator;").eol();
+    }
+    if (useJsonB) {
+      for (final UType type : jsonTypes.values()) {
+        JsonBUtil.writeJsonbType(type, writer);
+      }
     }
     writer.append("  }").eol().eol();
   }
@@ -85,7 +116,7 @@ final class VertxControllerWriter extends BaseControllerWriter {
       if (!method.isWebMethod()) {
         continue;
       }
-      new VertxControllerMethodWriter(method, writer).write(isRequestScoped());
+      new VertxControllerMethodWriter(method, writer, useJsonB).write(isRequestScoped());
       if (!reader.isDocHidden()) {
         method.buildApiDocumentation();
       }

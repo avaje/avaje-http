@@ -1,13 +1,17 @@
 package io.avaje.http.generator.vertx;
 
+import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.CoreWebMethod;
+import io.avaje.http.generator.core.JsonBUtil;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.UType;
+import static io.avaje.http.generator.core.ProcessingContext.disabledDirectWrites;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -16,11 +20,15 @@ final class VertxControllerMethodWriter {
 
   private final MethodReader method;
   private final Append writer;
+  private final boolean useJsonB;
+  private final boolean useJstachio;
   private final String handlerType;
 
-  VertxControllerMethodWriter(MethodReader method, Append writer) {
+  VertxControllerMethodWriter(MethodReader method, Append writer, boolean useJsonB) {
     this.method = method;
     this.writer = writer;
+    this.useJstachio = ProcessingContext.isJstacheTemplate(method.returnType());
+    this.useJsonB = !useJstachio && useJsonB && !disabledDirectWrites();
     handlerType =
        BlockingPrism.isPresent(method.element())
                || BlockingPrism.isPresent(method.element().getEnclosingElement())
@@ -239,7 +247,12 @@ final class VertxControllerMethodWriter {
     if ("io.vertx.core.buffer.Buffer".equals(returnType.mainType())) {
       if (contentType != null) {
         writer.append("        ctx.response().putHeader(\"content-type\", \"%s\");", escapeJava(contentType)).eol();
+      } else {
+        APContext.logWarn(
+            method.element(),
+            "Returning Buffer without content type header, consider setting @Produces on the method");
       }
+
       writer.append("        ctx.response().end(%s);", valueVar).eol();
     } else if ("io.vertx.core.json.JsonObject".equals(returnType.mainType())
         || "io.vertx.core.json.JsonArray".equals(returnType.mainType())) {
@@ -252,12 +265,16 @@ final class VertxControllerMethodWriter {
 		writer.append("        ctx.response().putHeader(\"content-type\", \"text/plain\");").eol();
 	  }
 	  writer.append("        ctx.response().end(%s);", valueVar).eol();
-    } else if (contentType != null) {
+    } else if (contentType != null && !JsonBUtil.isJsonMimeType(contentType)) {
         writer.append("        ctx.response().putHeader(\"content-type\", \"%s\");", escapeJava(contentType)).eol();
         if (contentType.startsWith("text/")) {
           writer.append("        ctx.response().end(String.valueOf(%s));", valueVar).eol();
-        } else {
-          writer.append("        ctx.response().end(Json.encode(%s));", valueVar).eol();
+      } else {
+        APContext.logError(
+            method.element(),
+            "Unsupported content type '%s' for return type '%s'",
+            contentType,
+            returnType.full());
         }
     } else if (isStringLike(returnType)) {
         writer.append("        ctx.response().putHeader(\"content-type\", \"text/plain\");").eol();
@@ -266,7 +283,14 @@ final class VertxControllerMethodWriter {
         writer
             .append("        ctx.response().putHeader(\"content-type\", \"application/json\");")
             .eol();
+
+      if (!useJsonB) {
         writer.append("        ctx.response().end(Json.encode(%s));", valueVar).eol();
+      } else {
+        writer.append(
+            "        ctx.response().end(Buffer.buffer(%sJsonType.toJsonBytes(%s)));",
+            returnType.shortName(), valueVar).eol();
+      }
     }
   }
 
