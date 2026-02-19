@@ -111,11 +111,10 @@ class VertxProcessorTest {
         .contains("routes.route(\"/roles-test\").handler(filterHandler);")
         .contains("routes.route(\"/roles-test/*\").handler(filterHandler);");
     assertThat(generatedSource)
-        .contains("if (failure == null || !(failure instanceof IllegalArgumentException)) {")
-        .contains("var ex = (IllegalArgumentException) failure;")
-        .contains("Object result = controller.onIllegalArg(ex);");
+        .contains("if (failure == null || !(failure instanceof IllegalArgumentException ex)) {")
+        .contains("var result = controller.onIllegalArg(ex);");
     assertThat(generatedSource)
-        .contains("if (failure == null || !(failure instanceof IllegalStateException)) {")
+        .contains("if (failure == null || !(failure instanceof IllegalStateException ex)) {")
         .contains("ctx.response().setStatusCode(503);")
         .contains("controller.onIllegalState(ctx);")
         .contains("routes.route(\"/roles-test\").failureHandler(errorHandler);")

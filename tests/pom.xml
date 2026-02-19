@@ -25,25 +25,15 @@
     <module>test-javalin</module>
     <module>test-javalin-jsonb</module>
     <module>test-sigma</module>
+    <module>test-client</module>
+    <module>test-nima</module>
+    <module>test-jex</module>
+    <module>test-nima-jsonb</module>
+    <module>test-nima-htmx</module>
+    <module>test-vertx</module>
+    <module>test-vertx-jsonb</module>
+    <module>test-client-generation</module>
   </modules>
-
-  <profiles>
-    <profile>
-      <id>jdk21plus</id>
-      <activation>
-        <jdk>[21,)</jdk>
-      </activation>
-      <modules>
-        <module>test-client</module>
-        <module>test-nima</module>
-        <module>test-jex</module>
-        <module>test-nima-jsonb</module>
-        <module>test-nima-htmx</module>
-        <module>test-vertx</module>
-        <module>test-client-generation</module>
-      </modules>
-    </profile>
-  </profiles>
 
   <dependencies>
     <dependency>
