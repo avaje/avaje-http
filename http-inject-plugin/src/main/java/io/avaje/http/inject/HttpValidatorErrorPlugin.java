@@ -1,6 +1,7 @@
 package io.avaje.http.inject;
 
 import io.avaje.http.api.AvajeJavalinPlugin;
+import io.avaje.http.api.vertx.VertxRouteSet;
 import io.avaje.inject.BeanScopeBuilder;
 import io.avaje.inject.spi.InjectPlugin;
 import io.avaje.inject.spi.PluginProvides;
@@ -15,6 +16,7 @@ import io.helidon.webserver.http.HttpFeature;
     "io.helidon.webserver.http.HttpFeature",
     "io.avaje.http.api.AvajeJavalinPlugin",
     "io.avaje.jex.Routing.HttpService",
+    "io.avaje.http.api.vertx.VertxRouteSet",
   })
 public final class HttpValidatorErrorPlugin implements InjectPlugin {
 
@@ -30,6 +32,9 @@ public final class HttpValidatorErrorPlugin implements InjectPlugin {
             builder.provideDefault(HttpFeature.class, HelidonHandler::new);
           } else if (bootLayer.findModule("io.javalin").isPresent()) {
             builder.provideDefault(AvajeJavalinPlugin.class, JavalinHandler::new);
+          } else if (bootLayer.findModule("io.avaje.http.api.vertx").isPresent()
+            && bootLayer.findModule("io.vertx.web").isPresent()) {
+            builder.provideDefault(VertxRouteSet.class, VertxHandler::new);
           }
         },
         () -> {
@@ -47,6 +52,11 @@ public final class HttpValidatorErrorPlugin implements InjectPlugin {
           }
           try {
             builder.provideDefault(AvajeJavalinPlugin.class, JavalinHandler::new);
+          } catch (NoClassDefFoundError e) {
+            // not present
+          }
+          try {
+            builder.provideDefault(VertxRouteSet.class, VertxHandler::new);
           } catch (NoClassDefFoundError e) {
             // not present
           }

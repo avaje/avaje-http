@@ -41,7 +41,7 @@ Use source code generation to adapt annotated REST controllers `@Path, @Get, @Po
 <!-- Annotation processors -->
 <dependency>
   <groupId>io.avaje</groupId>
-  <artifactId>avaje-http-{javalin/helidon}-generator</artifactId>
+  <artifactId>avaje-http-{javalin/helidon/vertx}-generator</artifactId>
   <version>${avaje.http.version}</version>
   <scope>provided</scope>
 </dependency>
@@ -85,7 +85,7 @@ public class WidgetController {
 }
 ```
 ## DI Usage
-The annotation processor will generate controller adapters to register routes to Javalin/Helidon. The natural way to use the generated adapters is to get a DI library to find and wire them. The AP will automatically detect the presence of avaje-inject and generate the class to use avaje-inject's `@Component` as the DI annotation.
+The annotation processor will generate controller adapters to register routes to Javalin, Helidon, or Vert.x. The natural way to use the generated adapters is to get a DI library to find and wire them. The AP will automatically detect the presence of avaje-inject and generate the class to use avaje-inject's `@Component` as the DI annotation.
 
 There isn't a hard requirement to use [Avaje](https://avaje.io/inject/) for dependency injection. In the absence of avaje-inject, the generated class will use `@jakarta.inject.Singleton` or `@javax.inject.Singleton` depending on what's on the classpath. Any DI library that can find and wire the generated @Singleton beans can be used. You can even use Dagger2 or Guice to wire the controllers if you so desire.
 
@@ -126,6 +126,27 @@ WebServer.builder()
          .addRouting(builder)
          .build()
          .start();
+```
+
+### Usage with Vert.x
+
+Add the Vert.x runtime API dependency:
+
+```xml
+<dependency>
+  <groupId>io.avaje</groupId>
+  <artifactId>avaje-http-api-vertx</artifactId>
+  <version>${avaje.http.version}</version>
+</dependency>
+```
+
+The annotation processor will generate controller classes implementing `VertxRouteSet`, which can be registered with `io.vertx.ext.web.Router`.
+
+```java
+List<io.avaje.http.api.vertx.VertxRouteSet> routes = ... //retrieve using a DI framework
+Router router = ...;
+
+routes.forEach(route -> route.register(router));
 ```
 ## Generated sources
 
