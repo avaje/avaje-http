@@ -6,6 +6,7 @@ import io.avaje.http.api.Filter;
 import io.avaje.http.api.Get;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
+import io.avaje.http.api.vertx.Blocking;
 import io.vertx.ext.web.RoutingContext;
 
 @Controller("/roles-test")
@@ -14,6 +15,13 @@ public class VertxRolesFixtureController {
 
   @Get("/inherited")
   String inherited() {
+    return "ok";
+  }
+
+
+  @Blocking
+  @Get("/blocking")
+  String blocking() {
     return "ok";
   }
 

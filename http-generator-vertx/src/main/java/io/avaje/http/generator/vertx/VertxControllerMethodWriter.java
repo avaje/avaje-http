@@ -16,10 +16,16 @@ final class VertxControllerMethodWriter {
 
   private final MethodReader method;
   private final Append writer;
+  private final String handlerType;
 
   VertxControllerMethodWriter(MethodReader method, Append writer) {
     this.method = method;
     this.writer = writer;
+    handlerType =
+       BlockingPrism.isPresent(method.element())
+               || BlockingPrism.isPresent(method.element().getEnclosingElement())
+           ? "blockingHandler"
+           : "handler";
   }
 
   void write(boolean requestScoped) {
@@ -47,11 +53,14 @@ final class VertxControllerMethodWriter {
     final String fullPath = toVertxPath(method.pathSegments().fullPath());
     writer.append("    {").eol();
     writer.append("      var route = routes.%s(\"%s\");", routeMethod, fullPath).eol();
+
     if (requiresBodyHandler()) {
-      writer.append("      route.handler(BodyHandler.create());").eol();
+      writer.append("      route.%s(BodyHandler.create());", handlerType).eol();
     }
     writeRoleHandlers();
-    writer.append("      route.handler(ctx -> {").eol();
+
+
+    writer.append("      route.%s(ctx -> {", handlerType).eol();
     writer.append("      try {").eol();
 
     int statusCode = method.statusCode();
@@ -66,7 +75,7 @@ final class VertxControllerMethodWriter {
       writeReturn("result", UType.parse(method.returnType()));
     }
 
-    writer.append("      } catch (Throwable e) {").eol();
+    writer.append("      } catch (Exception e) {").eol();
     writer.append("        ctx.fail(e);").eol();
     writer.append("      }").eol();
     writer.append("      });").eol().eol();
@@ -89,7 +98,7 @@ final class VertxControllerMethodWriter {
     writer.append("        ctx.fail(e);").eol();
     writer.append("      }").eol();
     writer.append("      };").eol();
-    writeScopedHandlerRegistration(fullPath, "handler", "filterHandler");
+    writeScopedHandlerRegistration(fullPath, handlerType, "filterHandler");
     writer.append("    }").eol().eol();
   }
 
@@ -98,11 +107,10 @@ final class VertxControllerMethodWriter {
     writer.append("    {").eol();
     writer.append("      io.vertx.core.Handler<RoutingContext> errorHandler = ctx -> {").eol();
     writer.append("      var failure = ctx.failure();").eol();
-    writer.append("      if (failure == null || !(failure instanceof %s)) {", method.exceptionShortName()).eol();
+    writer.append("      if (failure == null || !(failure instanceof %s ex)) {", method.exceptionShortName()).eol();
     writer.append("        ctx.next();").eol();
     writer.append("        return;").eol();
     writer.append("      }").eol();
-    writer.append("      var ex = (%s) failure;", method.exceptionShortName()).eol();
     writer.append("      try {").eol();
 
     final int statusCode = method.statusCode();
@@ -145,7 +153,7 @@ final class VertxControllerMethodWriter {
   ) {
     writer.append("        ");
     if (captureResult && !method.isVoid()) {
-      writer.append("Object result = ");
+      writer.append("var result = ");
     }
     if (requestScoped) {
       writer.append("factory.create(ctx).");
@@ -228,49 +236,43 @@ final class VertxControllerMethodWriter {
     writer.append("            return;").eol();
     writer.append("          }").eol();
 
-    writer.append("          if (%s instanceof Buffer buffer) {", valueVar).eol();
-    if (contentType != null) {
-      writer.append("            ctx.response().putHeader(\"content-type\", \"%s\");", escapeJava(contentType)).eol();
-    }
-    writer.append("            ctx.response().end(buffer);").eol();
-    writer.append("            return;").eol();
-    writer.append("          }").eol();
-
-    writer.append("          if (%s instanceof JsonObject jsonObject) {", valueVar).eol();
-    writer.append("            ctx.response().putHeader(\"content-type\", \"application/json\");").eol();
-    writer.append("            ctx.response().end(jsonObject.encode());").eol();
-    writer.append("            return;").eol();
-    writer.append("          }").eol();
-
-    writer.append("          if (%s instanceof JsonArray jsonArray) {", valueVar).eol();
-    writer.append("            ctx.response().putHeader(\"content-type\", \"application/json\");").eol();
-    writer.append("            ctx.response().end(jsonArray.encode());").eol();
-    writer.append("            return;").eol();
-    writer.append("          }").eol();
-
-    writer.append("          if (%s instanceof String stringValue) {", valueVar).eol();
-    if (contentType == null) {
-      writer.append("            ctx.response().putHeader(\"content-type\", \"text/plain\");").eol();
-    } else {
-      writer.append("            ctx.response().putHeader(\"content-type\", \"%s\");", escapeJava(contentType)).eol();
-    }
-    writer.append("            ctx.response().end(stringValue);").eol();
-    writer.append("            return;").eol();
-    writer.append("          }").eol();
-
-    if (contentType != null) {
-      writer.append("          ctx.response().putHeader(\"content-type\", \"%s\");", escapeJava(contentType)).eol();
-      if (contentType.startsWith("text/")) {
-        writer.append("          ctx.response().end(String.valueOf(%s));", valueVar).eol();
-      } else {
-        writer.append("          ctx.response().end(Json.encode(%s));", valueVar).eol();
+    if ("io.vertx.core.buffer.Buffer".equals(returnType.mainType())) {
+      if (contentType != null) {
+        writer.append("        ctx.response().putHeader(\"content-type\", \"%s\");", escapeJava(contentType)).eol();
       }
+      writer.append("        ctx.response().end(%s);", valueVar).eol();
+      return;
+    }
+    if ("io.vertx.core.json.JsonObject".equals(returnType.mainType())
+        || "io.vertx.core.json.JsonArray".equals(returnType.mainType())) {
+      writer.append("        ctx.response().putHeader(\"content-type\", \"application/json\");").eol();
+	  writer.append("        ctx.response().end(%s.encode());", valueVar).eol();
+      return;
+    }
+    if ("java.lang.String".equals(returnType.mainType())) {
+	  if (contentType != null) {
+		writer.append("        ctx.response().putHeader(\"content-type\", \"%s\");", escapeJava(contentType)).eol();
+	  } else {
+		writer.append("        ctx.response().putHeader(\"content-type\", \"text/plain\");").eol();
+	  }
+	  writer.append("        ctx.response().end(%s);", valueVar).eol();
+      return;
+    }
+    if (contentType != null) {
+        writer.append("        ctx.response().putHeader(\"content-type\", \"%s\");", escapeJava(contentType)).eol();
+        if (contentType.startsWith("text/")) {
+          writer.append("        ctx.response().end(String.valueOf(%s));", valueVar).eol();
+        } else {
+          writer.append("        ctx.response().end(Json.encode(%s));", valueVar).eol();
+        }
     } else if (isStringLike(returnType)) {
-      writer.append("          ctx.response().putHeader(\"content-type\", \"text/plain\");").eol();
-      writer.append("          ctx.response().end(String.valueOf(%s));", valueVar).eol();
+        writer.append("        ctx.response().putHeader(\"content-type\", \"text/plain\");").eol();
+        writer.append("        ctx.response().end(String.valueOf(%s));", valueVar).eol();
     } else {
-      writer.append("          ctx.response().putHeader(\"content-type\", \"application/json\");").eol();
-      writer.append("          ctx.response().end(Json.encode(%s));", valueVar).eol();
+        writer
+            .append("        ctx.response().putHeader(\"content-type\", \"application/json\");")
+            .eol();
+        writer.append("        ctx.response().end(Json.encode(%s));", valueVar).eol();
     }
   }
 
@@ -307,22 +309,15 @@ final class VertxControllerMethodWriter {
   }
 
   private String routeMethod(CoreWebMethod webMethod) {
-    switch (webMethod) {
-      case GET:
-        return "get";
-      case POST:
-        return "post";
-      case PUT:
-        return "put";
-      case PATCH:
-        return "patch";
-      case DELETE:
-        return "delete";
-      case OPTIONS:
-        return "options";
-      default:
-        return null;
-    }
+    return switch (webMethod) {
+      case GET -> "get";
+      case POST -> "post";
+      case PUT -> "put";
+      case PATCH -> "patch";
+      case DELETE -> "delete";
+      case OPTIONS -> "options";
+      default -> null;
+    };
   }
 
   private String toVertxPath(String path) {
@@ -343,14 +338,15 @@ final class VertxControllerMethodWriter {
     }
     List<String> uniqueRoles = new ArrayList<>(new LinkedHashSet<>(roles));
     if (uniqueRoles.size() == 1) {
-      writer.append(
-        "      route.handler(AuthorizationHandler.create(RoleBasedAuthorization.create(\"%s\")));",
-        escapeJava(uniqueRoles.get(0))
-      ).eol();
+      writer
+          .append(
+              "      route.%s(AuthorizationHandler.create(RoleBasedAuthorization.create(\"%s\")));",
+              handlerType, escapeJava(uniqueRoles.get(0)))
+          .eol();
       return;
     }
 
-    writer.append("      route.handler(AuthorizationHandler.create(OrAuthorization.create()").eol();
+    writer.append("      route.%s(AuthorizationHandler.create(OrAuthorization.create()", handlerType).eol();
     for (String role : uniqueRoles) {
       writer.append("        .addAuthorization(RoleBasedAuthorization.create(\"%s\"))", escapeJava(role)).eol();
     }

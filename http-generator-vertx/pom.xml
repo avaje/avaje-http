@@ -26,6 +26,7 @@
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api-vertx</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>

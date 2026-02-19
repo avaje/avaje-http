@@ -15,14 +15,12 @@ final class VertxControllerWriter extends BaseControllerWriter {
 
   VertxControllerWriter(ControllerReader reader) throws IOException {
     super(reader);
+    reader.addStaticImportType("io.avaje.http.api.vertx.VertxUtils.cookieValue");
     reader.addImportType("io.vertx.ext.web.Router");
     reader.addImportType("io.vertx.ext.web.RoutingContext");
     reader.addImportType("io.avaje.http.api.vertx.VertxRouteSet");
     reader.addImportType("io.avaje.http.api.Generated");
     reader.addImportType("io.vertx.core.json.Json");
-    reader.addImportType("io.vertx.core.json.JsonArray");
-    reader.addImportType("io.vertx.core.json.JsonObject");
-    reader.addImportType("io.vertx.core.buffer.Buffer");
     if (hasBodyMethods()) {
       reader.addImportType("io.vertx.ext.web.handler.BodyHandler");
     }
@@ -75,11 +73,6 @@ final class VertxControllerWriter extends BaseControllerWriter {
     if (reader.isIncludeValidator()) {
       writer.append("    this.validator = validator;").eol();
     }
-    writer.append("  }").eol().eol();
-
-    writer.append("  private static String cookieValue(RoutingContext ctx, String cookieName) {").eol();
-    writer.append("    final var cookie = ctx.request().getCookie(cookieName);").eol();
-    writer.append("    return cookie != null ? cookie.getValue() : null;").eol();
     writer.append("  }").eol().eol();
   }
 
