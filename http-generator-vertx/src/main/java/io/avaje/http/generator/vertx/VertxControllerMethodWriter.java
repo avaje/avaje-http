@@ -241,24 +241,18 @@ final class VertxControllerMethodWriter {
         writer.append("        ctx.response().putHeader(\"content-type\", \"%s\");", escapeJava(contentType)).eol();
       }
       writer.append("        ctx.response().end(%s);", valueVar).eol();
-      return;
-    }
-    if ("io.vertx.core.json.JsonObject".equals(returnType.mainType())
+    } else if ("io.vertx.core.json.JsonObject".equals(returnType.mainType())
         || "io.vertx.core.json.JsonArray".equals(returnType.mainType())) {
       writer.append("        ctx.response().putHeader(\"content-type\", \"application/json\");").eol();
 	  writer.append("        ctx.response().end(%s.encode());", valueVar).eol();
-      return;
-    }
-    if ("java.lang.String".equals(returnType.mainType())) {
+    } else if ("java.lang.String".equals(returnType.mainType())) {
 	  if (contentType != null) {
 		writer.append("        ctx.response().putHeader(\"content-type\", \"%s\");", escapeJava(contentType)).eol();
 	  } else {
 		writer.append("        ctx.response().putHeader(\"content-type\", \"text/plain\");").eol();
 	  }
 	  writer.append("        ctx.response().end(%s);", valueVar).eol();
-      return;
-    }
-    if (contentType != null) {
+    } else if (contentType != null) {
         writer.append("        ctx.response().putHeader(\"content-type\", \"%s\");", escapeJava(contentType)).eol();
         if (contentType.startsWith("text/")) {
           writer.append("        ctx.response().end(String.valueOf(%s));", valueVar).eol();
