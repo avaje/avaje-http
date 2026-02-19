@@ -10,6 +10,8 @@ import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.UType;
+import io.avaje.http.generator.core.openapi.MediaType;
+
 import static io.avaje.http.generator.core.ProcessingContext.disabledDirectWrites;
 
 import java.util.ArrayList;
@@ -279,6 +281,10 @@ final class VertxControllerMethodWriter {
     } else if (isStringLike(returnType)) {
         writer.append("        ctx.response().putHeader(\"content-type\", \"text/plain\");").eol();
         writer.append("        ctx.response().end(String.valueOf(%s));", valueVar).eol();
+    } else if (useJstachio) {
+      writer.append("        ctx.response().putHeader(\"content-type\", \"%s\");", escapeJava(contentType)).eol();
+      var renderer = ProcessingContext.jstacheRenderer(method.returnType());
+      writer.append("        ctx.response().end(%s(%s));", renderer, valueVar);
     } else {
         writer
             .append("        ctx.response().putHeader(\"content-type\", \"application/json\");")
@@ -316,6 +322,10 @@ final class VertxControllerMethodWriter {
   }
 
   private String normalizeContentType(String produces) {
+    if (useJstachio && produces == null) {
+      produces = MediaType.TEXT_HTML.getValue();
+    }
+
     if (produces == null) {
       return null;
     }
