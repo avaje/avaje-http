@@ -24,8 +24,8 @@ A light (~80kb) wrapper to the [JDK 11+ Java Http Client](http://openjdk.java.ne
 Use source code generation to adapt annotated REST controllers `@Path, @Get, @Post, etc` to Javalin, Helidon SE, and similar web routing HTTP servers.
 
 - Lightweight (65Kb library + generated source code)
-- Full use of Javalin or Helidon SE/Nima as desired
-- Bean Validation of request bodies supported (validation groups supported as well)
+- Supports Full use of underlying Javalin or Helidon SE constructs as desired
+- Bean Validation of request bodies (validation groups supported as well)
 
 ## Add dependencies
 ```xml
@@ -41,7 +41,7 @@ Use source code generation to adapt annotated REST controllers `@Path, @Get, @Po
 <!-- Annotation processors -->
 <dependency>
   <groupId>io.avaje</groupId>
-  <artifactId>avaje-http-{javalin/helidon/vertx}-generator</artifactId>
+  <artifactId>avaje-http-{jex/javalin/helidon/vertx}-generator</artifactId>
   <version>${avaje.http.version}</version>
   <scope>provided</scope>
 </dependency>
