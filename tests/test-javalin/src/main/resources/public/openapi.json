@@ -835,6 +835,70 @@
 				"deprecated" : true
 			}
 		},
+		"/notnullmarked/class" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/NotNullMarkedClassDTO"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/NotNullMarkedClassDTO"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "No content"
+					}
+				}
+			}
+		},
+		"/notnullmarked/record" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/NotNullMarkedRecordDTO"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/nullmarked/class" : {
 			"get" : {
 				"tags" : [
@@ -974,6 +1038,87 @@
 					"whenAction" : {
 						"type" : "string",
 						"format" : "date-time"
+					}
+				}
+			},
+			"NotNullMarkedClassDTO" : {
+				"type" : "object",
+				"properties" : {
+					"string1" : {
+						"type" : "string"
+					},
+					"string2" : {
+						"type" : "string"
+					},
+					"stringArray1" : {
+						"type" : "array",
+						"items" : {
+							"type" : "string"
+						}
+					},
+					"stringArray2" : {
+						"type" : "array",
+						"items" : {
+							"type" : "string"
+						}
+					},
+					"set1" : {
+						"type" : "array",
+						"items" : {
+							"type" : "string",
+							"nullable" : false
+						}
+					},
+					"set2" : {
+						"type" : "array",
+						"items" : {
+							"type" : "string"
+						}
+					},
+					"set3" : {
+						"type" : "array",
+						"items" : {
+							"type" : "string",
+							"nullable" : false
+						}
+					},
+					"map1" : {
+						"type" : "object",
+						"additionalProperties" : {
+							"type" : "string",
+							"nullable" : false
+						}
+					},
+					"map2" : {
+						"type" : "object",
+						"additionalProperties" : {
+							"type" : "string",
+							"nullable" : false
+						}
+					},
+					"map3" : {
+						"type" : "object",
+						"additionalProperties" : {
+							"type" : "string"
+						}
+					},
+					"map4" : {
+						"type" : "object",
+						"additionalProperties" : {
+							"type" : "string",
+							"nullable" : false
+						}
+					}
+				}
+			},
+			"NotNullMarkedRecordDTO" : {
+				"type" : "object",
+				"properties" : {
+					"notNullable" : {
+						"type" : "string"
+					},
+					"nullable" : {
+						"type" : "string"
 					}
 				}
 			},
