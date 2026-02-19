@@ -67,9 +67,11 @@ public final class JsonBUtil {
                 addJsonBodyType(methodReader, addToMap);
               }
               final var asTypeElement = APContext.asTypeElement(methodReader.returnType());
-              if (!methodReader.isVoid() && (asTypeElement == null || !JStachePrism.isPresent(asTypeElement))) {
+              if (!methodReader.isVoid()
+                  && (asTypeElement == null || !JStachePrism.isPresent(asTypeElement))) {
                 var uType = UType.parse(methodReader.returnType());
-                if ("java.util.concurrent.CompletableFuture".equals(uType.mainType())) {
+                if ("java.util.concurrent.CompletableFuture".equals(uType.mainType())
+                    || "java.util.concurrent.CompletionStage".equals(uType.mainType())) {
                   uType = uType.paramRaw();
                 }
 

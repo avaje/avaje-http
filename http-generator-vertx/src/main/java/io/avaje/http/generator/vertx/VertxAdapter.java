@@ -5,6 +5,7 @@ import io.avaje.http.generator.core.Constants;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PlatformAdapter;
+import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.UType;
 import java.util.List;
 
@@ -27,22 +28,20 @@ final class VertxAdapter implements PlatformAdapter {
   @Override
   public String bodyAsClass(UType type) {
     final String fullType = type.full();
-    if ("java.lang.String".equals(fullType)) {
-      return "ctx.body().asString()";
-    }
-    if ("byte[]".equals(fullType)) {
-      return "ctx.body().buffer().getBytes()";
-    }
-    if ("io.vertx.core.buffer.Buffer".equals(fullType)) {
-      return "ctx.body().buffer()";
-    }
-    if (JSON_OBJECT.equals(fullType)) {
-      return "ctx.body().asJsonObject()";
-    }
-    if (JSON_ARRAY.equals(fullType)) {
-      return "ctx.body().asJsonArray()";
-    }
-    return "ctx.body().asPojo(" + type.mainType() + ".class)";
+    return switch (fullType) {
+      case "java.lang.String" -> "ctx.body().asString()";
+      case "byte[]" -> "ctx.body().buffer().getBytes()";
+      case "io.vertx.core.buffer.Buffer" -> "ctx.body().buffer()";
+      case JSON_OBJECT -> "ctx.body().asJsonObject()";
+      case JSON_ARRAY -> "ctx.body().asJsonArray()";
+      default -> {
+        if (ProcessingContext.useJsonb()) {
+          yield type.shortName() + "JsonType.fromJson(ctx.body().buffer().getBytes())";
+        }
+
+        yield "ctx.body().asPojo(" + type.mainType() + ".class)";
+      }
+    };
   }
 
   @Override
@@ -66,21 +65,13 @@ final class VertxAdapter implements PlatformAdapter {
   @Override
   public void writeReadParameter(Append writer, ParamType paramType, String paramName) {
     switch (paramType) {
-      case PATHPARAM:
-        writer.append("ctx.pathParam(\"%s\")", paramName);
-        break;
-      case QUERYPARAM:
-      case FORMPARAM:
-        writer.append("ctx.request().getParam(\"%s\")", paramName);
-        break;
-      case HEADER:
-        writer.append("ctx.request().getHeader(\"%s\")", paramName);
-        break;
-      case COOKIE:
-        writer.append("cookieValue(ctx, \"%s\")", paramName);
-        break;
-      default:
-        throw new UnsupportedOperationException("Unsupported parameter type for Vert.x: " + paramType);
+      case PATHPARAM -> writer.append("ctx.pathParam(\"%s\")", paramName);
+      case QUERYPARAM, FORMPARAM -> writer.append("ctx.request().getParam(\"%s\")", paramName);
+      case HEADER -> writer.append("ctx.request().getHeader(\"%s\")", paramName);
+      case COOKIE -> writer.append("cookieValue(ctx, \"%s\")", paramName);
+      default ->
+          throw new UnsupportedOperationException(
+              "Unsupported parameter type for Vert.x: " + paramType);
     }
   }
 
@@ -98,36 +89,19 @@ final class VertxAdapter implements PlatformAdapter {
 
   @Override
   public void writeReadMapParameter(Append writer, ParamType paramType) {
-    switch (paramType) {
-      case QUERYPARAM:
-      case FORMPARAM:
-      case FORM:
-        writer.append(
-        "ctx.request().params().entries().stream()"
-          + ".collect(java.util.stream.Collectors.groupingBy("
-          + "java.util.Map.Entry::getKey, "
-          + "java.util.stream.Collectors.mapping("
-          + "java.util.Map.Entry::getValue, java.util.stream.Collectors.toList())))"
-        );
-        break;
-      default:
-        throw new UnsupportedOperationException("Only query/form map parameters are supported in Vert.x");
-    }
+    switch (paramType){case QUERYPARAM, FORMPARAM, FORM ->writer.append(
+    """
+    ctx.request().params().entries().stream()\
+    .collect(java.util.stream.Collectors.groupingBy(\
+    java.util.Map.Entry::getKey, \
+    java.util.stream.Collectors.mapping(\
+    java.util.Map.Entry::getValue, java.util.stream.Collectors.toList())))"""
+    );default ->throw new UnsupportedOperationException("Only query/form map parameters are supported in Vert.x");}
   }
 
   @Override
   public void writeReadCollectionParameter(Append writer, ParamType paramType, String paramName) {
-    switch (paramType) {
-      case QUERYPARAM:
-        writer.append("ctx.queryParam(\"%s\")", paramName);
-        break;
-      case FORMPARAM:
-      case FORM:
-        writer.append("ctx.request().params().getAll(\"%s\")", paramName);
-        break;
-      default:
-        throw new UnsupportedOperationException("Only query/form multi-value parameters are supported in Vert.x");
-    }
+    switch (paramType){case QUERYPARAM ->writer.append("ctx.queryParam(\"%s\")", paramName);case FORMPARAM, FORM ->writer.append("ctx.request().params().getAll(\"%s\")", paramName);default ->throw new UnsupportedOperationException("Only query/form multi-value parameters are supported in Vert.x");}
   }
 
   @Override

@@ -34,7 +34,8 @@ final class AnnotationCopier {
           || type.contains("InstrumentServerContext")
           || type.contains("Default")
           || type.contains("OpenAPI")
-          || type.contains("Valid")) {
+          || type.contains("Valid")
+          || type.contains("Blocking")) {
         continue;
       }
 

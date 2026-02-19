@@ -7,6 +7,7 @@ import io.avaje.http.api.Get;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 import io.avaje.http.api.vertx.Blocking;
+import io.avaje.jsonb.Json;
 import io.vertx.ext.web.RoutingContext;
 
 @Controller("/roles-test")
@@ -36,6 +37,7 @@ public class VertxRolesFixtureController {
     return new Payload("Returning " + payload.name());
   }
 
+  @Json
   record Payload(String name) {}
 
   @Filter
