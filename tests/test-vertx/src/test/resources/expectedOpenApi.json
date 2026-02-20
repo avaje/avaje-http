@@ -45,10 +45,10 @@
 						"in" : "path",
 						"required" : true,
 						"schema" : {
-									"type" : "integer",
-									"format" : "int64",
-								}
-							},
+							"type" : "integer",
+							"format" : "int64"
+						}
+					},
 					{
 						"name" : "q",
 						"in" : "query",
