@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.SpecVersion;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
@@ -22,8 +23,10 @@ import io.swagger.v3.oas.models.tags.Tag;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -71,7 +74,7 @@ final class OpenAPIMergerUtil {
       return secondary;
     } else {
       final OpenAPI merged = new OpenAPI();
-      merged.setOpenapi(firstNotBlank(primary.getOpenapi(), secondary.getOpenapi()));
+      merged.setOpenapi(preferredOpenApiVersion(primary.getOpenapi(), secondary.getOpenapi()));
       merged.setInfo(merge(primary.getInfo(), secondary.getInfo()));
       merged.setExternalDocs(merge(primary.getExternalDocs(), secondary.getExternalDocs()));
       merged.setServers(merge(primary.getServers(), secondary.getServers(), Server::getUrl));
@@ -81,11 +84,7 @@ final class OpenAPIMergerUtil {
       merged.setComponents(merge(primary.getComponents(), secondary.getComponents()));
       merged.setExtensions(merge(primary.getExtensions(), secondary.getExtensions()));
       merged.setJsonSchemaDialect(firstNotBlank(primary.getJsonSchemaDialect(), secondary.getJsonSchemaDialect()));
-      if (primary.getSpecVersion() != null) {
-        merged.setSpecVersion(primary.getSpecVersion());
-      } else if (secondary.getSpecVersion() != null) {
-        merged.setSpecVersion(secondary.getSpecVersion());
-      }
+      merged.setSpecVersion(preferredSpecVersion(primary.getSpecVersion(), secondary.getSpecVersion()));
       return merged;
     }
   }
@@ -122,6 +121,124 @@ final class OpenAPIMergerUtil {
       return secondary;
     }
     return primary;
+  }
+
+  private static String preferredOpenApiVersion(final String primary, final String secondary) {
+    final var primaryVersion = firstNotBlank(primary, null);
+    final var secondaryVersion = firstNotBlank(secondary, null);
+    if (primaryVersion == null) {
+      return secondaryVersion;
+    }
+    if (secondaryVersion == null) {
+      return primaryVersion;
+    }
+    final int primaryRank = openApiVersionRank(primaryVersion);
+    final int secondaryRank = openApiVersionRank(secondaryVersion);
+    if (secondaryRank > primaryRank) {
+      return secondaryVersion;
+    }
+    return primaryVersion;
+  }
+
+  private static int openApiVersionRank(final String version) {
+    final var normalized = version.trim();
+    final var parts = normalized.split("\\.");
+    if (parts.length < 2) {
+      return 0;
+    }
+    try {
+      return Integer.parseInt(parts[0]) * 100 + Integer.parseInt(parts[1]);
+    } catch (NumberFormatException ignored) {
+      return 0;
+    }
+  }
+
+  private static SpecVersion preferredSpecVersion(final SpecVersion primary, final SpecVersion secondary) {
+    if (primary == SpecVersion.V31 || secondary == SpecVersion.V31) {
+      return SpecVersion.V31;
+    }
+    if (primary == SpecVersion.V30 || secondary == SpecVersion.V30) {
+      return SpecVersion.V30;
+    }
+    return firstNonNull(primary, secondary);
+  }
+
+  private static String preferredSchemaType(final Schema primary, final Schema secondary) {
+    final var explicitType = firstNotBlank(primary.getType(), secondary.getType());
+    if (explicitType != null) {
+      return explicitType;
+    }
+    final var primaryType = firstSchemaType(primary.getTypes());
+    final var secondaryType = firstSchemaType(secondary.getTypes());
+    return firstNotBlank(primaryType, secondaryType);
+  }
+
+  private static String firstSchemaType(final Set<String> types) {
+    if (types == null || types.isEmpty()) {
+      return null;
+    }
+    if (types.size() == 1) {
+      return types.iterator().next();
+    }
+    for (final String candidate : types) {
+      if (!"null".equals(candidate)) {
+        return candidate;
+      }
+    }
+    return null;
+  }
+
+  private static Set<String> mergedSchemaTypes(
+    final Schema primary,
+    final Schema secondary,
+    final String preferredType) {
+
+    final boolean hasTypeSet =
+      (primary.getTypes() != null && !primary.getTypes().isEmpty())
+        || (secondary.getTypes() != null && !secondary.getTypes().isEmpty());
+    final Boolean nullable = firstNonNull(primary.getNullable(), secondary.getNullable());
+    if (!hasTypeSet && !Boolean.TRUE.equals(nullable)) {
+      return null;
+    }
+
+    final LinkedHashSet<String> merged = new LinkedHashSet<>();
+    if (preferredType != null && !preferredType.isBlank() && !"null".equals(preferredType)) {
+      merged.add(preferredType);
+    }
+    addSchemaTypes(merged, primary.getTypes());
+    addSchemaTypes(merged, secondary.getTypes());
+    addSchemaType(merged, primary.getType());
+    addSchemaType(merged, secondary.getType());
+
+    boolean includeNull =
+      (primary.getTypes() != null && primary.getTypes().contains("null"))
+        || (secondary.getTypes() != null && secondary.getTypes().contains("null"));
+    if (Boolean.TRUE.equals(nullable)) {
+      includeNull = true;
+    } else if (Boolean.FALSE.equals(nullable)) {
+      includeNull = false;
+    }
+    if (includeNull) {
+      merged.add("null");
+    }
+
+    return merged.isEmpty() ? null : merged;
+  }
+
+  private static void addSchemaTypes(final Set<String> target, final Set<String> source) {
+    if (source == null || source.isEmpty()) {
+      return;
+    }
+    for (final String candidate : source) {
+      addSchemaType(target, candidate);
+    }
+  }
+
+  private static void addSchemaType(final Set<String> target, final String candidate) {
+    if (candidate == null || candidate.isBlank() || "null".equals(candidate)) {
+      return;
+    }
+    target.add(candidate);
   }
 
   private static <T, U> Map<T, U> merge(final Map<T, U> primary, final Map<T, U> secondary) {
@@ -310,7 +427,7 @@ final class OpenAPIMergerUtil {
       merged.setTrace(firstNonNull(primary.getTrace(), secondary.getTrace()));
       merged.setServers(merge(primary.getServers(), secondary.getServers(), Server::getUrl));
       merged.setParameters(merge(primary.getParameters(), secondary.getParameters(), Parameter::getName));
-      merged.set$ref(firstNotBlank(primary.get$ref(), primary.get$ref()));
+      merged.set$ref(firstNotBlank(primary.get$ref(), secondary.get$ref()));
       merged.setExtensions(merge(primary.getExtensions(), secondary.getExtensions()));
       return merged;
     }
@@ -345,7 +462,8 @@ final class OpenAPIMergerUtil {
       return secondary;
     } else {
       // We will alter "primary" to match
-      final String type = firstNotBlank(primary.getType(), secondary.getType());
+      final String type = preferredSchemaType(primary, secondary);
+      final Set<String> types = mergedSchemaTypes(primary, secondary, type);
       final String format = firstNotBlank(primary.getFormat(), secondary.getFormat());
       return SchemaCustomAdaptor.createSchemaFromInformation(type, format)
         .type(type)
@@ -356,7 +474,7 @@ final class OpenAPIMergerUtil {
         .maximum(firstNonNull(primary.getMaximum(), secondary.getMaximum()))
         .exclusiveMaximum(firstNonNull(primary.getExclusiveMaximum(), secondary.getExclusiveMaximum()))
         .minimum(firstNonNull(primary.getMinimum(), secondary.getMinimum()))
-        .exclusiveMaximum(firstNonNull(primary.getExclusiveMinimum(), secondary.getExclusiveMinimum()))
+        .exclusiveMinimum(firstNonNull(primary.getExclusiveMinimum(), secondary.getExclusiveMinimum()))
         .maxLength(firstNonNull(primary.getMaxLength(), secondary.getMaxLength()))
         .minLength(firstNonNull(primary.getMinLength(), secondary.getMinLength()))
         .pattern(firstNotBlank(primary.getPattern(), secondary.getPattern()))
@@ -371,7 +489,7 @@ final class OpenAPIMergerUtil {
         .additionalProperties(firstNonNull(primary.getAdditionalProperties(), secondary.getAdditionalProperties()))
         .description(firstNotBlank(primary.getDescription(), secondary.getDescription()))
         .$ref(firstNotBlank(primary.get$ref(), secondary.get$ref()))
-        .nullable(firstNonNull(primary.getNullable(), secondary.getNullable()))
+        .nullable(null)
         .readOnly(firstNonNull(primary.getReadOnly(), secondary.getReadOnly()))
         .writeOnly(firstNonNull(primary.getWriteOnly(), secondary.getWriteOnly()))
         .externalDocs(merge(primary.getExternalDocs(), secondary.getExternalDocs()))
@@ -384,7 +502,7 @@ final class OpenAPIMergerUtil {
         .anyOf(merge(primary.getAnyOf(), secondary.getAnyOf()))
         .oneOf(merge(primary.getOneOf(), secondary.getOneOf()))
         .items(merge(primary.getItems(), secondary.getItems()))
-        .types(firstNonNull(primary.getTypes(), secondary.getTypes()))
+        .types(types)
         .patternProperties(merge(primary.getPatternProperties(), secondary.getPatternProperties(), OpenAPIMergerUtil::merge, Schema.class))
         .exclusiveMaximumValue(firstNonNull(primary.getExclusiveMaximumValue(), secondary.getExclusiveMaximumValue()))
         .exclusiveMinimumValue(firstNonNull(primary.getExclusiveMinimumValue(), secondary.getExclusiveMinimumValue()))

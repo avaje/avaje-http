@@ -1,5 +1,5 @@
 {
-	"openapi" : "3.0.1",
+	"openapi" : "3.1.2",
 	"info" : {
 		"title" : "",
 		"version" : ""
@@ -157,8 +157,7 @@
 						"required" : true,
 						"schema" : {
 							"type" : "integer",
-							"format" : "int64",
-							"nullable" : false
+							"format" : "int64"
 						}
 					}
 				],
@@ -244,8 +243,7 @@
 						"required" : true,
 						"schema" : {
 							"type" : "integer",
-							"format" : "int32",
-							"nullable" : false
+							"format" : "int32"
 						}
 					},
 					{
@@ -596,8 +594,7 @@
 								"type" : "object",
 								"properties" : {
 									"name" : {
-										"type" : "string",
-										"nullable" : false
+										"type" : "string"
 									},
 									"email" : {
 										"type" : "string"
@@ -671,8 +668,7 @@
 								"type" : "object",
 								"properties" : {
 									"name" : {
-										"type" : "string",
-										"nullable" : false
+										"type" : "string"
 									},
 									"email" : {
 										"type" : "string"
@@ -796,12 +792,14 @@
 				"parameters" : [
 					{
 						"name" : "myOptional",
-						"in" : "query",
-						"schema" : {
-							"type" : "integer",
-							"format" : "int64",
-							"nullable" : true
-						}
+							"in" : "query",
+							"schema" : {
+								"type" : [
+									"integer",
+									"null"
+								],
+								"format" : "int64"
+							}
 					}
 				],
 				"responses" : {
@@ -830,8 +828,10 @@
 						"name" : "myOptional",
 						"in" : "query",
 						"schema" : {
-							"type" : "string",
-							"nullable" : true,
+							"type" : [
+								"string",
+								"null"
+							],
 							"enum" : [
 								"A",
 								"B",
@@ -866,8 +866,10 @@
 						"name" : "myOptional",
 						"in" : "query",
 						"schema" : {
-							"type" : "string",
-							"nullable" : true
+							"type" : [
+								"string",
+								"null"
+							]
 						}
 					}
 				],
@@ -899,8 +901,7 @@
 						"required" : true,
 						"schema" : {
 							"type" : "integer",
-							"format" : "int32",
-							"nullable" : false
+							"format" : "int32"
 						}
 					},
 					{
@@ -961,8 +962,7 @@
 						"name" : "name",
 						"in" : "query",
 						"schema" : {
-							"type" : "string",
-							"nullable" : false
+							"type" : "string"
 						}
 					},
 					{
@@ -1033,8 +1033,7 @@
 						"required" : true,
 						"schema" : {
 							"type" : "integer",
-							"format" : "int32",
-							"nullable" : false
+							"format" : "int32"
 						}
 					}
 				],
@@ -1060,8 +1059,7 @@
 						"required" : true,
 						"schema" : {
 							"type" : "integer",
-							"format" : "int32",
-							"nullable" : false
+							"format" : "int32"
 						}
 					},
 					{
@@ -1628,8 +1626,7 @@
 				"properties" : {
 					"id" : {
 						"type" : "integer",
-						"format" : "int64",
-						"nullable" : false
+						"format" : "int64"
 					},
 					"name" : {
 						"type" : "string"
@@ -1660,12 +1657,10 @@
 				"properties" : {
 					"id" : {
 						"type" : "integer",
-						"format" : "int32",
-						"nullable" : false
+						"format" : "int32"
 					},
 					"name" : {
-						"type" : "string",
-						"nullable" : false
+						"type" : "string"
 					},
 					"serverType" : {
 						"type" : "string",
@@ -1741,8 +1736,7 @@
 				"properties" : {
 					"id" : {
 						"type" : "integer",
-						"format" : "int32",
-						"nullable" : false
+						"format" : "int32"
 					},
 					"name" : {
 						"type" : "string",
@@ -1763,5 +1757,6 @@
 				}
 			}
 		}
-	}
+	},
+	"jsonSchemaDialect" : "https://spec.openapis.org/oas/3.1/dialect/base"
 }
