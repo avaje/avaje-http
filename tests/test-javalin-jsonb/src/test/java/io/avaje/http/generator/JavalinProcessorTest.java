@@ -172,10 +172,9 @@ class JavalinProcessorTest {
     final var mapper = new ObjectMapper();
     final var expectedOpenApiJson =
         mapper.readTree(new File("src/test/resources/expectedOpenApi.json"));
-    File file = new File("openapi.json");
-    // Files.copy(file.toPath(), Paths.get("other.json"));
-    final var generatedOpenApi = mapper.readTree(file);
+    final var generatedOpenApi = mapper.readTree(new File("openapi.json"));
 
+    assertOpenApi31(generatedOpenApi.toString());
     assertThat(generatedOpenApi).isEqualTo(expectedOpenApiJson);
   }
 
@@ -210,7 +209,8 @@ class JavalinProcessorTest {
         mapper.readTree(new File("src/test/resources/expectedInheritedOpenApi.json"));
     final var generatedOpenApi = mapper.readTree(new File("openapi.json"));
 
-    assert expectedOpenApiJson.equals(generatedOpenApi);
+    assertOpenApi31(generatedOpenApi.toString());
+    assertThat(generatedOpenApi).isEqualTo(expectedOpenApiJson);
   }
 
   private Iterable<JavaFileObject> getSourceFiles(String source) throws Exception {
@@ -221,5 +221,12 @@ class JavalinProcessorTest {
 
     final Set<Kind> fileKinds = Collections.singleton(Kind.SOURCE);
     return files.list(StandardLocation.SOURCE_PATH, "", fileKinds, true);
+  }
+
+  private static void assertOpenApi31(String json) {
+    assertThat(json).contains("\"openapi\":\"3.1.2\"");
+    assertThat(json).contains("\"jsonSchemaDialect\":\"https://spec.openapis.org/oas/3.1/dialect/base\"");
+    assertThat(json).doesNotContain("\"nullable\"");
+    assertThat(json).doesNotContain("\"types\":");
   }
 }

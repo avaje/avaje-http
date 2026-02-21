@@ -29,6 +29,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.SpecVersion;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
@@ -63,6 +64,9 @@ public class DocContext {
 
   private OpenAPI initOpenAPI() {
     OpenAPI openAPI = new OpenAPI();
+    openAPI.setOpenapi("3.1.2");
+    openAPI.setSpecVersion(SpecVersion.V31);
+    openAPI.setJsonSchemaDialect("https://spec.openapis.org/oas/3.1/dialect/base");
     openAPI.setPaths(new Paths());
 
     Server server = new Server();
