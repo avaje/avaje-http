@@ -10,7 +10,7 @@
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-parent</artifactId>
   <name>avaje-http-parent</name>
-  <version>3.8-RC2</version>
+  <version>3.8-RC3</version>
   <packaging>pom</packaging>
 
   <scm>
@@ -24,7 +24,7 @@
     <jackson.version>2.14.2</jackson.version>
     <jex.version>3.0-RC10</jex.version>
     <avaje.prisms.version>2.1-RC2</avaje.prisms.version>
-    <project.build.outputTimestamp>2026-02-16T09:12:32Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-02-21T06:25:41Z</project.build.outputTimestamp>
     <module-info.shade>${project.build.directory}${file.separator}module-info.shade</module-info.shade>
   </properties>
 

@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.8-RC2</version>
+    <version>3.8-RC3</version>
   </parent>
 
   <artifactId>avaje-htmx-nima</artifactId>
@@ -22,7 +22,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-htmx-api</artifactId>
-      <version>3.8-RC2</version>
+      <version>3.8-RC3</version>
     </dependency>
     <dependency>
       <groupId>io.helidon.webserver</groupId>
