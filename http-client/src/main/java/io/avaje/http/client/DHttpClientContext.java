@@ -270,7 +270,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
         .handle(
             (r, e) -> {
               if (e != null) {
-                if (e.getCause().getCause() instanceof InterruptedException) {
+                if (e.getCause() instanceof InterruptedException) {
                   Thread.currentThread().interrupt();
                 }
                 throw new HttpException(499, e.getCause());

@@ -716,14 +716,14 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
               });
     }
 
-    return resultFuture.thenApply(this::setHttpResponse);
+    return resultFuture.thenApply(this::afterAsync);
   }
 
-  <T> HttpResponse<T> setHttpResponse(HttpResponse<T> httpResponse) {
-	this.httpResponse = httpResponse;
+  protected <E> HttpResponse<E> afterAsync(HttpResponse<E> response) {
+    this.httpResponse = response;
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
-	context.afterResponse(this);
-	return httpResponse;
+    context.afterResponse(this);
+    return response;
   }
 
   protected HttpResponse<Void> asyncVoid(HttpResponse<byte[]> response) {
