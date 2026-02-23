@@ -646,6 +646,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
           new InterceptorChain(context.interceptors(), () -> performSend(responseHandler))
               .proceed(this);
       httpResponse = res;
+      context.afterResponse(this);
       return (HttpResponse<T>) res;
     } catch (final HttpException e) {
       throw errorMapper == null ? e : errorMapper.apply(e);
@@ -674,7 +675,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
             () ->
                 (HttpResponse<T>)
                     new InterceptorChain(
-                            context.interceptors(), () -> performSendAsync2(responseHandler).join())
+                            context.interceptors(), () -> performAsyncSend(responseHandler).join())
                         .proceed(this));
 
     if (errorMapper != null && !isRetry) {
@@ -697,7 +698,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return resultFuture;
   }
 
-  protected <T> CompletableFuture<HttpResponse<T>> performSendAsync2(
+  private <T> CompletableFuture<HttpResponse<T>> performAsyncSend(
       HttpResponse.BodyHandler<T> responseHandler) {
 
     addHeaders();
@@ -720,6 +721,8 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   <T> HttpResponse<T> setHttpResponse(HttpResponse<T> httpResponse) {
 	this.httpResponse = httpResponse;
+    responseTimeNanos = System.nanoTime() - startAsyncNanos;
+	context.afterResponse(this);
 	return httpResponse;
   }
 

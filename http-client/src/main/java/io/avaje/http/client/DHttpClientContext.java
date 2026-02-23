@@ -125,9 +125,10 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     }
     return new DMetrics(metricResTotal.sum(), metricResError.sum(), metricResBytes.sum(), metricResMicros.sum(), metricResMaxMicros.get());
   }
-  public List<RequestIntercept> interceptors() {
-return requestIntercept;}
 
+  public List<RequestIntercept> interceptors() {
+    return requestIntercept;
+  }
 
   void metricsString(int stringBody) {
     metricResBytes.add(stringBody);
