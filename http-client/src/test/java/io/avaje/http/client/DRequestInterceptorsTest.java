@@ -26,6 +26,34 @@ class DRequestInterceptorsTest {
     assertThat(buffer.toString()).isEqualTo("oneBefore|twoBefore|call|twoAfter|oneAfter|");
   }
 
+  @Test
+  void intercept_abort() {
+
+    new InterceptorChain(
+            asList(new One(), new Skip(), new Two()),
+            () -> {
+              buffer.append("call|");
+              return mock(HttpResponse.class);
+            })
+        .proceed(mock(HttpClientRequest.class));
+
+    assertThat(buffer.toString()).isEqualTo("oneBefore|skip|oneAfter|");
+  }
+
+  @Test
+  void intercept_noProceed() {
+
+    new InterceptorChain(
+            asList(new One(), new PassThrough(), new Two()),
+            () -> {
+              buffer.append("call|");
+              return mock(HttpResponse.class);
+            })
+        .proceed(mock(HttpClientRequest.class));
+
+    assertThat(buffer.toString()).isEqualTo("oneBefore|pass|call|oneAfter|");
+  }
+
   private class One implements RequestIntercept {
 
     @Override
@@ -49,6 +77,23 @@ class DRequestInterceptorsTest {
     @Override
     public void afterResponse(HttpResponse<?> response, HttpClientRequest request) {
       buffer.append("twoAfter|");
+    }
+  }
+
+  private class Skip implements RequestIntercept {
+
+    @Override
+    public void intercept(HttpClientRequest request, InterceptChain chain) {
+      buffer.append("skip|");
+      chain.setResponse(mock(HttpResponse.class));
+    }
+  }
+
+  private class PassThrough implements RequestIntercept {
+
+    @Override
+    public void intercept(HttpClientRequest request, InterceptChain chain) {
+      buffer.append("pass|");
     }
   }
 }

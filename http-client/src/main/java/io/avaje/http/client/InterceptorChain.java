@@ -26,7 +26,6 @@ final class InterceptorChain implements RequestIntercept.InterceptChain {
 
     if (intercepts.hasNext()) {
       intercepts.next().intercept(request, this);
-      return response;
     }
     if (response != null) {
       return response;
