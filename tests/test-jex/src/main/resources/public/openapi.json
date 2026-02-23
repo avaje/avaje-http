@@ -54,128 +54,6 @@
 				}
 			}
 		},
-		"/bars" : {
-			"get" : {
-				"tags" : [
-					
-				],
-				"summary" : "",
-				"description" : "",
-				"responses" : {
-					"200" : {
-						"description" : "",
-						"content" : {
-							"text/plain" : {
-								"schema" : {
-									"type" : "string"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/bars/find/{code}" : {
-			"get" : {
-				"tags" : [
-					
-				],
-				"summary" : "",
-				"description" : "",
-				"parameters" : [
-					{
-						"name" : "code",
-						"in" : "path",
-						"required" : true,
-						"schema" : {
-							"type" : "string"
-						}
-					}
-				],
-				"responses" : {
-					"200" : {
-						"description" : "",
-						"content" : {
-							"application/json" : {
-								"schema" : {
-									"type" : "array",
-									"items" : {
-										"$ref" : "#/components/schemas/Bar"
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/bars/find/{code}/stream" : {
-			"get" : {
-				"tags" : [
-					
-				],
-				"summary" : "",
-				"description" : "",
-				"parameters" : [
-					{
-						"name" : "code",
-						"in" : "path",
-						"required" : true,
-						"schema" : {
-							"type" : "string"
-						}
-					}
-				],
-				"responses" : {
-					"200" : {
-						"description" : "",
-						"content" : {
-							"application/json" : {
-								"schema" : {
-									"type" : "array",
-									"items" : {
-										"$ref" : "#/components/schemas/Bar"
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/bars/{id}" : {
-			"get" : {
-				"tags" : [
-					
-				],
-				"summary" : "",
-				"description" : "",
-				"parameters" : [
-					{
-						"name" : "id",
-						"in" : "path",
-						"required" : true,
-						"schema" : {
-							"type" : "integer",
-							"format" : "int64",
-							"nullable" : false
-						}
-					}
-				],
-				"responses" : {
-					"200" : {
-						"description" : "",
-						"content" : {
-							"application/json" : {
-								"schema" : {
-									"$ref" : "#/components/schemas/Bar"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
 		"/baz" : {
 			"get" : {
 				"tags" : [
@@ -1623,19 +1501,6 @@
 	},
 	"components" : {
 		"schemas" : {
-			"Bar" : {
-				"type" : "object",
-				"properties" : {
-					"id" : {
-						"type" : "integer",
-						"format" : "int64",
-						"nullable" : false
-					},
-					"name" : {
-						"type" : "string"
-					}
-				}
-			},
 			"Baz" : {
 				"type" : "object",
 				"properties" : {
@@ -1708,12 +1573,12 @@
 			"Person" : {
 				"type" : "object",
 				"properties" : {
-					"name" : {
-						"type" : "string"
-					},
 					"birthday" : {
 						"type" : "string",
 						"format" : "date"
+					},
+					"name" : {
+						"type" : "string"
 					}
 				}
 			},

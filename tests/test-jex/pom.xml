@@ -18,12 +18,6 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.avaje</groupId>
-      <artifactId>logback</artifactId>
-      <version>1.0</version>
-    </dependency>
-
-    <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jex</artifactId>
       <version>${jex.version}</version>
@@ -51,6 +45,7 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -100,12 +95,14 @@
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-jex-generator</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-client-generator</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

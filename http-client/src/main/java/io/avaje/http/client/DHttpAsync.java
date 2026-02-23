@@ -17,8 +17,7 @@ final class DHttpAsync implements HttpAsyncResponse {
 
   private <E> CompletableFuture<HttpResponse<E>> with(boolean loggable, HttpResponse.BodyHandler<E>  handler) {
     return request
-      .performSendAsync(loggable, handler)
-      .thenApply(request::afterAsync);
+      .performSendAsync(loggable, handler);
   }
 
   @Override

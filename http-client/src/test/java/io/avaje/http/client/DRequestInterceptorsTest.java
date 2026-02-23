@@ -15,12 +15,15 @@ class DRequestInterceptorsTest {
   @Test
   void intercept_reverse_after() {
 
-    DRequestInterceptors interceptors = new DRequestInterceptors(asList(new One(), new Two()));
+    new InterceptorChain(
+            asList(new One(), new Two()),
+            () -> {
+              buffer.append("call|");
+              return mock(HttpResponse.class);
+            })
+        .proceed(mock(HttpClientRequest.class));
 
-    interceptors.beforeRequest(mock(HttpClientRequest.class));
-    interceptors.afterResponse(mock(HttpResponse.class), mock(HttpClientRequest.class));
-
-    assertThat(buffer.toString()).isEqualTo("oneBefore|twoBefore|twoAfter|oneAfter|");
+    assertThat(buffer.toString()).isEqualTo("oneBefore|twoBefore|call|twoAfter|oneAfter|");
   }
 
   private class One implements RequestIntercept {

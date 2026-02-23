@@ -71,23 +71,13 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
   }
 
   private RequestListener buildListener() {
-    if (listeners.isEmpty()) {
+    if (listeners.isEmpty()){
       return null;
-    } else if (listeners.size() == 1) {
+    }
+    if (listeners.size() == 1){
       return listeners.get(0);
-    } else {
-      return new DRequestListeners(listeners);
     }
-  }
-
-  private RequestIntercept buildIntercept() {
-    if (interceptors.isEmpty()) {
-      return null;
-    } else if (interceptors.size() == 1) {
-      return interceptors.get(0);
-    } else {
-      return new DRequestInterceptors(interceptors);
-    }
+    return new DRequestListeners(listeners);
   }
 
   private java.net.http.HttpClient defaultClient() {
@@ -181,7 +171,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
       buildListener(),
       authTokenProvider,
       backgroundRefreshDuration,
-      buildIntercept());
+      interceptors);
   }
 
   DHttpClientBuilder() {}
