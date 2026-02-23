@@ -91,7 +91,7 @@ final class DHttpClientRequestWithRetry extends DHttpClientRequest {
                 return CompletableFuture.completedFuture(res);
               }
               if (!retryHandler.isRetry(retryCount, res)) {
-                return CompletableFuture.<HttpResponse<T>>failedFuture(ex.getCause().getCause());
+                return CompletableFuture.<HttpResponse<T>>failedFuture(ex.getCause());
               }
               retryCount++;
               return asyncwithRetry(loggable, responseHandler);
