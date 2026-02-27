@@ -10,7 +10,8 @@ import io.avaje.http.api.AvajeJavalinPlugin;
 import io.avaje.http.api.PathSegment;
 import io.avaje.http.api.Validator;
 import io.javalin.config.JavalinConfig;
-import io.javalin.router.JavalinDefaultRouting;
+import io.javalin.config.JavalinState;
+import io.javalin.config.RoutesConfig;
 
 //@Singleton
 public class HelloController$Route extends AvajeJavalinPlugin {
@@ -25,39 +26,39 @@ public class HelloController$Route extends AvajeJavalinPlugin {
 
 
   @Override
-  public void onStart(JavalinConfig cfg) {
-    cfg.router.mount(this::routes);
+  public void onStart(JavalinState cfg) {
+   routes(cfg.routes);
   }
 
-  private void routes(JavalinDefaultRouting cfg) {
+  private void routes(RoutesConfig routes) {
 
-	  cfg.get("/hello/message", ctx -> {
+	  routes.get("/hello/message", ctx -> {
       ctx.status(200);
       ctx.contentType("text/plain").result(controller.getPlainMessage());
     });
 
-	  cfg.get("/hello/retry", ctx -> {
+	  routes.get("/hello/retry", ctx -> {
       ctx.status(200);
       ctx.contentType("text/plain").result(controller.retry());
     });
 
-	  cfg.get("/hello/basicAuth", ctx -> {
+	  routes.get("/hello/basicAuth", ctx -> {
       ctx.status(200);
       final String authorization = ctx.header("Authorization");
       ctx.result(controller.basicAuth(authorization));
     });
 
-    cfg.get("/hello/stream", ctx -> {
+    routes.get("/hello/stream", ctx -> {
       ctx.status(200);
       controller.stream(ctx);
     });
 
-    cfg.get("/hello/streamEmpty", ctx -> {
+    routes.get("/hello/streamEmpty", ctx -> {
       ctx.status(200);
       controller.streamEmpty(ctx);
     });
 
-    cfg.get("/hello/{id}/{date}", ctx -> {
+    routes.get("/hello/{id}/{date}", ctx -> {
       ctx.status(200);
       final int id = asInt(ctx.pathParam("id"));
       final LocalDate date = asLocalDate(ctx.pathParam("date"));
@@ -65,21 +66,21 @@ public class HelloController$Route extends AvajeJavalinPlugin {
       ctx.json(controller.hello(id, date, otherParam));
     });
 
-    cfg.get("/hello/findbyname/{name}", ctx -> {
+    routes.get("/hello/findbyname/{name}", ctx -> {
       ctx.status(200);
       final String name = ctx.pathParam("name");
       final String otherParam = ctx.queryParam("otherParam");
       ctx.json(controller.findByName(name, otherParam));
     });
 
-    cfg.post("/hello", ctx -> {
+    routes.post("/hello", ctx -> {
       ctx.status(201);
       final HelloDto dto = ctx.bodyAsClass(HelloDto.class);
       validator.validate(dto, "en-us");
       ctx.json(controller.post(dto));
     });
 
-    cfg.post("/hello/savebean/{foo}", ctx -> {
+    routes.post("/hello/savebean/{foo}", ctx -> {
       ctx.status(201);
       final String foo = ctx.pathParam("foo");
       final HelloDto dto = ctx.bodyAsClass(HelloDto.class);
@@ -87,7 +88,7 @@ public class HelloController$Route extends AvajeJavalinPlugin {
       controller.saveBean(foo, dto, ctx);
     });
 
-    cfg.post("/hello/saveform", ctx -> {
+    routes.post("/hello/saveform", ctx -> {
       ctx.status(201);
       final HelloForm helloForm =  new HelloForm(
         ctx.formParam("name"),
@@ -100,7 +101,7 @@ public class HelloController$Route extends AvajeJavalinPlugin {
       controller.saveForm(helloForm);
     });
 
-    cfg.post("/hello/saveform2", ctx -> {
+    routes.post("/hello/saveform2", ctx -> {
       ctx.status(201);
       final String name = ctx.formParam("name");
       final String email = ctx.formParam("email");
@@ -108,7 +109,7 @@ public class HelloController$Route extends AvajeJavalinPlugin {
       controller.saveForm2(name, email, url);
     });
 
-    cfg.post("/hello/saveform3", ctx -> {
+    routes.post("/hello/saveform3", ctx -> {
       ctx.status(201);
       final HelloForm helloForm =  new HelloForm(
         ctx.formParam("name"),
@@ -121,18 +122,18 @@ public class HelloController$Route extends AvajeJavalinPlugin {
       ctx.json(controller.saveForm3(helloForm));
     });
 
-    cfg.get("/hello", ctx -> {
+    routes.get("/hello", ctx -> {
       ctx.status(200);
       ctx.json(controller.getAll());
     });
 
-    cfg.delete("/hello/{id}", ctx -> {
+    routes.delete("/hello/{id}", ctx -> {
       ctx.status(204);
       final int id = asInt(ctx.pathParam("id"));
       controller.deleteById(id);
     });
 
-    cfg.get("/hello/withMatrix/{year_segment}/{other}", ctx -> {
+    routes.get("/hello/withMatrix/{year_segment}/{other}", ctx -> {
       ctx.status(200);
       final PathSegment year_segment = PathSegment.of(ctx.pathParam("year_segment"));
       final int year = asInt(year_segment.val());
