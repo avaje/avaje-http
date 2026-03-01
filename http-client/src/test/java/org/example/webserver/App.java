@@ -26,48 +26,48 @@ public class App {
     Javalin app =
         Javalin.create(
             config -> {
-              config.showJavalinBanner = false;
               config.registerPlugin(bean);
+              var route = config.routes;
+
+              route.exception(
+                  ValidationException.class,
+                  (exception, ctx) -> {
+                    Map<String, Object> map = new LinkedHashMap<>();
+                    map.put("message", exception.getMessage());
+                    map.put("errors", exception.getErrors());
+                    ctx.status(exception.getStatus());
+                    ctx.json(map);
+                  });
+
+              route.exception(
+                  InvalidTypeArgumentException.class,
+                  (exception, ctx) -> {
+                    Map<String, String> map = new LinkedHashMap<>();
+                    map.put("path", ctx.path());
+                    map.put("message", "invalid type argument");
+                    ctx.status(400);
+                    ctx.json(map);
+                  });
+
+              route.exception(
+                  InvalidPathArgumentException.class,
+                  (exception, ctx) -> {
+                    Map<String, String> map = new LinkedHashMap<>();
+                    map.put("path", ctx.path());
+                    map.put("message", "invalid path argument");
+                    ctx.status(404);
+                    ctx.json(map);
+                  });
+
+              route.get("/", ctx -> ctx.result("Hello World"));
+              route.head("/head", ctx -> ctx.result("head"));
+              route.get("/get", ctx -> ctx.result("get"));
+              route.post("/post", ctx -> ctx.result("post"));
+              route.put("/put", ctx -> ctx.result("put"));
+              route.patch("/patch", ctx -> ctx.result("patch"));
+              // route.tra("/patch", ctx -> ctx.result("patch"));
+              route.delete("/delete", ctx -> ctx.result("delete body[" + ctx.body().trim() + "]"));
             });
-
-    app.exception(
-        ValidationException.class,
-        (exception, ctx) -> {
-          Map<String, Object> map = new LinkedHashMap<>();
-          map.put("message", exception.getMessage());
-          map.put("errors", exception.getErrors());
-          ctx.status(exception.getStatus());
-          ctx.json(map);
-        });
-
-    app.exception(
-        InvalidTypeArgumentException.class,
-        (exception, ctx) -> {
-          Map<String, String> map = new LinkedHashMap<>();
-          map.put("path", ctx.path());
-          map.put("message", "invalid type argument");
-          ctx.status(400);
-          ctx.json(map);
-        });
-
-    app.exception(
-        InvalidPathArgumentException.class,
-        (exception, ctx) -> {
-          Map<String, String> map = new LinkedHashMap<>();
-          map.put("path", ctx.path());
-          map.put("message", "invalid path argument");
-          ctx.status(404);
-          ctx.json(map);
-        });
-
-    app.get("/", ctx -> ctx.result("Hello World"));
-    app.head("/head", ctx -> ctx.result("head"));
-    app.get("/get", ctx -> ctx.result("get"));
-    app.post("/post", ctx -> ctx.result("post"));
-    app.put("/put", ctx -> ctx.result("put"));
-    app.patch("/patch", ctx -> ctx.result("patch"));
-    // app.tra("/patch", ctx -> ctx.result("patch"));
-    app.delete("/delete", ctx -> ctx.result("delete body[" + ctx.body().trim() + "]"));
 
     //    // All WebRoutes / Controllers ... from DI Context
     //    List<WebRoutes> webRoutes = context.getBeans(WebRoutes.class);
