@@ -412,13 +412,13 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   private HttpRequest.BodyPublisher body() {
-    if (body != null){
+    if (body != null) {
       return body;
     }
-    if (encodedRequestBody != null){
+    if (encodedRequestBody != null) {
       return fromEncodedBody();
     }
-    if (formParams != null){
+    if (formParams != null) {
       return bodyFromForm();
     }
     return HttpRequest.BodyPublishers.noBody();
@@ -641,7 +641,6 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private <T> HttpResponse<T> sendWith(HttpResponse.BodyHandler<T> responseHandler) {
     context.authToken(this);
     try {
-
       var res =
           new InterceptorChain(context.interceptors(), () -> performSend(responseHandler))
               .proceed(this);
@@ -671,49 +670,42 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
     startAsyncNanos = System.nanoTime();
     var resultFuture =
-        CompletableFuture.supplyAsync(
-            () ->
-                (HttpResponse<T>)
-                    new InterceptorChain(
-                            context.interceptors(), () -> performAsyncSend(responseHandler).join())
-                        .proceed(this));
+      CompletableFuture.supplyAsync(() ->
+        (HttpResponse<T>)
+          new InterceptorChain(context.interceptors(), () -> performAsyncSend(responseHandler).join())
+            .proceed(this));
 
     if (errorMapper != null && !isRetry) {
       resultFuture =
-          resultFuture
-              .handle(
-                  (r, e) -> {
-                    if (e != null && e.getCause() instanceof HttpException) {
-                      return CompletableFuture.<HttpResponse<T>>failedFuture(
-                          errorMapper.apply((HttpException) e.getCause().getCause()));
-                    }
-                    if (e != null) {
-                      return CompletableFuture.<HttpResponse<T>>failedFuture(e.getCause());
-                    }
-                    return CompletableFuture.completedFuture(r);
-                  })
-              .thenCompose(Function.identity());
+        resultFuture.handle((r, e) -> {
+            if (e != null && e.getCause() instanceof HttpException) {
+              return CompletableFuture.<HttpResponse<T>>failedFuture(
+                errorMapper.apply((HttpException) e.getCause().getCause()));
+            }
+            if (e != null) {
+              return CompletableFuture.<HttpResponse<T>>failedFuture(e.getCause());
+            }
+            return CompletableFuture.completedFuture(r);
+          })
+          .thenCompose(Function.identity());
     }
 
     return resultFuture;
   }
 
-  private <T> CompletableFuture<HttpResponse<T>> performAsyncSend(
-      HttpResponse.BodyHandler<T> responseHandler) {
-
+  private <T> CompletableFuture<HttpResponse<T>> performAsyncSend(HttpResponse.BodyHandler<T> responseHandler) {
     addHeaders();
     startAsyncNanos = System.nanoTime();
     var resultFuture = context.sendAsync(httpRequest, responseHandler);
 
     if (errorMapper != null && !isRetry) {
       resultFuture =
-          resultFuture.handle(
-              (r, e) -> {
-                if (e != null && e.getCause() instanceof HttpException) {
-                  throw errorMapper.apply((HttpException) e.getCause());
-                }
-                return r;
-              });
+        resultFuture.handle((r, e) -> {
+          if (e != null && e.getCause() instanceof HttpException) {
+            throw errorMapper.apply((HttpException) e.getCause());
+          }
+          return r;
+        });
     }
 
     return resultFuture.thenApply(this::afterAsync);
@@ -890,16 +882,16 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
     @Override
     public String requestBody() {
-      if (suppressLogging){
+      if (suppressLogging) {
         return "<suppressed request body>";
       }
-      if (encodedRequestBody != null){
+      if (encodedRequestBody != null) {
         return encodedRequestBody.contentAsUtf8();
       }
-      if (bodyFormEncoded){
+      if (bodyFormEncoded) {
         return buildEncodedFormContent();
       }
-      if (body != null){
+      if (body != null) {
         return body.toString();
       }
       return null;

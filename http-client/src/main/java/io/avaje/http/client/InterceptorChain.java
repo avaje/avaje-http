@@ -14,7 +14,7 @@ final class InterceptorChain implements RequestIntercept.InterceptChain {
 
   private final Iterator<RequestIntercept> intercepts;
   private final Supplier<HttpResponse<?>> callInvocation;
-  HttpResponse<?> response;
+  private HttpResponse<?> response;
 
   InterceptorChain(List<RequestIntercept> interceptors, Supplier<HttpResponse<?>> request) {
     this.intercepts = List.copyOf(interceptors).iterator();
@@ -23,7 +23,6 @@ final class InterceptorChain implements RequestIntercept.InterceptChain {
 
   @Override
   public HttpResponse<?> proceed(HttpClientRequest request) {
-
     if (intercepts.hasNext()) {
       intercepts.next().intercept(request, this);
     }
