@@ -60,6 +60,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private Map<String, Object> customAttributes;
   protected Function<HttpException, RuntimeException> errorMapper;
   protected boolean isRetry;
+  protected int retryCount;
   private String method;
 
   DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
@@ -653,7 +654,9 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   protected <T> HttpResponse<T> performSend(HttpResponse.BodyHandler<T> responseHandler) {
-    addHeaders();
+    if (retryCount == 0) {
+      addHeaders();
+    }
     final long startNanos = System.nanoTime();
     try {
       return context.send(httpRequest, responseHandler);
@@ -694,7 +697,6 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   private <T> CompletableFuture<HttpResponse<T>> performAsyncSend(HttpResponse.BodyHandler<T> responseHandler) {
-    addHeaders();
     startAsyncNanos = System.nanoTime();
     var resultFuture = context.sendAsync(httpRequest, responseHandler);
 
