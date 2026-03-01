@@ -71,10 +71,10 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
   }
 
   private RequestListener buildListener() {
-    if (listeners.isEmpty()){
+    if (listeners.isEmpty()) {
       return null;
     }
-    if (listeners.size() == 1){
+    if (listeners.size() == 1) {
       return listeners.get(0);
     }
     return new DRequestListeners(listeners);
