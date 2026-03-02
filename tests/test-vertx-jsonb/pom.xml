@@ -70,7 +70,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>junit</artifactId>
-      <version>1.7</version>
+      <version>1.8</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -87,7 +87,7 @@
       <plugin>
         <groupId>io.avaje</groupId>
         <artifactId>avaje-inject-maven-plugin</artifactId>
-        <version>12.3</version>
+        <version>12.4</version>
         <executions>
           <execution>
             <?m2e execute?>

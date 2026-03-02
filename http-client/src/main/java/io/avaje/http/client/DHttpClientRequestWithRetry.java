@@ -9,7 +9,6 @@ import java.util.function.Function;
 final class DHttpClientRequestWithRetry extends DHttpClientRequest {
 
   private final RetryHandler retryHandler;
-  private int retryCount;
 
   DHttpClientRequestWithRetry(
       DHttpClientContext context, Duration requestTimeout, RetryHandler retryHandler) {

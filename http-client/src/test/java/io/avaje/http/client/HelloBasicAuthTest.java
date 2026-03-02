@@ -27,8 +27,8 @@ class HelloBasicAuthTest extends BaseWebTest {
       .GET()
       .asString();
 
-    assertThat(hres.statusCode()).isEqualTo(200);
     assertThat(hres.body()).isEqualTo("decoded: rob:bot");
+    assertThat(hres.statusCode()).isEqualTo(200);
   }
 
 }

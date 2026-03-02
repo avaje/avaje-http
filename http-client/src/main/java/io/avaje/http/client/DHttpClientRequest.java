@@ -60,6 +60,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private Map<String, Object> customAttributes;
   protected Function<HttpException, RuntimeException> errorMapper;
   protected boolean isRetry;
+  protected int retryCount;
   private String method;
 
   DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
@@ -414,13 +415,14 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private HttpRequest.BodyPublisher body() {
     if (body != null) {
       return body;
-    } else if (encodedRequestBody != null) {
-      return fromEncodedBody();
-    } else if (formParams != null) {
-      return bodyFromForm();
-    } else {
-      return HttpRequest.BodyPublishers.noBody();
     }
+    if (encodedRequestBody != null) {
+      return fromEncodedBody();
+    }
+    if (formParams != null) {
+      return bodyFromForm();
+    }
+    return HttpRequest.BodyPublishers.noBody();
   }
 
   private HttpRequest.BodyPublisher bodyFromForm() {
@@ -632,25 +634,29 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   @Override
   public <T> HttpResponse<T> handler(HttpResponse.BodyHandler<T> responseHandler) {
-    final HttpResponse<T> response = sendWith(responseHandler);
-    context.afterResponse(this);
-    return response;
+    return sendWith(responseHandler);
   }
 
   /** Prepare and send the request but not performing afterResponse() handling. */
+  @SuppressWarnings("unchecked")
   private <T> HttpResponse<T> sendWith(HttpResponse.BodyHandler<T> responseHandler) {
-    context.beforeRequest(this);
-    addHeaders();
+    context.authToken(this);
     try {
-      HttpResponse<T> res = performSend(responseHandler);
+      var res =
+          new InterceptorChain(context.interceptors(), () -> performSend(responseHandler))
+              .proceed(this);
       httpResponse = res;
-      return res;
+      context.afterResponse(this);
+      return (HttpResponse<T>) res;
     } catch (final HttpException e) {
-      throw errorMapper == null ? e: errorMapper.apply(e);
+      throw errorMapper == null ? e : errorMapper.apply(e);
     }
   }
 
   protected <T> HttpResponse<T> performSend(HttpResponse.BodyHandler<T> responseHandler) {
+    if (retryCount == 0) {
+      addHeaders();
+    }
     final long startNanos = System.nanoTime();
     try {
       return context.send(httpRequest, responseHandler);
@@ -659,26 +665,59 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     }
   }
 
+  @SuppressWarnings("unchecked")
   protected <T> CompletableFuture<HttpResponse<T>> performSendAsync(
       boolean loggable, HttpResponse.BodyHandler<T> responseHandler) {
     loggableResponseBody = loggable;
-    context.beforeRequest(this);
-    addHeaders();
+    context.authToken(this);
+
+    startAsyncNanos = System.nanoTime();
+    var resultFuture =
+      CompletableFuture.supplyAsync(() ->
+        (HttpResponse<T>)
+          new InterceptorChain(context.interceptors(), () -> performAsyncSend(responseHandler).join())
+            .proceed(this));
+
+    if (errorMapper != null && !isRetry) {
+      resultFuture =
+        resultFuture.handle((r, e) -> {
+            if (e != null && e.getCause() instanceof HttpException) {
+              return CompletableFuture.<HttpResponse<T>>failedFuture(
+                errorMapper.apply((HttpException) e.getCause().getCause()));
+            }
+            if (e != null) {
+              return CompletableFuture.<HttpResponse<T>>failedFuture(e.getCause());
+            }
+            return CompletableFuture.completedFuture(r);
+          })
+          .thenCompose(Function.identity());
+    }
+
+    return resultFuture;
+  }
+
+  private <T> CompletableFuture<HttpResponse<T>> performAsyncSend(HttpResponse.BodyHandler<T> responseHandler) {
     startAsyncNanos = System.nanoTime();
     var resultFuture = context.sendAsync(httpRequest, responseHandler);
 
     if (errorMapper != null && !isRetry) {
       resultFuture =
-          resultFuture.handle(
-              (r, e) -> {
-                if (e != null && e.getCause() instanceof HttpException) {
-                  throw errorMapper.apply((HttpException) e.getCause());
-                }
-                return r;
-              });
+        resultFuture.handle((r, e) -> {
+          if (e != null && e.getCause() instanceof HttpException) {
+            throw errorMapper.apply((HttpException) e.getCause());
+          }
+          return r;
+        });
     }
 
-    return resultFuture;
+    return resultFuture.thenApply(this::afterAsync);
+  }
+
+  protected <E> HttpResponse<E> afterAsync(HttpResponse<E> response) {
+    this.httpResponse = response;
+    responseTimeNanos = System.nanoTime() - startAsyncNanos;
+    context.afterResponse(this);
+    return response;
   }
 
   protected HttpResponse<Void> asyncVoid(HttpResponse<byte[]> response) {
@@ -699,7 +738,6 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   protected <E> HttpResponse<Stream<E>> asyncStream(Type type, HttpResponse<Stream<String>> response) {
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
-    context.afterResponse(this);
     checkResponse(response);
     final BodyReader<E> bodyReader = context.beanReader(type);
     return new HttpWrapperResponse<>(response.body().map(bodyReader::readBody), httpResponse);
@@ -709,15 +747,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     responseTimeNanos = System.nanoTime() - startAsyncNanos;
     httpResponse = response;
     encodedResponseBody = context.readContent(response);
-    context.afterResponse(this);
     checkMaybeThrow(response);
-  }
-
-  protected <E> HttpResponse<E> afterAsync(HttpResponse<E> response) {
-    responseTimeNanos = System.nanoTime() - startAsyncNanos;
-    httpResponse = response;
-    context.afterResponse(this);
-    return response;
   }
 
   @Override
@@ -856,15 +886,17 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     public String requestBody() {
       if (suppressLogging) {
         return "<suppressed request body>";
-      } else if (encodedRequestBody != null) {
-        return encodedRequestBody.contentAsUtf8();
-      } else if (bodyFormEncoded) {
-        return buildEncodedFormContent();
-      } else if (body != null) {
-        return body.toString();
-      } else {
-        return null;
       }
+      if (encodedRequestBody != null) {
+        return encodedRequestBody.contentAsUtf8();
+      }
+      if (bodyFormEncoded) {
+        return buildEncodedFormContent();
+      }
+      if (body != null) {
+        return body.toString();
+      }
+      return null;
     }
 
     @Override
@@ -874,7 +906,8 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
       }
       if (encodedResponseBody != null) {
         return context.maxResponseBody(new String(encodedResponseBody.content(), StandardCharsets.UTF_8));
-      } else if (httpResponse != null && loggableResponseBody) {
+      }
+      if (httpResponse != null && loggableResponseBody) {
         final var responseBody = httpResponse.body();
         return responseBody == null ? null : context.maxResponseBody(responseBody.toString());
       }
