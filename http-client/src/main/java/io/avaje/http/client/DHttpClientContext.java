@@ -33,7 +33,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   private final Duration requestTimeout;
   private final BodyAdapter bodyAdapter;
   private final RequestListener requestListener;
-  private final RequestIntercept requestIntercept;
+  private final List<RequestIntercept> requestIntercept;
   private final RetryHandler retryHandler;
   private final boolean withAuthToken;
   private final AuthTokenProvider authTokenProvider;
@@ -60,7 +60,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
       RequestListener requestListener,
       AuthTokenProvider authTokenProvider,
       Duration backgroundRefreshDuration,
-      RequestIntercept intercept) {
+      List<RequestIntercept> list) {
     this.httpClient = httpClient;
     this.baseUrl = baseUrl;
     this.requestTimeout = requestTimeout;
@@ -71,7 +71,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     this.authTokenProvider = authTokenProvider;
     this.backgroundRefreshDuration = backgroundRefreshDuration;
     this.withAuthToken = authTokenProvider != null;
-    this.requestIntercept = intercept;
+    this.requestIntercept = list;
   }
 
   @Override
@@ -124,6 +124,10 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
       return new DMetrics(metricResTotal.sumThenReset(), metricResError.sumThenReset(), metricResBytes.sumThenReset(), metricResMicros.sumThenReset(), metricResMaxMicros.getThenReset());
     }
     return new DMetrics(metricResTotal.sum(), metricResError.sum(), metricResBytes.sum(), metricResMicros.sum(), metricResMaxMicros.get());
+  }
+
+  List<RequestIntercept> interceptors() {
+    return requestIntercept;
   }
 
   void metricsString(int stringBody) {
@@ -331,17 +335,11 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     if (requestListener != null) {
       requestListener.response(request.listenerEvent());
     }
-    if (requestIntercept != null) {
-      requestIntercept.afterResponse(request.response(), request);
-    }
   }
 
-  void beforeRequest(DHttpClientRequest request) {
+  void authToken(DHttpClientRequest request) {
     if (withAuthToken && !request.isSkipAuthToken()) {
       request.header(AUTHORIZATION, BEARER + authToken());
-    }
-    if (requestIntercept != null) {
-      requestIntercept.beforeRequest(request);
     }
   }
 
