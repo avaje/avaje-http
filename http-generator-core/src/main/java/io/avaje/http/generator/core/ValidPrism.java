@@ -28,7 +28,6 @@ import io.avaje.prism.GeneratePrism;
 public interface ValidPrism {
 
   static Optional<ValidPrism> getOptionalOn(Element e) {
-
     return Optional.<ValidPrism>empty()
         .or(() -> AvajeValidPrism.getOptionalOn(e))
         .or(() -> HttpValidPrism.getOptionalOn(e))
@@ -42,7 +41,6 @@ public interface ValidPrism {
         || JakartaValidPrism.isPresent(e)
         || JavaxValidPrism.isPresent(e)
         || HttpValidPrism.isPresent(e)
-        || HttpValidPrism.isPresent(e)
         || typeUse(e).isPresent();
   }
 
@@ -52,15 +50,14 @@ public interface ValidPrism {
       var returnType = ee.getReturnType();
       if (returnType.getKind() != TypeKind.VOID) {
         return returnType.getAnnotationMirrors().stream()
-            .map(
-                m ->
-                    Optional.<ValidPrism>empty()
-                        .or(() -> AvajeValidPrism.getOptional(m))
-                        .or(() -> JakartaValidPrism.getOptional(m))
-                        .or(() -> JavaxValidPrism.getOptional(m)))
-            .filter(Optional::isPresent)
-            .findFirst()
-            .flatMap(Function.identity());
+          .map(m ->
+            Optional.<ValidPrism>empty()
+              .or(() -> AvajeValidPrism.getOptional(m))
+              .or(() -> JakartaValidPrism.getOptional(m))
+              .or(() -> JavaxValidPrism.getOptional(m)))
+          .filter(Optional::isPresent)
+          .findFirst()
+          .flatMap(Function.identity());
       }
     }
     return Optional.empty();
