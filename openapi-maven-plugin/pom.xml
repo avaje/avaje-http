@@ -17,10 +17,10 @@
     <project.build.outputTimestamp>2026-03-02T08:48:54Z</project.build.outputTimestamp>
     <!-- Dependency Versions -->
     <avaje.jsonb.version>3.11</avaje.jsonb.version>
-    <maven-api.version>3.9.12</maven-api.version>
+    <maven-api.version>3.9.13</maven-api.version>
     <maven-plugin-tools.version>3.15.2</maven-plugin-tools.version>
     <javadoc-plugin.version>3.12.0</javadoc-plugin.version>
-    <swagger.version>2.2.44</swagger.version>
+    <swagger.version>2.2.45</swagger.version>
     <junit.version>4.13.2</junit.version>
     <jackson.version>2.20.1</jackson.version>
   </properties>
