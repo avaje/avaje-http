@@ -5,6 +5,7 @@ import static io.avaje.http.generator.core.Util.typeDef;
 import io.avaje.http.generator.core.javadoc.Javadoc;
 import io.swagger.v3.oas.models.media.StringSchema;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -137,11 +138,11 @@ class SchemaDocBuilder {
   }
 
   Schema<?> toSchema(Element element) {
-    final var schema = toSchema(element.asType());
+    var schema = toSchema(element.asType());
     setLengthMinMax(element, schema);
     setFormatFromValidation(element, schema);
     if (isNotNullable(element)) {
-      schema.setNullable(Boolean.FALSE);
+      schema = markNotNullable(schema);
     }
     return schema;
   }
@@ -213,8 +214,7 @@ class SchemaDocBuilder {
       }
     }
     // Since it's explicitly optional, we should explicitly say it's nullable
-    itemSchema.nullable(Boolean.TRUE);
-    return itemSchema;
+    return markNullable(itemSchema);
   }
 
   private Schema<?> buildIterableSchema(TypeMirror type) {
@@ -271,7 +271,7 @@ class SchemaDocBuilder {
     for (VariableElement field : allFields(element)) {
       Schema<?> propSchema = toSchema(field.asType());
       if (isNotNullable(field)) {
-        propSchema.setNullable(Boolean.FALSE);
+        propSchema = markNotNullable(propSchema);
         objectSchema.addRequiredItem(field.getSimpleName().toString());
       }
       setDescription(field, propSchema);
@@ -279,6 +279,43 @@ class SchemaDocBuilder {
       setFormatFromValidation(field, propSchema);
       objectSchema.addProperties(field.getSimpleName().toString(), propSchema);
     }
+  }
+
+  private Schema<?> markNullable(Schema<?> schema) {
+    if (schema.get$ref() != null) {
+      final var oneOf = new ArrayList<Schema>();
+      oneOf.add(schema);
+      oneOf.add(new Schema<>().type("null"));
+      return new Schema<>().oneOf(oneOf);
+    }
+    final var schemaType = schema.getType();
+    if (schemaType != null && !schemaType.isBlank()) {
+      final var union = new LinkedHashSet<String>();
+      union.add(schemaType);
+      union.add("null");
+      schema.setType(null);
+      schema.setTypes(union);
+      schema.setNullable(null);
+      return schema;
+    }
+    final var union = new LinkedHashSet<String>();
+    if (schema.getTypes() != null) {
+      union.addAll(schema.getTypes());
+    }
+    union.add("null");
+    schema.setTypes(union);
+    schema.setNullable(null);
+    return schema;
+  }
+
+  private Schema<?> markNotNullable(Schema<?> schema) {
+    if (schema.getTypes() != null && schema.getTypes().contains("null")) {
+      final var nonNullTypes = new LinkedHashSet<String>(schema.getTypes());
+      nonNullTypes.remove("null");
+      schema.setTypes(nonNullTypes.isEmpty() ? null : nonNullTypes);
+    }
+    schema.setNullable(null);
+    return schema;
   }
 
   private void setFormatFromValidation(Element element, Schema<?> propSchema) {

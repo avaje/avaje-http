@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.1.2",
   "info": {
     "title": "Example service",
     "description": "Example Javalin controllers with Java and Maven",
@@ -88,8 +88,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int64",
-              "nullable": false
+              "format": "int64"
             }
           }
         ],
@@ -175,8 +174,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "nullable": false
+              "format": "int32"
             }
           },{
             "name": "p1",
@@ -511,8 +509,7 @@
                 "type": "object",
                 "properties": {
                   "name": {
-                    "type": "string",
-                    "nullable": false
+                    "type": "string"
                   },
                   "email": {
                     "type": "string"
@@ -586,8 +583,7 @@
                 "type": "object",
                 "properties": {
                   "name": {
-                    "type": "string",
-                    "nullable": false
+                    "type": "string"
                   },
                   "email": {
                     "type": "string"
@@ -729,8 +725,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "nullable": false
+              "format": "int32"
             }
           },{
             "name": "author",
@@ -786,8 +781,7 @@
             "name": "name",
             "in": "query",
             "schema": {
-              "type": "string",
-              "nullable": false
+              "type": "string"
             }
           },{
             "name": "email",
@@ -850,8 +844,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "nullable": false
+              "format": "int32"
             }
           }
         ],
@@ -875,8 +868,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "nullable": false
+              "format": "int32"
             }
           },{
             "name": "date",
@@ -1948,8 +1940,7 @@
               "application/json": {
                 "schema": {
                   "type": "integer",
-                  "format": "int32",
-                  "nullable": false
+                  "format": "int32"
                 },
                 "exampleSetFlag": false
               }
@@ -1971,8 +1962,7 @@
               "application/json": {
                 "schema": {
                   "type": "integer",
-                  "format": "int64",
-                  "nullable": false
+                  "format": "int64"
                 },
                 "exampleSetFlag": false
               }
@@ -2293,8 +2283,7 @@
           "id": {
             "type": "integer",
             "format": "int64",
-            "description": "This is a number ... I think?",
-            "nullable": false
+            "description": "This is a number ... I think?"
           }
         },
         "description": "But oh, what a description this schema has!"
@@ -2326,8 +2315,7 @@
           },
           "id": {
             "type": "integer",
-            "format": "int32",
-            "nullable": false
+            "format": "int32"
           }
         }
       },
@@ -2361,8 +2349,7 @@
           },
           "id": {
             "type": "integer",
-            "format": "int64",
-            "nullable": false
+            "format": "int64"
           }
         }
       },
@@ -2387,5 +2374,6 @@
       }
     }
   },
-  "specVersion": "V30"
+  "jsonSchemaDialect": "https://spec.openapis.org/oas/3.1/dialect/base",
+  "specVersion": "V31"
 }

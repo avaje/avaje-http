@@ -1,5 +1,5 @@
 {
-	"openapi" : "3.0.1",
+	"openapi" : "3.1.2",
 	"info" : {
 		"title" : "Example service",
 		"description" : "Example Javalin controllers with Java and Maven",
@@ -87,8 +87,7 @@
 						"required" : true,
 						"schema" : {
 							"type" : "integer",
-							"format" : "int64",
-							"nullable" : false
+							"format" : "int64"
 						}
 					}
 				],
@@ -174,8 +173,7 @@
 						"required" : true,
 						"schema" : {
 							"type" : "integer",
-							"format" : "int32",
-							"nullable" : false
+							"format" : "int32"
 						}
 					},
 					{
@@ -519,8 +517,7 @@
 								"type" : "object",
 								"properties" : {
 									"name" : {
-										"type" : "string",
-										"nullable" : false
+										"type" : "string"
 									},
 									"email" : {
 										"type" : "string"
@@ -594,8 +591,7 @@
 								"type" : "object",
 								"properties" : {
 									"name" : {
-										"type" : "string",
-										"nullable" : false
+										"type" : "string"
 									},
 									"email" : {
 										"type" : "string"
@@ -723,8 +719,7 @@
 						"required" : true,
 						"schema" : {
 							"type" : "integer",
-							"format" : "int32",
-							"nullable" : false
+							"format" : "int32"
 						}
 					},
 					{
@@ -785,8 +780,7 @@
 						"name" : "name",
 						"in" : "query",
 						"schema" : {
-							"type" : "string",
-							"nullable" : false
+							"type" : "string"
 						}
 					},
 					{
@@ -857,8 +851,7 @@
 						"required" : true,
 						"schema" : {
 							"type" : "integer",
-							"format" : "int32",
-							"nullable" : false
+							"format" : "int32"
 						}
 					}
 				],
@@ -884,8 +877,7 @@
 						"required" : true,
 						"schema" : {
 							"type" : "integer",
-							"format" : "int32",
-							"nullable" : false
+							"format" : "int32"
 						}
 					},
 					{
@@ -1679,8 +1671,7 @@
 							"application/json" : {
 								"schema" : {
 									"type" : "integer",
-									"format" : "int32",
-									"nullable" : false
+									"format" : "int32"
 								}
 							}
 						}
@@ -1702,8 +1693,7 @@
 							"application/json" : {
 								"schema" : {
 									"type" : "integer",
-									"format" : "int64",
-									"nullable" : false
+									"format" : "int64"
 								}
 							}
 						}
@@ -2004,8 +1994,7 @@
 				"properties" : {
 					"id" : {
 						"type" : "integer",
-						"format" : "int64",
-						"nullable" : false
+						"format" : "int64"
 					},
 					"name" : {
 						"type" : "string"
@@ -2044,8 +2033,7 @@
 				"properties" : {
 					"id" : {
 						"type" : "integer",
-						"format" : "int32",
-						"nullable" : false
+						"format" : "int32"
 					},
 					"name" : {
 						"type" : "string",
@@ -2114,5 +2102,6 @@
 				"in" : "query"
 			}
 		}
-	}
+	},
+	"jsonSchemaDialect" : "https://spec.openapis.org/oas/3.1/dialect/base"
 }
