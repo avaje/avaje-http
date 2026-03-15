@@ -16,4 +16,5 @@ module io.avaje.http.generator.core {
   requires static java.validation;
   requires static jakarta.validation;
   requires static io.avaje.validation.contraints;
+  requires static org.jspecify;
 }
