@@ -92,6 +92,7 @@ public class TestClientWriter {
   }
 
   private void writeClassStart() {
+    writer.append("@SuppressWarnings(\"all\")").eol();
     writer.append(AT_GENERATED).eol();
     writer.append("@Client(\"%s\")", reader.path()).eol();
     writer
