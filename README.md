@@ -156,7 +156,7 @@ routes.forEach(route -> route.register(router));
 ```java
 @Generated("avaje-javalin-generator")
 @Singleton
-public class WidgetController$Route implements Plugin {
+public final class WidgetController$Route extends AvajeJavalinPlugin {
 
   private final WidgetController controller;
 
@@ -165,7 +165,11 @@ public class WidgetController$Route implements Plugin {
   }
 
   @Override
-  public void apply(Javalin app) {
+  public void onStart(JavalinState state) {
+    routes(state.routes);
+  }
+
+  private void routes(RoutesConfig app) {
 
     app.get("/widgets/{id}", ctx -> {
       ctx.status(200);
@@ -189,7 +193,7 @@ public class WidgetController$Route implements Plugin {
 ```java
 @Generated("avaje-helidon-generator")
 @Component
-public class WidgetController$Route implements HttpFeature {
+public final class WidgetController$Route implements HttpFeature {
 
   private final WidgetController controller;
 
@@ -208,15 +212,77 @@ public class WidgetController$Route implements HttpFeature {
     var pathParams = req.path().pathParameters();
     var id = asInt(pathParams.contains("id") ? pathParams.get("id") : null);
     var result = controller.getById(id);
-    res.send(result);
+    if (result == null) {
+      res.status(NO_CONTENT_204).send();
+    } else {
+      res.send(result);
+    }
   }
 
   private void _getAll(ServerRequest req, ServerResponse res) throws Exception {
     res.status(OK_200);
     var result = controller.getAll();
-    res.send(result);
+    if (result == null) {
+      res.status(NO_CONTENT_204).send();
+    } else {
+      res.send(result);
+    }
   }
 
+}
+```
+
+### (Vert.x) The generated WidgetController$Route.java is:
+
+```java
+@Generated("avaje-vertx-generator")
+@Component
+public final class WidgetController$Route implements VertxRouteSet {
+
+  private final WidgetController controller;
+
+  public WidgetController$Route(WidgetController controller) {
+    this.controller = controller;
+  }
+
+  @Override
+  public void register(Router router) {
+
+    var routes = router;
+    {
+      var route = routes.get("/widgets/:id");
+      route.handler(ctx -> {
+      try {
+        ctx.response().setStatusCode(200);
+        var id = asInt(ctx.pathParam("id"));
+        var result = controller.getById(id);
+          if (result == null || ctx.response().ended()) {
+            return;
+          }
+        ctx.response().putHeader("content-type", "application/json");
+        ctx.response().end(Json.encode(result));
+      } catch (Exception e) {
+        ctx.fail(e);
+      }
+      });
+    }
+    {
+      var route = routes.get("/widgets");
+      route.handler(ctx -> {
+      try {
+        ctx.response().setStatusCode(200);
+        var result = controller.getAll();
+          if (result == null || ctx.response().ended()) {
+            return;
+          }
+        ctx.response().putHeader("content-type", "application/json");
+        ctx.response().end(Json.encode(result));
+      } catch (Exception e) {
+        ctx.fail(e);
+      }
+      });
+    }
+  }
 }
 ```
 
@@ -227,32 +293,36 @@ If [Avaje-Jsonb](https://github.com/avaje/avaje-jsonb) is detected, http generat
 ```java
 @Generated("avaje-javalin-generator")
 @Component
-public class WidgetController$Route implements Plugin {
+public final class WidgetController$Route extends AvajeJavalinPlugin {
 
   private final WidgetController controller;
   private final JsonType<List<Widget>> listWidgetJsonType;
   private final JsonType<Widget> widgetJsonType;
 
-  public WidgetController$Route(WidgetController controller, Jsonb jsonB) {
+  public WidgetController$Route(WidgetController controller, Jsonb jsonb) {
     this.controller = controller;
-    this.listWidgetJsonType = jsonB.type(Widget.class).list();
-    this.widgetJsonType = jsonB.type(Widget.class);
+    this.listWidgetJsonType = jsonb.type(Types.newParameterizedType(List.class, Widget.class));
+    this.widgetJsonType = jsonb.type(Widget.class);
   }
 
   @Override
-  public void apply(Javalin app) {
+  public void onStart(JavalinState state) {
+    routes(state.routes);
+  }
+
+  private void routes(RoutesConfig app) {
 
     app.get("/widgets/{id}", ctx -> {
       ctx.status(200);
       var id = asInt(ctx.pathParam("id"));
       var result = controller.getById(id);
-      widgetJsonType.toJson(result, ctx.contentType("application/json").outputStream());
+      widgetJsonType.toJson(result, ctx.contentType("application/json").res().getOutputStream());
     });
 
     app.get("/widgets", ctx -> {
       ctx.status(200);
       var result = controller.getAll();
-      listWidgetJsonType.toJson(result, ctx.contentType("application/json").outputStream());
+      listWidgetJsonType.toJson(result, ctx.contentType("application/json").res().getOutputStream());
     });
 
   }
@@ -264,7 +334,7 @@ public class WidgetController$Route implements Plugin {
 ```java
 @Generated("avaje-helidon-generator")
 @Component
-public class WidgetController$Route implements HttpFeature {
+public final class WidgetController$Route implements HttpFeature {
 
   private final WidgetController controller;
   private final JsonType<WidgetController.Widget> widgetController$WidgetJsonType;
@@ -273,7 +343,7 @@ public class WidgetController$Route implements HttpFeature {
   public WidgetController$Route(WidgetController controller, Jsonb jsonb) {
     this.controller = controller;
     this.widgetController$WidgetJsonType = jsonb.type(WidgetController.Widget.class);
-    this.listWidgetController$WidgetJsonType = jsonb.type(WidgetController.Widget.class).list();
+    this.listWidgetController$WidgetJsonType = jsonb.type(Types.newParameterizedType(List.class, WidgetController.Widget.class));
   }
 
   @Override
@@ -287,17 +357,85 @@ public class WidgetController$Route implements HttpFeature {
     var pathParams = req.path().pathParameters();
     var id = asInt(pathParams.contains("id") ? pathParams.get("id") : null);
     var result = controller.getById(id);
-    res.headers().contentType(MediaTypes.APPLICATION_JSON);
-    //jsonb has a special accommodation for helidon to improve performance
-    widgetController$WidgetJsonType.toJson(result, JsonOutput.of(res));
+    if (result == null) {
+      res.status(NO_CONTENT_204).send();
+    } else {
+      res.headers().contentType(MediaTypes.APPLICATION_JSON);
+      //jsonb has a special accommodation for helidon to improve performance
+      widgetController$WidgetJsonType.toJson(result, JsonOutput.of(res));
+    }
   }
 
   private void _getAll(ServerRequest req, ServerResponse res) throws Exception {
     res.status(OK_200);
     var result = controller.getAll();
-    res.headers().contentType(MediaTypes.APPLICATION_JSON);
-    listWidgetController$WidgetJsonType.toJson(result, JsonOutput.of(res));
+    if (result == null) {
+      res.status(NO_CONTENT_204).send();
+    } else {
+      res.headers().contentType(MediaTypes.APPLICATION_JSON);
+      listWidgetController$WidgetJsonType.toJson(result, JsonOutput.of(res));
+    }
   }
 
+}
+```
+
+### (Vert.x) The generated WidgetController$Route.java is:
+
+```java
+@Generated("avaje-vertx-generator")
+@Component
+public final class WidgetController$Route implements VertxRouteSet {
+
+  private final WidgetController controller;
+  private final JsonType<List<Widget>> listWidgetJsonType;
+  private final JsonType<Widget> widgetJsonType;
+
+  public WidgetController$Route(WidgetController controller, Jsonb jsonb) {
+    this.controller = controller;
+    this.listWidgetJsonType = jsonb.type(Types.newParameterizedType(List.class, Widget.class));
+    this.widgetJsonType = jsonb.type(Widget.class);
+  }
+
+  @Override
+  public void register(Router router) {
+
+    var routes = router;
+
+    {
+      var route = routes.get("/widgets/:id");
+      route.handler(ctx -> {
+      try {
+        ctx.response().setStatusCode(200);
+        var id = asInt(ctx.pathParam("id"));
+        var result = controller.getById(id);
+          if (result == null || ctx.response().ended()) {
+            return;
+          }
+        ctx.response().putHeader("content-type", "application/json");
+        ctx.response().end(Buffer.buffer(widgetJsonType.toJsonBytes(result)));
+      } catch (Exception e) {
+        ctx.fail(e);
+      }
+      });
+    }
+
+    {
+      var route = routes.get("/widgets");
+      route.handler(ctx -> {
+      try {
+        ctx.response().setStatusCode(200);
+        var result = controller.getAll();
+          if (result == null || ctx.response().ended()) {
+            return;
+          }
+        ctx.response().putHeader("content-type", "application/json");
+        ctx.response().end(Buffer.buffer(listWidgetJsonType.toJsonBytes(result)));
+      } catch (Exception e) {
+        ctx.fail(e);
+      }
+      });
+    }
+  }
 }
 ```
