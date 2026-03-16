@@ -54,6 +54,22 @@
           <useModulePath>false</useModulePath>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <configuration>
+          <relocations>
+            <relocation>
+              <pattern>io.avaje.http.generator.core</pattern>
+              <shadedPattern>io.avaje.http.client.generator.core</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>io.swagger.v3</pattern>
+              <shadedPattern>io.avaje.http.client.generator.swagger.v3</shadedPattern>
+            </relocation>
+          </relocations>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
