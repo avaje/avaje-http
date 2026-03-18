@@ -90,11 +90,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
     if (CHECKED_FOR_DI_ANNOTATION.compareAndSet(false, true)) {
       // Check to see if any DI wiring is available to us
-      final boolean isDiPresent = Optional.ofNullable(APContext.typeElement(Constants.COMPONENT))
-        .or(() -> Optional.ofNullable(APContext.typeElement(Constants.SINGLETON_JAKARTA)))
-        .or(() -> Optional.ofNullable(APContext.typeElement(Constants.SINGLETON_JAVAX)))
-        .isPresent();
-      if (!isDiPresent) {
+      if (!isDIPresent()) {
         logError("Avaje HTTP requires Dependency Injection. Please add jakarta.inject:jakarta.inject-api or some compatible DI implementation to your dependencies");
       }
     }
@@ -156,6 +152,13 @@ public abstract class BaseProcessor extends AbstractProcessor {
       }
     }
     return false;
+  }
+
+  private static boolean isDIPresent() {
+    return Optional.ofNullable(APContext.typeElement(Constants.COMPONENT))
+      .or(() -> Optional.ofNullable(APContext.typeElement(Constants.SINGLETON_JAKARTA)))
+      .or(() -> Optional.ofNullable(APContext.typeElement(Constants.SINGLETON_JAVAX)))
+      .isPresent();
   }
 
   private void warnValid(Element e) {
