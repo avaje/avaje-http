@@ -50,6 +50,7 @@ class ControllerWriter extends BaseControllerWriter {
   }
 
   private void writeClassStart() {
+    writer.append("@SuppressWarnings(\"all\")").eol();
     writer.append(AT_GENERATED).eol();
     writer.append(diAnnotation()).eol();
     writer
