@@ -5,7 +5,6 @@ import java.io.Writer;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -90,21 +89,20 @@ public class DocContext {
     }
     if (varElement != null) {
       return SchemaPrism.getOptionalOn(element)
-        .map(schemaPrism -> toSchema(rawType, varElement, schemaPrism))
+        .map(schemaPrism -> toSchema(varElement, schemaPrism))
         .orElseGet(() -> schemaBuilder.toSchema(element));
     }
     return schemaBuilder.toSchema(typeElement);
   }
 
-  private Schema toSchema(String rawType, Element element, SchemaPrism schemaPrism) {
-    final Element toCreateSchemaOf = Optional.ofNullable(schemaPrism.implementation())
-      .filter(typeMirror -> !"java.lang.Void".equals(typeMirror.toString()))
+  private Schema toSchema(Element element, SchemaPrism schemaPrism) {
+    final Element toCreateSchemaOf = SchemaPrismHelper.implementation(schemaPrism)
       .map(APContext::asTypeElement)
       .map(Element.class::cast)
       .orElse(element);
     // Even if we end up with the original element, the annotation has been stripped off of it
     final Schema schema = toSchema(toCreateSchemaOf.asType().toString(), toCreateSchemaOf);
-    SchemaCopier.overwriteFromPrism(schema, schemaPrism);
+    SchemaPrismHelper.overwriteFromPrism(schema, schemaPrism);
 
     return schema;
   }

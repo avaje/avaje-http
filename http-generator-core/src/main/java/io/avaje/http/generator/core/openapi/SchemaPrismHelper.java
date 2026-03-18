@@ -3,12 +3,18 @@ package io.avaje.http.generator.core.openapi;
 import io.avaje.http.generator.core.SchemaPrism;
 import io.swagger.v3.oas.models.media.Schema;
 
+import javax.lang.model.type.TypeMirror;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-final class SchemaCopier {
+final class SchemaPrismHelper {
 
   private static final String DEFAULT_SENTINEL = "##default";
+
+  public static Optional<TypeMirror> implementation(final SchemaPrism schemaPrism) {
+    return Optional.ofNullable(schemaPrism.implementation())
+      .filter(typeMirror -> !"java.lang.Void".equals(typeMirror.toString()));
+  }
 
   public static void overwriteFromPrism(final Schema<?> schema, final SchemaPrism schemaPrism) {
     Optional.ofNullable(schemaPrism.description())

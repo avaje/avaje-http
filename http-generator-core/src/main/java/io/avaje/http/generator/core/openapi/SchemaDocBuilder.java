@@ -153,11 +153,10 @@ class SchemaDocBuilder {
       .flatMap(SchemaPrism::getOptionalOn);
     if (prism.isPresent()) {
       final SchemaPrism schemaPrism = prism.get();
-      final Schema schema = Optional.ofNullable(schemaPrism.implementation())
-        .filter(typeMirror -> !"java.lang.Void".equals(typeMirror.toString()))
+      final Schema schema = SchemaPrismHelper.implementation(schemaPrism)
         .map(this::toSchemaImpl)
         .orElseGet(() -> (Schema) toSchemaImpl(type));
-      SchemaCopier.overwriteFromPrism(schema, schemaPrism);
+      SchemaPrismHelper.overwriteFromPrism(schema, schemaPrism);
       return schema;
     }
     return toSchemaImpl(type);
@@ -294,8 +293,7 @@ class SchemaDocBuilder {
     Element element = types.asElement(objectType);
     for (VariableElement field : allFields(element)) {
       Schema<?> propSchema = SchemaPrism.getOptionalOn(field)
-        .map(SchemaPrism::implementation)
-        .filter(typeMirror -> !"java.lang.Void".equals(typeMirror.toString()))
+        .flatMap(SchemaPrismHelper::implementation)
         .map(this::toSchema)
         .orElseGet(() -> (Schema) toSchema(field.asType()));
       if (isNotNullable(field)) {
@@ -306,7 +304,7 @@ class SchemaDocBuilder {
       setLengthMinMax(field, propSchema);
       setFormatFromValidation(field, propSchema);
       SchemaPrism.getOptionalOn(field)
-        .ifPresent(schemaPrism -> SchemaCopier.overwriteFromPrism(propSchema, schemaPrism));
+        .ifPresent(schemaPrism -> SchemaPrismHelper.overwriteFromPrism(propSchema, schemaPrism));
       objectSchema.addProperties(field.getSimpleName().toString(), propSchema);
     }
   }
