@@ -2,6 +2,7 @@ package io.avaje.http.generator.core.openapi;
 
 import static io.avaje.http.generator.core.Util.typeDef;
 
+import io.avaje.http.generator.core.SchemaPrism;
 import io.avaje.http.generator.core.javadoc.Javadoc;
 import io.swagger.v3.oas.models.media.StringSchema;
 import java.util.ArrayList;
@@ -148,6 +149,21 @@ class SchemaDocBuilder {
   }
 
   Schema<?> toSchema(TypeMirror type) {
+    final Optional<SchemaPrism> prism = Optional.ofNullable(APContext.asTypeElement(type))
+      .flatMap(SchemaPrism::getOptionalOn);
+    if (prism.isPresent()) {
+      final SchemaPrism schemaPrism = prism.get();
+      final Schema schema = Optional.ofNullable(schemaPrism.implementation())
+        .filter(typeMirror -> !"java.lang.Void".equals(typeMirror.toString()))
+        .map(this::toSchemaImpl)
+        .orElseGet(() -> (Schema) toSchemaImpl(type));
+      SchemaCopier.overwriteFromPrism(schema, schemaPrism);
+      return schema;
+    }
+    return toSchemaImpl(type);
+  }
+
+  private Schema<?> toSchemaImpl(TypeMirror type) {
     if (types.isAssignable(type, completableFutureType)) {
       type = typeArgument(type);
     }
@@ -277,7 +293,11 @@ class SchemaDocBuilder {
   private <T> void populateObjectSchema(TypeMirror objectType, Schema<T> objectSchema) {
     Element element = types.asElement(objectType);
     for (VariableElement field : allFields(element)) {
-      Schema<?> propSchema = toSchema(field.asType());
+      Schema<?> propSchema = SchemaPrism.getOptionalOn(field)
+        .map(SchemaPrism::implementation)
+        .filter(typeMirror -> !"java.lang.Void".equals(typeMirror.toString()))
+        .map(this::toSchema)
+        .orElseGet(() -> (Schema) toSchema(field.asType()));
       if (isNotNullable(field)) {
         propSchema.setNullable(Boolean.FALSE);
         objectSchema.addRequiredItem(field.getSimpleName().toString());
@@ -285,6 +305,8 @@ class SchemaDocBuilder {
       setDescription(field, propSchema);
       setLengthMinMax(field, propSchema);
       setFormatFromValidation(field, propSchema);
+      SchemaPrism.getOptionalOn(field)
+        .ifPresent(schemaPrism -> SchemaCopier.overwriteFromPrism(propSchema, schemaPrism));
       objectSchema.addProperties(field.getSimpleName().toString(), propSchema);
     }
   }

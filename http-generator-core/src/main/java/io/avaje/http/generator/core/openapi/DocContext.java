@@ -5,6 +5,7 @@ import java.io.Writer;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -18,7 +19,9 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
+import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.OpenAPIDefinitionPrism;
+import io.avaje.http.generator.core.SchemaPrism;
 import io.avaje.http.generator.core.SecuritySchemePrism;
 import io.avaje.http.generator.core.SecuritySchemesPrism;
 import io.avaje.http.generator.core.TagPrism;
@@ -86,9 +89,24 @@ public class DocContext {
       return schemaBuilder.toSchema(element.asType());
     }
     if (varElement != null) {
-      return schemaBuilder.toSchema(element);
+      return SchemaPrism.getOptionalOn(element)
+        .map(schemaPrism -> toSchema(rawType, varElement, schemaPrism))
+        .orElseGet(() -> schemaBuilder.toSchema(element));
     }
     return schemaBuilder.toSchema(typeElement);
+  }
+
+  private Schema toSchema(String rawType, Element element, SchemaPrism schemaPrism) {
+    final Element toCreateSchemaOf = Optional.ofNullable(schemaPrism.implementation())
+      .filter(typeMirror -> !"java.lang.Void".equals(typeMirror.toString()))
+      .map(APContext::asTypeElement)
+      .map(Element.class::cast)
+      .orElse(element);
+    // Even if we end up with the original element, the annotation has been stripped off of it
+    final Schema schema = toSchema(toCreateSchemaOf.asType().toString(), toCreateSchemaOf);
+    SchemaCopier.overwriteFromPrism(schema, schemaPrism);
+
+    return schema;
   }
 
   Content createContent(TypeMirror returnType, String mediaType) {
