@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -37,6 +38,7 @@ import io.avaje.prism.GenerateAPContext;
 public abstract class BaseProcessor extends AbstractProcessor {
 
   private static final String HTTP_CONTROLLERS_TXT = "testAPI/controllers.txt";
+  private static final AtomicBoolean CHECKED_FOR_DI_ANNOTATION = new AtomicBoolean(false);
   protected String contextPathString;
 
   protected Map<String, String> packagePaths = new HashMap<>();
@@ -86,6 +88,12 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
+    if (CHECKED_FOR_DI_ANNOTATION.compareAndSet(false, true)) {
+      // Check to see if any DI wiring is available to us
+      if (!isDIPresent()) {
+        logError("Avaje HTTP requires Dependency Injection. Please add jakarta.inject:jakarta.inject-api or some compatible DI implementation to your dependencies");
+      }
+    }
     if (round.errorRaised()) {
       return false;
     }
@@ -144,6 +152,13 @@ public abstract class BaseProcessor extends AbstractProcessor {
       }
     }
     return false;
+  }
+
+  private static boolean isDIPresent() {
+    return Optional.ofNullable(APContext.typeElement(Constants.COMPONENT))
+      .or(() -> Optional.ofNullable(APContext.typeElement(Constants.SINGLETON_JAKARTA)))
+      .or(() -> Optional.ofNullable(APContext.typeElement(Constants.SINGLETON_JAVAX)))
+      .isPresent();
   }
 
   private void warnValid(Element e) {
