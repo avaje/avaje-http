@@ -78,6 +78,7 @@ final class ClientWriter extends BaseControllerWriter {
   }
 
   private void writeClassStart() {
+    writer.append("@SuppressWarnings(\"all\")").eol();
     writer.append(AT_GENERATED).eol();
     AnnotationUtil.writeAnnotations(writer, reader.beanType());
     var access = packagePrivate ? "" : "public ";

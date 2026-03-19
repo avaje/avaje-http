@@ -63,6 +63,7 @@ final class SimpleComponentWriter {
 
   private void writeClassStart() {
     final String shortName = Util.shortName(fullName);
+    writer.append("@SuppressWarnings(\"all\")").eol();
     writer.append(AT_GENERATED).eol();
     writer.append("@MetaData({");
     final List<String> all = metaData.all();

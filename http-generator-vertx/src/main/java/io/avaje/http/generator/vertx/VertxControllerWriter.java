@@ -60,6 +60,7 @@ final class VertxControllerWriter extends BaseControllerWriter {
   }
 
   private void writeClassStart() {
+    writer.append("@SuppressWarnings(\"all\")").eol();
     writer.append(GENERATED).eol();
     writer.append(diAnnotation()).eol();
     writer
