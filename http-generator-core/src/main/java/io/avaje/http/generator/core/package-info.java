@@ -29,6 +29,7 @@
 @GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecuritySchemes.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecurityRequirement.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecurityRequirements.class, publicAccess = true)
+@GeneratePrism(value = io.swagger.v3.oas.annotations.media.Schema.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.OpenAPIResponse.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.OpenAPIResponses.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.Hidden.class, publicAccess = true)
