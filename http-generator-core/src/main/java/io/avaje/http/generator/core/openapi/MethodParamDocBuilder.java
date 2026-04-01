@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import javax.lang.model.element.Element;
 
-import io.avaje.http.generator.core.ConsumesPrism;
+import io.avaje.http.generator.prisms.ConsumesPrism;
 import io.avaje.http.generator.core.ElementReader;
 import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.javadoc.Javadoc;

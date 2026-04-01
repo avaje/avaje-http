@@ -6,15 +6,7 @@ module io.avaje.http.generator.core {
 
   requires java.sql;
   requires java.compiler;
-
-  // SHADED: All content after this line will be removed at package time
+  requires io.swagger.v3.oas.models;
+  requires transitive io.avaje.http.generator.prisms;
   requires static io.avaje.prism;
-  requires static io.avaje.http.api;
-  requires static io.avaje.htmx.api;
-  requires static io.swagger.v3.oas.models;
-  requires static io.swagger.v3.oas.annotations;
-  requires static java.validation;
-  requires static jakarta.validation;
-  requires static io.avaje.validation.contraints;
-  requires static org.jspecify;
 }

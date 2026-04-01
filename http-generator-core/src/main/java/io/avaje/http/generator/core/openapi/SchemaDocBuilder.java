@@ -2,8 +2,12 @@ package io.avaje.http.generator.core.openapi;
 
 import static io.avaje.http.generator.core.Util.typeDef;
 
-import io.avaje.http.generator.core.SchemaPrism;
+import io.avaje.http.generator.prisms.EmailPrism;
+import io.avaje.http.generator.prisms.JavaxEmailPrism;
+import io.avaje.http.generator.prisms.JavaxSizePrism;
+import io.avaje.http.generator.prisms.SchemaPrism;
 import io.avaje.http.generator.core.javadoc.Javadoc;
+import io.avaje.http.generator.prisms.SizePrism;
 import io.swagger.v3.oas.models.media.StringSchema;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +32,8 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import io.avaje.http.generator.core.APContext;
-import io.avaje.http.generator.core.HiddenPrism;
+import io.avaje.http.generator.prisms.HiddenPrism;
 import io.avaje.http.generator.core.Util;
-import io.avaje.prism.GeneratePrism;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Content;
@@ -41,10 +44,6 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 
 /** Help build OpenAPI Schema objects. */
-@GeneratePrism(jakarta.validation.constraints.Size.class)
-@GeneratePrism(jakarta.validation.constraints.Email.class)
-@GeneratePrism(value = javax.validation.constraints.Size.class, name = "JavaxSizePrism")
-@GeneratePrism(value = javax.validation.constraints.Email.class, name = "JavaxEmailPrism")
 class SchemaDocBuilder {
 
   private static final String APP_FORM = "application/x-www-form-urlencoded";

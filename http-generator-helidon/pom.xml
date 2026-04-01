@@ -4,7 +4,7 @@
   <parent>
     <artifactId>avaje-http-parent</artifactId>
     <groupId>io.avaje</groupId>
-    <version>3.8</version>
+    <version>4.0-B.1</version>
   </parent>
 
   <artifactId>avaje-http-helidon-generator</artifactId>
@@ -31,4 +31,21 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>io.avaje</groupId>
+              <artifactId>avaje-prisms</artifactId>
+              <version>${avaje.prisms.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

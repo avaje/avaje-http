@@ -4,17 +4,17 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.8</version>
+    <version>4.0-B.1</version>
     <relativePath>..</relativePath>
   </parent>
 
   <artifactId>openapi-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <name>openapi-maven-plugin</name>
-  <url>https://avaje.io/http</url>
+
+  <description>The Avaje OpenAPI Maven Plugin is used when you want to copy generated OpenAPI definitions into your source directory, optionally merging it with other definitions</description>
 
   <properties>
-    <project.build.outputTimestamp>2026-04-01T04:55:18Z</project.build.outputTimestamp>
     <!-- Dependency Versions -->
     <avaje.jsonb.version>3.11</avaje.jsonb.version>
     <maven-api.version>3.9.14</maven-api.version>
@@ -24,11 +24,6 @@
     <junit.version>4.13.2</junit.version>
     <jackson.version>2.20.1</jackson.version>
   </properties>
-
-  <scm>
-    <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
 
   <dependencies>
     <dependency>

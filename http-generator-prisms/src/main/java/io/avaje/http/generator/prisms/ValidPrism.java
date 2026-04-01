@@ -1,4 +1,4 @@
-package io.avaje.http.generator.core;
+package io.avaje.http.generator.prisms;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -12,19 +12,23 @@ import io.avaje.prism.GeneratePrism;
 @GeneratePrism(
     value = io.avaje.validation.constraints.Valid.class,
     name = "AvajeValidPrism",
-    superInterfaces = ValidPrism.class)
+    superInterfaces = ValidPrism.class,
+  publicAccess = true)
 @GeneratePrism(
     value = javax.validation.Valid.class,
     name = "JavaxValidPrism",
-    superInterfaces = ValidPrism.class)
+    superInterfaces = ValidPrism.class,
+    publicAccess = true)
 @GeneratePrism(
     value = jakarta.validation.Valid.class,
     name = "JakartaValidPrism",
-    superInterfaces = ValidPrism.class)
+    superInterfaces = ValidPrism.class,
+  publicAccess = true)
 @GeneratePrism(
     value = io.avaje.http.api.Valid.class,
     name = "HttpValidPrism",
-    superInterfaces = ValidPrism.class)
+    superInterfaces = ValidPrism.class,
+  publicAccess = true)
 public interface ValidPrism {
 
   static Optional<ValidPrism> getOptionalOn(Element e) {

@@ -6,10 +6,9 @@ import static io.avaje.http.api.PathTypeConversion.toLocalDate;
 
 import java.time.LocalDate;
 
-import io.avaje.http.api.AvajeJavalinPlugin;
 import io.avaje.http.api.PathSegment;
 import io.avaje.http.api.Validator;
-import io.javalin.config.JavalinConfig;
+import io.avaje.http.api.javalin.AvajeJavalinPlugin;
 import io.javalin.config.JavalinState;
 import io.javalin.config.RoutesConfig;
 

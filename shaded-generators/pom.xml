@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.avaje</groupId>
+    <artifactId>avaje-http-parent</artifactId>
+    <version>4.0-B.1</version>
+  </parent>
+  <packaging>pom</packaging>
+  <artifactId>avaje-http-generator-shaded-parent</artifactId>
+  <name>avaje-http-generator-shaded-parent</name>
+
+  <properties>
+    <maven.compiler.proc>none</maven.compiler.proc>
+  </properties>
+
+  <modules>
+    <module>client</module>
+    <module>helidon</module>
+  </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <configuration>
+          <artifactSet>
+            <excludes>
+              <exclude>module-info.java</exclude>
+            </excludes>
+          </artifactSet>
+          <filters>
+            <filter>
+              <artifact>io.swagger.core.v3:swagger-models</artifact>
+              <excludes>
+                <exclude>io/swagger/v3/oas/models/callbacks/**</exclude>
+                <exclude>io/swagger/v3/oas/models/examples/**</exclude>
+              </excludes>
+            </filter>
+          </filters>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.moditect</groupId>
+        <artifactId>moditect-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-module-infos</id>
+            <phase>package</phase>
+            <goals>
+              <goal>add-module-info</goal>
+            </goals>
+            <configuration>
+              <overwriteExistingFiles>true</overwriteExistingFiles>
+              <module>
+                <moduleInfoFile>module-info.java</moduleInfoFile>
+              </module>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

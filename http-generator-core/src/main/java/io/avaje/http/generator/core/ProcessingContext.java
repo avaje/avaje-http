@@ -30,6 +30,9 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 
+import io.avaje.http.generator.prisms.JStacheConfigPrism;
+import io.avaje.http.generator.prisms.JStachePrism;
+
 import io.avaje.http.generator.core.openapi.DocContext;
 
 public final class ProcessingContext {

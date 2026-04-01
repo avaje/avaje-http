@@ -10,22 +10,25 @@
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-parent</artifactId>
   <name>avaje-http-parent</name>
-  <version>3.8</version>
+  <version>4.0-B.1</version>
   <packaging>pom</packaging>
+  <url>https://avaje.io/http</url>
+
+  <description>Library that generates adapter code for Jex, Javalin and Helidon SE APIs via Annotation Processing.</description>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
-    <tag>avaje-http-parent-1.19</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
+    <project.build.outputTimestamp>2026-04-01T04:55:18Z</project.build.outputTimestamp>
+    <!-- Dependency versions -->
+    <avaje.prisms.version>2.1-RC2</avaje.prisms.version>
     <swagger.version>2.2.45</swagger.version>
     <jackson.version>2.14.2</jackson.version>
     <jex.version>3.0-RC10</jex.version>
-    <avaje.prisms.version>2.1-RC2</avaje.prisms.version>
-    <project.build.outputTimestamp>2026-04-01T04:55:18Z</project.build.outputTimestamp>
-    <module-info.shade>${project.build.directory}${file.separator}module-info.shade</module-info.shade>
   </properties>
 
   <dependencies>
@@ -45,11 +48,13 @@
     <module>http-client</module>
     <module>http-client-gson-adapter</module>
     <module>http-client-moshi-adapter</module>
+    <module>http-generator-prisms</module>
     <module>http-generator-core</module>
     <module>http-generator-javalin</module>
     <module>http-generator-sigma</module>
     <module>http-generator-client</module>
     <module>http-hibernate-validator</module>
+    <module>shaded-generators</module>
   </modules>
 
   <profiles>
@@ -68,6 +73,12 @@
         <jdk>[21,)</jdk>
       </activation>
       <modules>
+        <!--
+          TODO: The inject plugin can't be here, because it needs to come before the http-api (since that depends on this)
+            but can this be used on less than Java 21? Maybe use multi-release JAR that for the versions of
+            Java that won't work throws instead? Or since new major version just set minimum Java version to 21? Also it
+            depends on http-api which depends on it...
+          -->
         <module>http-inject-plugin</module>
         <module>htmx-nima</module>
         <module>htmx-nima-jstache</module>
@@ -88,87 +99,5 @@
         <module>tests</module>
       </modules>
     </profile>
-
-    <profile>
-      <id>module-info.shade</id>
-      <activation>
-        <file>
-          <exists>src/etc/activate-shade-module</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <version>3.2.0</version>
-            <executions>
-              <execution>
-                <phase>process-resources</phase>
-                <configuration>
-                  <target>
-                    <property name="input" value="src${file.separator}main${file.separator}java${file.separator}module-info.java" />
-                    <copy file="${input}" tofile="${module-info.shade}" />
-                    <replaceregexp file="${module-info.shade}" match="(// SHADED:).*" flags="s" replace="}" />
-                  </target>
-                </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
-            <configuration>
-              <artifactSet>
-                <excludes>
-                  <exclude>module-info.java</exclude>
-                </excludes>
-              </artifactSet>
-              <filters>
-                <filter>
-                  <artifact>io.swagger.core.v3:swagger-models</artifact>
-                  <excludes>
-                    <exclude>io/swagger/v3/oas/models/callbacks/**</exclude>
-                    <exclude>io/swagger/v3/oas/models/examples/**</exclude>
-                  </excludes>
-                </filter>
-              </filters>
-            </configuration>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>shade</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.moditect</groupId>
-            <artifactId>moditect-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>add-module-infos</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>add-module-info</goal>
-                </goals>
-                <configuration>
-                  <overwriteExistingFiles>true</overwriteExistingFiles>
-                  <module>
-                    <moduleInfoFile>${module-info.shade}</moduleInfoFile>
-                  </module>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
   </profiles>
-
-
 </project>

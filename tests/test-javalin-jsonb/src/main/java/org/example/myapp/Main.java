@@ -6,7 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.avaje.http.api.AvajeJavalinPlugin;
+import io.avaje.http.api.javalin.AvajeJavalinPlugin;
 import io.avaje.http.api.InvalidPathArgumentException;
 import io.avaje.http.api.InvalidTypeArgumentException;
 import io.avaje.http.api.ValidationException;

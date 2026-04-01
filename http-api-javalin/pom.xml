@@ -4,15 +4,26 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.8</version>
+    <version>4.0-B.1</version>
     <relativePath>..</relativePath>
   </parent>
 
   <artifactId>avaje-http-api-javalin</artifactId>
   <name>avaje-http-api-javalin</name>
+  <description>Library that generates adapter code for Javalin APIs via Annotation Processing.</description>
 
-  <scm>
-    <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
-    <tag>avaje-http-parent-1.19</tag>
-  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.javalin</groupId>
+      <artifactId>javalin</artifactId>
+      <version>7.1.0</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
 </project>

@@ -23,6 +23,28 @@ import javax.lang.model.type.TypeMirror;
 
 import io.avaje.http.generator.core.javadoc.Javadoc;
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
+import io.avaje.http.generator.prisms.ConsumesPrism;
+import io.avaje.http.generator.prisms.ContentCachePrism;
+import io.avaje.http.generator.prisms.DeletePrism;
+import io.avaje.http.generator.prisms.ExceptionHandlerPrism;
+import io.avaje.http.generator.prisms.FilterPrism;
+import io.avaje.http.generator.prisms.TagPrism;
+import io.avaje.http.generator.prisms.FormPrism;
+import io.avaje.http.generator.prisms.GetPrism;
+import io.avaje.http.generator.prisms.HxRequestPrism;
+import io.avaje.http.generator.prisms.InstrumentServerContextPrism;
+import io.avaje.http.generator.prisms.OpenAPIResponsePrism;
+import io.avaje.http.generator.prisms.OpenAPIResponsesPrism;
+import io.avaje.http.generator.prisms.OperationPrism;
+import io.avaje.http.generator.prisms.PatchPrism;
+import io.avaje.http.generator.prisms.PostPrism;
+import io.avaje.http.generator.prisms.ProducesPrism;
+import io.avaje.http.generator.prisms.PutPrism;
+import io.avaje.http.generator.prisms.RequestTimeoutPrism;
+import io.avaje.http.generator.prisms.SecurityRequirementPrism;
+import io.avaje.http.generator.prisms.SecurityRequirementsPrism;
+import io.avaje.http.generator.prisms.TagsPrism;
+import io.avaje.http.generator.prisms.ValidPrism;
 import io.swagger.v3.oas.models.Operation;
 
 public class MethodReader {

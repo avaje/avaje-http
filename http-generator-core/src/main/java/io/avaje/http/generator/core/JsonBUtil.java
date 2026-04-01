@@ -68,7 +68,7 @@ public final class JsonBUtil {
               }
               final var asTypeElement = APContext.asTypeElement(methodReader.returnType());
               if (!methodReader.isVoid()
-                  && (asTypeElement == null || !JStachePrism.isPresent(asTypeElement))) {
+                  && (asTypeElement == null || !io.avaje.http.generator.prisms.JStachePrism.isPresent(asTypeElement))) {
                 var uType = UType.parse(methodReader.returnType());
                 if ("java.util.concurrent.CompletableFuture".equals(uType.mainType())
                     || "java.util.concurrent.CompletionStage".equals(uType.mainType())) {

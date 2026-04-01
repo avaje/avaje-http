@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.avaje.http.generator.core.*;
 import io.avaje.http.generator.core.openapi.MediaType;
+import io.avaje.http.generator.prisms.HxRequestPrism;
 
 import javax.lang.model.type.TypeMirror;
 

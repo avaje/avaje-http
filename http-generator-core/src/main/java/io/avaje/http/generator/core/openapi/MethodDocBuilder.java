@@ -2,14 +2,14 @@ package io.avaje.http.generator.core.openapi;
 
 import java.util.Optional;
 
-import io.avaje.http.generator.core.ConsumesPrism;
+import io.avaje.http.generator.prisms.ConsumesPrism;
 import io.avaje.http.generator.core.CoreWebMethod;
-import io.avaje.http.generator.core.HiddenPrism;
+import io.avaje.http.generator.prisms.DeprecatedPrism;
+import io.avaje.http.generator.prisms.HiddenPrism;
 import io.avaje.http.generator.core.MethodParam;
 import io.avaje.http.generator.core.MethodReader;
-import io.avaje.http.generator.core.SecurityRequirementPrism;
+import io.avaje.http.generator.prisms.SecurityRequirementPrism;
 import io.avaje.http.generator.core.javadoc.Javadoc;
-import io.avaje.prism.GeneratePrism;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.responses.ApiResponse;
@@ -17,7 +17,6 @@ import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 
 /** Build the OpenAPI documentation for a method. */
-@GeneratePrism(Deprecated.class)
 public class MethodDocBuilder {
 
   private final Javadoc javadoc;

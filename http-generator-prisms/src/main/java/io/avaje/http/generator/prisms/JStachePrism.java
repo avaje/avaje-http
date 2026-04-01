@@ -1,4 +1,4 @@
-package io.avaje.http.generator.core;
+package io.avaje.http.generator.prisms;
 
 import javax.annotation.processing.Generated;
 import javax.lang.model.element.AnnotationMirror;

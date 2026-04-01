@@ -11,6 +11,7 @@ import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.ProcessingContext;
 import io.avaje.http.generator.core.UType;
 import io.avaje.http.generator.core.openapi.MediaType;
+import io.avaje.http.generator.prisms.BlockingPrism;
 
 import static io.avaje.http.generator.core.ProcessingContext.disabledDirectWrites;
 

@@ -5,9 +5,9 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.8</version>
+    <version>4.0-B.1</version>
   </parent>
-  
+
   <artifactId>avaje-http-hibernate-validator</artifactId>
   <name>avaje-http-hibernate-validator</name>
 
@@ -33,7 +33,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>3.8</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
 

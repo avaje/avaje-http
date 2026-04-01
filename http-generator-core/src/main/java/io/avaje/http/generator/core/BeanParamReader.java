@@ -1,5 +1,7 @@
 package io.avaje.http.generator.core;
 
+import io.avaje.http.generator.prisms.IgnorePrism;
+
 import static io.avaje.http.generator.core.ProcessingContext.*;
 import javax.lang.model.element.*;
 import java.util.*;

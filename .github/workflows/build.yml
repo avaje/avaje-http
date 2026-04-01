@@ -33,4 +33,14 @@ jobs:
         env:
           JAVA_VERSION: ${{ matrix.java_version }}
         run: |
-          mvn clean package install -Ptest
+          mvn clean package install -Ptest21
+      - name: Configure minimum Java version
+        uses: actions/setup-java@v5
+        with:
+          java-version: 11
+          distribution: "zulu"
+      - name: Test on minimum version
+        env:
+          JAVA_VERSION: 11
+        run: |
+          mvn test -Ptest

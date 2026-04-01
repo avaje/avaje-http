@@ -18,7 +18,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.ElementFilter;
 
-import io.avaje.http.api.SuppressLogging;
 import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.Append;
 import io.avaje.http.generator.core.BeanParamReader;
@@ -29,15 +28,15 @@ import io.avaje.http.generator.core.ParamType;
 import io.avaje.http.generator.core.PathSegments;
 import io.avaje.http.generator.core.PathSegments.Segment;
 import io.avaje.http.generator.core.ProcessingContext;
-import io.avaje.http.generator.core.RequestTimeoutPrism;
+import io.avaje.http.generator.prisms.HeadersPrism;
+import io.avaje.http.generator.prisms.RequestTimeoutPrism;
 import io.avaje.http.generator.core.Util;
 import io.avaje.http.generator.core.WebMethod;
-import io.avaje.prism.GeneratePrism;
+import io.avaje.http.generator.prisms.SuppressLoggingPrism;
 import io.avaje.prism.GenerateUtils;
 
 /** Write code to register Web route for a given controller method. */
 @GenerateUtils
-@GeneratePrism(SuppressLogging.class)
 final class ClientMethodWriter {
   private static final KnownResponse KNOWN_RESPONSE = new KnownResponse();
   private static final String BODY_HANDLER = "java.net.http.HttpResponse.BodyHandler";

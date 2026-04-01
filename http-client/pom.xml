@@ -6,16 +6,11 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.8</version>
+    <version>4.0-B.1</version>
   </parent>
 
   <artifactId>avaje-http-client</artifactId>
   <name>avaje-http-client</name>
-
-  <scm>
-    <developerConnection>scm:git:git@github.com:avaje/avaje-http-client.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
 
   <properties>
     <surefire.useModulePath>false</surefire.useModulePath>
@@ -35,14 +30,14 @@
       <version>3.1.0</version>
       <optional>true</optional>
     </dependency>
-    
+
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>2.21.2</version>
       <optional>true</optional>
     </dependency>
-    
+
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
@@ -89,7 +84,7 @@
 
     <dependency>
       <groupId>io.avaje</groupId>
-      <artifactId>avaje-http-api</artifactId>
+      <artifactId>avaje-http-api-javalin</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

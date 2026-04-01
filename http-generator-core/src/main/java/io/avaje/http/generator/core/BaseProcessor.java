@@ -25,6 +25,16 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 
 import io.avaje.http.generator.core.TypeMap.CustomHandler;
+import io.avaje.http.generator.prisms.ControllerPrism;
+import io.avaje.http.generator.prisms.HttpValidPrism;
+import io.avaje.http.generator.prisms.MapImportPrism;
+import io.avaje.http.generator.prisms.MappedParamPrism;
+import io.avaje.http.generator.prisms.OpenAPIDefinitionPrism;
+import io.avaje.http.generator.prisms.PathPrism;
+import io.avaje.http.generator.prisms.SecuritySchemePrism;
+import io.avaje.http.generator.prisms.SecuritySchemesPrism;
+import io.avaje.http.generator.prisms.TagPrism;
+import io.avaje.http.generator.prisms.TagsPrism;
 import io.avaje.prism.GenerateAPContext;
 
 @GenerateAPContext

@@ -1,5 +1,17 @@
 package io.avaje.http.generator.core;
 
+import io.avaje.http.generator.prisms.ClientPrism;
+import io.avaje.http.generator.prisms.ControllerPrism;
+import io.avaje.http.generator.prisms.HiddenPrism;
+import io.avaje.http.generator.prisms.HtmlPrism;
+import io.avaje.http.generator.prisms.InstrumentServerContextPrism;
+import io.avaje.http.generator.prisms.OpenAPIResponsePrism;
+import io.avaje.http.generator.prisms.OpenAPIResponsesPrism;
+import io.avaje.http.generator.prisms.PathPrism;
+import io.avaje.http.generator.prisms.ProducesPrism;
+import io.avaje.http.generator.prisms.ValidPrism;
+import io.avaje.http.generator.prisms.WebAPIPrism;
+
 import static io.avaje.http.generator.core.ProcessingContext.asElement;
 import static io.avaje.http.generator.core.ProcessingContext.asMemberOf;
 import static io.avaje.http.generator.core.ProcessingContext.instrumentAllWebMethods;

@@ -19,12 +19,12 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import io.avaje.http.generator.core.APContext;
-import io.avaje.http.generator.core.OpenAPIDefinitionPrism;
-import io.avaje.http.generator.core.SchemaPrism;
-import io.avaje.http.generator.core.SecuritySchemePrism;
-import io.avaje.http.generator.core.SecuritySchemesPrism;
-import io.avaje.http.generator.core.TagPrism;
-import io.avaje.http.generator.core.TagsPrism;
+import io.avaje.http.generator.prisms.OpenAPIDefinitionPrism;
+import io.avaje.http.generator.prisms.SchemaPrism;
+import io.avaje.http.generator.prisms.SecuritySchemePrism;
+import io.avaje.http.generator.prisms.SecuritySchemesPrism;
+import io.avaje.http.generator.prisms.TagPrism;
+import io.avaje.http.generator.prisms.TagsPrism;
 import io.avaje.http.generator.core.Util;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

@@ -1,6 +1,6 @@
 package io.avaje.http.generator.core.openapi;
 
-import io.avaje.http.generator.core.SchemaPrism;
+import io.avaje.http.generator.prisms.SchemaPrism;
 import io.swagger.v3.oas.models.media.Schema;
 
 import javax.lang.model.type.TypeMirror;

@@ -17,6 +17,20 @@ import javax.lang.model.type.TypeMirror;
 import io.avaje.http.generator.core.TypeMap.CustomHandler;
 import io.avaje.http.generator.core.openapi.MethodDocBuilder;
 import io.avaje.http.generator.core.openapi.MethodParamDocBuilder;
+import io.avaje.http.generator.prisms.BeanParamPrism;
+import io.avaje.http.generator.prisms.BodyStringPrism;
+import io.avaje.http.generator.prisms.CookiePrism;
+import io.avaje.http.generator.prisms.DefaultPrism;
+import io.avaje.http.generator.prisms.FormParamPrism;
+import io.avaje.http.generator.prisms.FormPrism;
+import io.avaje.http.generator.prisms.HeaderPrism;
+import io.avaje.http.generator.prisms.HttpValidPrism;
+import io.avaje.http.generator.prisms.IgnorePrism;
+import io.avaje.http.generator.prisms.MappedParamPrism;
+import io.avaje.http.generator.prisms.MatrixParamPrism;
+import io.avaje.http.generator.prisms.ParamPrism;
+import io.avaje.http.generator.prisms.QueryParamPrism;
+import io.avaje.http.generator.prisms.ValidPrism;
 
 public class ElementReader {
 

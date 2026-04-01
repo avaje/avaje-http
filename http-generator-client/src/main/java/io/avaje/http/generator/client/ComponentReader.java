@@ -23,9 +23,8 @@ import javax.tools.StandardLocation;
 
 import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.Constants;
-import io.avaje.prism.GeneratePrism;
+import io.avaje.http.generator.prisms.MetaDataPrism;
 
-@GeneratePrism(io.avaje.http.api.spi.MetaData.class)
 final class ComponentReader {
 
   private final ComponentMetaData componentMetaData;

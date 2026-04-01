@@ -1,5 +1,8 @@
 package io.avaje.http.generator.core;
 
+import io.avaje.http.generator.prisms.NullMarkedPrism;
+import io.avaje.http.generator.prisms.NullUnmarkedPrism;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

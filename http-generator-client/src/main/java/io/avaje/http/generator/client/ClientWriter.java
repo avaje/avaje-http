@@ -1,7 +1,7 @@
 package io.avaje.http.generator.client;
 
 import io.avaje.http.generator.core.BaseControllerWriter;
-import io.avaje.http.generator.core.ClientPrism;
+import io.avaje.http.generator.prisms.ClientPrism;
 import io.avaje.http.generator.core.ControllerReader;
 import io.avaje.http.generator.core.MethodReader;
 

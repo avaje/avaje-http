@@ -1,4 +1,4 @@
-package io.avaje.http.generator.core;
+package io.avaje.http.generator.prisms;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ import javax.lang.model.util.ElementFilter;
 
 /** A Prism representing a {@link io.jstach.jstache.JStacheConfig @JStacheConfig} annotation. */
 @Generated("avaje-prism-generator")
-final class JStacheConfigPrism {
+public final class JStacheConfigPrism {
 
   /** store prism value of type */
   private final String _type;
@@ -35,7 +35,7 @@ final class JStacheConfigPrism {
    * @param mirror mirror.
    * @return true if prism is present.
    */
-  static boolean isInstance(AnnotationMirror mirror) {
+  public static boolean isInstance(AnnotationMirror mirror) {
     return getInstance(mirror) != null;
   }
 
@@ -46,7 +46,7 @@ final class JStacheConfigPrism {
    * @param element element.
    * @return true if annotation is present on the element.
    */
-  static boolean isPresent(Element element) {
+  public static boolean isPresent(Element element) {
     return getInstanceOn(element) != null;
   }
 
@@ -59,7 +59,7 @@ final class JStacheConfigPrism {
    * @param element element.
    * @return prism on element or null if no annotation is found.
    */
-  static JStacheConfigPrism getInstanceOn(Element element) {
+  public static JStacheConfigPrism getInstanceOn(Element element) {
     final var mirror = getMirror(element);
     if (mirror == null) return null;
     return getInstance(mirror);
@@ -74,7 +74,7 @@ final class JStacheConfigPrism {
    * @param element element.
    * @return prism optional for element.
    */
-  static Optional<JStacheConfigPrism> getOptionalOn(Element element) {
+  public static Optional<JStacheConfigPrism> getOptionalOn(Element element) {
     final var mirror = getMirror(element);
     if (mirror == null) return Optional.empty();
     return getOptional(mirror);
@@ -87,7 +87,7 @@ final class JStacheConfigPrism {
    * @param mirror mirror.
    * @return prism for mirror or null if mirror is an incorrect type.
    */
-  static JStacheConfigPrism getInstance(AnnotationMirror mirror) {
+  public static JStacheConfigPrism getInstance(AnnotationMirror mirror) {
     if (mirror == null || !PRISM_TYPE.equals(mirror.getAnnotationType().toString())) return null;
 
     return new JStacheConfigPrism(mirror);
@@ -102,7 +102,7 @@ final class JStacheConfigPrism {
    * @param mirror mirror.
    * @return prism optional for mirror.
    */
-  static Optional<JStacheConfigPrism> getOptional(AnnotationMirror mirror) {
+  public static Optional<JStacheConfigPrism> getOptional(AnnotationMirror mirror) {
     if (mirror == null || !PRISM_TYPE.equals(mirror.getAnnotationType().toString()))
       return Optional.empty();
 
@@ -155,7 +155,7 @@ final class JStacheConfigPrism {
    * corresponding to that member in the model of the annotations. Returns null for defaulted
    * members. Used for Messager, so default values are not useful.
    */
-  static final class Values {
+  public static final class Values {
     private final Map<String, AnnotationValue> values;
 
     private Values(Map<String, AnnotationValue> values) {

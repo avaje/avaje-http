@@ -4,17 +4,12 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.8</version>
+    <version>4.0-B.1</version>
     <relativePath>..</relativePath>
   </parent>
 
   <artifactId>avaje-http-api</artifactId>
   <name>avaje-http-api</name>
-
-  <scm>
-    <developerConnection>scm:git:git@github.com:avaje/avaje-http.git</developerConnection>
-    <tag>avaje-http-parent-1.19</tag>
-  </scm>
 
   <dependencies>
     <dependency>
@@ -22,14 +17,6 @@
       <artifactId>avaje-http-inject-plugin</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>io.javalin</groupId>
-      <artifactId>javalin</artifactId>
-      <version>7.1.0</version>
-      <scope>provided</scope>
-      <optional>true</optional>
-    </dependency>
-
   </dependencies>
 
   <build>
