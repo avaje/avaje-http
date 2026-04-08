@@ -69,7 +69,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>3.11</version>
+      <version>3.12</version>
     </dependency>
 
     <!-- java annotation processors -->
@@ -137,7 +137,7 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-jsonb-generator</artifactId>
-              <version>3.11</version>
+              <version>3.12</version>
             </path>
             <path>
               <groupId>io.avaje</groupId>
@@ -184,7 +184,7 @@
       <plugin>
         <groupId>io.avaje</groupId>
         <artifactId>avaje-inject-maven-plugin</artifactId>
-        <version>12.4</version>
+        <version>12.5</version>
         <executions>
           <execution>
             <phase>process-sources</phase>
