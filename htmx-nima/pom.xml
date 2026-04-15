@@ -27,7 +27,7 @@
     <dependency>
       <groupId>io.helidon.webserver</groupId>
       <artifactId>helidon-webserver</artifactId>
-      <version>4.4.0</version>
+      <version>4.4.1</version>
     </dependency>
   </dependencies>
 </project>
