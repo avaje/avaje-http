@@ -298,6 +298,27 @@
 				}
 			}
 		},
+		"/generic-list" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/Data_Bar"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/hello" : {
 			"post" : {
 				"tags" : [
@@ -2039,6 +2060,18 @@
 					"startDate" : {
 						"type" : "string",
 						"format" : "date"
+					}
+				}
+			},
+			"Data_Bar" : {
+				"type" : "object",
+				"properties" : {
+					"data" : {
+						"type" : "array",
+						"items" : {
+							"$ref" : "#/components/schemas/Bar",
+							"nullable" : false
+						}
 					}
 				}
 			},

@@ -293,6 +293,27 @@
         }
       }
     },
+    "/generic-list": {
+      "get": {
+        "tags": [
+        ],
+        "summary": "",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Data_Bar"
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
     "/hello": {
       "post": {
         "tags": [
@@ -966,7 +987,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/String,?>"
+                  "$ref": "#/components/schemas/Data2_String_?"
                 },
                 "exampleSetFlag": false
               }
@@ -987,7 +1008,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/String>>"
+                  "$ref": "#/components/schemas/Data2_String_Data_String"
                 },
                 "exampleSetFlag": false
               }
@@ -1037,7 +1058,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/String>"
+                  "$ref": "#/components/schemas/Data_String"
                 },
                 "exampleSetFlag": false
               }
@@ -2315,10 +2336,10 @@
         },
         "description": "But oh, what a description this schema has!"
       },
-      "String>": {
+      "Data2_String_?": {
         "type": "object"
       },
-      "String,?>": {
+      "Data_String": {
         "type": "object"
       },
       "HelloDto": {
@@ -2347,9 +2368,6 @@
           }
         }
       },
-      "String>>": {
-        "type": "object"
-      },
       "Baz": {
         "type": "object",
         "properties": {
@@ -2369,6 +2387,9 @@
       "StreamingOutput": {
         "type": "object"
       },
+      "Data2_String_Data_String": {
+        "type": "object"
+      },
       "Person": {
         "type": "object",
         "properties": {
@@ -2379,6 +2400,18 @@
             "type": "integer",
             "format": "int64",
             "nullable": false
+          }
+        }
+      },
+      "Data_Bar": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Bar",
+              "nullable": false
+            }
           }
         }
       },
