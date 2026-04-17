@@ -281,6 +281,20 @@ class SchemaDocBuilder {
   }
 
   private String getObjectSchemaName(TypeMirror type) {
+    if (type.getKind() == TypeKind.DECLARED) {
+      DeclaredType declaredType = (DeclaredType) type;
+      List<? extends TypeMirror> typeArgs = declaredType.getTypeArguments();
+      String simpleName = ((TypeElement) declaredType.asElement()).getSimpleName().toString();
+      if (!typeArgs.isEmpty()) {
+        StringBuilder sb = new StringBuilder(simpleName);
+        for (TypeMirror arg : typeArgs) {
+          sb.append('_');
+          sb.append(getObjectSchemaName(arg));
+        }
+        return sb.toString();
+      }
+      return simpleName;
+    }
     var canonicalName = Util.trimAnnotations(type.toString());
     final var pos = canonicalName.lastIndexOf('.');
     if (pos > -1) {
@@ -292,10 +306,13 @@ class SchemaDocBuilder {
   private <T> void populateObjectSchema(TypeMirror objectType, Schema<T> objectSchema) {
     Element element = types.asElement(objectType);
     for (VariableElement field : allFields(element)) {
+      TypeMirror fieldType = objectType instanceof DeclaredType
+          ? types.asMemberOf((DeclaredType) objectType, field)
+          : field.asType();
       Schema<?> propSchema = SchemaPrism.getOptionalOn(field)
         .flatMap(SchemaPrismHelper::implementation)
         .map(this::toSchema)
-        .orElseGet(() -> (Schema) toSchema(field.asType()));
+        .orElseGet(() -> (Schema) toSchema(fieldType));
       if (isNotNullable(field)) {
         propSchema.setNullable(Boolean.FALSE);
         objectSchema.addRequiredItem(field.getSimpleName().toString());
