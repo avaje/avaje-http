@@ -16,6 +16,37 @@ class AsyncTest extends BaseWebTest {
   final HttpClient clientContext = client();
 
   @Test
+  void asyncHeadersAreSent_asString() {
+    final CompletableFuture<HttpResponse<String>> future = clientContext.request()
+      .path("hello/basicAuth")
+      .header("Authorization", "Basic cm9iOmJvdA==") // rob:bot
+      .GET()
+      .async()
+      .asString();
+
+    future.whenComplete((hres, throwable) -> {
+      assertThat(throwable).isNull();
+      assertThat(hres.statusCode()).isEqualTo(200);
+      assertThat(hres.body()).isEqualTo("decoded: rob:bot");
+    }).join();
+  }
+
+  @Test
+  void asyncHeadersAreSent_asVoid() {
+    final CompletableFuture<HttpResponse<Void>> future = clientContext.request()
+      .path("hello/basicAuth")
+      .header("Authorization", "Basic cm9iOmJvdA==") // rob:bot
+      .GET()
+      .async()
+      .asVoid();
+
+    future.whenComplete((hres, throwable) -> {
+      assertThat(throwable).isNull();
+      assertThat(hres.statusCode()).isEqualTo(200);
+    }).join();
+  }
+
+  @Test
   void waitForAsync() {
     final CompletableFuture<HttpResponse<Stream<String>>> future = clientContext.request()
       .path("hello").path("stream")
