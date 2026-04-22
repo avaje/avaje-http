@@ -13,7 +13,7 @@
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
     <maven.deploy.skip>true</maven.deploy.skip>
-    <vertx.version>5.0.10</vertx.version>
+    <vertx.version>5.0.11</vertx.version>
   </properties>
 
   <dependencies>
