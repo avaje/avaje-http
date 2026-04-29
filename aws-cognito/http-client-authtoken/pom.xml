@@ -24,14 +24,14 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-json-core</artifactId>
-      <version>3.12</version>
+      <version>3.13</version>
     </dependency>
 
     <!-- test dependencies -->
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-json-node</artifactId>
-      <version>3.12</version>
+      <version>3.13</version>
       <scope>test</scope>
     </dependency>
 

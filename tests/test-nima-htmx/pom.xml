@@ -88,7 +88,7 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-jsonb-generator</artifactId>
-              <version>3.12</version>
+              <version>3.13</version>
             </path>
             <path>
               <groupId>io.jstach</groupId>
