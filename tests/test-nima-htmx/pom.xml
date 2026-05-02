@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>tests</artifactId>
-    <version>3.8-RC4</version>
+    <version>3.9-RC2</version>
   </parent>
 
   <artifactId>test-nima-htmx</artifactId>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-nima</artifactId>
-      <version>1.7</version>
+      <version>1.9</version>
     </dependency>
 
     <dependency>
@@ -60,7 +60,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-nima-test</artifactId>
-      <version>1.7</version>
+      <version>1.9</version>
       <scope>test</scope>
     </dependency>
 
@@ -88,7 +88,7 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-jsonb-generator</artifactId>
-              <version>3.11</version>
+              <version>3.13</version>
             </path>
             <path>
               <groupId>io.jstach</groupId>

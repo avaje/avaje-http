@@ -29,6 +29,7 @@
 @GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecuritySchemes.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecurityRequirement.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.security.SecurityRequirements.class, publicAccess = true)
+@GeneratePrism(value = io.swagger.v3.oas.annotations.media.Schema.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.OpenAPIResponse.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.OpenAPIResponses.class, publicAccess = true)
 @GeneratePrism(value = io.swagger.v3.oas.annotations.Hidden.class, publicAccess = true)
@@ -37,6 +38,8 @@
 @GeneratePrism(value = io.avaje.htmx.api.HxRequest.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.htmx.api.Html.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.htmx.api.ContentCache.class, publicAccess = true)
+@GeneratePrism(org.jspecify.annotations.NullMarked.class)
+@GeneratePrism(org.jspecify.annotations.NullUnmarked.class)
 package io.avaje.http.generator.core;
 
 import io.avaje.prism.GeneratePrism;

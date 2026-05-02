@@ -100,7 +100,8 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Bar"
+										"$ref" : "#/components/schemas/Bar",
+										"nullable" : false
 									}
 								}
 							}
@@ -134,7 +135,8 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Bar"
+										"$ref" : "#/components/schemas/Bar",
+										"nullable" : false
 									}
 								}
 							}
@@ -190,7 +192,8 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Baz"
+										"$ref" : "#/components/schemas/Baz",
+										"nullable" : false
 									}
 								}
 							}
@@ -322,7 +325,8 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Baz"
+										"$ref" : "#/components/schemas/Baz",
+										"nullable" : false
 									}
 								}
 							}
@@ -479,7 +483,8 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/WebHelloDto"
+										"$ref" : "#/components/schemas/WebHelloDto",
+										"nullable" : false
 									}
 								}
 							}
@@ -978,7 +983,8 @@
 						"schema" : {
 							"type" : "array",
 							"items" : {
-								"type" : "string"
+								"type" : "string",
+								"nullable" : false
 							}
 						}
 					},
@@ -996,6 +1002,7 @@
 							"type" : "array",
 							"items" : {
 								"type" : "string",
+								"nullable" : false,
 								"enum" : [
 									"PROXY",
 									"HIDE_N_SEEK",
@@ -1381,7 +1388,8 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/HelloDto"
+										"$ref" : "#/components/schemas/HelloDto",
+										"nullable" : false
 									}
 								}
 							}
@@ -1461,6 +1469,7 @@
 							"type" : "array",
 							"items" : {
 								"type" : "string",
+								"nullable" : false,
 								"enum" : [
 									"PROXY",
 									"HIDE_N_SEEK",
@@ -1540,7 +1549,8 @@
 						"schema" : {
 							"type" : "array",
 							"items" : {
-								"type" : "string"
+								"type" : "string",
+								"nullable" : false
 							}
 						}
 					}
@@ -1681,7 +1691,8 @@
 					"people" : {
 						"type" : "array",
 						"items" : {
-							"$ref" : "#/components/schemas/Person"
+							"$ref" : "#/components/schemas/Person",
+							"nullable" : false
 						}
 					}
 				}
@@ -1695,7 +1706,8 @@
 					"people" : {
 						"type" : "array",
 						"items" : {
-							"$ref" : "#/components/schemas/Person"
+							"$ref" : "#/components/schemas/Person",
+							"nullable" : false
 						}
 					}
 				}

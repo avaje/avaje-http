@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.8-RC4</version>
+    <version>3.9-RC2</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -13,7 +13,7 @@
   <name>avaje-http-api-vertx</name>
 
   <properties>
-    <vertx.version>5.0.8</vertx.version>
+    <vertx.version>5.0.11</vertx.version>
   </properties>
 
   <dependencies>

@@ -18,7 +18,9 @@ import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
+import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.OpenAPIDefinitionPrism;
+import io.avaje.http.generator.core.SchemaPrism;
 import io.avaje.http.generator.core.SecuritySchemePrism;
 import io.avaje.http.generator.core.SecuritySchemesPrism;
 import io.avaje.http.generator.core.TagPrism;
@@ -90,9 +92,23 @@ public class DocContext {
       return schemaBuilder.toSchema(element.asType());
     }
     if (varElement != null) {
-      return schemaBuilder.toSchema(element);
+      return SchemaPrism.getOptionalOn(element)
+        .map(schemaPrism -> toSchema(varElement, schemaPrism))
+        .orElseGet(() -> schemaBuilder.toSchema(element));
     }
     return schemaBuilder.toSchema(typeElement);
+  }
+
+  private Schema toSchema(Element element, SchemaPrism schemaPrism) {
+    final Element toCreateSchemaOf = SchemaPrismHelper.implementation(schemaPrism)
+      .map(APContext::asTypeElement)
+      .map(Element.class::cast)
+      .orElse(element);
+    // Even if we end up with the original element, the annotation has been stripped off of it
+    final Schema schema = toSchema(toCreateSchemaOf.asType().toString(), toCreateSchemaOf);
+    SchemaPrismHelper.overwriteFromPrism(schema, schemaPrism);
+
+    return schema;
   }
 
   Content createContent(TypeMirror returnType, String mediaType) {

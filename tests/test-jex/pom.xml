@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>tests</artifactId>
-    <version>3.8-RC4</version>
+    <version>3.9-RC2</version>
   </parent>
 
   <artifactId>test-jex</artifactId>
@@ -12,7 +12,7 @@
     <maven.compiler.release>21</maven.compiler.release>
     <maven.deploy.skip>true</maven.deploy.skip>
     <main.class>org.example.myapp.Main</main.class>
-    <swagger.version>2.2.43</swagger.version>
+    <swagger.version>2.2.49</swagger.version>
   </properties>
 
   <dependencies>
@@ -69,7 +69,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jsonb</artifactId>
-      <version>3.11</version>
+      <version>3.13</version>
     </dependency>
 
     <!-- java annotation processors -->
@@ -137,12 +137,12 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-jsonb-generator</artifactId>
-              <version>3.11</version>
+              <version>3.13</version>
             </path>
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-validator-generator</artifactId>
-              <version>2.16</version>
+              <version>2.17</version>
             </path>
             <path>
               <groupId>io.jstach</groupId>
@@ -171,7 +171,7 @@
       <plugin>
         <groupId>io.repaint.maven</groupId>
         <artifactId>tiles-maven-plugin</artifactId>
-        <version>2.43</version>
+        <version>2.44</version>
         <extensions>true</extensions>
         <configuration>
           <tiles>
@@ -184,7 +184,7 @@
       <plugin>
         <groupId>io.avaje</groupId>
         <artifactId>avaje-inject-maven-plugin</artifactId>
-        <version>12.4</version>
+        <version>12.5</version>
         <executions>
           <execution>
             <phase>process-sources</phase>

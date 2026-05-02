@@ -19,6 +19,8 @@ final class OpenAPISerializer {
           "EXPLICIT_OBJECT_SCHEMA_PROPERTY",
           "USE_ARBITRARY_SCHEMA_PROPERTY",
           "exampleSetFlag",
+          "defaultSetFlag",
+          "types",
           "specVersion");
 
   private OpenAPISerializer() {}

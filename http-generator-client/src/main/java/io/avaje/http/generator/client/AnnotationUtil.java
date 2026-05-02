@@ -20,7 +20,9 @@ final class AnnotationUtil {
   public static void writeAnnotations(Append writer, Element element, String indent) {
     for (final AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
       final var type = UType.parse(annotationMirror.getAnnotationType().asElement().asType());
-      if (type.mainType().startsWith("io.avaje.http") || type.mainType().startsWith("io.swagger")) {
+      if (type.mainType().startsWith("io.avaje.http")
+          || type.mainType().startsWith("io.swagger")
+          || type.mainType().equals(SuppressWarnings.class.getName())) {
         continue;
       }
       final String annotationName = annotationMirror.getAnnotationType().toString();

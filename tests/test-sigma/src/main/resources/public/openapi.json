@@ -64,7 +64,8 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Bar"
+										"$ref" : "#/components/schemas/Bar",
+										"nullable" : false
 									}
 								}
 							}
@@ -120,7 +121,8 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Baz"
+										"$ref" : "#/components/schemas/Baz",
+										"nullable" : false
 									}
 								}
 							}
@@ -252,7 +254,8 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Baz"
+										"$ref" : "#/components/schemas/Baz",
+										"nullable" : false
 									}
 								}
 							}
@@ -286,6 +289,27 @@
 							"application/json" : {
 								"schema" : {
 									"$ref" : "#/components/schemas/Baz"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/generic-list" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/Data_Bar"
 								}
 							}
 						}
@@ -339,7 +363,8 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/HelloDto"
+										"$ref" : "#/components/schemas/HelloDto",
+										"nullable" : false
 									}
 								}
 							}
@@ -402,7 +427,8 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/HelloDto"
+										"$ref" : "#/components/schemas/HelloDto",
+										"nullable" : false
 									}
 								}
 							}
@@ -796,7 +822,8 @@
 						"schema" : {
 							"type" : "array",
 							"items" : {
-								"type" : "string"
+								"type" : "string",
+								"nullable" : false
 							}
 						}
 					},
@@ -814,6 +841,7 @@
 							"type" : "array",
 							"items" : {
 								"type" : "string",
+								"nullable" : false,
 								"enum" : [
 									"PROXY",
 									"HIDE_N_SEEK",
@@ -1080,7 +1108,8 @@
 							"schema" : {
 								"type" : "array",
 								"items" : {
-									"$ref" : "#/components/schemas/Person"
+									"$ref" : "#/components/schemas/Person",
+									"nullable" : false
 								}
 							}
 						}
@@ -1418,6 +1447,7 @@
 							"type" : "array",
 							"items" : {
 								"type" : "string",
+								"nullable" : false,
 								"enum" : [
 									"PROXY",
 									"HIDE_N_SEEK",
@@ -1583,7 +1613,8 @@
 									"strings" : {
 										"type" : "array",
 										"items" : {
-											"type" : "string"
+											"type" : "string",
+											"nullable" : false
 										}
 									}
 								}
@@ -1745,7 +1776,8 @@
 							"schema" : {
 								"type" : "array",
 								"items" : {
-									"$ref" : "#/components/schemas/Person"
+									"$ref" : "#/components/schemas/Person",
+									"nullable" : false
 								}
 							}
 						}
@@ -1822,7 +1854,8 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Person"
+										"$ref" : "#/components/schemas/Person",
+										"nullable" : false
 									}
 								}
 							}
@@ -1856,7 +1889,8 @@
 								"schema" : {
 									"type" : "object",
 									"additionalProperties" : {
-										"$ref" : "#/components/schemas/Person"
+										"$ref" : "#/components/schemas/Person",
+										"nullable" : false
 									}
 								}
 							}
@@ -1890,7 +1924,8 @@
 								"schema" : {
 									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Person"
+										"$ref" : "#/components/schemas/Person",
+										"nullable" : false
 									}
 								}
 							}
@@ -2017,6 +2052,18 @@
 					}
 				}
 			},
+			"Data_Bar" : {
+				"type" : "object",
+				"properties" : {
+					"data" : {
+						"type" : "array",
+						"items" : {
+							"$ref" : "#/components/schemas/Bar",
+							"nullable" : false
+						}
+					}
+				}
+			},
 			"ErrorResponse" : {
 				"type" : "object",
 				"properties" : {
@@ -2062,7 +2109,8 @@
 					"people" : {
 						"type" : "array",
 						"items" : {
-							"$ref" : "#/components/schemas/Person"
+							"$ref" : "#/components/schemas/Person",
+							"nullable" : false
 						}
 					}
 				}
@@ -2076,7 +2124,8 @@
 					"people" : {
 						"type" : "array",
 						"items" : {
-							"$ref" : "#/components/schemas/Person"
+							"$ref" : "#/components/schemas/Person",
+							"nullable" : false
 						}
 					}
 				}

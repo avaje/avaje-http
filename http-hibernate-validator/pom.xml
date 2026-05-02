@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.8-RC4</version>
+    <version>3.9-RC2</version>
   </parent>
   
   <artifactId>avaje-http-hibernate-validator</artifactId>
@@ -33,14 +33,14 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-http-api</artifactId>
-      <version>3.8-RC4</version>
+      <version>3.9-RC2</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject-generator</artifactId>
-      <version>12.4</version>
+      <version>12.5</version>
       <scope>provided</scope>
     </dependency>
 

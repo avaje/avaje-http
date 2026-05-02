@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>tests</artifactId>
-    <version>3.8-RC4</version>
+    <version>3.9-RC2</version>
   </parent>
 
   <artifactId>test-vertx</artifactId>
@@ -13,7 +13,7 @@
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
     <maven.deploy.skip>true</maven.deploy.skip>
-    <vertx.version>5.0.8</vertx.version>
+    <vertx.version>5.0.11</vertx.version>
   </properties>
 
   <dependencies>
@@ -52,6 +52,11 @@
       <groupId>io.vertx</groupId>
       <artifactId>vertx-web</artifactId>
       <version>${vertx.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swagger.version}</version>
     </dependency>
 
     <dependency>
@@ -93,7 +98,7 @@
       <plugin>
         <groupId>io.avaje</groupId>
         <artifactId>avaje-inject-maven-plugin</artifactId>
-        <version>12.4</version>
+        <version>12.5</version>
         <executions>
           <execution>
             <?m2e execute?>

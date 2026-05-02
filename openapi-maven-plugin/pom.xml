@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.8-RC4</version>
+    <version>3.9-RC2</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -14,13 +14,13 @@
   <url>https://avaje.io/http</url>
 
   <properties>
-    <project.build.outputTimestamp>2026-03-02T08:48:54Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-04-20T20:50:59Z</project.build.outputTimestamp>
     <!-- Dependency Versions -->
-    <avaje.jsonb.version>3.11</avaje.jsonb.version>
-    <maven-api.version>3.9.12</maven-api.version>
+    <avaje.jsonb.version>3.13</avaje.jsonb.version>
+    <maven-api.version>3.9.15</maven-api.version>
     <maven-plugin-tools.version>3.15.2</maven-plugin-tools.version>
     <javadoc-plugin.version>3.12.0</javadoc-plugin.version>
-    <swagger.version>2.2.43</swagger.version>
+    <swagger.version>2.2.49</swagger.version>
     <junit.version>4.13.2</junit.version>
     <jackson.version>2.20.1</jackson.version>
   </properties>

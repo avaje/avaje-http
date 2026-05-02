@@ -697,6 +697,9 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   private <T> CompletableFuture<HttpResponse<T>> performAsyncSend(HttpResponse.BodyHandler<T> responseHandler) {
+    if (retryCount == 0) {
+      addHeaders();
+    }
     startAsyncNanos = System.nanoTime();
     var resultFuture = context.sendAsync(httpRequest, responseHandler);
 

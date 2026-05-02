@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.8-RC4</version>
+    <version>3.9-RC2</version>
   </parent>
 
   <artifactId>avaje-http-generator-core</artifactId>
@@ -78,6 +78,14 @@
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+      <version>1.0.0</version>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+
 
   </dependencies>
 

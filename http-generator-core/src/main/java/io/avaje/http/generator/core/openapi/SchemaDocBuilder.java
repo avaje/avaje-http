@@ -2,6 +2,7 @@ package io.avaje.http.generator.core.openapi;
 
 import static io.avaje.http.generator.core.Util.typeDef;
 
+import io.avaje.http.generator.core.SchemaPrism;
 import io.avaje.http.generator.core.javadoc.Javadoc;
 import io.swagger.v3.oas.models.media.StringSchema;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import io.avaje.http.generator.core.APContext;
 import io.avaje.http.generator.core.HiddenPrism;
 import io.avaje.http.generator.core.Util;
 import io.avaje.prism.GeneratePrism;
@@ -148,6 +150,20 @@ class SchemaDocBuilder {
   }
 
   Schema<?> toSchema(TypeMirror type) {
+    final Optional<SchemaPrism> prism = Optional.ofNullable(APContext.asTypeElement(type))
+      .flatMap(SchemaPrism::getOptionalOn);
+    if (prism.isPresent()) {
+      final SchemaPrism schemaPrism = prism.get();
+      final Schema schema = SchemaPrismHelper.implementation(schemaPrism)
+        .map(this::toSchemaImpl)
+        .orElseGet(() -> (Schema) toSchemaImpl(type));
+      SchemaPrismHelper.overwriteFromPrism(schema, schemaPrism);
+      return schema;
+    }
+    return toSchemaImpl(type);
+  }
+
+  private Schema<?> toSchemaImpl(TypeMirror type) {
     if (types.isAssignable(type, completableFutureType)) {
       type = typeArgument(type);
     }
@@ -219,11 +235,14 @@ class SchemaDocBuilder {
 
   private Schema<?> buildIterableSchema(TypeMirror type) {
     Schema<?> itemSchema = new ObjectSchema().format("unknownIterableType");
-
     if (type.getKind() == TypeKind.DECLARED) {
       List<? extends TypeMirror> typeArguments = ((DeclaredType) type).getTypeArguments();
       if (typeArguments.size() == 1) {
-        itemSchema = toSchema(typeArguments.get(0));
+        TypeMirror typeMirror = typeArguments.get(0);
+        itemSchema = toSchema(typeMirror);
+        if (isNotNullable(typeMirror)) {
+          itemSchema.setNullable(Boolean.FALSE);
+        }
       }
     }
 
@@ -248,7 +267,11 @@ class SchemaDocBuilder {
       DeclaredType declaredType = (DeclaredType) type;
       List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
       if (typeArguments.size() == 2) {
-        valueSchema = toSchema(typeArguments.get(1));
+        TypeMirror valueType = typeArguments.get(1);
+        valueSchema = toSchema(valueType);
+        if (isNotNullable(valueType)) {
+          valueSchema.setNullable(Boolean.FALSE);
+        }
       }
     }
 
@@ -258,6 +281,20 @@ class SchemaDocBuilder {
   }
 
   private String getObjectSchemaName(TypeMirror type) {
+    if (type.getKind() == TypeKind.DECLARED) {
+      DeclaredType declaredType = (DeclaredType) type;
+      List<? extends TypeMirror> typeArgs = declaredType.getTypeArguments();
+      String simpleName = ((TypeElement) declaredType.asElement()).getSimpleName().toString();
+      if (!typeArgs.isEmpty()) {
+        StringBuilder sb = new StringBuilder(simpleName);
+        for (TypeMirror arg : typeArgs) {
+          sb.append('_');
+          sb.append(getObjectSchemaName(arg));
+        }
+        return sb.toString();
+      }
+      return simpleName;
+    }
     var canonicalName = Util.trimAnnotations(type.toString());
     final var pos = canonicalName.lastIndexOf('.');
     if (pos > -1) {
@@ -269,7 +306,13 @@ class SchemaDocBuilder {
   private <T> void populateObjectSchema(TypeMirror objectType, Schema<T> objectSchema) {
     Element element = types.asElement(objectType);
     for (VariableElement field : allFields(element)) {
-      Schema<?> propSchema = toSchema(field.asType());
+      TypeMirror fieldType = objectType instanceof DeclaredType
+          ? types.asMemberOf((DeclaredType) objectType, field)
+          : field.asType();
+      Schema<?> propSchema = SchemaPrism.getOptionalOn(field)
+        .flatMap(SchemaPrismHelper::implementation)
+        .map(this::toSchema)
+        .orElseGet(() -> (Schema) toSchema(fieldType));
       if (isNotNullable(field)) {
         propSchema = markNotNullable(propSchema);
         objectSchema.addRequiredItem(field.getSimpleName().toString());
@@ -277,6 +320,8 @@ class SchemaDocBuilder {
       setDescription(field, propSchema);
       setLengthMinMax(field, propSchema);
       setFormatFromValidation(field, propSchema);
+      SchemaPrism.getOptionalOn(field)
+        .ifPresent(schemaPrism -> SchemaPrismHelper.overwriteFromPrism(propSchema, schemaPrism));
       objectSchema.addProperties(field.getSimpleName().toString(), propSchema);
     }
   }
@@ -369,11 +414,39 @@ class SchemaDocBuilder {
   }
 
   private boolean isNotNullable(Element element) {
-    return element.getAnnotationMirrors().stream()
+    List<AnnotationMirror> annotationMirrors = new ArrayList<>();
+    if (element instanceof VariableElement) {
+      annotationMirrors.addAll(element.asType().getAnnotationMirrors());
+    } else {
+      annotationMirrors.addAll(element.getAnnotationMirrors());
+    }
+
+    if (Util.nullMarked(element)) {
+      for (var mirror : annotationMirrors) {
+        if ("Nullable"
+            .equals(APContext.asTypeElement(mirror.getAnnotationType()).getSimpleName().toString())) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    return annotationMirrors.stream()
       .anyMatch(m -> m.toString().contains("@") &&
         Stream.of("NotNull", "NotEmpty", "NotBlank")
           .anyMatch(annotation -> m.toString().contains(annotation))
       );
+  }
+
+  private boolean isNotNullable(TypeMirror type) {
+    List<? extends AnnotationMirror> annotationMirrors = type.getAnnotationMirrors();
+
+    for (AnnotationMirror annotationMirror : annotationMirrors) {
+      if ("org.jspecify.annotations.Nullable".equals(annotationMirror.getAnnotationType().asElement().toString())) {
+      return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -431,5 +504,4 @@ class SchemaDocBuilder {
     Set<Modifier> modifiers = field.getModifiers();
     return (modifiers.contains(Modifier.STATIC) || modifiers.contains(Modifier.TRANSIENT));
   }
-
 }

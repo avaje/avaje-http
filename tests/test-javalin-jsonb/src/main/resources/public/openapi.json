@@ -66,7 +66,8 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Bar"
+                    "$ref": "#/components/schemas/Bar",
+                    "nullable": false
                   }
                 },
                 "exampleSetFlag": false
@@ -121,7 +122,8 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Baz"
+                    "$ref": "#/components/schemas/Baz",
+                    "nullable": false
                   }
                 },
                 "exampleSetFlag": false
@@ -247,7 +249,8 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Baz"
+                    "$ref": "#/components/schemas/Baz",
+                    "nullable": false
                   }
                 },
                 "exampleSetFlag": false
@@ -280,6 +283,27 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Baz"
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generic-list": {
+      "get": {
+        "tags": [
+        ],
+        "summary": "",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Data_Bar"
                 },
                 "exampleSetFlag": false
               }
@@ -334,7 +358,8 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/HelloDto"
+                    "$ref": "#/components/schemas/HelloDto",
+                    "nullable": false
                   }
                 },
                 "exampleSetFlag": false
@@ -395,7 +420,8 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/HelloDto"
+                    "$ref": "#/components/schemas/HelloDto",
+                    "nullable": false
                   }
                 },
                 "exampleSetFlag": false
@@ -795,7 +821,8 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "string"
+                "type": "string",
+                "nullable": false
               }
             }
           },{
@@ -811,6 +838,7 @@
               "type": "array",
               "items": {
                 "type": "string",
+                "nullable": false,
                 "enum": ["PROXY","HIDE_N_SEEK","FFA"
                 ]
               }
@@ -951,7 +979,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/String,?>"
+                  "$ref": "#/components/schemas/Data2_String_?"
                 },
                 "exampleSetFlag": false
               }
@@ -972,7 +1000,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/String>>"
+                  "$ref": "#/components/schemas/Data2_String_Data_String"
                 },
                 "exampleSetFlag": false
               }
@@ -996,8 +1024,10 @@
                   "type": "object",
                   "additionalProperties": {
                     "type": "array",
+                    "nullable": false,
                     "items": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": false
                     }
                   }
                 },
@@ -1020,7 +1050,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/String>"
+                  "$ref": "#/components/schemas/Data_String"
                 },
                 "exampleSetFlag": false
               }
@@ -1226,7 +1256,8 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/Person"
+                  "$ref": "#/components/schemas/Person",
+                  "nullable": false
                 }
               },
               "exampleSetFlag": false
@@ -1631,6 +1662,7 @@
               "type": "array",
               "items": {
                 "type": "string",
+                "nullable": false,
                 "enum": ["PROXY","HIDE_N_SEEK","FFA"
                 ]
               }
@@ -1819,7 +1851,8 @@
                   "strings": {
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": false
                     }
                   }
                 }
@@ -2036,7 +2069,8 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/Person"
+                  "$ref": "#/components/schemas/Person",
+                  "nullable": false
                 }
               },
               "exampleSetFlag": false
@@ -2112,7 +2146,8 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Person"
+                    "$ref": "#/components/schemas/Person",
+                    "nullable": false
                   }
                 },
                 "exampleSetFlag": false
@@ -2145,7 +2180,8 @@
                 "schema": {
                   "type": "object",
                   "additionalProperties": {
-                    "$ref": "#/components/schemas/Person"
+                    "$ref": "#/components/schemas/Person",
+                    "nullable": false
                   }
                 },
                 "exampleSetFlag": false
@@ -2178,7 +2214,8 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Person"
+                    "$ref": "#/components/schemas/Person",
+                    "nullable": false
                   }
                 },
                 "exampleSetFlag": false
@@ -2288,10 +2325,10 @@
         },
         "description": "But oh, what a description this schema has!"
       },
-      "String>": {
+      "Data2_String_?": {
         "type": "object"
       },
-      "String,?>": {
+      "Data_String": {
         "type": "object"
       },
       "HelloDto": {
@@ -2319,9 +2356,6 @@
           }
         }
       },
-      "String>>": {
-        "type": "object"
-      },
       "Baz": {
         "type": "object",
         "properties": {
@@ -2341,6 +2375,9 @@
       "StreamingOutput": {
         "type": "object"
       },
+      "Data2_String_Data_String": {
+        "type": "object"
+      },
       "Person": {
         "type": "object",
         "properties": {
@@ -2350,6 +2387,18 @@
           "id": {
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "Data_Bar": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Bar",
+              "nullable": false
+            }
           }
         }
       },
