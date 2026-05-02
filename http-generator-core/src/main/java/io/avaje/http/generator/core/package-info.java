@@ -5,6 +5,7 @@
 @GeneratePrism(value = io.avaje.http.api.Client.class, publicAccess = true, superInterfaces = WebAPIPrism.class)
 @GeneratePrism(value = io.avaje.http.api.BeanParam.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Ignore.class, publicAccess = true)
+@GeneratePrism(value = io.avaje.http.api.Body.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.BodyString.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Default.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Delete.class, publicAccess = true)

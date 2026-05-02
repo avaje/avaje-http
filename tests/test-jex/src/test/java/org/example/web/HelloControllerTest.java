@@ -221,4 +221,38 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(res.statusCode()).isEqualTo(200);
   }
 
+  @Test
+  void postListBody() {
+    HttpResponse<String> res = client.request()
+      .path("test/listBody")
+      .body("[\"123\",\"456\"]")
+      .POST()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(201);
+    assertThat(res.body()).isEqualTo("[123, 456]");
+  }
+
+  @Test
+  void postStringBody_bodyAndBodyStringEquivalent() {
+    final var payload = "{\"key\":42}";
+
+    HttpResponse<String> bodyStringRes = client.request()
+      .path("test/strBodyStringPost")
+      .body(payload)
+      .POST()
+      .asString();
+
+    HttpResponse<String> bodyRes = client.request()
+      .path("test/strBodyBodyPost")
+      .body(payload)
+      .POST()
+      .asString();
+
+    assertThat(bodyStringRes.statusCode()).isEqualTo(201);
+    assertThat(bodyRes.statusCode()).isEqualTo(201);
+    assertThat(bodyStringRes.body()).isEqualTo(payload);
+    assertThat(bodyRes.body()).isEqualTo(payload);
+  }
+
 }
