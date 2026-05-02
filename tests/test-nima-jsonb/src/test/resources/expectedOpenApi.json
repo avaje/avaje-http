@@ -147,8 +147,7 @@
 							"schema": {
 								"type": "array",
 								"items": {
-									"$ref": "#/components/schemas/Person",
-									"nullable": false
+									"$ref": "#/components/schemas/Person"
 								}
 							}
 						}
@@ -231,8 +230,7 @@
 				"properties": {
 					"id": {
 						"type": "integer",
-						"format": "int64",
-						"nullable": false
+						"format": "int64"
 					},
 					"name": {
 						"type": "string"

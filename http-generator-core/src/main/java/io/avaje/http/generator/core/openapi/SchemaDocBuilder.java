@@ -241,7 +241,7 @@ class SchemaDocBuilder {
         TypeMirror typeMirror = typeArguments.get(0);
         itemSchema = toSchema(typeMirror);
         if (isNotNullable(typeMirror)) {
-          itemSchema.setNullable(Boolean.FALSE);
+          itemSchema = markNotNullable(itemSchema);
         }
       }
     }
@@ -270,7 +270,7 @@ class SchemaDocBuilder {
         TypeMirror valueType = typeArguments.get(1);
         valueSchema = toSchema(valueType);
         if (isNotNullable(valueType)) {
-          valueSchema.setNullable(Boolean.FALSE);
+          valueSchema = markNotNullable(valueSchema);
         }
       }
     }

@@ -66,8 +66,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Bar",
-                    "nullable": false
+                    "$ref": "#/components/schemas/Bar"
                   }
                 },
                 "exampleSetFlag": false
@@ -122,8 +121,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Baz",
-                    "nullable": false
+                    "$ref": "#/components/schemas/Baz"
                   }
                 },
                 "exampleSetFlag": false
@@ -249,8 +247,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Baz",
-                    "nullable": false
+                    "$ref": "#/components/schemas/Baz"
                   }
                 },
                 "exampleSetFlag": false
@@ -358,8 +355,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/HelloDto",
-                    "nullable": false
+                    "$ref": "#/components/schemas/HelloDto"
                   }
                 },
                 "exampleSetFlag": false
@@ -420,8 +416,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/HelloDto",
-                    "nullable": false
+                    "$ref": "#/components/schemas/HelloDto"
                   }
                 },
                 "exampleSetFlag": false
@@ -821,8 +816,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "string",
-                "nullable": false
+                "type": "string"
               }
             }
           },{
@@ -838,7 +832,6 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "nullable": false,
                 "enum": ["PROXY","HIDE_N_SEEK","FFA"
                 ]
               }
@@ -1024,10 +1017,8 @@
                   "type": "object",
                   "additionalProperties": {
                     "type": "array",
-                    "nullable": false,
                     "items": {
-                      "type": "string",
-                      "nullable": false
+                      "type": "string"
                     }
                   }
                 },
@@ -1256,8 +1247,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/Person",
-                  "nullable": false
+                  "$ref": "#/components/schemas/Person"
                 }
               },
               "exampleSetFlag": false
@@ -1662,7 +1652,6 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "nullable": false,
                 "enum": ["PROXY","HIDE_N_SEEK","FFA"
                 ]
               }
@@ -1851,8 +1840,7 @@
                   "strings": {
                     "type": "array",
                     "items": {
-                      "type": "string",
-                      "nullable": false
+                      "type": "string"
                     }
                   }
                 }
@@ -2069,8 +2057,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/Person",
-                  "nullable": false
+                  "$ref": "#/components/schemas/Person"
                 }
               },
               "exampleSetFlag": false
@@ -2146,8 +2133,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Person",
-                    "nullable": false
+                    "$ref": "#/components/schemas/Person"
                   }
                 },
                 "exampleSetFlag": false
@@ -2180,8 +2166,7 @@
                 "schema": {
                   "type": "object",
                   "additionalProperties": {
-                    "$ref": "#/components/schemas/Person",
-                    "nullable": false
+                    "$ref": "#/components/schemas/Person"
                   }
                 },
                 "exampleSetFlag": false
@@ -2214,8 +2199,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Person",
-                    "nullable": false
+                    "$ref": "#/components/schemas/Person"
                   }
                 },
                 "exampleSetFlag": false
@@ -2396,8 +2380,7 @@
           "data": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Bar",
-              "nullable": false
+              "$ref": "#/components/schemas/Bar"
             }
           }
         }
@@ -2424,5 +2407,5 @@
     }
   },
   "jsonSchemaDialect": "https://spec.openapis.org/oas/3.1/dialect/base",
-  "specVersion": "V31"
+  "specVersion": "V30"
 }

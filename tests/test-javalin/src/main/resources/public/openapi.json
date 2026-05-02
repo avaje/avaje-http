@@ -56,11 +56,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Bar",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/Bar"
+									},
+									"type" : "array"
 								}
 							}
 						}
@@ -81,8 +80,8 @@
 						"in" : "path",
 						"required" : true,
 						"schema" : {
-							"type" : "integer",
-							"format" : "int64"
+							"format" : "int64",
+							"type" : "integer"
 						}
 					}
 				],
@@ -113,11 +112,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Baz",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/Baz"
+									},
+									"type" : "array"
 								}
 							}
 						}
@@ -146,8 +144,8 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "integer",
-									"format" : "int64"
+									"format" : "int64",
+									"type" : "integer"
 								}
 							}
 						}
@@ -168,8 +166,8 @@
 						"in" : "path",
 						"required" : true,
 						"schema" : {
-							"type" : "integer",
-							"format" : "int32"
+							"format" : "int32",
+							"type" : "integer"
 						}
 					},
 					{
@@ -190,8 +188,8 @@
 						"name" : "p3",
 						"in" : "query",
 						"schema" : {
-							"type" : "integer",
-							"format" : "int32"
+							"format" : "int32",
+							"type" : "integer"
 						}
 					},
 					{
@@ -246,11 +244,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Baz",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/Baz"
+									},
+									"type" : "array"
 								}
 							}
 						}
@@ -271,8 +268,8 @@
 						"in" : "path",
 						"required" : true,
 						"schema" : {
-							"type" : "integer",
-							"format" : "int64"
+							"format" : "int64",
+							"type" : "integer"
 						}
 					}
 				],
@@ -334,11 +331,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/HelloDto",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/HelloDto"
+									},
+									"type" : "array"
 								}
 							}
 						}
@@ -378,11 +374,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/HelloDto",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/HelloDto"
+									},
+									"type" : "array"
 								}
 							}
 						}
@@ -433,7 +428,8 @@
 									"url" : {
 										"type" : "string"
 									}
-								}
+								},
+								"type" : "object"
 							}
 						}
 					},
@@ -505,10 +501,11 @@
 										"type" : "string"
 									},
 									"startDate" : {
-										"type" : "string",
-										"format" : "date"
+										"format" : "date",
+										"type" : "string"
 									}
-								}
+								},
+								"type" : "object"
 							}
 						}
 					},
@@ -543,7 +540,8 @@
 									"url" : {
 										"type" : "string"
 									}
-								}
+								},
+								"type" : "object"
 							}
 						}
 					},
@@ -579,10 +577,11 @@
 										"type" : "string"
 									},
 									"startDate" : {
-										"type" : "string",
-										"format" : "date"
+										"format" : "date",
+										"type" : "string"
 									}
-								}
+								},
+								"type" : "object"
 							}
 						}
 					},
@@ -662,8 +661,8 @@
 						"in" : "path",
 						"required" : true,
 						"schema" : {
-							"type" : "integer",
-							"format" : "int32"
+							"format" : "int32",
+							"type" : "integer"
 						}
 					},
 					{
@@ -762,8 +761,8 @@
 						"in" : "path",
 						"required" : true,
 						"schema" : {
-							"type" : "integer",
-							"format" : "int32"
+							"format" : "int32",
+							"type" : "integer"
 						}
 					}
 				],
@@ -789,8 +788,8 @@
 						"description" : "The hello Id.",
 						"required" : true,
 						"schema" : {
-							"type" : "integer",
-							"format" : "int32"
+							"format" : "int32",
+							"type" : "integer"
 						}
 					},
 					{
@@ -799,8 +798,8 @@
 						"description" : "The name of the hello",
 						"required" : true,
 						"schema" : {
-							"type" : "string",
-							"format" : "date"
+							"format" : "date",
+							"type" : "string"
 						}
 					},
 					{
@@ -857,8 +856,7 @@
 					"content" : {
 						"application/json" : {
 							"schema" : {
-								"$ref" : "#/components/schemas/NullMarkedClassDTO",
-								"nullable" : false
+								"$ref" : "#/components/schemas/NullMarkedClassDTO"
 							}
 						}
 					},
@@ -917,39 +915,38 @@
 	"components" : {
 		"schemas" : {
 			"Bar" : {
-				"type" : "object",
 				"properties" : {
 					"id" : {
-						"type" : "integer",
-						"format" : "int64"
+						"format" : "int64",
+						"type" : "integer"
 					},
 					"name" : {
 						"type" : "string"
 					}
-				}
+				},
+				"type" : "object"
 			},
 			"Baz" : {
-				"type" : "object",
 				"properties" : {
 					"id" : {
-						"type" : "integer",
-						"format" : "int64"
+						"format" : "int64",
+						"type" : "integer"
 					},
 					"name" : {
 						"type" : "string"
 					},
 					"startDate" : {
-						"type" : "string",
-						"format" : "date"
+						"format" : "date",
+						"type" : "string"
 					}
-				}
+				},
+				"type" : "object"
 			},
 			"HelloDto" : {
-				"type" : "object",
 				"properties" : {
 					"id" : {
-						"type" : "integer",
-						"format" : "int32"
+						"format" : "int32",
+						"type" : "integer"
 					},
 					"name" : {
 						"type" : "string"
@@ -958,14 +955,15 @@
 						"type" : "string"
 					},
 					"gid" : {
-						"type" : "string",
-						"format" : "uuid"
+						"format" : "uuid",
+						"type" : "string"
 					},
 					"whenAction" : {
-						"type" : "string",
-						"format" : "date-time"
+						"format" : "date-time",
+						"type" : "string"
 					}
-				}
+				},
+				"type" : "object"
 			},
 			"NullMarkedClassDTO" : {
 				"required" : [
@@ -978,97 +976,83 @@
 					"stringArray1",
 					"stringArray2"
 				],
-				"type" : "object",
 				"properties" : {
 					"string1" : {
-						"type" : "string",
-						"nullable" : false
+						"type" : "string"
 					},
 					"string2" : {
 						"type" : "string"
 					},
 					"stringArray1" : {
-						"type" : "array",
-						"nullable" : false,
 						"items" : {
 							"type" : "string"
-						}
+						},
+						"type" : "array"
 					},
 					"stringArray2" : {
-						"type" : "array",
-						"nullable" : false,
 						"items" : {
 							"type" : "string"
-						}
+						},
+						"type" : "array"
 					},
 					"set1" : {
-						"type" : "array",
-						"nullable" : false,
 						"items" : {
-							"type" : "string",
-							"nullable" : false
-						}
+							"type" : "string"
+						},
+						"type" : "array"
 					},
 					"set2" : {
-						"type" : "array",
-						"nullable" : false,
 						"items" : {
 							"type" : "string"
-						}
+						},
+						"type" : "array"
 					},
 					"set3" : {
-						"type" : "array",
 						"items" : {
-							"type" : "string",
-							"nullable" : false
-						}
+							"type" : "string"
+						},
+						"type" : "array"
 					},
 					"map1" : {
-						"type" : "object",
-						"additionalProperties" : {
-							"type" : "string",
-							"nullable" : false
-						},
-						"nullable" : false
-					},
-					"map2" : {
-						"type" : "object",
-						"additionalProperties" : {
-							"type" : "string",
-							"nullable" : false
-						},
-						"nullable" : false
-					},
-					"map3" : {
-						"type" : "object",
 						"additionalProperties" : {
 							"type" : "string"
 						},
-						"nullable" : false
+						"type" : "object"
+					},
+					"map2" : {
+						"additionalProperties" : {
+							"type" : "string"
+						},
+						"type" : "object"
+					},
+					"map3" : {
+						"additionalProperties" : {
+							"type" : "string"
+						},
+						"type" : "object"
 					},
 					"map4" : {
-						"type" : "object",
 						"additionalProperties" : {
-							"type" : "string",
-							"nullable" : false
-						}
+							"type" : "string"
+						},
+						"type" : "object"
 					}
-				}
+				},
+				"type" : "object"
 			},
 			"NullMarkedRecordDTO" : {
 				"required" : [
 					"notNullable"
 				],
-				"type" : "object",
 				"properties" : {
 					"notNullable" : {
-						"type" : "string",
-						"nullable" : false
+						"type" : "string"
 					},
 					"nullable" : {
 						"type" : "string"
 					}
-				}
+				},
+				"type" : "object"
 			}
 		}
 	},
