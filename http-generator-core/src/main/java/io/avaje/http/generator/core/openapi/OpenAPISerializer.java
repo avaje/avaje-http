@@ -20,7 +20,6 @@ final class OpenAPISerializer {
           "USE_ARBITRARY_SCHEMA_PROPERTY",
           "exampleSetFlag",
           "defaultSetFlag",
-          "types",
           "specVersion");
 
   private OpenAPISerializer() {}

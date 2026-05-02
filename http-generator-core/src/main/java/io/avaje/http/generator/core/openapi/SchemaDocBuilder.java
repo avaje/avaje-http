@@ -309,12 +309,12 @@ class SchemaDocBuilder {
       TypeMirror fieldType = objectType instanceof DeclaredType
           ? types.asMemberOf((DeclaredType) objectType, field)
           : field.asType();
-      Schema<?> propSchema = SchemaPrism.getOptionalOn(field)
+      final Schema<?> propSchema = SchemaPrism.getOptionalOn(field)
         .flatMap(SchemaPrismHelper::implementation)
         .map(this::toSchema)
         .orElseGet(() -> (Schema) toSchema(fieldType));
       if (isNotNullable(field)) {
-        propSchema = markNotNullable(propSchema);
+        markNotNullable(propSchema);
         objectSchema.addRequiredItem(field.getSimpleName().toString());
       }
       setDescription(field, propSchema);
