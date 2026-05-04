@@ -1,7 +1,9 @@
 package org.example.web;
 
 import java.util.Set;
+import java.util.List;
 
+import io.avaje.http.api.Body;
 import io.avaje.http.api.BodyString;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Default;
@@ -40,8 +42,23 @@ public class TestController {
     return type.name();
   }
 
+  @Post("/listBody")
+  String listBody(@Body List<String> codes) {
+    return codes.toString();
+  }
+
   @Options("/strBody")
   String strBody(@BodyString String body, Context ctx) {
+    return body;
+  }
+
+  @Post("/strBodyStringPost")
+  String strBodyStringPost(@BodyString String body) {
+    return body;
+  }
+
+  @Post("/strBodyBodyPost")
+  String strBodyBodyPost(@Body String body) {
     return body;
   }
 
