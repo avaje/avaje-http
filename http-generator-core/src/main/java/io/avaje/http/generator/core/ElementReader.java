@@ -184,6 +184,10 @@ public class ElementReader {
     if (defaultVal != null) {
       this.paramDefault = defaultVal.value();
     }
+    if (BodyPrism.isPresent(element)) {
+      this.paramType = ParamType.BODY;
+      return;
+    }
     if (FormPrism.isPresent(element)) {
       this.paramType = ParamType.FORM;
       return;
@@ -386,7 +390,7 @@ public class ElementReader {
       }
     }
 
-    final String asMethod = typeHandler == null ? null : typeHandler.toMethod();
+    final String asMethod = paramType == ParamType.BODY || typeHandler == null ? null : typeHandler.toMethod();
     if (asMethod != null) {
       writer.append(asMethod);
     }

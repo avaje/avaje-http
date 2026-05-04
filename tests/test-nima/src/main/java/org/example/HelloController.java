@@ -1,9 +1,11 @@
 package org.example;
 
 import io.avaje.http.api.BeanParam;
+import io.avaje.http.api.Body;
 import io.avaje.http.api.Controller;
 import io.avaje.http.api.Default;
 import io.avaje.http.api.Get;
+import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
 
 import java.util.List;
@@ -39,6 +41,12 @@ public class HelloController {
   @Produces("text/plain")
   @Get("listParams")
   String listParam(List<String> codes) {
+    return "codes:" + codes;
+  }
+
+  @Produces("text/plain")
+  @Post("postListParams")
+  String postListParams(@Body List<String> codes) {
     return "codes:" + codes;
   }
 }

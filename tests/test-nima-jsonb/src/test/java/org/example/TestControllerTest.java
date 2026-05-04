@@ -66,6 +66,28 @@ class TestControllerTest {
   }
 
   @Test
+  void strBody_bodyAndBodyStringEquivalent() {
+    final var payload = "{\"key\":42}";
+
+    HttpResponse<String> bodyStringRes = client.request()
+      .path("test/strBody")
+      .body(payload)
+      .POST()
+      .asString();
+
+    HttpResponse<String> bodyRes = client.request()
+      .path("test/strBodyBody")
+      .body(payload)
+      .POST()
+      .asString();
+
+    assertThat(bodyStringRes.statusCode()).isEqualTo(201);
+    assertThat(bodyRes.statusCode()).isEqualTo(201);
+    assertThat(bodyStringRes.body()).isEqualTo(payload);
+    assertThat(bodyRes.body()).isEqualTo(payload);
+  }
+
+  @Test
   void strBody3() {
     HttpResponse<String> res = client.request()
       .path("test/strBody3")

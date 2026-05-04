@@ -49,31 +49,15 @@ class JexAdapter implements PlatformAdapter {
 
   public static String writeJsonbType(UType type) {
     var writer = new StringBuilder();
-    switch (type.mainType()) {
-      case "java.util.List":
-        writeType(type.paramRaw(), writer);
-        writer.append(".list()");
-        break;
-      case "java.util.Set":
-        writeType(type.paramRaw(), writer);
-        writer.append(".set()");
-        break;
-      case "java.util.Map":
-        writeType(type.paramRaw(), writer);
-        writer.append(".map()");
-        break;
-      case "java.util.stream.Stream":
-        writeType(type.paramRaw(), writer);
-        writer.append(".stream()");
-        break;
-      default: {
-        if (type.mainType().contains("java.util")) {
-          throw new UnsupportedOperationException(
-            "Only java.util Map, Set, List and Stream are supported JsonB Controller Collection Types");
-        }
-        writeType(type, writer);
-      }
+    if (type.mainType().contains("java.util")
+      && !type.mainType().startsWith("java.util.List")
+      && !type.mainType().startsWith("java.util.Set")
+      && !type.mainType().startsWith("java.util.Map")
+      && !type.mainType().startsWith("java.util.stream.Stream")) {
+      throw new UnsupportedOperationException(
+        "Only java.util Map, Set, List and Stream are supported JsonB Controller Collection Types");
     }
+    writeType(type, writer);
     return writer.toString();
   }
 

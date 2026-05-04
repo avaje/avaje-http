@@ -43,4 +43,16 @@ class HelloControllerTest extends BaseWebTest {
     assertThat(res.statusCode()).isEqualTo(200);
     assertThat(res.body()).isEqualTo("codes:[]");
   }
+
+  @Test
+  void postListParams_body() {
+    HttpResponse<String> res = client().request()
+      .path("postListParams")
+      .body("[\"123\",\"456\"]")
+      .POST()
+      .asPlainString();
+
+    assertThat(res.statusCode()).isEqualTo(201);
+    assertThat(res.body()).isEqualTo("codes:[123, 456]");
+  }
 }
