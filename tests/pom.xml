@@ -4,7 +4,7 @@
   <parent>
     <artifactId>avaje-http-parent</artifactId>
     <groupId>io.avaje</groupId>
-    <version>3.8</version>
+    <version>3.9-RC2</version>
   </parent>
 
   <artifactId>tests</artifactId>
@@ -14,11 +14,11 @@
     <maven.deploy.skip>true</maven.deploy.skip>
     <junit.version>6.0.3</junit.version>
     <assertj.version>3.27.7</assertj.version>
-    <jackson.version>2.21.2</jackson.version>
+    <jackson.version>2.21.3</jackson.version>
     <jex.version>3.5</jex.version>
     <avaje-inject.version>12.5</avaje-inject.version>
     <helidon.version>4.4.1</helidon.version>
-    <javalin.version>7.1.0</javalin.version>
+    <javalin.version>7.2.0</javalin.version>
   </properties>
 
   <modules>

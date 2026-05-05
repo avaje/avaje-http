@@ -1537,6 +1537,41 @@
 				}
 			}
 		},
+		"/test/listBody" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"type" : "array",
+								"items" : {
+									"type" : "string",
+									"nullable" : false
+								}
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/test/paramMulti" : {
 			"get" : {
 				"tags" : [
@@ -1559,6 +1594,68 @@
 				],
 				"responses" : {
 					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/strBodyBodyPost" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/text" : {
+							"schema" : {
+								"type" : "string"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/test/strBodyStringPost" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/text" : {
+							"schema" : {
+								"type" : "string"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
 						"description" : "",
 						"content" : {
 							"application/json" : {
