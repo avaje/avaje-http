@@ -227,6 +227,9 @@ public abstract class BaseProcessor extends AbstractProcessor {
     reader.read(true);
     try {
       writeControllerAdapter(reader);
+      if (reader.isRequestScoped()) {
+        new RequestFactoryWriter(reader).write();
+      }
       writeClientAdapter(reader);
 
     } catch (final Throwable e) {

@@ -20,7 +20,9 @@ import java.util.function.Function;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
@@ -57,6 +59,10 @@ public final class ControllerReader {
    * Flag set when the controller is dependent on a request scope type.
    */
   private boolean requestScope;
+  /** Constructor params, inject fields for request-scoped factory generation. */
+  private final List<VariableElement> constructorParams = new ArrayList<>();
+  private final List<VariableElement> requestScopeFields = new ArrayList<>();
+  private final List<VariableElement> diFields = new ArrayList<>();
   private boolean docHidden;
   private final boolean hasInstrument;
   private boolean hasJstache;
@@ -231,12 +237,29 @@ public final class ControllerReader {
     return requestScope;
   }
 
+  /** Return the constructor parameters for the controller. */
+  List<VariableElement> constructorParams() {
+    return constructorParams;
+  }
+
+  /** Return the request-scoped inject fields. */
+  List<VariableElement> requestScopeFields() {
+    return requestScopeFields;
+  }
+
+  /** Return the DI inject fields (non-request-scoped). */
+  List<VariableElement> diFields() {
+    return diFields;
+  }
+
   public void read(boolean withSingleton) {
     if (!roles.isEmpty()) {
       platform().controllerRoles(roles, this);
     }
     for (final Element element : beanType.getEnclosedElements()) {
-      if (element.getKind() == ElementKind.METHOD) {
+      if (element.getKind() == ElementKind.CONSTRUCTOR) {
+        readConstructor((ExecutableElement) element);
+      } else if (element.getKind() == ElementKind.METHOD) {
         readMethod((ExecutableElement) element);
       } else if (element.getKind() == ElementKind.FIELD) {
         readField(element);
@@ -296,11 +319,37 @@ public final class ControllerReader {
     return false;
   }
 
-  private void readField(Element element) {
-    if (!requestScope) {
-      final String rawType = element.asType().toString();
-      requestScope = RequestScopeTypes.isRequestType(rawType);
+  private void readConstructor(ExecutableElement constructor) {
+    // use the first non-default constructor
+    if (!constructorParams.isEmpty() || constructor.getParameters().isEmpty()) {
+      return;
     }
+    for (var param : constructor.getParameters()) {
+      constructorParams.add(param);
+      final String rawType = param.asType().toString();
+      if (RequestScopeTypes.isRequestType(rawType)) {
+        requestScope = true;
+      }
+    }
+  }
+
+  private void readField(Element element) {
+    final String rawType = element.asType().toString();
+    boolean isFinal = element.getModifiers().contains(Modifier.FINAL);
+    if (RequestScopeTypes.isRequestType(rawType)) {
+      requestScope = true;
+      if (!isFinal) {
+        requestScopeFields.add((VariableElement) element);
+      }
+    } else if (!isFinal && hasInjectAnnotation(element)) {
+      diFields.add((VariableElement) element);
+    }
+  }
+
+  private static boolean hasInjectAnnotation(Element element) {
+    return element.getAnnotationMirrors().stream()
+      .map(m -> m.getAnnotationType().toString())
+      .anyMatch(a -> a.equals("jakarta.inject.Inject") || a.equals("javax.inject.Inject"));
   }
 
   /**

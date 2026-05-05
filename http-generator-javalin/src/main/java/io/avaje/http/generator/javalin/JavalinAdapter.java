@@ -140,6 +140,16 @@ class JavalinAdapter implements PlatformAdapter {
   }
 
   @Override
+  public String requestFactoryCreateParams() {
+    return "Context ctx";
+  }
+
+  @Override
+  public List<String> requestFactoryImportTypes() {
+    return List.of(JAVALIN3_CONTEXT);
+  }
+
+  @Override
   public List<Function<Element, Optional<CustomWebMethod>>> customHandlers() {
     final Function<Element, AfterPrism> after = AfterPrism::getInstanceOn;
     final Function<Element, BeforePrism> before = BeforePrism::getInstanceOn;
