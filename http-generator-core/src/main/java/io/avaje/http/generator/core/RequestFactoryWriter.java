@@ -196,13 +196,12 @@ final class RequestFactoryWriter {
       writer.append(");").eol();
     }
 
-    // set request-scoped fields using platform variable names
+    // set request-scoped fields (non-final only, final fields are set via constructor)
     for (var field : reader.requestScopeFields()) {
       String fieldType = field.asType().toString();
       writer.append("    bean.%s = %s;", field.getSimpleName(), platform().platformVariable(fieldType)).eol();
     }
-
-    // set DI fields
+    // set DI fields (non-final only, final fields are set via constructor)
     for (var field : reader.diFields()) {
       writer.append("    bean.%s = %s;", field.getSimpleName(), field.getSimpleName()).eol();
     }
