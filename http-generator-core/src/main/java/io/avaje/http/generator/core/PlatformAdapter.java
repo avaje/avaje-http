@@ -52,6 +52,21 @@ public interface PlatformAdapter {
     throw new UnsupportedOperationException("Unsupported MultiValue Parameter");
   }
 
+  /**
+   * Return the parameter declarations for the request factory create method.
+   * For example, "Context ctx" for Jex/Javalin, or "ServerRequest req, ServerResponse res" for Helidon.
+   */
+  default String requestFactoryCreateParams() {
+    return "";
+  }
+
+  /**
+   * Return the import types needed for the request factory create method parameters.
+   */
+  default List<String> requestFactoryImportTypes() {
+    return List.of();
+  }
+
   default List<Function<Element, Optional<CustomWebMethod>>> customHandlers() {
     return List.of();
   }

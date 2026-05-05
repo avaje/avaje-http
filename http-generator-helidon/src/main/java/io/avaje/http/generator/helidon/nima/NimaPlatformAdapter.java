@@ -161,4 +161,14 @@ class NimaPlatformAdapter implements PlatformAdapter {
   public void writeAcceptLanguage(Append writer) {
     writer.append("language(req)");
   }
+
+  @Override
+  public String requestFactoryCreateParams() {
+    return "ServerRequest req, ServerResponse res";
+  }
+
+  @Override
+  public List<String> requestFactoryImportTypes() {
+    return List.of(NIMA_REQ, NIMA_RES);
+  }
 }

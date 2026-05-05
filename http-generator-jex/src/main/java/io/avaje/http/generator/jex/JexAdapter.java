@@ -167,4 +167,14 @@ class JexAdapter implements PlatformAdapter {
   public void writeAcceptLanguage(Append writer) {
     writer.append("ctx.header(\"%s\")", Constants.ACCEPT_LANGUAGE);
   }
+
+  @Override
+  public String requestFactoryCreateParams() {
+    return "Context ctx";
+  }
+
+  @Override
+  public List<String> requestFactoryImportTypes() {
+    return List.of(JEX_CONTEXT);
+  }
 }

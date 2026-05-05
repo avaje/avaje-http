@@ -128,6 +128,16 @@ final class VertxAdapter implements PlatformAdapter {
     writer.append("ctx.request().getHeader(\"%s\")", Constants.ACCEPT_LANGUAGE);
   }
 
+  @Override
+  public String requestFactoryCreateParams() {
+    return "RoutingContext ctx";
+  }
+
+  @Override
+  public List<String> requestFactoryImportTypes() {
+    return List.of(ROUTING_CONTEXT);
+  }
+
   private String escapeJava(String value) {
     if (value == null) {
       return "";
