@@ -8,7 +8,6 @@
           "id": {
             "type": "integer",
             "format": "int64",
-            "nullable": false,
             "description": "This is a number ... I think?"
           },
           "name": {

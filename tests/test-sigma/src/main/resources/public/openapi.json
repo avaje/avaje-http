@@ -1,5 +1,5 @@
 {
-	"openapi" : "3.0.1",
+	"openapi" : "3.1.2",
 	"info" : {
 		"title" : "Example service",
 		"description" : "Example Javalin controllers with Java and Maven",
@@ -62,11 +62,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Bar",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/Bar"
+									},
+									"type" : "array"
 								}
 							}
 						}
@@ -87,9 +86,8 @@
 						"in" : "path",
 						"required" : true,
 						"schema" : {
-							"type" : "integer",
 							"format" : "int64",
-							"nullable" : false
+							"type" : "integer"
 						}
 					}
 				],
@@ -120,11 +118,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Baz",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/Baz"
+									},
+									"type" : "array"
 								}
 							}
 						}
@@ -153,8 +150,8 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "integer",
-									"format" : "int64"
+									"format" : "int64",
+									"type" : "integer"
 								}
 							}
 						}
@@ -175,9 +172,8 @@
 						"in" : "path",
 						"required" : true,
 						"schema" : {
-							"type" : "integer",
 							"format" : "int32",
-							"nullable" : false
+							"type" : "integer"
 						}
 					},
 					{
@@ -198,8 +194,8 @@
 						"name" : "p3",
 						"in" : "query",
 						"schema" : {
-							"type" : "integer",
-							"format" : "int32"
+							"format" : "int32",
+							"type" : "integer"
 						}
 					},
 					{
@@ -254,11 +250,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Baz",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/Baz"
+									},
+									"type" : "array"
 								}
 							}
 						}
@@ -279,8 +274,8 @@
 						"in" : "path",
 						"required" : true,
 						"schema" : {
-							"type" : "integer",
-							"format" : "int64"
+							"format" : "int64",
+							"type" : "integer"
 						}
 					}
 				],
@@ -363,11 +358,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/HelloDto",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/HelloDto"
+									},
+									"type" : "array"
 								}
 							}
 						}
@@ -427,11 +421,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/HelloDto",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/HelloDto"
+									},
+									"type" : "array"
 								}
 							}
 						}
@@ -482,7 +475,8 @@
 									"url" : {
 										"type" : "string"
 									}
-								}
+								},
+								"type" : "object"
 							}
 						}
 					},
@@ -545,8 +539,7 @@
 								"type" : "object",
 								"properties" : {
 									"name" : {
-										"type" : "string",
-										"nullable" : false
+										"type" : "string"
 									},
 									"email" : {
 										"type" : "string"
@@ -555,10 +548,11 @@
 										"type" : "string"
 									},
 									"startDate" : {
-										"type" : "string",
-										"format" : "date"
+										"format" : "date",
+										"type" : "string"
 									}
-								}
+								},
+								"type" : "object"
 							}
 						}
 					},
@@ -593,7 +587,8 @@
 									"url" : {
 										"type" : "string"
 									}
-								}
+								},
+								"type" : "object"
 							}
 						}
 					},
@@ -620,8 +615,7 @@
 								"type" : "object",
 								"properties" : {
 									"name" : {
-										"type" : "string",
-										"nullable" : false
+										"type" : "string"
 									},
 									"email" : {
 										"type" : "string"
@@ -630,10 +624,11 @@
 										"type" : "string"
 									},
 									"startDate" : {
-										"type" : "string",
-										"format" : "date"
+										"format" : "date",
+										"type" : "string"
 									}
-								}
+								},
+								"type" : "object"
 							}
 						}
 					},
@@ -712,12 +707,12 @@
 						"name" : "myEnum",
 						"in" : "query",
 						"schema" : {
-							"type" : "string",
 							"enum" : [
 								"A",
 								"B",
 								"C"
-							]
+							],
+							"type" : "string"
 						}
 					}
 				],
@@ -748,9 +743,8 @@
 						"in" : "path",
 						"required" : true,
 						"schema" : {
-							"type" : "integer",
 							"format" : "int32",
-							"nullable" : false
+							"type" : "integer"
 						}
 					},
 					{
@@ -811,8 +805,7 @@
 						"name" : "name",
 						"in" : "query",
 						"schema" : {
-							"type" : "string",
-							"nullable" : false
+							"type" : "string"
 						}
 					},
 					{
@@ -826,11 +819,10 @@
 						"name" : "addresses",
 						"in" : "query",
 						"schema" : {
-							"type" : "array",
 							"items" : {
-								"type" : "string",
-								"nullable" : false
-							}
+								"type" : "string"
+							},
+							"type" : "array"
 						}
 					},
 					{
@@ -844,16 +836,15 @@
 						"name" : "type",
 						"in" : "query",
 						"schema" : {
-							"type" : "array",
 							"items" : {
-								"type" : "string",
-								"nullable" : false,
 								"enum" : [
 									"PROXY",
 									"HIDE_N_SEEK",
 									"FFA"
-								]
-							}
+								],
+								"type" : "string"
+							},
+							"type" : "array"
 						}
 					}
 				],
@@ -884,9 +875,8 @@
 						"in" : "path",
 						"required" : true,
 						"schema" : {
-							"type" : "integer",
 							"format" : "int32",
-							"nullable" : false
+							"type" : "integer"
 						}
 					}
 				],
@@ -911,9 +901,8 @@
 						"description" : "The hello Id.",
 						"required" : true,
 						"schema" : {
-							"type" : "integer",
 							"format" : "int32",
-							"nullable" : false
+							"type" : "integer"
 						}
 					},
 					{
@@ -922,8 +911,8 @@
 						"description" : "The name of the hello",
 						"required" : true,
 						"schema" : {
-							"type" : "string",
-							"format" : "date"
+							"format" : "date",
+							"type" : "string"
 						}
 					},
 					{
@@ -1114,11 +1103,10 @@
 					"content" : {
 						"application/json" : {
 							"schema" : {
-								"type" : "array",
 								"items" : {
-									"$ref" : "#/components/schemas/Person",
-									"nullable" : false
-								}
+									"$ref" : "#/components/schemas/Person"
+								},
+								"type" : "array"
 							}
 						}
 					},
@@ -1305,14 +1293,15 @@
 										"type" : "string"
 									},
 									"type" : {
-										"type" : "string",
 										"enum" : [
 											"PROXY",
 											"HIDE_N_SEEK",
 											"FFA"
-										]
+										],
+										"type" : "string"
 									}
-								}
+								},
+								"type" : "object"
 							}
 						}
 					},
@@ -1342,14 +1331,15 @@
 										"type" : "string"
 									},
 									"type" : {
-										"type" : "string",
 										"enum" : [
 											"PROXY",
 											"HIDE_N_SEEK",
 											"FFA"
-										]
+										],
+										"type" : "string"
 									}
-								}
+								},
+								"type" : "object"
 							}
 						}
 					},
@@ -1382,12 +1372,12 @@
 						"in" : "path",
 						"required" : true,
 						"schema" : {
-							"type" : "string",
 							"enum" : [
 								"PROXY",
 								"HIDE_N_SEEK",
 								"FFA"
-							]
+							],
+							"type" : "string"
 						}
 					}
 				],
@@ -1417,12 +1407,12 @@
 						"name" : "type",
 						"in" : "query",
 						"schema" : {
-							"type" : "string",
 							"enum" : [
 								"PROXY",
 								"HIDE_N_SEEK",
 								"FFA"
-							]
+							],
+							"type" : "string"
 						}
 					}
 				],
@@ -1452,16 +1442,15 @@
 						"name" : "type",
 						"in" : "query",
 						"schema" : {
-							"type" : "array",
 							"items" : {
-								"type" : "string",
-								"nullable" : false,
 								"enum" : [
 									"PROXY",
 									"HIDE_N_SEEK",
 									"FFA"
-								]
-							}
+								],
+								"type" : "string"
+							},
+							"type" : "array"
 						}
 					}
 				],
@@ -1498,12 +1487,12 @@
 						"name" : "type",
 						"in" : "query",
 						"schema" : {
-							"type" : "string",
 							"enum" : [
 								"PROXY",
 								"HIDE_N_SEEK",
 								"FFA"
-							]
+							],
+							"type" : "string"
 						}
 					}
 				],
@@ -1543,7 +1532,8 @@
 									"url" : {
 										"type" : "string"
 									}
-								}
+								},
+								"type" : "object"
 							}
 						}
 					},
@@ -1585,7 +1575,8 @@
 									"url" : {
 										"type" : "string"
 									}
-								}
+								},
+								"type" : "object"
 							}
 						}
 					},
@@ -1619,13 +1610,13 @@
 								"type" : "object",
 								"properties" : {
 									"strings" : {
-										"type" : "array",
 										"items" : {
-											"type" : "string",
-											"nullable" : false
-										}
+											"type" : "string"
+										},
+										"type" : "array"
 									}
-								}
+								},
+								"type" : "object"
 							}
 						}
 					},
@@ -1709,9 +1700,8 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "integer",
 									"format" : "int32",
-									"nullable" : false
+									"type" : "integer"
 								}
 							}
 						}
@@ -1732,9 +1722,8 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "integer",
 									"format" : "int64",
-									"nullable" : false
+									"type" : "integer"
 								}
 							}
 						}
@@ -1784,11 +1773,10 @@
 					"content" : {
 						"application/json" : {
 							"schema" : {
-								"type" : "array",
 								"items" : {
-									"$ref" : "#/components/schemas/Person",
-									"nullable" : false
-								}
+									"$ref" : "#/components/schemas/Person"
+								},
+								"type" : "array"
 							}
 						}
 					},
@@ -1862,11 +1850,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Person",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/Person"
+									},
+									"type" : "array"
 								}
 							}
 						}
@@ -1897,11 +1884,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "object",
 									"additionalProperties" : {
-										"$ref" : "#/components/schemas/Person",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/Person"
+									},
+									"type" : "object"
 								}
 							}
 						}
@@ -1932,11 +1918,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Person",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/Person"
+									},
+									"type" : "array"
 								}
 							}
 						}
@@ -2035,48 +2020,45 @@
 	"components" : {
 		"schemas" : {
 			"Bar" : {
-				"type" : "object",
 				"properties" : {
 					"id" : {
-						"type" : "integer",
 						"format" : "int64",
-						"nullable" : false
+						"type" : "integer"
 					},
 					"name" : {
 						"type" : "string"
 					}
-				}
+				},
+				"type" : "object"
 			},
 			"Baz" : {
-				"type" : "object",
 				"properties" : {
 					"id" : {
-						"type" : "integer",
-						"format" : "int64"
+						"format" : "int64",
+						"type" : "integer"
 					},
 					"name" : {
 						"type" : "string"
 					},
 					"startDate" : {
-						"type" : "string",
-						"format" : "date"
+						"format" : "date",
+						"type" : "string"
 					}
-				}
+				},
+				"type" : "object"
 			},
 			"Data_Bar" : {
-				"type" : "object",
 				"properties" : {
 					"data" : {
-						"type" : "array",
 						"items" : {
-							"$ref" : "#/components/schemas/Bar",
-							"nullable" : false
-						}
+							"$ref" : "#/components/schemas/Bar"
+						},
+						"type" : "array"
 					}
-				}
+				},
+				"type" : "object"
 			},
 			"ErrorResponse" : {
-				"type" : "object",
 				"properties" : {
 					"id" : {
 						"type" : "string"
@@ -2084,75 +2066,73 @@
 					"text" : {
 						"type" : "string"
 					}
-				}
+				},
+				"type" : "object"
 			},
 			"HelloDto" : {
-				"type" : "object",
 				"properties" : {
 					"id" : {
-						"type" : "integer",
 						"format" : "int32",
-						"nullable" : false
+						"type" : "integer"
 					},
 					"name" : {
-						"type" : "string",
-						"description" : "This is a comment"
+						"description" : "This is a comment",
+						"type" : "string"
 					},
 					"otherParam" : {
-						"type" : "string",
-						"description" : "This is a comment"
+						"description" : "This is a comment",
+						"type" : "string"
 					},
 					"gid" : {
-						"type" : "string",
-						"format" : "uuid"
+						"format" : "uuid",
+						"type" : "string"
 					},
 					"whenAction" : {
-						"type" : "string",
-						"format" : "date-time"
+						"format" : "date-time",
+						"type" : "string"
 					}
-				}
+				},
+				"type" : "object"
 			},
 			"HelloWorld" : {
-				"type" : "object",
 				"properties" : {
 					"message" : {
 						"type" : "string"
 					},
 					"people" : {
-						"type" : "array",
 						"items" : {
-							"$ref" : "#/components/schemas/Person",
-							"nullable" : false
-						}
+							"$ref" : "#/components/schemas/Person"
+						},
+						"type" : "array"
 					}
-				}
+				},
+				"type" : "object"
 			},
 			"HelloWorldZeroDependency" : {
-				"type" : "object",
 				"properties" : {
 					"message" : {
 						"type" : "string"
 					},
 					"people" : {
-						"type" : "array",
 						"items" : {
-							"$ref" : "#/components/schemas/Person",
-							"nullable" : false
-						}
+							"$ref" : "#/components/schemas/Person"
+						},
+						"type" : "array"
 					}
-				}
+				},
+				"type" : "object"
 			},
 			"Person" : {
-				"type" : "object",
 				"properties" : {
 					"name" : {
 						"type" : "string"
 					},
 					"birthday" : {
-						"type" : "string",
-						"format" : "date"
+						"format" : "date",
+						"type" : "string"
 					}
-				}
+				},
+				"type" : "object"
 			}
 		},
 		"securitySchemes" : {
@@ -2163,5 +2143,6 @@
 				"in" : "query"
 			}
 		}
-	}
+	},
+	"jsonSchemaDialect" : "https://spec.openapis.org/oas/3.1/dialect/base"
 }

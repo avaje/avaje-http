@@ -32,6 +32,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -200,7 +201,16 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
       final String fieldName = reader.nextField();
       switch (fieldName) {
         case "type":
-          type = stringJsonAdapter.fromJson(reader);
+          switch (reader.currentToken()) {
+            case STRING:
+              type = stringJsonAdapter.fromJson(reader);
+              break;
+            case BEGIN_ARRAY:
+              types = setStringJsonAdaptor.fromJson(reader);
+              break;
+            default:
+              reader.skipValue();
+          }
           break;
         case "format":
           format = stringJsonAdapter.fromJson(reader);
@@ -421,7 +431,8 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
       }
     }
     reader.endObject();
-    final Schema schema = createSchemaFromInformation(type, format);
+    final Set<String> normalizedTypes = normalizeTypes(type, types, nullable);
+    final Schema schema = createSchemaFromInformation(schemaTypeForCreation(type, normalizedTypes), format);
     schema.name(name)
       .title(title)
       .multipleOf(multipleOf)
@@ -443,7 +454,7 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
       .additionalProperties(additionalProperties)
       .description(description)
       .$ref($ref)
-      .nullable(nullable)
+      .nullable(null)
       .readOnly(readOnly)
       .writeOnly(writeOnly)
       .externalDocs(externalDocs)
@@ -456,7 +467,7 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
       .anyOf(anyOf)
       .oneOf(oneOf)
       .items(items)
-      .types(types)
+      .types(normalizedTypes)
       .patternProperties(patternProperties)
       .exclusiveMaximumValue(exclusiveMaximumValue)
       .exclusiveMinimumValue(exclusiveMinimumValue)
@@ -533,6 +544,69 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
     }
   }
 
+  private static String schemaTypeForCreation(final String type, final Set<String> types) {
+    if (type != null && !type.isBlank()) {
+      return type;
+    }
+    if (types == null || types.isEmpty()) {
+      return null;
+    }
+    if (types.size() == 1) {
+      return types.iterator().next();
+    }
+    for (final String candidate : types) {
+      if (!"null".equals(candidate)) {
+        return candidate;
+      }
+    }
+    return null;
+  }
+
+  private static Set<String> normalizeTypes(
+    final String type,
+    final Set<String> types,
+    final Boolean nullable) {
+
+    final boolean hasTypeSet = types != null && !types.isEmpty();
+    final boolean hasNullableUnion = Boolean.TRUE.equals(nullable);
+    if (!hasTypeSet && !hasNullableUnion) {
+      return null;
+    }
+
+    final LinkedHashSet<String> normalized = new LinkedHashSet<>();
+    if (hasTypeSet) {
+      for (final String candidate : types) {
+        if (candidate != null && !candidate.isBlank() && !"null".equals(candidate)) {
+          normalized.add(candidate);
+        }
+      }
+    }
+    if (type != null && !type.isBlank() && !"null".equals(type)) {
+      normalized.add(type);
+    }
+
+    boolean includeNull = false;
+    if (hasTypeSet && types.contains("null")) {
+      includeNull = true;
+    }
+    if (Boolean.TRUE.equals(nullable)) {
+      includeNull = true;
+    } else if (Boolean.FALSE.equals(nullable)) {
+      includeNull = false;
+    }
+    if (includeNull) {
+      normalized.add("null");
+    }
+    return normalized.isEmpty() ? null : normalized;
+  }
+
+  private static String scalarSchemaType(final Set<String> normalizedTypes) {
+    if (normalizedTypes == null || normalizedTypes.size() != 1) {
+      return null;
+    }
+    return normalizedTypes.iterator().next();
+  }
+
   private Schema readSelf(JsonReader reader) {
     if (reader.isNullValue()) {
       reader.skipValue();
@@ -577,7 +651,15 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
 
   private void toJsonImpl(JsonWriter writer, Schema<?> value) {
     writer.name(0);
-    stringJsonAdapter.toJson(writer, value.getType());
+    final Set<String> serializedTypes = normalizeTypes(value.getType(), value.getTypes(), value.getNullable());
+    final String scalarType = scalarSchemaType(serializedTypes);
+    if (scalarType != null) {
+      stringJsonAdapter.toJson(writer, scalarType);
+    } else if (serializedTypes != null && !serializedTypes.isEmpty()) {
+      setStringJsonAdaptor.toJson(writer, serializedTypes);
+    } else {
+      stringJsonAdapter.toJson(writer, value.getType());
+    }
     writer.name(1);
     stringJsonAdapter.toJson(writer, value.getFormat());
     writer.name(2);
@@ -631,7 +713,7 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
     writer.name(22);
     stringJsonAdapter.toJson(writer, value.get$ref());
     writer.name(23);
-    booleanJsonAdapter.toJson(writer, value.getNullable());
+    writer.nullValue();
     writer.name(24);
     booleanJsonAdapter.toJson(writer, value.getReadOnly());
     writer.name(25);
@@ -666,7 +748,7 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
     // specVersion - ignored
     writer.nullValue();
     writer.name(38);
-    setStringJsonAdaptor.toJson(writer, value.getTypes());
+    writer.nullValue();
     writer.name(39);
     writeMapSelf(value.getPatternProperties(), writer);
     writer.name(40);

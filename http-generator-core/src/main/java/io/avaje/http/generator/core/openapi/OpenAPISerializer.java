@@ -1,9 +1,12 @@
 package io.avaje.http.generator.core.openapi;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+
+import io.swagger.v3.oas.models.media.Schema;
 
 final class OpenAPISerializer {
 
@@ -17,7 +20,6 @@ final class OpenAPISerializer {
           "USE_ARBITRARY_SCHEMA_PROPERTY",
           "exampleSetFlag",
           "defaultSetFlag",
-          "types",
           "specVersion");
 
   private OpenAPISerializer() {}
@@ -77,6 +79,9 @@ final class OpenAPISerializer {
 
         var firstField = true;
         for (final Field field : fields) {
+          if (Modifier.isStatic(field.getModifiers())) {
+            continue;
+          }
 
           // skip JsonIgnored fields
           if (IGNORED_FIELDS
@@ -85,14 +90,24 @@ final class OpenAPISerializer {
           }
 
           field.setAccessible(true);
-          final var value = field.get(obj);
+          Object value = field.get(obj);
+          if (obj instanceof Schema<?>) {
+            final Schema<?> schema = (Schema<?>) obj;
+            if ("type".equals(field.getName()) && hasSchemaTypes(schema.getTypes())) {
+              continue;
+            }
+            if ("types".equals(field.getName())) {
+              value = schemaTypeValue(schema);
+            }
+          }
           if (value != null) {
 
             if (!firstField) {
               sb.append(",");
             }
+            final var jsonFieldName = jsonFieldName(obj, field.getName());
             sb.append("\"");
-            sb.append(field.getName().replace("_enum", "enum"));
+            sb.append(jsonFieldName);
             sb.append("\" : ");
             write(sb, value);
             firstField = false;
@@ -126,6 +141,31 @@ final class OpenAPISerializer {
     } else {
       return fields;
     }
+  }
+
+  private static boolean hasSchemaTypes(Set<String> types) {
+    return types != null && !types.isEmpty();
+  }
+
+  private static Object schemaTypeValue(Schema<?> schema) {
+    final var types = schema.getTypes();
+    if (!hasSchemaTypes(types)) {
+      return schema.getType();
+    }
+    if (types.size() == 1) {
+      return types.iterator().next();
+    }
+    return types;
+  }
+
+  private static String jsonFieldName(Object container, String fieldName) {
+    if ("_enum".equals(fieldName)) {
+      return "enum";
+    }
+    if (container instanceof Schema<?> && "types".equals(fieldName)) {
+      return "type";
+    }
+    return fieldName;
   }
 
   static boolean isPrimitiveWrapperType(Object value) {
