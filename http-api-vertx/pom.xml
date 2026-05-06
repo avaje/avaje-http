@@ -13,7 +13,7 @@
   <name>avaje-http-api-vertx</name>
 
   <properties>
-    <vertx.version>5.0.11</vertx.version>
+    <vertx.version>5.0.12</vertx.version>
   </properties>
 
   <dependencies>
