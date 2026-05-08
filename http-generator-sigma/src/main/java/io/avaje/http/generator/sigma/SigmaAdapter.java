@@ -138,4 +138,14 @@ class SigmaAdapter implements PlatformAdapter {
   public void methodRoles(List<String> roles, ControllerReader controller) {
 
   }
+
+  @Override
+  public String requestFactoryCreateParams() {
+    return "HttpContext ctx";
+  }
+
+  @Override
+  public List<String> requestFactoryImportTypes() {
+    return List.of(CONTEXT);
+  }
 }

@@ -174,4 +174,14 @@ class HelidonPlatformAdapter implements PlatformAdapter {
   public void writeAcceptLanguage(Append writer) {
     writer.append("req.headers().first(\"%s\").orElse(null)", Constants.ACCEPT_LANGUAGE);
   }
+
+  @Override
+  public String requestFactoryCreateParams() {
+    return "ServerRequest req, ServerResponse res";
+  }
+
+  @Override
+  public List<String> requestFactoryImportTypes() {
+    return List.of(HELIDON_REQ, HELIDON_RES);
+  }
 }
