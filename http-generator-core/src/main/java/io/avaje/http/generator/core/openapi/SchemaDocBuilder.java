@@ -4,9 +4,9 @@ import static io.avaje.http.generator.core.Util.typeDef;
 
 import io.avaje.http.generator.core.SchemaPrism;
 import io.avaje.http.generator.core.javadoc.Javadoc;
+import io.avaje.http.openapi.OpenApiSchemaNormalizer;
 import io.swagger.v3.oas.models.media.StringSchema;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -143,8 +143,10 @@ class SchemaDocBuilder {
     var schema = toSchema(element.asType());
     setLengthMinMax(element, schema);
     setFormatFromValidation(element, schema);
-    if (isNotNullable(element)) {
-      schema = markNotNullable(schema);
+    if (isNullable(element)) {
+      schema = OpenApiSchemaNormalizer.nullable(schema);
+    } else if (isNotNullable(element) && !isOptionalType(element.asType())) {
+      schema = OpenApiSchemaNormalizer.notNullable(schema);
     }
     return schema;
   }
@@ -152,15 +154,17 @@ class SchemaDocBuilder {
   Schema<?> toSchema(TypeMirror type) {
     final Optional<SchemaPrism> prism = Optional.ofNullable(APContext.asTypeElement(type))
       .flatMap(SchemaPrism::getOptionalOn);
+    final Schema<?> schema;
     if (prism.isPresent()) {
       final SchemaPrism schemaPrism = prism.get();
-      final Schema schema = SchemaPrismHelper.implementation(schemaPrism)
+      schema = SchemaPrismHelper.implementation(schemaPrism)
         .map(this::toSchemaImpl)
         .orElseGet(() -> (Schema) toSchemaImpl(type));
       SchemaPrismHelper.overwriteFromPrism(schema, schemaPrism);
-      return schema;
+    } else {
+      schema = toSchemaImpl(type);
     }
-    return toSchemaImpl(type);
+    return isNullable(type) ? OpenApiSchemaNormalizer.nullable(schema) : schema;
   }
 
   private Schema<?> toSchemaImpl(TypeMirror type) {
@@ -230,7 +234,7 @@ class SchemaDocBuilder {
       }
     }
     // Since it's explicitly optional, we should explicitly say it's nullable
-    return markNullable(itemSchema);
+    return OpenApiSchemaNormalizer.nullable(itemSchema);
   }
 
   private Schema<?> buildIterableSchema(TypeMirror type) {
@@ -240,8 +244,10 @@ class SchemaDocBuilder {
       if (typeArguments.size() == 1) {
         TypeMirror typeMirror = typeArguments.get(0);
         itemSchema = toSchema(typeMirror);
-        if (isNotNullable(typeMirror)) {
-          itemSchema = markNotNullable(itemSchema);
+        if (isNullable(typeMirror)) {
+          itemSchema = OpenApiSchemaNormalizer.nullable(itemSchema);
+        } else if (isNotNullable(typeMirror)) {
+          itemSchema = OpenApiSchemaNormalizer.notNullable(itemSchema);
         }
       }
     }
@@ -253,7 +259,11 @@ class SchemaDocBuilder {
 
   private Schema<?> buildArraySchema(TypeMirror type) {
     ArrayType arrayType = (ArrayType) type;
-    Schema<?> itemSchema = toSchema(arrayType.getComponentType());
+    final var componentType = arrayType.getComponentType();
+    Schema<?> itemSchema = toSchema(componentType);
+    if (isNullable(componentType)) {
+      itemSchema = OpenApiSchemaNormalizer.nullable(itemSchema);
+    }
 
     ArraySchema arraySchema = new ArraySchema();
     arraySchema.setItems(itemSchema);
@@ -269,8 +279,10 @@ class SchemaDocBuilder {
       if (typeArguments.size() == 2) {
         TypeMirror valueType = typeArguments.get(1);
         valueSchema = toSchema(valueType);
-        if (isNotNullable(valueType)) {
-          valueSchema = markNotNullable(valueSchema);
+        if (isNullable(valueType)) {
+          valueSchema = OpenApiSchemaNormalizer.nullable(valueSchema);
+        } else if (isNotNullable(valueType)) {
+          valueSchema = OpenApiSchemaNormalizer.notNullable(valueSchema);
         }
       }
     }
@@ -309,58 +321,24 @@ class SchemaDocBuilder {
       TypeMirror fieldType = objectType instanceof DeclaredType
           ? types.asMemberOf((DeclaredType) objectType, field)
           : field.asType();
-      final Schema<?> propSchema = SchemaPrism.getOptionalOn(field)
+      Schema<?> propSchema = SchemaPrism.getOptionalOn(field)
         .flatMap(SchemaPrismHelper::implementation)
         .map(this::toSchema)
         .orElseGet(() -> (Schema) toSchema(fieldType));
-      if (isNotNullable(field)) {
-        markNotNullable(propSchema);
+      if (isNullable(field)) {
+        propSchema = OpenApiSchemaNormalizer.nullable(propSchema);
+      } else if (isNotNullable(field) && !isOptionalType(fieldType)) {
+        propSchema = OpenApiSchemaNormalizer.notNullable(propSchema);
         objectSchema.addRequiredItem(field.getSimpleName().toString());
       }
       setDescription(field, propSchema);
       setLengthMinMax(field, propSchema);
       setFormatFromValidation(field, propSchema);
+      final Schema<?> finalPropSchema = propSchema;
       SchemaPrism.getOptionalOn(field)
-        .ifPresent(schemaPrism -> SchemaPrismHelper.overwriteFromPrism(propSchema, schemaPrism));
+        .ifPresent(schemaPrism -> SchemaPrismHelper.overwriteFromPrism(finalPropSchema, schemaPrism));
       objectSchema.addProperties(field.getSimpleName().toString(), propSchema);
     }
-  }
-
-  private Schema<?> markNullable(Schema<?> schema) {
-    if (schema.get$ref() != null) {
-      final var oneOf = new ArrayList<Schema>();
-      oneOf.add(schema);
-      oneOf.add(new Schema<>().type("null"));
-      return new Schema<>().oneOf(oneOf);
-    }
-    final var schemaType = schema.getType();
-    if (schemaType != null && !schemaType.isBlank()) {
-      final var union = new LinkedHashSet<String>();
-      union.add(schemaType);
-      union.add("null");
-      schema.setType(null);
-      schema.setTypes(union);
-      schema.setNullable(null);
-      return schema;
-    }
-    final var union = new LinkedHashSet<String>();
-    if (schema.getTypes() != null) {
-      union.addAll(schema.getTypes());
-    }
-    union.add("null");
-    schema.setTypes(union);
-    schema.setNullable(null);
-    return schema;
-  }
-
-  private Schema<?> markNotNullable(Schema<?> schema) {
-    if (schema.getTypes() != null && schema.getTypes().contains("null")) {
-      final var nonNullTypes = new LinkedHashSet<String>(schema.getTypes());
-      nonNullTypes.remove("null");
-      schema.setTypes(nonNullTypes.isEmpty() ? null : nonNullTypes);
-    }
-    schema.setNullable(null);
-    return schema;
   }
 
   private void setFormatFromValidation(Element element, Schema<?> propSchema) {
@@ -414,19 +392,10 @@ class SchemaDocBuilder {
   }
 
   private boolean isNotNullable(Element element) {
-    List<AnnotationMirror> annotationMirrors = new ArrayList<>();
-    if (element instanceof VariableElement) {
-      annotationMirrors.addAll(element.asType().getAnnotationMirrors());
-    } else {
-      annotationMirrors.addAll(element.getAnnotationMirrors());
-    }
-
+    final var annotationMirrors = annotationMirrors(element);
     if (Util.nullMarked(element)) {
-      for (var mirror : annotationMirrors) {
-        if ("Nullable"
-            .equals(APContext.asTypeElement(mirror.getAnnotationType()).getSimpleName().toString())) {
-          return false;
-        }
+      if (annotationMirrors.stream().anyMatch(this::isNullableAnnotation)) {
+        return false;
       }
       return true;
     }
@@ -438,15 +407,33 @@ class SchemaDocBuilder {
       );
   }
 
-  private boolean isNotNullable(TypeMirror type) {
-    List<? extends AnnotationMirror> annotationMirrors = type.getAnnotationMirrors();
+  private boolean isNullable(Element element) {
+    return annotationMirrors(element).stream().anyMatch(this::isNullableAnnotation);
+  }
 
-    for (AnnotationMirror annotationMirror : annotationMirrors) {
-      if ("org.jspecify.annotations.Nullable".equals(annotationMirror.getAnnotationType().asElement().toString())) {
-      return false;
-      }
+  private List<AnnotationMirror> annotationMirrors(Element element) {
+    List<AnnotationMirror> annotationMirrors = new ArrayList<>();
+    annotationMirrors.addAll(element.getAnnotationMirrors());
+    if (element instanceof VariableElement) {
+      annotationMirrors.addAll(element.asType().getAnnotationMirrors());
     }
-    return true;
+    return annotationMirrors;
+  }
+
+  private boolean isNullableAnnotation(AnnotationMirror mirror) {
+    return "Nullable".equals(mirror.getAnnotationType().asElement().getSimpleName().toString());
+  }
+
+  private boolean isOptionalType(TypeMirror type) {
+    return types.isAssignable(type, optionalType);
+  }
+
+  private boolean isNotNullable(TypeMirror type) {
+    return !isNullable(type);
+  }
+
+  private boolean isNullable(TypeMirror type) {
+    return type.getAnnotationMirrors().stream().anyMatch(this::isNullableAnnotation);
   }
 
   /**

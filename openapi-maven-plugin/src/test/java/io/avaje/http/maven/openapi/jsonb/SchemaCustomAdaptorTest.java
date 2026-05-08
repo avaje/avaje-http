@@ -75,4 +75,46 @@ class SchemaCustomAdaptorTest {
     assertThat(json).contains("\"type\":\"string\"");
     assertThat(json).doesNotContain("\"nullable\"");
   }
+
+  @Test
+  void parseAndWriteNumericExclusiveBounds() {
+    final Jsonb jsonb =
+        Jsonb.builder().serializeEmpty(true).serializeNulls(false).failOnUnknown(false).build();
+    final JsonType<Schema> schemaType = jsonb.type(Schema.class);
+
+    final Schema schema =
+        schemaType.fromJson("{\"type\":\"number\",\"exclusiveMinimum\":1.5,\"exclusiveMaximum\":9.5}");
+
+    assertThat(schema.getExclusiveMinimum()).isNull();
+    assertThat(schema.getExclusiveMaximum()).isNull();
+    assertThat(schema.getExclusiveMinimumValue()).isEqualByComparingTo("1.5");
+    assertThat(schema.getExclusiveMaximumValue()).isEqualByComparingTo("9.5");
+
+    final String json = schemaType.toJson(schema);
+    assertThat(json).contains("\"exclusiveMinimum\":1.5");
+    assertThat(json).contains("\"exclusiveMaximum\":9.5");
+    assertThat(json).doesNotContain("\"exclusiveMinimumValue\"");
+    assertThat(json).doesNotContain("\"exclusiveMaximumValue\"");
+  }
+
+  @Test
+  void parseLegacyBooleanExclusiveBoundsWritesNumericBounds() {
+    final Jsonb jsonb =
+        Jsonb.builder().serializeEmpty(true).serializeNulls(false).failOnUnknown(false).build();
+    final JsonType<Schema> schemaType = jsonb.type(Schema.class);
+
+    final Schema schema =
+        schemaType.fromJson("{\"type\":\"integer\",\"minimum\":5,\"exclusiveMinimum\":true,\"maximum\":10,\"exclusiveMaximum\":true}");
+
+    assertThat(schema.getExclusiveMinimum()).isTrue();
+    assertThat(schema.getExclusiveMaximum()).isTrue();
+
+    final String json = schemaType.toJson(schema);
+    assertThat(json).contains("\"exclusiveMinimum\":5");
+    assertThat(json).contains("\"exclusiveMaximum\":10");
+    assertThat(json).doesNotContain("\"minimum\":5");
+    assertThat(json).doesNotContain("\"maximum\":10");
+    assertThat(json).doesNotContain("\"exclusiveMinimumValue\"");
+    assertThat(json).doesNotContain("\"exclusiveMaximumValue\"");
+  }
 }

@@ -1,6 +1,6 @@
 package io.avaje.http.maven.openapi;
 
-import io.avaje.http.maven.openapi.jsonb.SchemaCustomAdaptor;
+import io.avaje.http.openapi.OpenApiSchemaNormalizer;
 import io.avaje.jsonb.Json;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;
@@ -23,7 +23,6 @@ import io.swagger.v3.oas.models.tags.Tag;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -164,28 +163,9 @@ final class OpenAPIMergerUtil {
   }
 
   private static String preferredSchemaType(final Schema primary, final Schema secondary) {
-    final var explicitType = firstNotBlank(primary.getType(), secondary.getType());
-    if (explicitType != null) {
-      return explicitType;
-    }
-    final var primaryType = firstSchemaType(primary.getTypes());
-    final var secondaryType = firstSchemaType(secondary.getTypes());
-    return firstNotBlank(primaryType, secondaryType);
-  }
-
-  private static String firstSchemaType(final Set<String> types) {
-    if (types == null || types.isEmpty()) {
-      return null;
-    }
-    if (types.size() == 1) {
-      return types.iterator().next();
-    }
-    for (final String candidate : types) {
-      if (!"null".equals(candidate)) {
-        return candidate;
-      }
-    }
-    return null;
+    return firstNotBlank(
+      OpenApiSchemaNormalizer.firstNonNullType(primary),
+      OpenApiSchemaNormalizer.firstNonNullType(secondary));
   }
 
   private static Set<String> mergedSchemaTypes(
@@ -193,52 +173,21 @@ final class OpenAPIMergerUtil {
     final Schema secondary,
     final String preferredType) {
 
-    final boolean hasTypeSet =
-      (primary.getTypes() != null && !primary.getTypes().isEmpty())
-        || (secondary.getTypes() != null && !secondary.getTypes().isEmpty());
-    final Boolean nullable = firstNonNull(primary.getNullable(), secondary.getNullable());
-    if (!hasTypeSet && !Boolean.TRUE.equals(nullable)) {
-      return null;
+    if (OpenApiSchemaNormalizer.hasTypeInformation(primary)) {
+      return schemaTypesForMerge(primary, preferredType);
     }
-
-    final LinkedHashSet<String> merged = new LinkedHashSet<>();
-    if (preferredType != null && !preferredType.isBlank() && !"null".equals(preferredType)) {
-      merged.add(preferredType);
+    if (OpenApiSchemaNormalizer.hasTypeInformation(secondary)) {
+      return schemaTypesForMerge(secondary, preferredType);
     }
-    addSchemaTypes(merged, primary.getTypes());
-    addSchemaTypes(merged, secondary.getTypes());
-    addSchemaType(merged, primary.getType());
-    addSchemaType(merged, secondary.getType());
-
-    boolean includeNull =
-      (primary.getTypes() != null && primary.getTypes().contains("null"))
-        || (secondary.getTypes() != null && secondary.getTypes().contains("null"));
-    if (Boolean.TRUE.equals(nullable)) {
-      includeNull = true;
-    } else if (Boolean.FALSE.equals(nullable)) {
-      includeNull = false;
-    }
-    if (includeNull) {
-      merged.add("null");
-    }
-
-    return merged.isEmpty() ? null : merged;
+    return null;
   }
 
-  private static void addSchemaTypes(final Set<String> target, final Set<String> source) {
-    if (source == null || source.isEmpty()) {
-      return;
+  private static Set<String> schemaTypesForMerge(final Schema schema, final String preferredType) {
+    final Set<String> types = OpenApiSchemaNormalizer.effectiveTypesForMerge(schema);
+    if (types != null && types.stream().anyMatch(type -> !"null".equals(type))) {
+      return types;
     }
-    for (final String candidate : source) {
-      addSchemaType(target, candidate);
-    }
-  }
-
-  private static void addSchemaType(final Set<String> target, final String candidate) {
-    if (candidate == null || candidate.isBlank() || "null".equals(candidate)) {
-      return;
-    }
-    target.add(candidate);
+    return OpenApiSchemaNormalizer.normalizeTypes(preferredType, types, schema.getNullable());
   }
 
   private static <T, U> Map<T, U> merge(final Map<T, U> primary, final Map<T, U> secondary) {
@@ -465,16 +414,24 @@ final class OpenAPIMergerUtil {
       final String type = preferredSchemaType(primary, secondary);
       final Set<String> types = mergedSchemaTypes(primary, secondary, type);
       final String format = firstNotBlank(primary.getFormat(), secondary.getFormat());
-      return SchemaCustomAdaptor.createSchemaFromInformation(type, format)
+      final var exclusiveMaximumValue = firstNonNull(
+        OpenApiSchemaNormalizer.exclusiveMaximumValue(primary),
+        OpenApiSchemaNormalizer.exclusiveMaximumValue(secondary));
+      final var exclusiveMinimumValue = firstNonNull(
+        OpenApiSchemaNormalizer.exclusiveMinimumValue(primary),
+        OpenApiSchemaNormalizer.exclusiveMinimumValue(secondary));
+      final var maximum = omitMaximum(primary, secondary) ? null : firstNonNull(primary.getMaximum(), secondary.getMaximum());
+      final var minimum = omitMinimum(primary, secondary) ? null : firstNonNull(primary.getMinimum(), secondary.getMinimum());
+      return OpenApiSchemaNormalizer.createSchemaFromInformation(type, format)
         .type(type)
         .format(format)
         .name(firstNotBlank(primary.getName(), secondary.getName()))
         .title(firstNotBlank(primary.getTitle(), secondary.getTitle()))
         .multipleOf(firstNonNull(primary.getMultipleOf(), secondary.getMultipleOf()))
-        .maximum(firstNonNull(primary.getMaximum(), secondary.getMaximum()))
-        .exclusiveMaximum(firstNonNull(primary.getExclusiveMaximum(), secondary.getExclusiveMaximum()))
-        .minimum(firstNonNull(primary.getMinimum(), secondary.getMinimum()))
-        .exclusiveMinimum(firstNonNull(primary.getExclusiveMinimum(), secondary.getExclusiveMinimum()))
+        .maximum(maximum)
+        .exclusiveMaximum(null)
+        .minimum(minimum)
+        .exclusiveMinimum(null)
         .maxLength(firstNonNull(primary.getMaxLength(), secondary.getMaxLength()))
         .minLength(firstNonNull(primary.getMinLength(), secondary.getMinLength()))
         .pattern(firstNotBlank(primary.getPattern(), secondary.getPattern()))
@@ -504,8 +461,8 @@ final class OpenAPIMergerUtil {
         .items(merge(primary.getItems(), secondary.getItems()))
         .types(types)
         .patternProperties(merge(primary.getPatternProperties(), secondary.getPatternProperties(), OpenAPIMergerUtil::merge, Schema.class))
-        .exclusiveMaximumValue(firstNonNull(primary.getExclusiveMaximumValue(), secondary.getExclusiveMaximumValue()))
-        .exclusiveMinimumValue(firstNonNull(primary.getExclusiveMinimumValue(), secondary.getExclusiveMinimumValue()))
+        .exclusiveMaximumValue(exclusiveMaximumValue)
+        .exclusiveMinimumValue(exclusiveMinimumValue)
         .contains(merge(primary.getContains(), secondary.getContains()))
         .$id(firstNotBlank(primary.get$id(), secondary.get$id()))
         .$schema(firstNotBlank(primary.get$schema(), secondary.get$schema()))
@@ -535,6 +492,20 @@ final class OpenAPIMergerUtil {
         ._const(firstNonNull(primary.getConst(), secondary.getConst()))
       ;
     }
+  }
+
+  private static boolean omitMaximum(final Schema primary, final Schema secondary) {
+    if (OpenApiSchemaNormalizer.omitMaximum(primary)) {
+      return true;
+    }
+    return primary.getMaximum() == null && OpenApiSchemaNormalizer.omitMaximum(secondary);
+  }
+
+  private static boolean omitMinimum(final Schema primary, final Schema secondary) {
+    if (OpenApiSchemaNormalizer.omitMinimum(primary)) {
+      return true;
+    }
+    return primary.getMinimum() == null && OpenApiSchemaNormalizer.omitMinimum(secondary);
   }
 
   private static Tag merge(final Tag primary, final Tag secondary) {

@@ -7,6 +7,7 @@ import io.avaje.json.PropertyNames;
 import io.avaje.jsonb.CustomAdapter;
 import io.avaje.jsonb.Jsonb;
 import io.avaje.jsonb.Types;
+import io.avaje.http.openapi.OpenApiSchemaNormalizer;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.media.ArbitrarySchema;
 import io.swagger.v3.oas.models.media.ArraySchema;
@@ -32,7 +33,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -228,13 +228,31 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
           maximum = bigDecimalJsonAdapter.fromJson(reader);
           break;
         case "exclusiveMaximum":
-          exclusiveMaximum = booleanJsonAdapter.fromJson(reader);
+          switch (reader.currentToken()) {
+            case NUMBER:
+              exclusiveMaximumValue = bigDecimalJsonAdapter.fromJson(reader);
+              break;
+            case BOOLEAN:
+              exclusiveMaximum = booleanJsonAdapter.fromJson(reader);
+              break;
+            default:
+              reader.skipValue();
+          }
           break;
         case "minimum":
           minimum = bigDecimalJsonAdapter.fromJson(reader);
           break;
         case "exclusiveMinimum":
-          exclusiveMinimum = booleanJsonAdapter.fromJson(reader);
+          switch (reader.currentToken()) {
+            case NUMBER:
+              exclusiveMinimumValue = bigDecimalJsonAdapter.fromJson(reader);
+              break;
+            case BOOLEAN:
+              exclusiveMinimum = booleanJsonAdapter.fromJson(reader);
+              break;
+            default:
+              reader.skipValue();
+          }
           break;
         case "maxLength":
           maxLength = integerJsonAdapter.fromJson(reader);
@@ -431,8 +449,9 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
       }
     }
     reader.endObject();
-    final Set<String> normalizedTypes = normalizeTypes(type, types, nullable);
-    final Schema schema = createSchemaFromInformation(schemaTypeForCreation(type, normalizedTypes), format);
+    final Set<String> normalizedTypes = OpenApiSchemaNormalizer.normalizeTypes(type, types, nullable);
+    final Schema schema = (Schema) OpenApiSchemaNormalizer.createSchemaFromInformation(
+      OpenApiSchemaNormalizer.schemaTypeForCreation(type, normalizedTypes), format);
     schema.name(name)
       .title(title)
       .multipleOf(multipleOf)
@@ -503,108 +522,7 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
   }
 
   public static Schema createSchemaFromInformation(final String type, final String format) {
-    if (type == null) {
-      return new ArbitrarySchema();
-    }
-    switch (type) {
-      case "array":
-        return new ArraySchema().format(format);
-      case "boolean":
-        return new BooleanSchema().format(format);
-      case "integer":
-        return new IntegerSchema().format(format);
-      case "object":
-        return new ObjectSchema().format(format);
-      case "number":
-        return new NumberSchema().format(format);
-      case "string":
-        if (format == null) {
-          return new StringSchema();
-        }
-        switch (format) {
-          case "binary":
-            return new BinarySchema();
-          case "byte":
-            return new ByteArraySchema();
-          case "date":
-            return new DateSchema();
-          case "date-time":
-            return new DateTimeSchema();
-          case "email":
-            return new EmailSchema();
-          case "password":
-            return new PasswordSchema();
-          case "uuid":
-            return new UUIDSchema();
-          default:
-            return new StringSchema().format(format);
-        }
-      default:
-        return new ArbitrarySchema().format(format).type(type);
-    }
-  }
-
-  private static String schemaTypeForCreation(final String type, final Set<String> types) {
-    if (type != null && !type.isBlank()) {
-      return type;
-    }
-    if (types == null || types.isEmpty()) {
-      return null;
-    }
-    if (types.size() == 1) {
-      return types.iterator().next();
-    }
-    for (final String candidate : types) {
-      if (!"null".equals(candidate)) {
-        return candidate;
-      }
-    }
-    return null;
-  }
-
-  private static Set<String> normalizeTypes(
-    final String type,
-    final Set<String> types,
-    final Boolean nullable) {
-
-    final boolean hasTypeSet = types != null && !types.isEmpty();
-    final boolean hasNullableUnion = Boolean.TRUE.equals(nullable);
-    if (!hasTypeSet && !hasNullableUnion) {
-      return null;
-    }
-
-    final LinkedHashSet<String> normalized = new LinkedHashSet<>();
-    if (hasTypeSet) {
-      for (final String candidate : types) {
-        if (candidate != null && !candidate.isBlank() && !"null".equals(candidate)) {
-          normalized.add(candidate);
-        }
-      }
-    }
-    if (type != null && !type.isBlank() && !"null".equals(type)) {
-      normalized.add(type);
-    }
-
-    boolean includeNull = false;
-    if (hasTypeSet && types.contains("null")) {
-      includeNull = true;
-    }
-    if (Boolean.TRUE.equals(nullable)) {
-      includeNull = true;
-    } else if (Boolean.FALSE.equals(nullable)) {
-      includeNull = false;
-    }
-    if (includeNull) {
-      normalized.add("null");
-    }
-    return normalized.isEmpty() ? null : normalized;
-  }
-
-  private static String scalarSchemaType(final Set<String> normalizedTypes) {
-    if (normalizedTypes == null || normalizedTypes.size() != 1) {
-      return null;
-    }
-    return normalizedTypes.iterator().next();
+    return (Schema) OpenApiSchemaNormalizer.createSchemaFromInformation(type, format);
   }
 
   private Schema readSelf(JsonReader reader) {
@@ -651,8 +569,8 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
 
   private void toJsonImpl(JsonWriter writer, Schema<?> value) {
     writer.name(0);
-    final Set<String> serializedTypes = normalizeTypes(value.getType(), value.getTypes(), value.getNullable());
-    final String scalarType = scalarSchemaType(serializedTypes);
+    final Set<String> serializedTypes = OpenApiSchemaNormalizer.normalizeTypes(value.getType(), value.getTypes(), value.getNullable());
+    final String scalarType = OpenApiSchemaNormalizer.scalarSchemaType(serializedTypes);
     if (scalarType != null) {
       stringJsonAdapter.toJson(writer, scalarType);
     } else if (serializedTypes != null && !serializedTypes.isEmpty()) {
@@ -669,13 +587,21 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
     writer.name(4);
     bigDecimalJsonAdapter.toJson(writer, value.getMultipleOf());
     writer.name(5);
-    bigDecimalJsonAdapter.toJson(writer, value.getMaximum());
+    if (OpenApiSchemaNormalizer.omitMaximum(value)) {
+      writer.nullValue();
+    } else {
+      bigDecimalJsonAdapter.toJson(writer, value.getMaximum());
+    }
     writer.name(6);
-    booleanJsonAdapter.toJson(writer, value.getExclusiveMaximum());
+    bigDecimalJsonAdapter.toJson(writer, OpenApiSchemaNormalizer.exclusiveMaximumValue(value));
     writer.name(7);
-    bigDecimalJsonAdapter.toJson(writer, value.getMinimum());
+    if (OpenApiSchemaNormalizer.omitMinimum(value)) {
+      writer.nullValue();
+    } else {
+      bigDecimalJsonAdapter.toJson(writer, value.getMinimum());
+    }
     writer.name(8);
-    booleanJsonAdapter.toJson(writer, value.getExclusiveMinimum());
+    bigDecimalJsonAdapter.toJson(writer, OpenApiSchemaNormalizer.exclusiveMinimumValue(value));
     writer.name(9);
     integerJsonAdapter.toJson(writer, value.getMaxLength());
     writer.name(10);
@@ -752,9 +678,9 @@ public final class SchemaCustomAdaptor implements JsonAdapter<Schema> {
     writer.name(39);
     writeMapSelf(value.getPatternProperties(), writer);
     writer.name(40);
-    bigDecimalJsonAdapter.toJson(writer, value.getExclusiveMaximumValue());
+    writer.nullValue();
     writer.name(41);
-    bigDecimalJsonAdapter.toJson(writer, value.getExclusiveMinimumValue());
+    writer.nullValue();
     writer.name(42);
     writeSelfNullSafe(value.getContains(), writer);
     writer.name(43);

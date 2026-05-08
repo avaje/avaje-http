@@ -981,7 +981,10 @@
 						"type" : "string"
 					},
 					"string2" : {
-						"type" : "string"
+						"type" : [
+							"string",
+							"null"
+						]
 					},
 					"stringArray1" : {
 						"items" : {
@@ -991,7 +994,10 @@
 					},
 					"stringArray2" : {
 						"items" : {
-							"type" : "string"
+							"type" : [
+								"string",
+								"null"
+							]
 						},
 						"type" : "array"
 					},
@@ -1003,7 +1009,10 @@
 					},
 					"set2" : {
 						"items" : {
-							"type" : "string"
+							"type" : [
+								"string",
+								"null"
+							]
 						},
 						"type" : "array"
 					},
@@ -1011,7 +1020,10 @@
 						"items" : {
 							"type" : "string"
 						},
-						"type" : "array"
+						"type" : [
+							"array",
+							"null"
+						]
 					},
 					"map1" : {
 						"additionalProperties" : {
@@ -1027,7 +1039,10 @@
 					},
 					"map3" : {
 						"additionalProperties" : {
-							"type" : "string"
+							"type" : [
+								"string",
+								"null"
+							]
 						},
 						"type" : "object"
 					},
@@ -1035,7 +1050,10 @@
 						"additionalProperties" : {
 							"type" : "string"
 						},
-						"type" : "object"
+						"type" : [
+							"object",
+							"null"
+						]
 					}
 				},
 				"type" : "object"
@@ -1049,7 +1067,10 @@
 						"type" : "string"
 					},
 					"nullable" : {
-						"type" : "string"
+						"type" : [
+							"string",
+							"null"
+						]
 					}
 				},
 				"type" : "object"
