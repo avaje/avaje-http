@@ -15,6 +15,8 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -62,6 +64,8 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   protected boolean isRetry;
   protected int retryCount;
   private String method;
+  private RequestObserver.Observation requestObservation;
+  private boolean executionPrepared;
 
   DHttpClientRequest(DHttpClientContext context, Duration requestTimeout) {
     this.context = context;
@@ -453,25 +457,70 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     return HttpRequest.BodyPublishers.ofByteArray(encodedRequestBody.content());
   }
 
-  private void addHeaders() {
+  private void addHeaders(HttpRequest.Builder requestBuilder) {
     if (encodedRequestBody != null) {
       final String contentType = encodedRequestBody.contentType();
       if (contentType != null) {
-        httpRequest.header(CONTENT_TYPE, contentType);
+        requestBuilder.header(CONTENT_TYPE, contentType);
       }
     } else if (bodyFormEncoded) {
-      httpRequest.header(CONTENT_TYPE, "application/x-www-form-urlencoded");
+      requestBuilder.header(CONTENT_TYPE, "application/x-www-form-urlencoded");
     }
     if (gzip) {
-      httpRequest.header(CONTENT_ENCODING, "gzip");
+      requestBuilder.header(CONTENT_ENCODING, "gzip");
     }
     if (headers != null) {
       for (Map.Entry<String, List<String>> header : headers.entrySet()) {
         for (String value : header.getValue()) {
-          httpRequest.header(header.getKey(), value);
+          requestBuilder.header(header.getKey(), value);
         }
       }
     }
+  }
+
+  private HttpRequest.Builder requestBuilder() {
+    if (retryCount == 0) {
+      addHeaders(httpRequest);
+      return httpRequest;
+    }
+    final HttpRequest.Builder retryRequest = retryRequest();
+    addHeaders(retryRequest);
+    return retryRequest;
+  }
+
+  private HttpRequest.Builder retryRequest() {
+    final String currentUrl = url.build();
+    if (VERB_GET.equals(method)) {
+      return newGet(currentUrl);
+    }
+    if (VERB_HEAD.equals(method)) {
+      return newHead(currentUrl);
+    }
+    if (VERB_POST.equals(method)) {
+      return newPost(currentUrl, body());
+    }
+    if (VERB_PUT.equals(method)) {
+      return newPut(currentUrl, body());
+    }
+    if (VERB_DELETE.equals(method)) {
+      return newDelete(currentUrl, body());
+    }
+    if (VERB_PATCH.equals(method)) {
+      return newPatch(currentUrl, body());
+    }
+    if (VERB_TRACE.equals(method)) {
+      return newTrace(currentUrl, body());
+    }
+    throw new IllegalStateException("Unsupported method: " + method);
+  }
+
+  protected static Throwable unwrapFutureError(Throwable error) {
+    Throwable unwrapped = error;
+    while ((unwrapped instanceof CompletionException || unwrapped instanceof ExecutionException)
+        && unwrapped.getCause() != null) {
+      unwrapped = unwrapped.getCause();
+    }
+    return unwrapped;
   }
 
   @Override
@@ -528,6 +577,27 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
 
   private RuntimeException mapException(HttpException e) {
     return errorMapper == null ? e : errorMapper.apply(e);
+  }
+
+  private RequestObserver.Observation requestObservation() {
+    if (requestObservation == null) {
+      final RequestObserver.Observation observation = context.requestObserver().start(this);
+      requestObservation = observation == null ? RequestObserver.Observation.NOOP : observation;
+    }
+    return requestObservation;
+  }
+
+  protected final void prepareExecution() {
+    if (!executionPrepared) {
+      context.authToken(this);
+      requestObservation();
+      executionPrepared = true;
+    }
+  }
+
+  private RequestObserver.Attempt startAttemptObservation() {
+    final RequestObserver.Attempt attempt = requestObservation().startAttempt(this, retryCount);
+    return attempt == null ? RequestObserver.Attempt.NOOP : attempt;
   }
 
   private void checkResponse(HttpResponse<?> response) {
@@ -640,7 +710,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   /** Prepare and send the request but not performing afterResponse() handling. */
   @SuppressWarnings("unchecked")
   private <T> HttpResponse<T> sendWith(HttpResponse.BodyHandler<T> responseHandler) {
-    context.authToken(this);
+    prepareExecution();
     try {
       var res =
           new InterceptorChain(context.interceptors(), () -> performSend(responseHandler))
@@ -654,14 +724,24 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   protected <T> HttpResponse<T> performSend(HttpResponse.BodyHandler<T> responseHandler) {
-    if (retryCount == 0) {
-      addHeaders();
-    }
+    final RequestObserver.Attempt attempt = startAttemptObservation();
+    final HttpRequest.Builder requestBuilder = requestBuilder();
     final long startNanos = System.nanoTime();
+    HttpResponse<T> response = null;
+    RuntimeException error = null;
     try {
-      return context.send(httpRequest, responseHandler);
+      response = context.send(requestBuilder, responseHandler);
+      return response;
+    } catch (final RuntimeException e) {
+      error = e;
+      throw e;
     } finally {
       responseTimeNanos = System.nanoTime() - startNanos;
+      if (error != null) {
+        attempt.onError(error);
+      } else if (response != null) {
+        attempt.onResponse(response);
+      }
     }
   }
 
@@ -669,7 +749,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   protected <T> CompletableFuture<HttpResponse<T>> performSendAsync(
       boolean loggable, HttpResponse.BodyHandler<T> responseHandler) {
     loggableResponseBody = loggable;
-    context.authToken(this);
+    prepareExecution();
 
     startAsyncNanos = System.nanoTime();
     var resultFuture =
@@ -681,12 +761,13 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     if (errorMapper != null && !isRetry) {
       resultFuture =
         resultFuture.handle((r, e) -> {
-            if (e != null && e.getCause() instanceof HttpException) {
-              return CompletableFuture.<HttpResponse<T>>failedFuture(
-                errorMapper.apply((HttpException) e.getCause().getCause()));
-            }
             if (e != null) {
-              return CompletableFuture.<HttpResponse<T>>failedFuture(e.getCause());
+              final Throwable error = unwrapFutureError(e);
+              if (error instanceof HttpException) {
+              return CompletableFuture.<HttpResponse<T>>failedFuture(
+                errorMapper.apply((HttpException) error));
+              }
+              return CompletableFuture.<HttpResponse<T>>failedFuture(error);
             }
             return CompletableFuture.completedFuture(r);
           })
@@ -697,23 +778,19 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   }
 
   private <T> CompletableFuture<HttpResponse<T>> performAsyncSend(HttpResponse.BodyHandler<T> responseHandler) {
-    if (retryCount == 0) {
-      addHeaders();
-    }
+    final RequestObserver.Attempt attempt = startAttemptObservation();
+    final HttpRequest.Builder requestBuilder = requestBuilder();
     startAsyncNanos = System.nanoTime();
-    var resultFuture = context.sendAsync(httpRequest, responseHandler);
-
-    if (errorMapper != null && !isRetry) {
-      resultFuture =
-        resultFuture.handle((r, e) -> {
-          if (e != null && e.getCause() instanceof HttpException) {
-            throw errorMapper.apply((HttpException) e.getCause());
-          }
-          return r;
-        });
-    }
-
-    return resultFuture.thenApply(this::afterAsync);
+    return context.sendAsync(requestBuilder, responseHandler)
+      .whenComplete((response, error) -> {
+        responseTimeNanos = System.nanoTime() - startAsyncNanos;
+        if (error != null) {
+          attempt.onError(unwrapFutureError(error));
+        } else if (response != null) {
+          attempt.onResponse(response);
+        }
+      })
+      .thenApply(this::afterAsync);
   }
 
   protected <E> HttpResponse<E> afterAsync(HttpResponse<E> response) {
