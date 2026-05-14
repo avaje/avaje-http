@@ -225,6 +225,14 @@ public interface HttpClient extends AutoCloseable {
     Builder requestIntercept(RequestIntercept... requestIntercept);
 
     /**
+     * Add a request observer.
+     * <p>
+     * Request observers are intended for observability concerns like tracing or metrics. Multiple
+     * observers may be added and will be called in the order they were added.
+     */
+    Builder requestObserver(RequestObserver... requestObserver);
+
+    /**
      * Add a Authorization token provider.
      * <p>
      * When set all requests are expected to use a Authorization Bearer token
