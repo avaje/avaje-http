@@ -36,6 +36,12 @@
     </dependency>
 
     <dependency>
+      <groupId>io.avaje</groupId>
+      <artifactId>avaje-http-openapi-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-models</artifactId>
       <version>${swagger.version}</version>

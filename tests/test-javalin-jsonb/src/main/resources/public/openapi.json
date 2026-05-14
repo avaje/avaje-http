@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.1.2",
   "info": {
     "title": "Example service",
     "description": "Example Javalin controllers with Java and Maven",
@@ -66,8 +66,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Bar",
-                    "nullable": false
+                    "$ref": "#/components/schemas/Bar"
                   }
                 },
                 "exampleSetFlag": false
@@ -89,8 +88,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int64",
-              "nullable": false
+              "format": "int64"
             }
           }
         ],
@@ -123,8 +121,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Baz",
-                    "nullable": false
+                    "$ref": "#/components/schemas/Baz"
                   }
                 },
                 "exampleSetFlag": false
@@ -177,8 +174,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "nullable": false
+              "format": "int32"
             }
           },{
             "name": "p1",
@@ -251,8 +247,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Baz",
-                    "nullable": false
+                    "$ref": "#/components/schemas/Baz"
                   }
                 },
                 "exampleSetFlag": false
@@ -360,8 +355,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/HelloDto",
-                    "nullable": false
+                    "$ref": "#/components/schemas/HelloDto"
                   }
                 },
                 "exampleSetFlag": false
@@ -422,8 +416,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/HelloDto",
-                    "nullable": false
+                    "$ref": "#/components/schemas/HelloDto"
                   }
                 },
                 "exampleSetFlag": false
@@ -537,8 +530,7 @@
                 "type": "object",
                 "properties": {
                   "name": {
-                    "type": "string",
-                    "nullable": false
+                    "type": "string"
                   },
                   "email": {
                     "type": "string"
@@ -612,8 +604,7 @@
                 "type": "object",
                 "properties": {
                   "name": {
-                    "type": "string",
-                    "nullable": false
+                    "type": "string"
                   },
                   "email": {
                     "type": "string"
@@ -755,8 +746,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "nullable": false
+              "format": "int32"
             }
           },{
             "name": "author",
@@ -812,8 +802,7 @@
             "name": "name",
             "in": "query",
             "schema": {
-              "type": "string",
-              "nullable": false
+              "type": "string"
             }
           },{
             "name": "email",
@@ -827,8 +816,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "string",
-                "nullable": false
+                "type": "string"
               }
             }
           },{
@@ -844,7 +832,6 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "nullable": false,
                 "enum": ["PROXY","HIDE_N_SEEK","FFA"
                 ]
               }
@@ -878,8 +865,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "nullable": false
+              "format": "int32"
             }
           }
         ],
@@ -903,8 +889,7 @@
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "nullable": false
+              "format": "int32"
             }
           },{
             "name": "date",
@@ -1032,10 +1017,8 @@
                   "type": "object",
                   "additionalProperties": {
                     "type": "array",
-                    "nullable": false,
                     "items": {
-                      "type": "string",
-                      "nullable": false
+                      "type": "string"
                     }
                   }
                 },
@@ -1264,8 +1247,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/Person",
-                  "nullable": false
+                  "$ref": "#/components/schemas/Person"
                 }
               },
               "exampleSetFlag": false
@@ -1670,7 +1652,6 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "nullable": false,
                 "enum": ["PROXY","HIDE_N_SEEK","FFA"
                 ]
               }
@@ -1859,8 +1840,7 @@
                   "strings": {
                     "type": "array",
                     "items": {
-                      "type": "string",
-                      "nullable": false
+                      "type": "string"
                     }
                   }
                 }
@@ -1981,8 +1961,7 @@
               "application/json": {
                 "schema": {
                   "type": "integer",
-                  "format": "int32",
-                  "nullable": false
+                  "format": "int32"
                 },
                 "exampleSetFlag": false
               }
@@ -2004,8 +1983,7 @@
               "application/json": {
                 "schema": {
                   "type": "integer",
-                  "format": "int64",
-                  "nullable": false
+                  "format": "int64"
                 },
                 "exampleSetFlag": false
               }
@@ -2079,8 +2057,7 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/Person",
-                  "nullable": false
+                  "$ref": "#/components/schemas/Person"
                 }
               },
               "exampleSetFlag": false
@@ -2156,8 +2133,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Person",
-                    "nullable": false
+                    "$ref": "#/components/schemas/Person"
                   }
                 },
                 "exampleSetFlag": false
@@ -2190,8 +2166,7 @@
                 "schema": {
                   "type": "object",
                   "additionalProperties": {
-                    "$ref": "#/components/schemas/Person",
-                    "nullable": false
+                    "$ref": "#/components/schemas/Person"
                   }
                 },
                 "exampleSetFlag": false
@@ -2224,8 +2199,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Person",
-                    "nullable": false
+                    "$ref": "#/components/schemas/Person"
                   }
                 },
                 "exampleSetFlag": false
@@ -2330,8 +2304,7 @@
           "id": {
             "type": "integer",
             "format": "int64",
-            "description": "This is a number ... I think?",
-            "nullable": false
+            "description": "This is a number ... I think?"
           }
         },
         "description": "But oh, what a description this schema has!"
@@ -2363,8 +2336,7 @@
           },
           "id": {
             "type": "integer",
-            "format": "int32",
-            "nullable": false
+            "format": "int32"
           }
         }
       },
@@ -2398,8 +2370,7 @@
           },
           "id": {
             "type": "integer",
-            "format": "int64",
-            "nullable": false
+            "format": "int64"
           }
         }
       },
@@ -2409,8 +2380,7 @@
           "data": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Bar",
-              "nullable": false
+              "$ref": "#/components/schemas/Bar"
             }
           }
         }
@@ -2436,5 +2406,6 @@
       }
     }
   },
+  "jsonSchemaDialect": "https://spec.openapis.org/oas/3.1/dialect/base",
   "specVersion": "V30"
 }

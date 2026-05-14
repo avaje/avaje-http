@@ -103,6 +103,12 @@ To force the AP to generate with `@javax.inject.Singleton`(in the case where you
 </plugin>
 ```
 
+OpenAPI output is generated as OpenAPI 3.1.
+
+The generated document sets:
+
+- `openapi: 3.1.2`
+
 ### Usage with Javalin
 
 The annotation processor will generate controller classes implementing the `AvajeJavalinPlugin` interface, which we can register in javalin using:
