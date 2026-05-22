@@ -292,6 +292,119 @@
 				}
 			}
 		},
+		"/enum/first" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/EnumDTO"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/enum/fourth" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/EnumDTO"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/EnumDTO"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/enum/second" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "enumExample",
+						"in" : "query",
+						"schema" : {
+							"$ref" : "#/components/schemas/EnumExample"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/EnumDTO"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/enum/third" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/EnumExample"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/EnumDTO"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/hello" : {
 			"post" : {
 				"tags" : [
@@ -952,6 +1065,24 @@
 						"format" : "date"
 					}
 				}
+			},
+			"EnumDTO" : {
+				"type" : "object",
+				"properties" : {
+					"value1" : {
+						"$ref" : "#/components/schemas/EnumExample"
+					},
+					"value2" : {
+						"$ref" : "#/components/schemas/EnumExample"
+					}
+				}
+			},
+			"EnumExample" : {
+				"type" : "string",
+				"enum" : [
+					"ENUM_VALUE_1",
+					"ENUM_VALUE_2"
+				]
 			},
 			"HelloDto" : {
 				"type" : "object",
