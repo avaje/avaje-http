@@ -190,17 +190,25 @@ class SchemaDocBuilder {
   }
 
   private Schema<?> buildEnumSchema(Element e) {
-    var schema = new StringSchema();
-    e.getEnclosedElements().stream()
-      .filter(ec -> ElementKind.ENUM_CONSTANT.equals(ec.getKind()))
-      .forEach(ec -> schema.addEnumItem(ec.getSimpleName().toString()));
+    String objectSchemaKey = getObjectSchemaName(e.asType());
+    Schema objectSchema = schemas.get(objectSchemaKey);
+    if (objectSchema == null) {
+      var schema = new StringSchema();
+      e.getEnclosedElements().stream()
+        .filter(ec -> ElementKind.ENUM_CONSTANT.equals(ec.getKind()))
+        .forEach(ec -> schema.addEnumItem(ec.getSimpleName().toString()));
 
-    var doc = Javadoc.parse(elements.getDocComment(e));
-    var desc = doc.getDescription();
-    if (desc != null && !desc.isEmpty()) {
-      schema.setDescription(desc);
+      var doc = Javadoc.parse(elements.getDocComment(e));
+      var desc = doc.getDescription();
+      if (desc != null && !desc.isEmpty()) {
+        schema.setDescription(desc);
+      }
+      schemas.put(objectSchemaKey, schema);
     }
-    return schema;
+
+    Schema ref = new Schema();
+    ref.$ref("#/components/schemas/" + objectSchemaKey);
+    return ref;
   }
 
   private Schema<?> buildObjectSchema(TypeMirror type) {
