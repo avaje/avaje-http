@@ -33,6 +33,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
   private final Duration requestTimeout;
   private final BodyAdapter bodyAdapter;
   private final RequestListener requestListener;
+  private final RequestObserver requestObserver;
   private final List<RequestIntercept> requestIntercept;
   private final RetryHandler retryHandler;
   private final boolean withAuthToken;
@@ -58,6 +59,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
       RetryHandler retryHandler,
       Function<HttpException, RuntimeException> errorHandler,
       RequestListener requestListener,
+      RequestObserver requestObserver,
       AuthTokenProvider authTokenProvider,
       Duration backgroundRefreshDuration,
       List<RequestIntercept> list) {
@@ -68,6 +70,7 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
     this.retryHandler = retryHandler;
     this.errorHandler = errorHandler;
     this.requestListener = requestListener;
+    this.requestObserver = requestObserver == null ? RequestObserver.NOOP : requestObserver;
     this.authTokenProvider = authTokenProvider;
     this.backgroundRefreshDuration = backgroundRefreshDuration;
     this.withAuthToken = authTokenProvider != null;
@@ -128,6 +131,10 @@ final class DHttpClientContext implements HttpClient, SpiHttpClient {
 
   List<RequestIntercept> interceptors() {
     return requestIntercept;
+  }
+
+  RequestObserver requestObserver() {
+    return requestObserver;
   }
 
   void metricsString(int stringBody) {
