@@ -11,7 +11,7 @@
   <name>avaje-http-client-otel</name>
 
   <properties>
-    <opentelemetry.version>1.62.0</opentelemetry.version>
+    <opentelemetry.version>1.63.0</opentelemetry.version>
     <surefire.useModulePath>false</surefire.useModulePath>
   </properties>
 
