@@ -32,7 +32,7 @@
     <dependency>
       <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>3.1.4</version>
+      <version>3.2.0</version>
       <optional>true</optional>
     </dependency>
     
@@ -67,7 +67,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject</artifactId>
-      <version>12.5</version>
+      <version>12.6</version>
       <optional>true</optional>
     </dependency>
 
@@ -120,7 +120,7 @@
             <path>
               <groupId>io.avaje</groupId>
               <artifactId>avaje-inject-generator</artifactId>
-              <version>12.5</version>
+              <version>12.6</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
@@ -158,7 +158,7 @@
       <plugin>
         <groupId>io.avaje</groupId>
         <artifactId>avaje-inject-maven-plugin</artifactId>
-        <version>12.5</version>
+        <version>12.6</version>
         <executions>
           <execution>
             <?m2e execute?>

@@ -13,7 +13,7 @@
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
     <maven.deploy.skip>true</maven.deploy.skip>
-    <vertx.version>5.1.1</vertx.version>
+    <vertx.version>5.1.2</vertx.version>
   </properties>
 
   <dependencies>
@@ -98,7 +98,7 @@
       <plugin>
         <groupId>io.avaje</groupId>
         <artifactId>avaje-inject-maven-plugin</artifactId>
-        <version>12.5</version>
+        <version>12.6</version>
         <executions>
           <execution>
             <?m2e execute?>
