@@ -76,6 +76,9 @@ final class ControllerMethodWriter {
     if (isFilter) {
       validateMethod();
     }
+    if (webMethod == CoreWebMethod.QUERY) {
+      logError(method.element(), "@Query is not supported by the Helidon generator");
+    }
   }
 
   private void validateMethod() {

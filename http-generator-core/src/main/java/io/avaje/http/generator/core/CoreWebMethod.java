@@ -7,6 +7,7 @@ public enum CoreWebMethod implements WebMethod {
   PATCH(200, 204),
   DELETE(200, 204),
   OPTIONS(200, 204),
+  QUERY(200),
   ERROR(500),
   FILTER(0),
   OTHER(0, 0);
