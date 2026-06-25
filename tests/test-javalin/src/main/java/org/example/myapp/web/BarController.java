@@ -22,6 +22,11 @@ public class BarController implements BarInterface {
   }
 
   @Override
+  public List<Bar> search(String code) {
+    return new ArrayList<>();
+  }
+
+  @Override
   public String barMessage() {
     return "Hello";
   }
