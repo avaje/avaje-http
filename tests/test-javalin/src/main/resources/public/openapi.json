@@ -68,6 +68,40 @@
 				}
 			}
 		},
+		"/bars/search/items" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "code",
+						"in" : "query",
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "array",
+									"items" : {
+										"$ref" : "#/components/schemas/Bar",
+										"nullable" : false
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/bars/{id}" : {
 			"get" : {
 				"tags" : [

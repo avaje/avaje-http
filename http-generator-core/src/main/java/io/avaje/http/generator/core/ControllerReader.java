@@ -181,7 +181,22 @@ public final class ControllerReader {
   }
 
   private boolean matchMethod(ExecutableElement interfaceMethod, ExecutableElement element) {
-    return interfaceMethod.toString().equals(element.toString());
+    if (!interfaceMethod.getSimpleName().equals(element.getSimpleName())) {
+      return false;
+    }
+    final var interfaceParams = interfaceMethod.getParameters();
+    final var elementParams = element.getParameters();
+    if (interfaceParams.size() != elementParams.size()) {
+      return false;
+    }
+    // Compare by parameter type ignoring (type-use) annotations
+    final var types = APContext.types();
+    for (int i = 0; i < interfaceParams.size(); i++) {
+      if (!types.isSameType(interfaceParams.get(i).asType(), elementParams.get(i).asType())) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private boolean initHtml() {
