@@ -57,6 +57,7 @@ final class VertxControllerMethodWriter {
   private void writeHttpRoute(CoreWebMethod coreWebMethod, boolean requestScoped) {
     final String routeMethod = routeMethod(coreWebMethod);
     if (routeMethod == null) {
+      APContext.logError(method.element(), "@Query is not supported by the Vert.x generator");
       return;
     }
 
