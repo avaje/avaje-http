@@ -234,6 +234,18 @@ class HelloControllerTest extends BaseWebTest {
   }
 
   @Test
+  void querySearch() {
+    HttpResponse<String> res = client.request()
+      .path("test/search")
+      .body("[\"foo\",\"bar\"]")
+      .QUERY()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("[\"foo\",\"bar\"]");
+  }
+
+  @Test
   void postStringBody_bodyAndBodyStringEquivalent() {
     final var payload = "{\"key\":42}";
 

@@ -161,6 +161,9 @@ public class MethodReader {
     findAnnotation(DeletePrism::getOptionalOn)
         .ifPresent(delete -> initSetWebMethod(CoreWebMethod.DELETE, delete.value()));
 
+    findAnnotation(QueryPrism::getOptionalOn)
+        .ifPresent(query -> initSetWebMethod(CoreWebMethod.QUERY, query.value()));
+
     findAnnotation(ExceptionHandlerPrism::getOptionalOn)
     .ifPresent(error -> initSetWebMethod(CoreWebMethod.ERROR, error));
 

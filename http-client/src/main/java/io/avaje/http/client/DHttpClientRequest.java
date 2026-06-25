@@ -35,6 +35,7 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private static final String VERB_HEAD = "HEAD";
   private static final String VERB_PATCH = "PATCH";
   private static final String VERB_TRACE = "TRACE";
+  private static final String VERB_QUERY = "QUERY";
 
   private final DHttpClientContext context;
   private final UrlBuilder url;
@@ -511,6 +512,9 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
     if (VERB_TRACE.equals(method)) {
       return newTrace(currentUrl, body());
     }
+    if (VERB_QUERY.equals(method)) {
+      return newQuery(currentUrl, body());
+    }
     throw new IllegalStateException("Unsupported method: " + method);
   }
 
@@ -566,6 +570,12 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   @Override
   public HttpClientResponse PATCH() {
     httpRequest = newPatch(url.build(), body());
+    return this;
+  }
+
+  @Override
+  public HttpClientResponse QUERY() {
+    httpRequest = newQuery(url.build(), body());
     return this;
   }
 
@@ -911,6 +921,10 @@ class DHttpClientRequest implements HttpClientRequest, HttpClientResponse {
   private HttpRequest.Builder newDelete(String url, HttpRequest.BodyPublisher body) {
     // allow DELETE to have a body
     return newRequest(VERB_DELETE, url, body);
+  }
+
+  private HttpRequest.Builder newQuery(String url, HttpRequest.BodyPublisher body) {
+    return newRequest(VERB_QUERY, url, body);
   }
 
   private HttpRequest.Builder newTrace(String url, HttpRequest.BodyPublisher body) {
