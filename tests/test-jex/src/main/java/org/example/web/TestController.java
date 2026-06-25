@@ -49,7 +49,7 @@ public class TestController {
   }
 
   @Query("/search")
-  List<String> search(List<String> criteria) {
+  List<String> search(@Body List<String> criteria) {
     return criteria;
   }
 
