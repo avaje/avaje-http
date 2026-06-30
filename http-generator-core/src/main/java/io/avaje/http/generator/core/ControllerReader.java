@@ -232,6 +232,15 @@ public final class ControllerReader {
     return beanType;
   }
 
+  /**
+   * The {@code @Path}/{@code @Client}/{@code @Controller} annotated interfaces implemented by
+   * this controller. Non-empty for a contract-first controller whose route mappings are
+   * declared on the implemented interface rather than on the controller methods directly.
+   */
+  public List<TypeElement> interfaces() {
+    return interfaces;
+  }
+
   public boolean isDocHidden() {
     return docHidden;
   }

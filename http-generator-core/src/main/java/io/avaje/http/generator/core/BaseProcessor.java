@@ -239,10 +239,15 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
   private void writeClientAdapter(ControllerReader reader) {
     try {
-      if (reader.beanType().getInterfaces().isEmpty()
-          && "java.lang.Object".equals(reader.beanType().getSuperclass().toString())
-          && new TestClientWriter(reader).write()) {
-        clientFQNs.add(reader.beanType().getQualifiedName().toString() + "TestAPI");
+      final var beanType = reader.beanType();
+      final boolean plainController =
+        beanType.getInterfaces().isEmpty()
+          && "java.lang.Object".equals(beanType.getSuperclass().toString());
+      // contract-first: the controller implements an annotated (@Path/@Client/@Controller)
+      // interface that declares the route mappings - still generate a test client for it.
+      final boolean contractFirst = !reader.interfaces().isEmpty();
+      if ((plainController || contractFirst) && new TestClientWriter(reader).write()) {
+        clientFQNs.add(beanType.getQualifiedName() + "TestAPI");
       }
     } catch (final IOException e) {
       logError(reader.beanType(), "Failed to write $Route class " + e);
