@@ -120,7 +120,12 @@ public class TestClientWriter {
 
     TypeMirror returnType = method.returnType();
     var isJstache = ProcessingContext.isJstacheTemplate(returnType);
-    AnnotationCopier.copyAnnotations(writer, method.element(), "  ", true);
+
+    // For a contract-first controller the route annotations (@Get, @QueryParam, ...) live on the
+    // implemented interface method, not on the controller's @Override - copy them from there.
+    var annotated = method.annotatedElement();
+    var annotatedParams = annotated.getParameters();
+    AnnotationCopier.copyAnnotations(writer, annotated, "  ", true);
 
     var returnTypeStr = PrimitiveUtil.wrap(UType.parse(returnType).shortType());
 
@@ -132,7 +137,9 @@ public class TestClientWriter {
     writer.append(
         "  HttpResponse<%s> %s(", isJstache ? "String" : returnTypeStr, method.simpleName());
     boolean first = true;
-    for (var param : method.params()) {
+    var methodParams = method.params();
+    for (int i = 0; i < methodParams.size(); i++) {
+      var param = methodParams.get(i);
 
       if (first) {
         first = false;
@@ -141,7 +148,8 @@ public class TestClientWriter {
       }
       var type = UType.parse(param.element().asType());
 
-      AnnotationCopier.copyAnnotations(writer, param.element(), false);
+      var annotationSource = i < annotatedParams.size() ? annotatedParams.get(i) : param.element();
+      AnnotationCopier.copyAnnotations(writer, annotationSource, false);
       writer.append("%s %s", type.shortType(), param.name());
     }
     writer.append(");");
