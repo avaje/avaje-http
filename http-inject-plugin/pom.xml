@@ -55,7 +55,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-jex</artifactId>
-      <version>3.6</version>
+      <version>3.7-RC2</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
