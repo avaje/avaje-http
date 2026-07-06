@@ -1,9 +1,13 @@
 package io.avaje.http.generator.core.openapi;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+
+import io.avaje.http.openapi.OpenApiSchemaNormalizer;
+import io.swagger.v3.oas.models.media.Schema;
 
 final class OpenAPISerializer {
 
@@ -17,7 +21,7 @@ final class OpenAPISerializer {
           "USE_ARBITRARY_SCHEMA_PROPERTY",
           "exampleSetFlag",
           "defaultSetFlag",
-          "types",
+          "nullable",
           "specVersion");
 
   private OpenAPISerializer() {}
@@ -77,6 +81,9 @@ final class OpenAPISerializer {
 
         var firstField = true;
         for (final Field field : fields) {
+          if (Modifier.isStatic(field.getModifiers())) {
+            continue;
+          }
 
           // skip JsonIgnored fields
           if (IGNORED_FIELDS
@@ -85,14 +92,31 @@ final class OpenAPISerializer {
           }
 
           field.setAccessible(true);
-          final var value = field.get(obj);
+          Object value = field.get(obj);
+          if (obj instanceof Schema<?>) {
+            final Schema<?> schema = (Schema<?>) obj;
+            if ("type".equals(field.getName()) && OpenApiSchemaNormalizer.hasTypeSet(schema)) {
+              continue;
+            }
+            if (skipSchemaField(schema, field.getName())) {
+              continue;
+            }
+            if ("types".equals(field.getName())) {
+              value = OpenApiSchemaNormalizer.schemaTypeValue(schema);
+            } else if ("exclusiveMaximumValue".equals(field.getName())) {
+              value = OpenApiSchemaNormalizer.exclusiveMaximumValue(schema);
+            } else if ("exclusiveMinimumValue".equals(field.getName())) {
+              value = OpenApiSchemaNormalizer.exclusiveMinimumValue(schema);
+            }
+          }
           if (value != null) {
 
             if (!firstField) {
               sb.append(",");
             }
+            final var jsonFieldName = jsonFieldName(obj, field.getName());
             sb.append("\"");
-            sb.append(field.getName().replace("_enum", "enum"));
+            sb.append(jsonFieldName);
             sb.append("\" : ");
             write(sb, value);
             firstField = false;
@@ -126,6 +150,32 @@ final class OpenAPISerializer {
     } else {
       return fields;
     }
+  }
+
+  private static boolean skipSchemaField(Schema<?> schema, String fieldName) {
+    if ("exclusiveMaximum".equals(fieldName) || "exclusiveMinimum".equals(fieldName)) {
+      return true;
+    }
+    if ("maximum".equals(fieldName) && OpenApiSchemaNormalizer.omitMaximum(schema)) {
+      return true;
+    }
+    return "minimum".equals(fieldName) && OpenApiSchemaNormalizer.omitMinimum(schema);
+  }
+
+  private static String jsonFieldName(Object container, String fieldName) {
+    if ("_enum".equals(fieldName)) {
+      return "enum";
+    }
+    if (container instanceof Schema<?> && "types".equals(fieldName)) {
+      return "type";
+    }
+    if (container instanceof Schema<?> && "exclusiveMaximumValue".equals(fieldName)) {
+      return "exclusiveMaximum";
+    }
+    if (container instanceof Schema<?> && "exclusiveMinimumValue".equals(fieldName)) {
+      return "exclusiveMinimum";
+    }
+    return fieldName;
   }
 
   static boolean isPrimitiveWrapperType(Object value) {
@@ -178,7 +228,9 @@ final class OpenAPISerializer {
   static void write(StringBuilder sb, Object value) throws IllegalAccessException {
     final var isPrimitiveWrapper = isPrimitiveWrapperType(value);
     // Append primitive or string value as is
-    if (value.getClass().isPrimitive() || value instanceof String || isPrimitiveWrapper) {
+    if (value instanceof Number) {
+      sb.append(value);
+    } else if (value.getClass().isPrimitive() || value instanceof String || isPrimitiveWrapper) {
       if (isPrimitiveWrapper) {
         sb.append(extractPrimitiveValue(value));
       } else {

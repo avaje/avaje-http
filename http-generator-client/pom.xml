@@ -64,6 +64,10 @@
               <shadedPattern>io.avaje.http.client.generator.core</shadedPattern>
             </relocation>
             <relocation>
+              <pattern>io.avaje.http.openapi</pattern>
+              <shadedPattern>io.avaje.http.client.generator.openapi</shadedPattern>
+            </relocation>
+            <relocation>
               <pattern>io.swagger.v3</pattern>
               <shadedPattern>io.avaje.http.client.generator.swagger.v3</shadedPattern>
             </relocation>

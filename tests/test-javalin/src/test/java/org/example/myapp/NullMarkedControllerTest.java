@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,20 +25,30 @@ public class NullMarkedControllerTest {
       JsonNode nullMarkedClassDTO = schemas.get("NullMarkedClassDTO");
       assertEquals("[\"map1\",\"map2\",\"map3\",\"set1\",\"set2\",\"string1\",\"stringArray1\",\"stringArray2\"]", nullMarkedClassDTO.get("required").toString());
 
-      assertEquals("{\"type\":\"string\",\"nullable\":false}", nullMarkedClassDTO.get("properties").get("string1").toString());
-      assertEquals("{\"type\":\"string\"}", nullMarkedClassDTO.get("properties").get("string2").toString());
+      JsonNode properties = nullMarkedClassDTO.get("properties");
+      assertType(properties.get("string1"), "string");
+      assertType(properties.get("string2"), "string", "null");
 
-      assertEquals("{\"type\":\"array\",\"nullable\":false,\"items\":{\"type\":\"string\"}}", nullMarkedClassDTO.get("properties").get("stringArray1").toString());
-      assertEquals("{\"type\":\"array\",\"nullable\":false,\"items\":{\"type\":\"string\"}}", nullMarkedClassDTO.get("properties").get("stringArray2").toString());
+      assertType(properties.get("stringArray1"), "array");
+      assertType(properties.get("stringArray1").get("items"), "string");
+      assertType(properties.get("stringArray2"), "array");
+      assertType(properties.get("stringArray2").get("items"), "string", "null");
 
-      assertEquals("{\"type\":\"array\",\"nullable\":false,\"items\":{\"type\":\"string\",\"nullable\":false}}", nullMarkedClassDTO.get("properties").get("set1").toString());
-      assertEquals("{\"type\":\"array\",\"nullable\":false,\"items\":{\"type\":\"string\"}}", nullMarkedClassDTO.get("properties").get("set2").toString());
-      assertEquals("{\"type\":\"array\",\"items\":{\"type\":\"string\",\"nullable\":false}}", nullMarkedClassDTO.get("properties").get("set3").toString());
+      assertType(properties.get("set1"), "array");
+      assertType(properties.get("set1").get("items"), "string");
+      assertType(properties.get("set2"), "array");
+      assertType(properties.get("set2").get("items"), "string", "null");
+      assertType(properties.get("set3"), "array", "null");
+      assertType(properties.get("set3").get("items"), "string");
 
-      assertEquals("{\"type\":\"object\",\"additionalProperties\":{\"type\":\"string\",\"nullable\":false},\"nullable\":false}", nullMarkedClassDTO.get("properties").get("map1").toString());
-      assertEquals("{\"type\":\"object\",\"additionalProperties\":{\"type\":\"string\",\"nullable\":false},\"nullable\":false}", nullMarkedClassDTO.get("properties").get("map2").toString());
-      assertEquals("{\"type\":\"object\",\"additionalProperties\":{\"type\":\"string\"},\"nullable\":false}", nullMarkedClassDTO.get("properties").get("map3").toString());
-      assertEquals("{\"type\":\"object\",\"additionalProperties\":{\"type\":\"string\",\"nullable\":false}}", nullMarkedClassDTO.get("properties").get("map4").toString());
+      assertType(properties.get("map1"), "object");
+      assertType(properties.get("map1").get("additionalProperties"), "string");
+      assertType(properties.get("map2"), "object");
+      assertType(properties.get("map2").get("additionalProperties"), "string");
+      assertType(properties.get("map3"), "object");
+      assertType(properties.get("map3").get("additionalProperties"), "string", "null");
+      assertType(properties.get("map4"), "object", "null");
+      assertType(properties.get("map4").get("additionalProperties"), "string");
     }
   }
 
@@ -49,8 +62,19 @@ public class NullMarkedControllerTest {
 
       JsonNode nullMarkedRecordDTO = schemas.get("NullMarkedRecordDTO");
       assertEquals("[\"notNullable\"]", nullMarkedRecordDTO.get("required").toString());
-      assertEquals("{\"type\":\"string\",\"nullable\":false}", nullMarkedRecordDTO.get("properties").get("notNullable").toString());
-      assertEquals("{\"type\":\"string\"}", nullMarkedRecordDTO.get("properties").get("nullable").toString());
+      assertType(nullMarkedRecordDTO.get("properties").get("notNullable"), "string");
+      assertType(nullMarkedRecordDTO.get("properties").get("nullable"), "string", "null");
     }
+  }
+
+  private static void assertType(JsonNode schema, String... expectedTypes) {
+    JsonNode type = schema.get("type");
+    if (expectedTypes.length == 1) {
+      assertEquals(expectedTypes[0], type.asText());
+      return;
+    }
+    List<String> actualTypes = new ArrayList<>();
+    type.forEach(typeNode -> actualTypes.add(typeNode.asText()));
+    assertEquals(Arrays.asList(expectedTypes), actualTypes);
   }
 }

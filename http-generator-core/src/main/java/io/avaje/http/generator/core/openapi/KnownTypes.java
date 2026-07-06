@@ -103,7 +103,7 @@ class KnownTypes {
   private class BoolType implements KnownType {
     @Override
     public Schema<?> createSchema() {
-      return new BooleanSchema().nullable(Boolean.FALSE);
+      return new BooleanSchema();
     }
   }
 
@@ -131,14 +131,14 @@ class KnownTypes {
   private class IntType implements KnownType {
     @Override
     public Schema<?> createSchema() {
-      return new IntegerSchema().nullable(Boolean.FALSE);
+      return new IntegerSchema();
     }
   }
 
   private class IntArrayType implements KnownType {
     @Override
     public Schema<?> createSchema() {
-      return new ArraySchema().items(new IntegerSchema().nullable(Boolean.FALSE));
+      return new ArraySchema().items(new IntegerSchema());
     }
   }
 
@@ -152,14 +152,14 @@ class KnownTypes {
   private class PLongType implements KnownType {
     @Override
     public Schema<?> createSchema() {
-      return new IntegerSchema().format("int64").nullable(Boolean.FALSE);
+      return new IntegerSchema().format("int64");
     }
   }
 
   private class PLongArrayType implements KnownType {
     @Override
     public Schema<?> createSchema() {
-      return new ArraySchema().items(new IntegerSchema().format("int64").nullable(Boolean.FALSE));
+      return new ArraySchema().items(new IntegerSchema().format("int64"));
     }
   }
 
@@ -173,14 +173,14 @@ class KnownTypes {
   private class PNumberType implements KnownType {
     @Override
     public Schema<?> createSchema() {
-      return new NumberSchema().nullable(Boolean.FALSE);
+      return new NumberSchema();
     }
   }
 
   private class PNumberArrayType implements KnownType {
     @Override
     public Schema<?> createSchema() {
-      return new ArraySchema().items(new NumberSchema().nullable(Boolean.FALSE));
+      return new ArraySchema().items(new NumberSchema());
     }
   }
 

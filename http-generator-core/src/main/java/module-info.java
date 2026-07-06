@@ -8,6 +8,7 @@ module io.avaje.http.generator.core {
   requires java.compiler;
 
   // SHADED: All content after this line will be removed at package time
+  requires io.avaje.http.openapi;
   requires static io.avaje.prism;
   requires static io.avaje.http.api;
   requires static io.avaje.htmx.api;

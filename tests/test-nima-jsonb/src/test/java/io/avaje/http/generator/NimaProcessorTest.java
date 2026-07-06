@@ -111,6 +111,11 @@ class NimaProcessorTest {
         mapper.readTree(new File("src/test/resources/expectedOpenApi.json"));
     final var generatedOpenApi = mapper.readTree(new File("openapi.json"));
 
-    assert expectedOpenApiJson.equals(generatedOpenApi);
+    final var json = generatedOpenApi.toString();
+    assertThat(json).contains("\"openapi\":\"3.1.2\"");
+    assertThat(json).contains("\"jsonSchemaDialect\":\"https://spec.openapis.org/oas/3.1/dialect/base\"");
+    assertThat(json).doesNotContain("\"nullable\"");
+    assertThat(json).doesNotContain("\"types\":");
+    assertThat(generatedOpenApi).isEqualTo(expectedOpenApiJson);
   }
 }
