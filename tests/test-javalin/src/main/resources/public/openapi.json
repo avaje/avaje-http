@@ -1067,6 +1067,47 @@
 					}
 				}
 			}
+		},
+		"/shorttest" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "shortValue",
+						"in" : "query",
+						"schema" : {
+							"type" : "integer",
+							"format" : "int32",
+							"nullable" : false
+						}
+					},
+					{
+						"name" : "shortObjectValue",
+						"in" : "query",
+						"schema" : {
+							"type" : "integer",
+							"format" : "int32",
+							"nullable" : false
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/ShortDto"
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components" : {
@@ -1242,6 +1283,20 @@
 					},
 					"nullable" : {
 						"type" : "string"
+					}
+				}
+			},
+			"ShortDto" : {
+				"type" : "object",
+				"properties" : {
+					"shortValue" : {
+						"type" : "integer",
+						"format" : "int32",
+						"nullable" : false
+					},
+					"shortObjectValue" : {
+						"type" : "integer",
+						"format" : "int32"
 					}
 				}
 			}

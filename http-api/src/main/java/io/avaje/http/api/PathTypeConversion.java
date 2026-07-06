@@ -87,6 +87,18 @@ public final class PathTypeConversion {
   }
 
   /**
+   * Convert to short.
+   */
+  public static short asShort(String value) {
+    checkNull(value);
+    try {
+      return Short.parseShort(value);
+    } catch (final NumberFormatException e) {
+      throw new InvalidPathArgumentException(e);
+    }
+  }
+
+  /**
    * Convert to int.
    */
   public static int asInt(String value) {
@@ -283,6 +295,18 @@ public final class PathTypeConversion {
   }
 
   /**
+   * Convert to Short (not nullable).
+   */
+  public static Short asShortObject(String value) {
+    checkNull(value);
+    try {
+      return Short.valueOf(value);
+    } catch (NumberFormatException e) {
+      throw new InvalidPathArgumentException(e);
+    }
+  }
+
+  /**
    * Convert to Integer (not nullable).
    */
   public static Integer asInteger(String value) {
@@ -311,6 +335,20 @@ public final class PathTypeConversion {
     try {
       return convertEnum(clazz, value);
     } catch (final IllegalArgumentException e) {
+      throw new InvalidTypeArgumentException(e);
+    }
+  }
+
+  /**
+   * Convert to Short (allowing nulls).
+   */
+  public static Short toShortObject(String value) {
+    if (isNullOrEmpty(value)) {
+      return null;
+    }
+    try {
+      return Short.valueOf(value);
+    } catch (NumberFormatException e) {
       throw new InvalidTypeArgumentException(e);
     }
   }
