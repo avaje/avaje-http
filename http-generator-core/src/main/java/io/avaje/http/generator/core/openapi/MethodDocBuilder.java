@@ -64,6 +64,9 @@ public class MethodDocBuilder {
       case PATCH:
         pathItem.setPatch(operation);
         break;
+      case QUERY:
+        pathItem.addExtension("x-query", operation);
+        break;
     }
 
     final var securityRequirements = methodReader.securityRequirements();

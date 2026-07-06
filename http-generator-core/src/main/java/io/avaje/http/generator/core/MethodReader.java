@@ -161,6 +161,9 @@ public class MethodReader {
     findAnnotation(DeletePrism::getOptionalOn)
         .ifPresent(delete -> initSetWebMethod(CoreWebMethod.DELETE, delete.value()));
 
+    findAnnotation(QueryPrism::getOptionalOn)
+        .ifPresent(query -> initSetWebMethod(CoreWebMethod.QUERY, query.value()));
+
     findAnnotation(ExceptionHandlerPrism::getOptionalOn)
     .ifPresent(error -> initSetWebMethod(CoreWebMethod.ERROR, error));
 
@@ -516,6 +519,31 @@ public class MethodReader {
 
   public ExecutableElement element() {
     return element;
+  }
+
+  /**
+   * The element that declares the HTTP method annotations ({@code @Get} etc). Normally this
+   * is the controller method itself, but for a contract-first controller (one implementing an
+   * annotated interface) the route annotations live on the overridden interface method rather
+   * than on the controller's {@code @Override}. Returns that interface method when so.
+   */
+  public ExecutableElement annotatedElement() {
+    if (hasWebMethodAnnotation(element)) {
+      return element;
+    }
+    return superMethods.stream()
+        .filter(MethodReader::hasWebMethodAnnotation)
+        .findFirst()
+        .orElse(element);
+  }
+
+  private static boolean hasWebMethodAnnotation(Element element) {
+    return GetPrism.getOptionalOn(element).isPresent()
+        || PostPrism.getOptionalOn(element).isPresent()
+        || PutPrism.getOptionalOn(element).isPresent()
+        || PatchPrism.getOptionalOn(element).isPresent()
+        || DeletePrism.getOptionalOn(element).isPresent()
+        || QueryPrism.getOptionalOn(element).isPresent();
   }
 
   public String exceptionShortName() {

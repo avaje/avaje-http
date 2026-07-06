@@ -1681,6 +1681,47 @@
 				}
 			}
 		},
+		"/test/search" : {
+			"extensions" : {
+				"x-query" : {
+					"tags" : [
+						
+					],
+					"summary" : "",
+					"description" : "",
+					"requestBody" : {
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "array",
+									"items" : {
+										"type" : "string",
+										"nullable" : false
+									}
+								}
+							}
+						},
+						"required" : true
+					},
+					"responses" : {
+						"200" : {
+							"description" : "",
+							"content" : {
+								"application/json" : {
+									"schema" : {
+										"type" : "array",
+										"items" : {
+											"type" : "string",
+											"nullable" : false
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/test/strBodyBodyPost" : {
 			"post" : {
 				"tags" : [
@@ -1884,6 +1925,14 @@
 				},
 				"type" : "object"
 			},
+			"NestedEnum" : {
+				"type" : "string",
+				"enum" : [
+					"A",
+					"B",
+					"C"
+				]
+			},
 			"Person" : {
 				"properties" : {
 					"name" : {
@@ -1895,6 +1944,14 @@
 					}
 				},
 				"type" : "object"
+			},
+			"ServerType" : {
+				"type" : "string",
+				"enum" : [
+					"PROXY",
+					"HIDE_N_SEEK",
+					"FFA"
+				]
 			},
 			"StreamingOutput" : {
 				"type" : "object"

@@ -10,7 +10,7 @@
   <groupId>io.avaje</groupId>
   <artifactId>avaje-http-parent</artifactId>
   <name>avaje-http-parent</name>
-  <version>3.9-RC3</version>
+  <version>3.10-RC1</version>
   <packaging>pom</packaging>
 
   <scm>
@@ -20,11 +20,11 @@
 
   <properties>
     <nexus.staging.autoReleaseAfterClose>true</nexus.staging.autoReleaseAfterClose>
-    <swagger.version>2.2.49</swagger.version>
+    <swagger.version>2.2.52</swagger.version>
     <jackson.version>2.14.2</jackson.version>
     <jex.version>3.0-RC10</jex.version>
     <avaje.prisms.version>2.1-RC2</avaje.prisms.version>
-    <project.build.outputTimestamp>2026-05-05T21:33:55Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-06-30T22:45:57Z</project.build.outputTimestamp>
     <module-info.shade>${project.build.directory}${file.separator}module-info.shade</module-info.shade>
   </properties>
 
@@ -44,6 +44,7 @@
     <module>http-api</module>
     <module>http-api-javalin</module>
     <module>http-client</module>
+    <module>http-client-otel</module>
     <module>http-client-gson-adapter</module>
     <module>http-client-moshi-adapter</module>
     <module>http-generator-core</module>

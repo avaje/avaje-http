@@ -1,7 +1,11 @@
 package org.example.myapp;
 
+import io.avaje.http.client.HttpClient;
 import org.example.myapp.web.Bar;
 import org.junit.jupiter.api.Test;
+
+import java.net.http.HttpResponse;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +42,21 @@ class BarControllerTest extends BaseWebTest {
       .get(baseUrl + "/bars/find/mycode")
       .then()
       .statusCode(200);
+  }
+
+  @Test
+  void search() {
+    // The interface with @QueryParam @Nullable String code (TYPE_USE @Nullable);
+    // the BarController @Override omits @Nullable. The route must still be generated.
+    HttpClient client = client();
+    HttpResponse<List<Bar>> res = client.request()
+      .path("bars").path("search").path("items")
+      .queryParam("code", "abc")
+      .GET()
+      .asList(Bar.class);
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEmpty();
   }
 
 }

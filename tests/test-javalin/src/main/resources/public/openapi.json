@@ -67,6 +67,40 @@
 				}
 			}
 		},
+		"/bars/search/items" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "code",
+						"in" : "query",
+						"schema" : {
+							"type" : "string"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"type" : "array",
+									"items" : {
+										"$ref" : "#/components/schemas/Bar",
+										"nullable" : false
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/bars/{id}" : {
 			"get" : {
 				"tags" : [
@@ -280,6 +314,119 @@
 							"application/json" : {
 								"schema" : {
 									"$ref" : "#/components/schemas/Baz"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/enum/first" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/EnumDTO"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/enum/fourth" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/EnumDTO"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/EnumDTO"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/enum/second" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "enumExample",
+						"in" : "query",
+						"schema" : {
+							"$ref" : "#/components/schemas/EnumExample"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/EnumDTO"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/enum/third" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/json" : {
+							"schema" : {
+								"$ref" : "#/components/schemas/EnumExample"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/EnumDTO"
 								}
 							}
 						}
@@ -941,6 +1088,24 @@
 					}
 				},
 				"type" : "object"
+			},
+			"EnumDTO" : {
+				"type" : "object",
+				"properties" : {
+					"value1" : {
+						"$ref" : "#/components/schemas/EnumExample"
+					},
+					"value2" : {
+						"$ref" : "#/components/schemas/EnumExample"
+					}
+				}
+			},
+			"EnumExample" : {
+				"type" : "string",
+				"enum" : [
+					"ENUM_VALUE_1",
+					"ENUM_VALUE_2"
+				]
 			},
 			"HelloDto" : {
 				"properties" : {

@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.9-RC3</version>
+    <version>3.10-RC1</version>
   </parent>
 
   <artifactId>avaje-htmx-nima-jstache</artifactId>
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject</artifactId>
-      <version>12.5</version>
+      <version>12.6</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>

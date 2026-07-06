@@ -489,6 +489,11 @@ public interface HttpClientRequest extends Cloneable {
   HttpClientResponse DELETE();
 
   /**
+   * Execute the request as a QUERY.
+   */
+  HttpClientResponse QUERY();
+
+  /**
    * Execute the request as a TRACE.
    */
   HttpClientResponse TRACE();
@@ -516,6 +521,8 @@ public interface HttpClientRequest extends Cloneable {
         return PATCH();
       case "DELETE":
         return DELETE();
+      case "QUERY":
+        return QUERY();
       case "TRACE":
         return TRACE();
       case "HEAD":

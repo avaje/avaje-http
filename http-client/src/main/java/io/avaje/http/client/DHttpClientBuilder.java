@@ -47,6 +47,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
   private int priority;
 
   private final List<RequestIntercept> interceptors = new ArrayList<>();
+  private final List<RequestObserver> observers = new ArrayList<>();
   private final List<RequestListener> listeners = new ArrayList<>();
   private final Set<String> suppressed = new HashSet<>();
 
@@ -78,6 +79,16 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
       return listeners.get(0);
     }
     return new DRequestListeners(listeners);
+  }
+
+  private RequestObserver buildObserver() {
+    if (observers.isEmpty()) {
+      return RequestObserver.NOOP;
+    }
+    if (observers.size() == 1) {
+      return observers.get(0);
+    }
+    return new DRequestObservers(observers);
   }
 
   private java.net.http.HttpClient defaultClient() {
@@ -169,6 +180,7 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
       retryHandler,
       errorHandler,
       buildListener(),
+      buildObserver(),
       authTokenProvider,
       backgroundRefreshDuration,
       interceptors);
@@ -233,6 +245,12 @@ final class DHttpClientBuilder implements HttpClient.Builder, HttpClient.Builder
   @Override
   public HttpClient.Builder requestIntercept(RequestIntercept... requestIntercept) {
     Collections.addAll(interceptors, requestIntercept);
+    return this;
+  }
+
+  @Override
+  public HttpClient.Builder requestObserver(RequestObserver... requestObserver) {
+    Collections.addAll(observers, requestObserver);
     return this;
   }
 

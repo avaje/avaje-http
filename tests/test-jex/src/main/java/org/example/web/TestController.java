@@ -14,6 +14,7 @@ import io.avaje.http.api.Options;
 import io.avaje.http.api.Path;
 import io.avaje.http.api.Post;
 import io.avaje.http.api.Produces;
+import io.avaje.http.api.Query;
 import io.avaje.http.api.QueryParam;
 import io.avaje.jex.http.Context;
 import io.avaje.jex.http.HttpFilter.FilterChain;
@@ -45,6 +46,11 @@ public class TestController {
   @Post("/listBody")
   String listBody(@Body List<String> codes) {
     return codes.toString();
+  }
+
+  @Query("/search")
+  List<String> search(@Body List<String> criteria) {
+    return criteria;
   }
 
   @Options("/strBody")

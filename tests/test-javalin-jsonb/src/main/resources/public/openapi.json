@@ -713,9 +713,7 @@
             "name": "myEnum",
             "in": "query",
             "schema": {
-              "type": "string",
-              "enum": ["A","B","C"
-              ]
+              "$ref": "#/components/schemas/NestedEnum"
             }
           }
         ],
@@ -1516,9 +1514,7 @@
                     "type": "string"
                   },
                   "type": {
-                    "type": "string",
-                    "enum": ["PROXY","HIDE_N_SEEK","FFA"
-                    ]
+                    "$ref": "#/components/schemas/ServerType"
                   }
                 }
               },
@@ -1550,9 +1546,7 @@
                     "type": "string"
                   },
                   "type": {
-                    "type": "string",
-                    "enum": ["PROXY","HIDE_N_SEEK","FFA"
-                    ]
+                    "$ref": "#/components/schemas/ServerType"
                   }
                 }
               },
@@ -1587,9 +1581,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "enum": ["PROXY","HIDE_N_SEEK","FFA"
-              ]
+              "$ref": "#/components/schemas/ServerType"
             }
           }
         ],
@@ -1618,9 +1610,7 @@
             "name": "type",
             "in": "query",
             "schema": {
-              "type": "string",
-              "enum": ["PROXY","HIDE_N_SEEK","FFA"
-              ]
+              "$ref": "#/components/schemas/ServerType"
             }
           }
         ],
@@ -1689,9 +1679,7 @@
             "name": "type",
             "in": "query",
             "schema": {
-              "type": "string",
-              "enum": ["PROXY","HIDE_N_SEEK","FFA"
-              ]
+              "$ref": "#/components/schemas/ServerType"
             }
           }
         ],
@@ -2294,6 +2282,11 @@
   },
   "components": {
     "schemas": {
+      "ServerType": {
+        "type": "string",
+        "enum": ["PROXY","HIDE_N_SEEK","FFA"
+        ]
+      },
       "Bar": {
         "type": "object",
         "properties": {
@@ -2361,6 +2354,11 @@
       },
       "Data2_String_Data_String": {
         "type": "object"
+      },
+      "NestedEnum": {
+        "type": "string",
+        "enum": ["A","B","C"
+        ]
       },
       "Person": {
         "type": "object",

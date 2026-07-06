@@ -2122,6 +2122,14 @@
 				},
 				"type" : "object"
 			},
+			"NestedEnum" : {
+				"type" : "string",
+				"enum" : [
+					"A",
+					"B",
+					"C"
+				]
+			},
 			"Person" : {
 				"properties" : {
 					"name" : {

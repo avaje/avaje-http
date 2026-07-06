@@ -3,6 +3,7 @@ package io.avaje.http.client;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.function.Function;
 
 /** Extends DHttpClientRequest with retry attempts. */
@@ -49,14 +50,22 @@ final class DHttpClientRequestWithRetry extends DHttpClientRequest {
   protected <T> CompletableFuture<HttpResponse<T>> performSendAsync(
       boolean loggable, HttpResponse.BodyHandler<T> responseHandler) {
 
+    prepareExecution();
     var resultFuture = asyncwithRetry(loggable, responseHandler);
 
     if (errorMapper != null) {
       resultFuture =
           resultFuture.handle(
               (r, e) -> {
-                if (e != null && e.getCause() instanceof HttpException) {
-                  throw errorMapper.apply((HttpException) e.getCause());
+                if (e != null) {
+                  final Throwable error = unwrapFutureError(e);
+                  if (error instanceof HttpException) {
+                    throw errorMapper.apply((HttpException) error);
+                  }
+                  if (error instanceof RuntimeException) {
+                    throw (RuntimeException) error;
+                  }
+                  throw new CompletionException(error);
                 }
                 return r;
               });
@@ -78,19 +87,23 @@ final class DHttpClientRequestWithRetry extends DHttpClientRequest {
     return super.performSendAsync(loggable, responseHandler)
         .handle(
             (res, ex) -> {
-              if (ex != null && ex.getCause() instanceof HttpException) {
-                if (!retryHandler.isExceptionRetry(retryCount, (HttpException) ex.getCause())) {
-                  return CompletableFuture.<HttpResponse<T>>failedFuture(ex.getCause());
+              if (ex != null) {
+                final Throwable error = unwrapFutureError(ex);
+                if (error instanceof HttpException) {
+                  if (!retryHandler.isExceptionRetry(retryCount, (HttpException) error)) {
+                    return CompletableFuture.<HttpResponse<T>>failedFuture(error);
+                  }
+                  retryCount++;
+                  return asyncwithRetry(loggable, responseHandler);
                 }
-                retryCount++;
-                return asyncwithRetry(loggable, responseHandler);
+                return CompletableFuture.<HttpResponse<T>>failedFuture(error);
               }
 
               if (res != null && res.statusCode() < 300) {
                 return CompletableFuture.completedFuture(res);
               }
               if (!retryHandler.isRetry(retryCount, res)) {
-                return CompletableFuture.<HttpResponse<T>>failedFuture(ex.getCause());
+                return CompletableFuture.completedFuture(res);
               }
               retryCount++;
               return asyncwithRetry(loggable, responseHandler);
