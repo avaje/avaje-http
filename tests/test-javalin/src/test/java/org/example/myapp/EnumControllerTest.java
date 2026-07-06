@@ -30,7 +30,7 @@ public class EnumControllerTest {
       assertEquals("{\"enum\":[\"ENUM_VALUE_1\",\"ENUM_VALUE_2\"],\"type\":\"string\"}", enumExample.toString());
 
       JsonNode enumDTO = components.get("EnumDTO");
-      assertEquals("{\"type\":\"object\",\"properties\":{\"value1\":{\"$ref\":\"#/components/schemas/EnumExample\"},\"value2\":{\"$ref\":\"#/components/schemas/EnumExample\"}}}", enumDTO.toString());
+      assertEquals("{\"properties\":{\"value1\":{\"$ref\":\"#/components/schemas/EnumExample\"},\"value2\":{\"$ref\":\"#/components/schemas/EnumExample\"}},\"type\":\"object\"}", enumDTO.toString());
   }
 
   @Test
