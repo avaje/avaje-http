@@ -89,11 +89,10 @@
 						"content" : {
 							"application/json" : {
 								"schema" : {
-									"type" : "array",
 									"items" : {
-										"$ref" : "#/components/schemas/Bar",
-										"nullable" : false
-									}
+										"$ref" : "#/components/schemas/Bar"
+									},
+									"type" : "array"
 								}
 							}
 						}
@@ -1057,6 +1056,45 @@
 					}
 				}
 			}
+		},
+		"/shorttest" : {
+			"get" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"parameters" : [
+					{
+						"name" : "shortValue",
+						"in" : "query",
+						"schema" : {
+							"format" : "int32",
+							"type" : "integer"
+						}
+					},
+					{
+						"name" : "shortObjectValue",
+						"in" : "query",
+						"schema" : {
+							"format" : "int32",
+							"type" : "integer"
+						}
+					}
+				],
+				"responses" : {
+					"200" : {
+						"description" : "",
+						"content" : {
+							"application/json" : {
+								"schema" : {
+									"$ref" : "#/components/schemas/ShortDto"
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components" : {
@@ -1090,7 +1128,6 @@
 				"type" : "object"
 			},
 			"EnumDTO" : {
-				"type" : "object",
 				"properties" : {
 					"value1" : {
 						"$ref" : "#/components/schemas/EnumExample"
@@ -1098,14 +1135,15 @@
 					"value2" : {
 						"$ref" : "#/components/schemas/EnumExample"
 					}
-				}
+				},
+				"type" : "object"
 			},
 			"EnumExample" : {
-				"type" : "string",
 				"enum" : [
 					"ENUM_VALUE_1",
 					"ENUM_VALUE_2"
-				]
+				],
+				"type" : "string"
 			},
 			"HelloDto" : {
 				"properties" : {
@@ -1236,6 +1274,19 @@
 							"string",
 							"null"
 						]
+					}
+				},
+				"type" : "object"
+			},
+			"ShortDto" : {
+				"properties" : {
+					"shortValue" : {
+						"format" : "int32",
+						"type" : "integer"
+					},
+					"shortObjectValue" : {
+						"format" : "int32",
+						"type" : "integer"
 					}
 				},
 				"type" : "object"

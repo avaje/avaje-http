@@ -707,12 +707,7 @@
 						"name" : "myEnum",
 						"in" : "query",
 						"schema" : {
-							"enum" : [
-								"A",
-								"B",
-								"C"
-							],
-							"type" : "string"
+							"$ref" : "#/components/schemas/NestedEnum"
 						}
 					}
 				],
@@ -837,12 +832,7 @@
 						"in" : "query",
 						"schema" : {
 							"items" : {
-								"enum" : [
-									"PROXY",
-									"HIDE_N_SEEK",
-									"FFA"
-								],
-								"type" : "string"
+								"$ref" : "#/components/schemas/ServerType"
 							},
 							"type" : "array"
 						}
@@ -1293,12 +1283,7 @@
 										"type" : "string"
 									},
 									"type" : {
-										"enum" : [
-											"PROXY",
-											"HIDE_N_SEEK",
-											"FFA"
-										],
-										"type" : "string"
+										"$ref" : "#/components/schemas/ServerType"
 									}
 								},
 								"type" : "object"
@@ -1331,12 +1316,7 @@
 										"type" : "string"
 									},
 									"type" : {
-										"enum" : [
-											"PROXY",
-											"HIDE_N_SEEK",
-											"FFA"
-										],
-										"type" : "string"
+										"$ref" : "#/components/schemas/ServerType"
 									}
 								},
 								"type" : "object"
@@ -1372,12 +1352,7 @@
 						"in" : "path",
 						"required" : true,
 						"schema" : {
-							"enum" : [
-								"PROXY",
-								"HIDE_N_SEEK",
-								"FFA"
-							],
-							"type" : "string"
+							"$ref" : "#/components/schemas/ServerType"
 						}
 					}
 				],
@@ -1407,12 +1382,7 @@
 						"name" : "type",
 						"in" : "query",
 						"schema" : {
-							"enum" : [
-								"PROXY",
-								"HIDE_N_SEEK",
-								"FFA"
-							],
-							"type" : "string"
+							"$ref" : "#/components/schemas/ServerType"
 						}
 					}
 				],
@@ -1443,12 +1413,7 @@
 						"in" : "query",
 						"schema" : {
 							"items" : {
-								"enum" : [
-									"PROXY",
-									"HIDE_N_SEEK",
-									"FFA"
-								],
-								"type" : "string"
+								"$ref" : "#/components/schemas/ServerType"
 							},
 							"type" : "array"
 						}
@@ -1487,12 +1452,7 @@
 						"name" : "type",
 						"in" : "query",
 						"schema" : {
-							"enum" : [
-								"PROXY",
-								"HIDE_N_SEEK",
-								"FFA"
-							],
-							"type" : "string"
+							"$ref" : "#/components/schemas/ServerType"
 						}
 					}
 				],
@@ -2123,12 +2083,12 @@
 				"type" : "object"
 			},
 			"NestedEnum" : {
-				"type" : "string",
 				"enum" : [
 					"A",
 					"B",
 					"C"
-				]
+				],
+				"type" : "string"
 			},
 			"Person" : {
 				"properties" : {
@@ -2141,6 +2101,14 @@
 					}
 				},
 				"type" : "object"
+			},
+			"ServerType" : {
+				"enum" : [
+					"PROXY",
+					"HIDE_N_SEEK",
+					"FFA"
+				],
+				"type" : "string"
 			}
 		},
 		"securitySchemes" : {

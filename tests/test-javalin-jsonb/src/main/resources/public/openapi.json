@@ -829,9 +829,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "string",
-                "enum": ["PROXY","HIDE_N_SEEK","FFA"
-                ]
+                "$ref": "#/components/schemas/ServerType"
               }
             }
           }
@@ -1641,9 +1639,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "string",
-                "enum": ["PROXY","HIDE_N_SEEK","FFA"
-                ]
+                "$ref": "#/components/schemas/ServerType"
               }
             }
           }
