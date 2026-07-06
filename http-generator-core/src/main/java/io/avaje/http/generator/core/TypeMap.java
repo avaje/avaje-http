@@ -19,12 +19,14 @@ final class TypeMap {
   }
 
   static {
+    types.put("short", new ShortHandler());
     types.put("int", new IntHandler());
     types.put("long", new PLongHandler());
     types.put("double", new PDoubleHandler());
     types.put("float", new PFloatHandler());
     types.put("boolean", new BoolHandler());
 
+    types.put("java.lang.Short", new ShortObjectHandler());
     types.put("java.lang.String", new StringHandler());
     types.put("java.lang.Integer", new IntegerHandler());
     types.put("java.lang.Long", new LongHandler());
@@ -79,6 +81,28 @@ final class TypeMap {
     @Override
     public String toMethod() {
       return null;
+    }
+  }
+
+  static final class ShortObjectHandler extends JavaLangType {
+    ShortObjectHandler() {
+      super("Short");
+    }
+
+    @Override
+    public String asMethod() {
+      return "asShortObject(";
+    }
+
+    @Override
+    public String toMethod() {
+      return "toShortObject(";
+    }
+  }
+
+  static final class ShortHandler extends Primitive {
+    ShortHandler() {
+      super("Short");
     }
   }
 
