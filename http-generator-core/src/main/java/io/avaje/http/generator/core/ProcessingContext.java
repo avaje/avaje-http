@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -170,19 +169,19 @@ public final class ProcessingContext {
     return CTX.get().typeUtils.asMemberOf(declaredType, element);
   }
 
-  public static List<ExecutableElement> superMethods(Element element, String methodName) {
+  public static List<ExecutableElement> superMethods(ExecutableElement method) {
     final Types types = CTX.get().typeUtils;
-    return types.directSupertypes(element.asType()).stream()
+    final Elements elements = CTX.get().elementUtils;
+    final TypeElement enclosingType = (TypeElement) method.getEnclosingElement();
+    return types.directSupertypes(enclosingType.asType()).stream()
       .filter(type -> !type.toString().contains("java.lang.Object"))
-      .map(superType -> {
+      .flatMap(superType -> {
         final var superClass = (TypeElement) types.asElement(superType);
-        for (final var method : ElementFilter.methodsIn(CTX.get().elementUtils.getAllMembers(superClass))) {
-          if (method.getSimpleName().contentEquals(methodName)) {
-            return method;
-          }
-        }
-      return null;
-    }).filter(Objects::nonNull).collect(Collectors.toList());
+        return ElementFilter.methodsIn(elements.getAllMembers(superClass)).stream();
+      })
+      .filter(superMethod -> elements.overrides(method, superMethod, enclosingType))
+      .distinct()
+      .collect(Collectors.toList());
   }
 
   public static PlatformAdapter platform() {
