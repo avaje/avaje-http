@@ -9,6 +9,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HelloControllerTest extends BaseWebTest {
 
   @Test
+  void contractFirstQueryDefaults() {
+    HttpResponse<String> res = client().request()
+      .path("queryDefaults")
+      .GET()
+      .asPlainString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("false,false");
+  }
+
+  @Test
   void listParamOne() {
     HttpResponse<String> res = client().request()
       .path("listParams")

@@ -73,8 +73,7 @@ public class MethodReader {
 
     initWebMethodViaAnnotation();
 
-    this.superMethods =
-        superMethods(element.getEnclosingElement(), element.getSimpleName().toString());
+    this.superMethods = superMethods(element);
     superMethods.forEach(m -> methodRoles.addAll(Util.findRoles(m)));
     this.throwsList = element.getThrownTypes();
     this.hasThrows = !throwsList.isEmpty();
@@ -334,6 +333,7 @@ public class MethodReader {
     final ParamType defaultParamType = formMarker ? ParamType.FORMPARAM : ParamType.QUERYPARAM;
 
     final List<? extends VariableElement> parameters = element.getParameters();
+    final List<? extends VariableElement> annotatedParameters = annotatedElement().getParameters();
     for (int i = 0; i < parameters.size(); i++) {
       final VariableElement p = parameters.get(i);
       TypeMirror typeMirror;
@@ -344,7 +344,7 @@ public class MethodReader {
       }
       final String rawType = Util.typeDef(typeMirror);
       final UType type = Util.parse(typeMirror.toString());
-      final MethodParam param = new MethodParam(p, type, rawType, defaultParamType, formMarker);
+      final MethodParam param = new MethodParam(annotatedParameters.get(i), type, rawType, defaultParamType, formMarker);
       params.add(param);
 
       if (CoreWebMethod.GET.equals(webMethod) && isBodyParam(param)) {
