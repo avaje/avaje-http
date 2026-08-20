@@ -464,7 +464,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -536,7 +535,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -576,7 +574,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -612,7 +609,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -1277,7 +1273,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"s" : {
 										"type" : "string"
@@ -1310,7 +1305,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"s" : {
 										"type" : "string"
@@ -1481,7 +1475,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -1524,7 +1517,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -1567,7 +1559,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"strings" : {
 										"items" : {

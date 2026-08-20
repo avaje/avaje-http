@@ -168,6 +168,7 @@ class HelloController {
     System.out.println("deleting " + id);
   }
 
+  @Hidden
   @Produces("text/plain")
   @Get("/withMatrix/:year;author;country/:other")
   String getWithMatrixParam(int year, String author, String country, String other, String extra) {
