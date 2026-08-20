@@ -110,6 +110,13 @@
       <artifactId>jspecify</artifactId>
       <version>1.0.1</version>
     </dependency>
+
+    <dependency>
+      <groupId>io.swagger.parser.v3</groupId>
+      <artifactId>swagger-parser</artifactId>
+      <version>2.1.47</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

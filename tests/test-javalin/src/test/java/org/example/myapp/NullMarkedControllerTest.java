@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NullMarkedControllerTest {
   @Test
@@ -23,7 +25,7 @@ public class NullMarkedControllerTest {
       JsonNode schemas = root.path("components").path("schemas");
 
       JsonNode nullMarkedClassDTO = schemas.get("NullMarkedClassDTO");
-      assertEquals("[\"map1\",\"map2\",\"map3\",\"set1\",\"set2\",\"string1\",\"stringArray1\",\"stringArray2\"]", nullMarkedClassDTO.get("required").toString());
+      assertEquals("[\"enum1\",\"map1\",\"map2\",\"map3\",\"set1\",\"set2\",\"string1\",\"stringArray1\",\"stringArray2\"]", nullMarkedClassDTO.get("required").toString());
 
       JsonNode properties = nullMarkedClassDTO.get("properties");
       assertType(properties.get("string1"), "string");
@@ -49,6 +51,9 @@ public class NullMarkedControllerTest {
       assertType(properties.get("map3").get("additionalProperties"), "string", "null");
       assertType(properties.get("map4"), "object", "null");
       assertType(properties.get("map4").get("additionalProperties"), "string");
+
+      assertObject(properties.get("enum1"), "#/components/schemas/EnumExample", false);
+      assertObject(properties.get("enum2"), "#/components/schemas/EnumExample", true);
     }
   }
 
@@ -76,5 +81,20 @@ public class NullMarkedControllerTest {
     List<String> actualTypes = new ArrayList<>();
     type.forEach(typeNode -> actualTypes.add(typeNode.asText()));
     assertEquals(Arrays.asList(expectedTypes), actualTypes);
+  }
+
+  private static void assertObject(JsonNode schema, String object, boolean nullable) {
+    if (nullable) {
+      var anyOf = schema.get("anyOf");
+
+      JsonNode firstItem = anyOf.get(0);
+      assertEquals(object,firstItem.get("$ref").asText());
+
+      JsonNode secondItem = anyOf.get(1);
+      assertEquals("null", secondItem.get("type").asText());
+    }
+    else {
+      assertEquals(object, schema.get("$ref").asText());
+    }
   }
 }

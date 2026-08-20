@@ -79,7 +79,10 @@
 						"name" : "code",
 						"in" : "query",
 						"schema" : {
-							"type" : "string"
+							"type" : [
+								"string",
+								"null"
+							]
 						}
 					}
 				],
@@ -563,7 +566,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -635,7 +637,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -675,7 +676,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -711,7 +711,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -1170,6 +1169,7 @@
 			},
 			"NullMarkedClassDTO" : {
 				"required" : [
+					"enum1",
 					"map1",
 					"map2",
 					"map3",
@@ -1256,6 +1256,19 @@
 						"type" : [
 							"object",
 							"null"
+						]
+					},
+					"enum1" : {
+						"$ref" : "#/components/schemas/EnumExample"
+					},
+					"enum2" : {
+						"anyOf" : [
+							{
+								"$ref" : "#/components/schemas/EnumExample"
+							},
+							{
+								"type" : "null"
+							}
 						]
 					}
 				},
