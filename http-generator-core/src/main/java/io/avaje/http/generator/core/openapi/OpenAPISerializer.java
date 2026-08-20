@@ -91,6 +91,10 @@ final class OpenAPISerializer {
             continue;
           }
 
+          if ("type".equals(field.getName()) && alsoHasTypesField(fields)) {
+            continue;
+          }
+
           field.setAccessible(true);
           Object value = field.get(obj);
           if (obj instanceof Schema<?>) {
@@ -176,6 +180,15 @@ final class OpenAPISerializer {
       return "exclusiveMinimum";
     }
     return fieldName;
+  }
+
+  static boolean alsoHasTypesField(Field[] fields) {
+    for (Field field : fields) {
+      if ("types".equals(field.getName())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   static boolean isPrimitiveWrapperType(Object value) {

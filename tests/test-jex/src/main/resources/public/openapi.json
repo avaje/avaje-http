@@ -520,7 +520,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -592,7 +591,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -632,7 +630,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -668,7 +665,6 @@
 					"content" : {
 						"application/x-www-form-urlencoded" : {
 							"schema" : {
-								"type" : "object",
 								"properties" : {
 									"name" : {
 										"type" : "string"
@@ -832,7 +828,6 @@
 									"$ref" : "#/components/schemas/NestedEnum"
 								},
 								{
-									"type" : "null",
 									"type" : "null"
 								}
 							]

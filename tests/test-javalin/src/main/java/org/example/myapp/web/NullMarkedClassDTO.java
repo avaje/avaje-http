@@ -18,7 +18,10 @@ public class NullMarkedClassDTO {
   @Nullable Set<String> set3;
 
   Map<String, String> map1;
-  Map<@Nullable String, String> map2; // In version 3.0 you cannot set the key so testing this is difficult.
+  Map<@Nullable String, String> map2; // In version 3.0 you cannot set the key, so testing this is difficult.
   Map<String, @Nullable String> map3;
   @Nullable Map<String, String> map4;
+
+  EnumExample enum1;
+  @Nullable EnumExample enum2;
 }
