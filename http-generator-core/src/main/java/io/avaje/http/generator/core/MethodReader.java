@@ -345,6 +345,10 @@ public class MethodReader {
       final String rawType = Util.typeDef(typeMirror);
       final UType type = Util.parse(typeMirror.toString());
       final MethodParam param = new MethodParam(annotatedParameters.get(i), type, rawType, defaultParamType, formMarker);
+      if (param.name().equals("arg" + i) && !p.getSimpleName().toString().equals("arg" + i)) {
+        // contract first interface with arg0, aeg1 but controller with param names to match on
+        param.overrideVarName(p.getSimpleName().toString(), defaultParamType);
+      }
       params.add(param);
 
       if (CoreWebMethod.GET.equals(webMethod) && isBodyParam(param)) {
@@ -355,6 +359,7 @@ public class MethodReader {
 
       param.addImports(bean);
     }
+    checkArgumentNames();
   }
 
   private static boolean isBodyParam(MethodParam param) {

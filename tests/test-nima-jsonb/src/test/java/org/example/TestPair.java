@@ -56,6 +56,10 @@ public class TestPair {
     TestController$Route tcr = new TestController$Route(tc, (a,b,c)->{}, jsonb, cr);
 
     routing.addFeature(tcr);
+
+    var cc = new ContractController();
+    var ccRoute = new ContractController$Route(cc);
+    routing.addFeature(ccRoute);
     return routing;
   }
 }
