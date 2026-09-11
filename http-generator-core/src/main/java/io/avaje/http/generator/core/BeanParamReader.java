@@ -10,6 +10,7 @@ public class BeanParamReader {
   private final String beanShortType;
   private final TypeElement beanType;
   private final ParamType defaultParamType;
+  private final String prefix;
   private final Set<String> setterMethods = new HashSet<>();
   private final Map<String, FieldReader> fieldMap = new LinkedHashMap<>();
   private final List<ExecutableElement> constructors = new ArrayList<>();
@@ -17,10 +18,15 @@ public class BeanParamReader {
   private final Set<String> imports = new HashSet<>();
 
   public BeanParamReader(TypeElement beanType, String beanVarName, String beanShortType, ParamType defaultParamType) {
+    this(beanType, beanVarName, beanShortType, defaultParamType, "");
+  }
+
+  public BeanParamReader(TypeElement beanType, String beanVarName, String beanShortType, ParamType defaultParamType, String prefix) {
     this.beanType = beanType;
     this.beanVarName = beanVarName;
     this.beanShortType = beanShortType;
     this.defaultParamType = defaultParamType;
+    this.prefix = prefix;
     read();
   }
 
@@ -48,7 +54,7 @@ public class BeanParamReader {
     if (IgnorePrism.isPresent(enclosedElement)) {
       return;
     }
-    FieldReader field = new FieldReader(enclosedElement, defaultParamType);
+    FieldReader field = new FieldReader(enclosedElement, defaultParamType, prefix);
     fieldMap.put(field.varName(), field);
 
     imports.addAll(UType.parse(field.element.element().asType()).importTypes());
@@ -67,16 +73,37 @@ public class BeanParamReader {
 
   void write(Append writer) {
     writer.append(" new %s(", beanShortType);
-    final Set<String> constructorParams = writeConstructorParams(writer);
+    writeConstructorParams(writer);
     writer.append(");").eol();
+    writeFields(writer);
+  }
 
+  /**
+   * Write the creation of nested form objects that are constructor parameters of this bean,
+   * before the bean itself is constructed (eg a record whose component is a {@code @FormPrefix} bean).
+   */
+  void writeCreateNestedCtorParams(Append writer) {
+    if (constructors.size() == 1) {
+      for (VariableElement parameter : constructors.get(0).getParameters()) {
+        final String paramName = parameter.getSimpleName().toString();
+        final FieldReader field = fieldMap.get(paramName);
+        if (field != null && field.isNestedForm()) {
+          field.writeNestedCreation(writer);
+          field.markConstructorParam();
+        }
+      }
+    }
+  }
+
+  /**
+   * Write the population of all fields against {@code beanVarName} (no constructor call).
+   */
+  void writeFields(Append writer) {
     for (String setterMethod : setterMethods) {
       String propName = Util.propertyName(setterMethod);
-      if (!constructorParams.contains(propName)) {
-        FieldReader field = fieldMap.get(propName);
-        if (field != null) {
-          field.setUseSetter(setterMethod);
-        }
+      FieldReader field = fieldMap.get(propName);
+      if (field != null && !field.isConstructorParam()) {
+        field.setUseSetter(setterMethod);
       }
     }
 
@@ -100,7 +127,11 @@ public class BeanParamReader {
             writer.append(", ");
           }
           writer.eol().append("        ");
-          field.writeConstructorParam(writer);
+          if (field.isNestedForm()) {
+            writer.append(field.nestedVarName());
+          } else {
+            field.writeConstructorParam(writer);
+          }
           paramsUsed.add(paramName);
         }
       }
@@ -156,8 +187,8 @@ public class BeanParamReader {
     private String setterMethod;
     private boolean constructorParam;
 
-    FieldReader(Element enclosedElement, ParamType defaultParamType) {
-      this.element = new ElementReader(enclosedElement, defaultParamType, false);
+    FieldReader(Element enclosedElement, ParamType defaultParamType, String prefix) {
+      this.element = new ElementReader(enclosedElement, defaultParamType, false, prefix);
     }
 
     boolean isPublic() {
@@ -183,11 +214,19 @@ public class BeanParamReader {
       element.setValue(writer);
     }
 
+    void markConstructorParam() {
+      constructorParam = true;
+    }
+
     boolean isConstructorParam() {
       return constructorParam;
     }
 
     void writeSet(Append writer, String beanVarName) {
+      if (element.isNestedForm()) {
+        writeNestedSet(writer, beanVarName);
+        return;
+      }
       if (setterMethod != null) {
         // populate via setter method
         writer.append("%s  %s.%s(", platform().indent(), beanVarName, setterMethod);
@@ -204,6 +243,51 @@ public class BeanParamReader {
 
     void setUseSetter(String setterMethod) {
       this.setterMethod = setterMethod;
+    }
+
+    boolean isNestedForm() {
+      return element.isNestedForm();
+    }
+
+    /**
+     * Unique local variable name for the nested instance, derived from the full
+     * prefix path so that the same field name used under different prefixes
+     * (eg {@code invoice.zip} and {@code shipping.zip}) does not collide.
+     */
+    private String nestedVarName() {
+      final String p = element.prefix();
+      if (p.isEmpty() || p.indexOf('.') == -1) {
+        return element.varName();
+      }
+      final StringBuilder sb = new StringBuilder();
+      for (final String part : p.split("\\.")) {
+        sb.append(part.isEmpty() ? "" : Character.toUpperCase(part.charAt(0)) + part.substring(1));
+      }
+      return Character.toLowerCase(sb.charAt(0)) + sb.substring(1);
+    }
+
+    /**
+     * Write {@code var x = new NestedType(...);} for a {@code @FormPrefix} object, populating via
+     * constructor when the nested type is a record (or single constructor) and via no-arg plus
+     * field/setter population otherwise.
+     */
+    void writeNestedCreation(Append writer) {
+      final String nestedType = element.shortType();
+      final TypeElement nestedTypeElement = typeElement(element.rawType());
+      final BeanParamReader nested =
+        new BeanParamReader(nestedTypeElement, nestedVarName(), nestedType, ParamType.FORMPARAM, element.prefix());
+      nested.writeCreateNestedCtorParams(writer);
+      writer.append("%s  var %s =", platform().indent(), nestedVarName());
+      nested.write(writer);
+    }
+
+    private void writeNestedSet(Append writer, String beanVarName) {
+      writeNestedCreation(writer);
+      if (setterMethod != null) {
+        writer.append("%s  %s.%s(%s);", platform().indent(), beanVarName, setterMethod, nestedVarName()).eol();
+      } else {
+        writer.append("%s  %s.%s = %s;", platform().indent(), beanVarName, element.varName(), nestedVarName()).eol();
+      }
     }
   }
 

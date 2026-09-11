@@ -10,6 +10,7 @@
 @GeneratePrism(value = io.avaje.http.api.Default.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Delete.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Form.class, publicAccess = true)
+@GeneratePrism(value = io.avaje.http.api.FormPrefix.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Get.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Patch.class, publicAccess = true)
 @GeneratePrism(value = io.avaje.http.api.Path.class, publicAccess = true)

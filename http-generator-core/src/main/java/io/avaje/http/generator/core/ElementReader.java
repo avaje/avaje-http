@@ -38,6 +38,7 @@ public class ElementReader {
   private String matrixParamName;
   private boolean impliedParamType;
   private List<String> paramDefault;
+  private String prefix = "";
 
   private boolean notNullKotlin;
   private boolean isParamCollection;
@@ -50,7 +51,15 @@ public class ElementReader {
     this(element, null, Util.typeDef(element.asType()), defaultType, formMarker);
   }
 
+  ElementReader(Element element, ParamType defaultType, boolean formMarker, String prefix) {
+    this(element, null, Util.typeDef(element.asType()), defaultType, formMarker, prefix);
+  }
+
   ElementReader(Element element, UType type, String rawType, ParamType defaultType, boolean formMarker) {
+    this(element, type, rawType, defaultType, formMarker, "");
+  }
+
+  ElementReader(Element element, UType type, String rawType, ParamType defaultType, boolean formMarker, String prefix) {
     this.element = element;
     this.type = type;
     this.rawType = rawType;
@@ -71,6 +80,7 @@ public class ElementReader {
     }
 
     this.formMarker = formMarker;
+    this.prefix = prefix;
     this.varName = element.getSimpleName().toString();
     this.snakeName = Util.snakeCase(varName);
     this.paramName = varName;
@@ -94,13 +104,23 @@ public class ElementReader {
   }
 
   private void beanParamImports(String rawType) {
-    typeElement(rawType).getEnclosedElements().stream()
+    beanParamImports(typeElement(rawType), new HashSet<>());
+  }
+
+  private void beanParamImports(TypeElement type, Set<String> seen) {
+    if (type == null || !seen.add(type.getQualifiedName().toString())) {
+      return;
+    }
+    type.getEnclosedElements().stream()
         .filter(e -> e.getKind() == ElementKind.FIELD)
         .filter(f -> !IgnorePrism.isPresent(f))
-        .map(Element::asType)
-        .map(UType::parse)
-        .flatMap(u -> u.importTypes().stream())
-        .forEach(imports::add);
+        .forEach(f -> {
+          final UType uType = UType.parse(f.asType());
+          imports.addAll(uType.importTypes());
+          if (FormPrefixPrism.isPresent(f)) {
+            beanParamImports(typeElement(uType.mainType()), seen);
+          }
+        });
   }
 
   TypeHandler initTypeHandler() {
@@ -194,6 +214,12 @@ public class ElementReader {
     }
     if (BeanParamPrism.isPresent(element)) {
       this.paramType = ParamType.BEANPARAM;
+      return;
+    }
+    final var formPrefix = FormPrefixPrism.getInstanceOn(element);
+    if (formPrefix != null) {
+      this.prefix = this.prefix.isEmpty() ? formPrefix.value() : this.prefix + "." + formPrefix.value();
+      this.paramType = ParamType.FORMNESTED;
       return;
     }
     final var queryParam = QueryParamPrism.getInstanceOn(element);
@@ -320,6 +346,7 @@ public class ElementReader {
     if (!isPlatformContext()
         && !isParamMap
         && paramType != ParamType.BEANPARAM
+        && paramType != ParamType.FORMNESTED
         && !IgnorePrism.isPresent(element)) {
       new MethodParamDocBuilder(methodDoc, this).build();
     }
@@ -342,6 +369,11 @@ public class ElementReader {
   void writeCtxGet(Append writer, PathSegments segments) {
     if (isPlatformContext() || paramType == ParamType.BODY && platform().isBodyMethodParam()) {
       // body passed as method parameter (Helidon)
+      return;
+    }
+    if (paramType == ParamType.FORM || paramType == ParamType.BEANPARAM) {
+      // writeForm emits the nested constructor params and the local variable declaration
+      setValue(writer, segments, handlerShortType());
       return;
     }
     final String shortType = handlerShortType();
@@ -390,6 +422,7 @@ public class ElementReader {
       }
     }
 
+    final String lookupName = ParamType.FORMPARAM.equals(paramType) ? formParamName() : paramName;
     final String asMethod = paramType == ParamType.BODY || typeHandler == null ? null : typeHandler.toMethod();
     if (asMethod != null) {
       writer.append(asMethod);
@@ -401,23 +434,23 @@ public class ElementReader {
 
     } else if (isParamCollection && specialParam) {
       if (hasParamDefault()) {
-        platform().writeReadCollectionParameter(writer, paramType, paramName, paramDefault);
+        platform().writeReadCollectionParameter(writer, paramType, lookupName, paramDefault);
       } else {
-        platform().writeReadCollectionParameter(writer, paramType, paramName);
+        platform().writeReadCollectionParameter(writer, paramType, lookupName);
       }
     } else if (isParamMap) {
       platform().writeReadMapParameter(writer, paramType);
     } else if (hasParamDefault()) {
-      platform().writeReadParameter(writer, paramType, paramName, paramDefault.get(0));
+      platform().writeReadParameter(writer, paramType, lookupName, paramDefault.get(0));
     } else {
       final var checkNull =
           notNullKotlin || paramType == ParamType.FORMPARAM && typeHandler.isPrimitive();
       if (checkNull) {
         writer.append("checkNull(");
       }
-      platform().writeReadParameter(writer, paramType, paramName);
+      platform().writeReadParameter(writer, paramType, lookupName);
       if (checkNull) {
-        writer.append(", \"%s\")", paramName);
+        writer.append(", \"%s\")", lookupName);
       }
     }
 
@@ -427,9 +460,29 @@ public class ElementReader {
     return true;
   }
 
+  /**
+   * The form parameter name with any nested form prefix applied.
+   */
+  private String formParamName() {
+    return prefix.isEmpty() ? paramName : prefix + "." + paramName;
+  }
+
+  /**
+   * Return true if this is a nested form object populated from prefixed form parameters.
+   */
+  boolean isNestedForm() {
+    return paramType == ParamType.FORMNESTED;
+  }
+
+  String prefix() {
+    return prefix;
+  }
+
   private void writeForm(Append writer, String shortType, String varName, ParamType defaultParamType) {
     final TypeElement formBeanType = typeElement(rawType);
     final BeanParamReader form = new BeanParamReader(formBeanType, varName, shortType, defaultParamType);
+    form.writeCreateNestedCtorParams(writer);
+    writer.append("%s  var %s =", platform().indent(), varName);
     form.write(writer);
   }
 
