@@ -478,7 +478,7 @@ final class TypeMap {
 
     @Override
     public String asMethod() {
-      return "asType(" + type.shortTypeNested() + "::" + (factory.isBlank() ? "new" : factory);
+      return "asType(" + type.shortTypeNested() + "::" + (factory.isBlank() ? "new" : factory) + ", ";
     }
   }
 

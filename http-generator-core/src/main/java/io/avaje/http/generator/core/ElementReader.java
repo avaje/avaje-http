@@ -377,7 +377,7 @@ public class ElementReader {
         final String asMethod =
           typeHandler == null
             ? null
-            : requiredParam ? typeHandler.asMethod() : typeHandler.toMethod();
+            : avoidTypeShadowing(requiredParam ? typeHandler.asMethod() : typeHandler.toMethod());
         if (asMethod != null) {
           writer.append(asMethod);
         }
@@ -390,7 +390,7 @@ public class ElementReader {
       }
     }
 
-    final String asMethod = paramType == ParamType.BODY || typeHandler == null ? null : typeHandler.toMethod();
+    final String asMethod = paramType == ParamType.BODY || typeHandler == null ? null : avoidTypeShadowing(typeHandler.toMethod());
     if (asMethod != null) {
       writer.append(asMethod);
     }
@@ -425,6 +425,22 @@ public class ElementReader {
       writer.append(")");
     }
     return true;
+  }
+
+  /**
+   * When the local variable name equals the type name (eg {@code TsID TsID}), the generated
+   * {@code var TsID = toType(TsID::new, ...)} method reference would resolve to the variable
+   * being declared. Qualify the method reference with the fully qualified type in that case.
+   */
+  private String avoidTypeShadowing(String asMethod) {
+    if (asMethod == null || type == null) {
+      return asMethod;
+    }
+    final String token = type.shortTypeNested() + "::";
+    if (varName.equals(type.shortTypeNested()) && asMethod.contains(token)) {
+      return asMethod.replace(token, type.full() + "::");
+    }
+    return asMethod;
   }
 
   private void writeForm(Append writer, String shortType, String varName, ParamType defaultParamType) {
