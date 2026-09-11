@@ -12,21 +12,25 @@ class NimaPlatformAdapter implements PlatformAdapter {
 
   static final String NIMA_REQ = "io.helidon.webserver.http.ServerRequest";
   static final String NIMA_RES = "io.helidon.webserver.http.ServerResponse";
+  static final String NIMA_ROUTING_REQ = "io.helidon.webserver.http.RoutingRequest";
+  static final String NIMA_ROUTING_RES = "io.helidon.webserver.http.RoutingResponse";
   static final String HELIDON_FORMPARAMS = "io.helidon.common.parameters.Parameters";
 
   @Override
   public boolean isContextType(String rawType) {
     return NIMA_REQ.equals(rawType)
         || NIMA_RES.equals(rawType)
+        || NIMA_ROUTING_REQ.equals(rawType)
+        || NIMA_ROUTING_RES.equals(rawType)
         || HELIDON_FORMPARAMS.equals(rawType);
   }
 
   @Override
   public String platformVariable(String rawType) {
-    if (NIMA_REQ.equals(rawType)) {
+    if (NIMA_REQ.equals(rawType) || NIMA_ROUTING_REQ.equals(rawType)) {
       return "req";
     }
-    if (NIMA_RES.equals(rawType)) {
+    if (NIMA_RES.equals(rawType) || NIMA_ROUTING_RES.equals(rawType)) {
       return "res";
     }
     if (HELIDON_FORMPARAMS.equals(rawType)) {
