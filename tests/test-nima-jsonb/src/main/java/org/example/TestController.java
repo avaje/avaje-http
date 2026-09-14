@@ -202,6 +202,16 @@ public class TestController {
     return type.name();
   }
 
+  @Get("/typePath/{value}")
+  String typePath(Static value) {
+    return value.name();
+  }
+
+  @Get("/typePathShadow/{Static}")
+  String typePathShadow(Static Static) {
+    return Static.name();
+  }
+
   @Get("/typeQuery2")
   String typeMultiQuery(@QueryParam @Default({"FFA", "PROXY"}) Set<Simple> type) {
     return type.toString();
