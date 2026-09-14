@@ -18,8 +18,8 @@ class FormPrefixControllerTest extends BaseWebTest {
                 .formParam("invoice.street", "Main Street")
                 .formParam("invoice.city", "Springfield")
                 .formParam("invoice.zip", "12345")
-                .formParam("invoice.contact.phone", "555-1234")
-                .formParam("invoice.contact.email", "bob@example.com")
+                .formParam("invoice.customer-info.phone", "555-1234")
+                .formParam("invoice.customer-info.email", "bob@example.com")
                 .formParam("shipping.street", "Square One")
                 .formParam("shipping.city", "Shelbyville")
                 .POST()
@@ -51,9 +51,9 @@ class FormPrefixControllerTest extends BaseWebTest {
                 .path("formprefix")
                 .formParam("name", "carol")
                 .formParam("invoice.street", "Invoice Street")
-                .formParam("invoice.contact.phone", "111")
+                .formParam("invoice.customer-info.phone", "111")
                 .formParam("shipping.street", "Shipping Street")
-                .formParam("shipping.contact.phone", "222")
+                .formParam("shipping.customer-info.phone", "222")
                 .POST()
                 .asPlainString();
 

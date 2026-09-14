@@ -14,7 +14,7 @@ public class AddressForm {
     @FormParam("zip")
     private String postalCode;
 
-    @FormPrefix("contact")
+    @FormPrefix("customer-info")
     public ContactForm contact;
 
     public void setPostalCode(String postalCode) {
