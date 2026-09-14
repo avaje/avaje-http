@@ -6,6 +6,18 @@ import java.util.*;
 
 public class BeanParamReader {
 
+  static String toJavaIdentifier(String value) {
+    final StringBuilder result = new StringBuilder(value.length());
+    for (int i = 0; i < value.length(); i++) {
+      final char c = value.charAt(i);
+      result.append(
+          i == 0
+              ? Character.isJavaIdentifierStart(c) ? c : '_'
+              : Character.isJavaIdentifierPart(c) ? c : '_');
+    }
+    return result.toString();
+  }
+
   private final String beanVarName;
   private final String beanShortType;
   private final TypeElement beanType;
@@ -263,7 +275,7 @@ public class BeanParamReader {
       for (final String part : p.split("\\.")) {
         sb.append(part.isEmpty() ? "" : Character.toUpperCase(part.charAt(0)) + part.substring(1));
       }
-      return Character.toLowerCase(sb.charAt(0)) + sb.substring(1);
+      return BeanParamReader.toJavaIdentifier(Character.toLowerCase(sb.charAt(0)) + sb.substring(1));
     }
 
     /**
