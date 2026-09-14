@@ -178,4 +178,26 @@ class TestControllerTest {
     assertThat(resNoBody.statusCode()).isEqualTo(204);
     assertThat(resNoBody.body()).isEmpty();
   }
+
+  @Test
+  void mappedParam_requiredPath() {
+    HttpResponse<String> res = client.request()
+      .path("test/typePath/FFA")
+      .GET()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("FFA");
+  }
+
+  @Test
+  void mappedParam_requiredPath_parameterNameMatchesType() {
+    HttpResponse<String> res = client.request()
+      .path("test/typePathShadow/PROXY")
+      .GET()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(200);
+    assertThat(res.body()).isEqualTo("PROXY");
+  }
 }
