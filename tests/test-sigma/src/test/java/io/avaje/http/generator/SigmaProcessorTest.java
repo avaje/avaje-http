@@ -63,6 +63,12 @@ class SigmaProcessorTest {
     assert Files.readString(
             Paths.get("org/example/myapp/web/BarController$Route.java").toAbsolutePath())
         .contains("io.avaje.inject.Component");
+
+    assertThat(
+            Files.readString(
+                Paths.get("org/example/myapp/web/FormPrefixController$Route.java").toAbsolutePath()))
+        .contains("form.invoice = invoice")
+        .contains("ctx.formParam(\"invoice.street\")");
   }
 
   @Test
