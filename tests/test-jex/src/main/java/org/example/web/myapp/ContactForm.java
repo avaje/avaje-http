@@ -1,0 +1,12 @@
+package org.example.web.myapp;
+
+import io.avaje.http.api.FormParam;
+
+public class ContactForm {
+
+  @FormParam("phone")
+  public String phone;
+
+  @FormParam("email")
+  public String email;
+}

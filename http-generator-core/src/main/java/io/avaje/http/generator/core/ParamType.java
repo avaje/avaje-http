@@ -6,6 +6,7 @@ public enum ParamType {
   BODY("body", "body"),
   PATHPARAM("pathParam", "path"),
   FORM("form", "form"),
+  FORMNESTED("formNested", "form"),
   BEANPARAM("beanParam", "bean"),
   QUERYPARAM("queryParam", "query"),
   FORMPARAM("formParam", "form"),

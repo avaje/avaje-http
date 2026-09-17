@@ -436,6 +436,42 @@
 				}
 			}
 		},
+		"/formprefix" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"properties" : {
+									"name" : {
+										"type" : "string"
+									}
+								},
+								"type" : "object"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/hello" : {
 			"post" : {
 				"tags" : [
@@ -965,6 +1001,48 @@
 							"application/json" : {
 								"schema" : {
 									"$ref" : "#/components/schemas/NullMarkedRecordDTO"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/recordform" : {
+			"post" : {
+				"tags" : [
+					
+				],
+				"summary" : "",
+				"description" : "",
+				"requestBody" : {
+					"content" : {
+						"application/x-www-form-urlencoded" : {
+							"schema" : {
+								"properties" : {
+									"firstName" : {
+										"type" : "string"
+									},
+									"lastName" : {
+										"items" : {
+											"type" : "string"
+										},
+										"type" : "array"
+									}
+								},
+								"type" : "object"
+							}
+						}
+					},
+					"required" : true
+				},
+				"responses" : {
+					"201" : {
+						"description" : "",
+						"content" : {
+							"text/plain" : {
+								"schema" : {
+									"type" : "string"
 								}
 							}
 						}
