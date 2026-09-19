@@ -88,6 +88,20 @@ class TestControllerTest {
   }
 
   @Test
+  void formEmptyValuesAreHandled() {
+    HttpResponse<String> res = client.request()
+      .path("form")
+      .formParam("name", "")
+      .formParam("email", "")
+      .formParam("url", "")
+      .POST()
+      .asString();
+
+    assertThat(res.statusCode()).isEqualTo(201);
+    assertThat(res.body()).isEqualTo("null-null-null");
+  }
+
+  @Test
   void strBody3() {
     HttpResponse<String> res = client.request()
       .path("test/strBody3")
