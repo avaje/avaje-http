@@ -20,7 +20,7 @@
     <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>avaje-inject-generator</artifactId>
-      <version>12.6</version>
+      <version>12.7</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -62,14 +62,14 @@
     <dependency>
       <groupId>io.helidon.webserver</groupId>
       <artifactId>helidon-webserver</artifactId>
-      <version>4.5.4</version>
+      <version>27.0.0</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-web</artifactId>
-      <version>5.1.8</version>
+      <version>5.2.0</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
