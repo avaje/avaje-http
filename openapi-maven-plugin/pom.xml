@@ -17,7 +17,7 @@
     <project.build.outputTimestamp>2026-09-21T10:28:43Z</project.build.outputTimestamp>
     <!-- Dependency Versions -->
     <avaje.jsonb.version>3.16</avaje.jsonb.version>
-    <maven-api.version>3.9.16</maven-api.version>
+    <maven-api.version>3.10.0</maven-api.version>
     <maven-plugin-tools.version>3.16.0</maven-plugin-tools.version>
     <javadoc-plugin.version>3.12.0</javadoc-plugin.version>
     <swagger.version>2.2.55</swagger.version>
