@@ -27,16 +27,21 @@ import io.avaje.http.generator.core.TagPrism;
 import io.avaje.http.generator.core.TagsPrism;
 import io.avaje.http.generator.core.Util;
 import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.SpecVersion;
+import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.oas.models.servers.ServerVariable;
+import io.swagger.v3.oas.models.servers.ServerVariables;
 import io.swagger.v3.oas.models.tags.Tag;
 
 /** Context for building the OpenAPI documentation. */
@@ -70,11 +75,6 @@ public class DocContext {
     openAPI.setSpecVersion(SpecVersion.V31);
     openAPI.setJsonSchemaDialect("https://spec.openapis.org/oas/3.1/dialect/base");
     openAPI.setPaths(new Paths());
-
-    Server server = new Server();
-    server.setUrl("localhost:8080");
-    server.setDescription("local testing");
-    openAPI.addServersItem(server);
 
     Info info = new Info();
     info.setTitle("");
@@ -230,6 +230,76 @@ public class DocContext {
     if (!info.version().isEmpty()) {
       openAPI.getInfo().setVersion(info.version());
     }
+    if (!info.summary().isEmpty()) {
+      openAPI.getInfo().setSummary(info.summary());
+    }
+    if (!info.termsOfService().isEmpty()) {
+      openAPI.getInfo().setTermsOfService(info.termsOfService());
+    }
+    final var contact = info.contact();
+    if (!contact.name().isEmpty() || !contact.url().isEmpty() || !contact.email().isEmpty()) {
+      final var c = new Contact();
+      if (!contact.name().isEmpty()) {
+        c.setName(contact.name());
+      }
+      if (!contact.url().isEmpty()) {
+        c.setUrl(contact.url());
+      }
+      if (!contact.email().isEmpty()) {
+        c.setEmail(contact.email());
+      }
+      openAPI.getInfo().setContact(c);
+    }
+    final var license = info.license();
+    if (!license.name().isEmpty()) {
+      final var l = new License().name(license.name());
+      if (!license.url().isEmpty()) {
+        l.setUrl(license.url());
+      }
+      if (!license.identifier().isEmpty()) {
+        l.setIdentifier(license.identifier());
+      }
+      openAPI.getInfo().setLicense(l);
+    }
+    for (final var s : openApi.servers()) {
+      openAPI.addServersItem(createServer(s));
+    }
+    for (final var tag : openApi.tags()) {
+      if (TAGS_TOP_SET.add(tag.name())) {
+        openAPI.addTagsItem(createTagItem(tag));
+      }
+    }
+    final var docs = openApi.externalDocs();
+    if (!docs.url().isEmpty()) {
+      final var ed = new ExternalDocumentation().url(docs.url());
+      if (!docs.description().isEmpty()) {
+        ed.setDescription(docs.description());
+      }
+      openAPI.setExternalDocs(ed);
+    }
+  }
+
+  private static Server createServer(OpenAPIDefinitionPrism.ServerPrism prism) {
+    final var server = new Server().url(prism.url());
+    if (!prism.description().isEmpty()) {
+      server.setDescription(prism.description());
+    }
+    if (!prism.variables().isEmpty()) {
+      final var variables = new ServerVariables();
+      for (final var v : prism.variables()) {
+        final var variable = new ServerVariable();
+        variable.setDefault(v.defaultValue());
+        if (!v.allowableValues().isEmpty()) {
+          variable.setEnum(v.allowableValues());
+        }
+        if (!v.description().isEmpty()) {
+          variable.setDescription(v.description());
+        }
+        variables.addServerVariable(v.name(), variable);
+      }
+      server.setVariables(variables);
+    }
+    return server;
   }
 
   public void writeApi() {

@@ -4,12 +4,6 @@
 		"title" : "",
 		"version" : ""
 	},
-	"servers" : [
-		{
-			"url" : "localhost:8080",
-			"description" : "local testing"
-		}
-	],
 	"paths" : {
 		"/hello" : {
 			"get" : {
