@@ -7,8 +7,8 @@
   },
   "servers": [
     {
-      "url": "localhost:8080",
-      "description": "local testing"
+      "url": "http://localhost:8081",
+      "description": "local"
     }
   ],
   "tags": [

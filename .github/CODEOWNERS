@@ -1,0 +1,5 @@
+* @rbygrave @rob-bygrave
+
+# No owners for files Dependabot updates, so its PRs can auto merge
+**/pom.xml
+/.github/workflows/

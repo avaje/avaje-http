@@ -5,12 +5,6 @@
 		"description" : "Example Helidon controllers with Java and Maven",
 		"version" : ""
 	},
-	"servers": [
-		{
-			"url": "localhost:8080",
-			"description": "local testing"
-		}
-	],
 	"tags": [
 		{
 			"name": "tag1",
