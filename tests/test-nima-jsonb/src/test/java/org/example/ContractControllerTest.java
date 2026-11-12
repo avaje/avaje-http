@@ -67,4 +67,17 @@ public class ContractControllerTest {
     assertThat(res.statusCode()).isEqualTo(200);
     assertThat(res.body()).isEqualTo("org:my-org,user:rob,activeOnly:true");
   }
+
+  @Test
+  void compiledContractPost_readsJsonBody() {
+    var person = new Person(42, "Avaje");
+    HttpResponse<Person> res = client.request()
+      .path("compiled-contract/people/echo")
+      .body(person)
+      .POST()
+      .as(Person.class);
+
+    assertThat(res.statusCode()).isEqualTo(201);
+    assertThat(res.body()).isEqualTo(person);
+  }
 }

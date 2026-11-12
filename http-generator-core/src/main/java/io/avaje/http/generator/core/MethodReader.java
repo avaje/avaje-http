@@ -347,7 +347,7 @@ public class MethodReader {
       final MethodParam param = new MethodParam(annotatedParameters.get(i), type, rawType, defaultParamType, formMarker);
       if (param.name().equals("arg" + i) && !p.getSimpleName().toString().equals("arg" + i)) {
         // contract first interface with arg0, aeg1 but controller with param names to match on
-        param.overrideVarName(p.getSimpleName().toString(), defaultParamType);
+        param.overrideVarName(p.getSimpleName().toString());
       }
       params.add(param);
 
