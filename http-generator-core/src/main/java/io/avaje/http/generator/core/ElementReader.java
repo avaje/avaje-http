@@ -293,6 +293,10 @@ public class ElementReader {
     return overrideVarNameError;
   }
 
+  public void overrideVarName(String name) {
+    this.varName = name;
+  }
+
   public void overrideVarName(String name, ParamType paramType) {
     this.varName = name;
     this.paramType = paramType;

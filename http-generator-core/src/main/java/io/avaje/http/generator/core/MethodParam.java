@@ -72,6 +72,10 @@ public class MethodParam {
     return elementParam.overrideVarNameError();
   }
 
+  public void overrideVarName(String name) {
+    elementParam.overrideVarName(name);
+  }
+
   public void overrideVarName(String name, ParamType paramType) {
     elementParam.overrideVarName(name, paramType);
   }
