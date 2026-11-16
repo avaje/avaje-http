@@ -7,6 +7,7 @@ import io.avaje.http.generator.core.javadoc.Javadoc;
 import io.avaje.http.openapi.OpenApiSchemaNormalizer;
 import io.swagger.v3.oas.models.media.StringSchema;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,6 +47,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 @GeneratePrism(jakarta.validation.constraints.Email.class)
 @GeneratePrism(value = javax.validation.constraints.Size.class, name = "JavaxSizePrism")
 @GeneratePrism(value = javax.validation.constraints.Email.class, name = "JavaxEmailPrism")
+@GeneratePrism(value = io.avaje.jsonb.Json.Ignore.class, name = "JsonIgnorePrism")
 class SchemaDocBuilder {
 
   private static final String APP_FORM = "application/x-www-form-urlencoded";
@@ -61,6 +63,7 @@ class SchemaDocBuilder {
   private final TypeMirror streamType;
 
   private final Map<String, Schema> schemas = new TreeMap<>();
+  private final Map<String, TypeElement> mixins = new HashMap<>();
 
   SchemaDocBuilder(Types types, Elements elements) {
     this.types = types;
@@ -71,6 +74,10 @@ class SchemaDocBuilder {
     this.completableFutureType = types.erasure(elements.getTypeElement("java.util.concurrent.CompletableFuture").asType());
     this.optionalType = types.erasure(elements.getTypeElement("java.util.Optional").asType());
     this.streamType = types.erasure(elements.getTypeElement("java.util.stream.Stream").asType());
+  }
+
+  void addMixIn(TypeElement target, TypeElement mixin) {
+    mixins.put(target.getQualifiedName().toString(), mixin);
   }
 
   Map<String, Schema> getSchemas() {
@@ -340,6 +347,14 @@ class SchemaDocBuilder {
         objectSchema.addRequiredItem(field.getSimpleName().toString());
       }
       setDescription(field, propSchema);
+      final var ignore = jsonIgnore(field);
+      if (ignore.isPresent()) {
+        if (ignore.get().serialize) {
+          propSchema.setReadOnly(true);
+        } else if (ignore.get().deserialize) {
+          propSchema.setWriteOnly(true);
+        }
+      }
       setLengthMinMax(field, propSchema);
       setFormatFromValidation(field, propSchema);
       final Schema<?> finalPropSchema = propSchema;
@@ -420,8 +435,7 @@ class SchemaDocBuilder {
   }
 
   private List<AnnotationMirror> annotationMirrors(Element element) {
-    List<AnnotationMirror> annotationMirrors = new ArrayList<>();
-    annotationMirrors.addAll(element.getAnnotationMirrors());
+    List<AnnotationMirror> annotationMirrors = new ArrayList<>(element.getAnnotationMirrors());
     if (element instanceof VariableElement) {
       annotationMirrors.addAll(element.asType().getAnnotationMirrors());
     }
@@ -468,7 +482,7 @@ class SchemaDocBuilder {
         gatherProperties(fields, mappedSuper);
       }
       for (VariableElement field : ElementFilter.fieldsIn(element.getEnclosedElements())) {
-        if (!ignoreField(field)) {
+        if (!ignoreField(field) && !isJsonIgnored(field)) {
           fields.add(field);
         }
       }
@@ -498,5 +512,50 @@ class SchemaDocBuilder {
   private boolean isStaticOrTransient(VariableElement field) {
     Set<Modifier> modifiers = field.getModifiers();
     return (modifiers.contains(Modifier.STATIC) || modifiers.contains(Modifier.TRANSIENT));
+  }
+
+  private boolean isJsonIgnored(VariableElement field) {
+    return jsonIgnore(field).map(JsonIgnore::isFullyIgnored).orElse(false);
+  }
+
+  private Optional<JsonIgnore> jsonIgnore(VariableElement field) {
+    var direct = readJsonIgnore(field);
+    if (direct.isPresent()) {
+      return direct;
+    }
+    final var enclosing = field.getEnclosingElement();
+    if (!(enclosing instanceof TypeElement)) {
+      return Optional.empty();
+    }
+    final var mixin = mixins.get(((TypeElement) enclosing).getQualifiedName().toString());
+    if (mixin == null) {
+      return Optional.empty();
+    }
+    final var name = field.getSimpleName();
+    return mixin.getEnclosedElements().stream()
+        .filter(e -> e.getKind() == ElementKind.FIELD || e.getKind() == ElementKind.METHOD)
+        .filter(e -> e.getSimpleName().contentEquals(name))
+        .map(this::readJsonIgnore)
+        .flatMap(Optional::stream)
+        .findFirst();
+  }
+
+  private Optional<JsonIgnore> readJsonIgnore(Element element) {
+    return JsonIgnorePrism.getOptionalOn(element)
+        .map(p -> new JsonIgnore(p.serialize(), p.deserialize()));
+  }
+
+  private static final class JsonIgnore {
+    final boolean serialize;
+    final boolean deserialize;
+
+    JsonIgnore(boolean serialize, boolean deserialize) {
+      this.serialize = serialize;
+      this.deserialize = deserialize;
+    }
+
+    boolean isFullyIgnored() {
+      return !serialize && !deserialize;
+    }
   }
 }

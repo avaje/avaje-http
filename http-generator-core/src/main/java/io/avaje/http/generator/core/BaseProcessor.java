@@ -58,7 +58,8 @@ public abstract class BaseProcessor extends AbstractProcessor {
         OpenAPIDefinitionPrism.PRISM_TYPE,
         MappedParamPrism.PRISM_TYPE,
         MapImportPrism.PRISM_TYPE,
-        HttpValidPrism.PRISM_TYPE);
+        HttpValidPrism.PRISM_TYPE,
+        JsonMixInPrism.PRISM_TYPE);
   }
 
   @Override
@@ -127,6 +128,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
 
     if (isOpenApiAvailable()) {
       readOpenApiDefinition(round);
+      readJsonMixIns(round);
       readTagDefinitions(round);
       readSecuritySchemes(round);
     }
@@ -195,6 +197,15 @@ public abstract class BaseProcessor extends AbstractProcessor {
   private void readOpenApiDefinition(RoundEnvironment round) {
     for (final Element element : round.getElementsAnnotatedWith(typeElement(OpenAPIDefinitionPrism.PRISM_TYPE))) {
       doc().readApiDefinition(element);
+    }
+  }
+
+  private void readJsonMixIns(RoundEnvironment round) {
+    for (final var mixin : ElementFilter.typesIn(getElements(round, JsonMixInPrism.PRISM_TYPE))) {
+      var target = APContext.asTypeElement(JsonMixInPrism.getInstanceOn(mixin).value());
+      if (target != null) {
+        doc().addJsonMixIn(target, mixin);
+      }
     }
   }
 

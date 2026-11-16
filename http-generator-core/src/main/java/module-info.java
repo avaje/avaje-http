@@ -12,6 +12,7 @@ module io.avaje.http.generator.core {
   requires static io.avaje.prism;
   requires static io.avaje.http.api;
   requires static io.avaje.htmx.api;
+  requires static io.avaje.jsonb;
   requires static io.swagger.v3.oas.models;
   requires static io.swagger.v3.oas.annotations;
   requires static java.validation;
