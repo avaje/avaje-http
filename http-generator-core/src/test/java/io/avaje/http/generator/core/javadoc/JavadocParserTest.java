@@ -163,4 +163,28 @@ public class JavadocParserTest {
     assertEquals("The \\n param", doc.getParams().get("bar"));
     assertEquals("The return value", doc.getReturnDescription());
   }
+
+  @Test
+  public void parse_param_description_on_next_line() {
+
+    var parser = new JavadocParser();
+    var doc =
+        parser.parse(
+            " Summary. A more detailed description.\n"
+                + "\n"
+                + " @param param1\n"
+                + "         the first parameter\n"
+                + " @param param2\n"
+                + "         the second parameter\n"
+                + "\n"
+                + " @return\n"
+                + "         the result\n");
+
+    assertEquals("Summary", doc.getSummary());
+    assertEquals("A more detailed description.", doc.getDescription());
+    assertThat(doc.getParams()).containsOnlyKeys("param1", "param2");
+    assertEquals("the first parameter", doc.getParams().get("param1"));
+    assertEquals("the second parameter", doc.getParams().get("param2"));
+    assertEquals("the result", doc.getReturnDescription());
+  }
 }

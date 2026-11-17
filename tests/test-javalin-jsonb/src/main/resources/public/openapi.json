@@ -1046,6 +1046,39 @@
         }
       }
     },
+    "/mixin": {
+      "post": {
+        "tags": [
+        ],
+        "summary": "",
+        "description": "",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MixinDto"
+              },
+              "exampleSetFlag": false
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "exampleSetFlag": false
+              }
+            }
+          }
+        }
+      }
+    },
     "/openapi/delete/{type}": {
       "delete": {
         "tags": [
@@ -2283,6 +2316,28 @@
         "enum": ["PROXY","HIDE_N_SEEK","FFA"
         ]
       },
+      "Data2_String_?": {
+        "type": "object"
+      },
+      "StreamingOutput": {
+        "type": "object"
+      },
+      "NestedEnum": {
+        "type": "string",
+        "enum": ["A","B","C"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
       "Bar": {
         "type": "object",
         "properties": {
@@ -2297,9 +2352,6 @@
           }
         },
         "description": "But oh, what a description this schema has!"
-      },
-      "Data2_String_?": {
-        "type": "object"
       },
       "Data_String": {
         "type": "object"
@@ -2329,6 +2381,30 @@
           }
         }
       },
+      "MixinDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/External"
+          }
+        }
+      },
+      "External": {
+        "type": "object",
+        "properties": {
+          "good2": {
+            "type": "string"
+          },
+          "good1": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "outputOnly": {
+            "type": "string",
+            "readOnly": true
+          }
+        }
+      },
       "Baz": {
         "type": "object",
         "properties": {
@@ -2345,16 +2421,8 @@
           }
         }
       },
-      "StreamingOutput": {
-        "type": "object"
-      },
       "Data2_String_Data_String": {
         "type": "object"
-      },
-      "NestedEnum": {
-        "type": "string",
-        "enum": ["A","B","C"
-        ]
       },
       "Person": {
         "type": "object",
@@ -2376,17 +2444,6 @@
             "items": {
               "$ref": "#/components/schemas/Bar"
             }
-          }
-        }
-      },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "text": {
-            "type": "string"
           }
         }
       }

@@ -135,7 +135,11 @@ private boolean hasReturn;
   }
 
   private void processParamName(char c) {
-    if (c == ' ') {
+    if (Character.isWhitespace(c)) {
+      if (currentParam.length() == 0) {
+        // skip whitespace before the parameter name
+        return;
+      }
       currentContent = new StringBuilder();
       state = PARAM_DESC;
       previousState = PARAM_DESC;

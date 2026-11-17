@@ -12,6 +12,7 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
@@ -63,6 +64,10 @@ public class DocContext {
     this.messager = env.getMessager();
     this.schemaBuilder = new SchemaDocBuilder(env.getTypeUtils(), env.getElementUtils());
     this.openAPI = initOpenAPI();
+  }
+
+  public void addJsonMixIn(TypeElement target, TypeElement mixin) {
+    schemaBuilder.addMixIn(target, mixin);
   }
 
   public boolean isOpenApiAvailable() {
