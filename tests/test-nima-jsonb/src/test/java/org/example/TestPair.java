@@ -60,6 +60,10 @@ public class TestPair {
     var cc = new ContractController();
     var ccRoute = new ContractController$Route(cc);
     routing.addFeature(ccRoute);
+
+    var compiledController = new CompiledContractController();
+    var compiledRoute = new CompiledContractController$Route(compiledController, jsonb);
+    routing.addFeature(compiledRoute);
     return routing;
   }
 }
