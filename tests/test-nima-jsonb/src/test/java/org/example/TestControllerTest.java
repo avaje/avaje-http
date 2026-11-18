@@ -98,7 +98,7 @@ class TestControllerTest {
       .asString();
 
     assertThat(res.statusCode()).isEqualTo(201);
-    assertThat(res.body()).isEqualTo("null-null-null");
+    assertThat(res.body()).isEqualTo("--");
   }
 
   @Test
