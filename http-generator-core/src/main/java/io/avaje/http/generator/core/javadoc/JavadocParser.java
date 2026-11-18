@@ -188,12 +188,23 @@ class JavadocParser {
     String desc = "";
     String summary = mainText;
 
-    int pos = mainText.indexOf('.');
+    int pos = sentenceEnd(mainText);
     if (pos > -1) {
       summary = mainText.substring(0, pos);
       desc = mainText.substring(pos + 1).trim();
     }
     return new Javadoc(summary, desc, params, returnDesc, deprecated);
+  }
+
+  private static int sentenceEnd(String text) {
+    int pos = text.indexOf('.');
+    while (pos > -1) {
+      if (pos + 1 == text.length() || Character.isWhitespace(text.charAt(pos + 1))) {
+        return pos;
+      }
+      pos = text.indexOf('.', pos + 1);
+    }
+    return -1;
   }
 
   String mergeLines(String multiline) {

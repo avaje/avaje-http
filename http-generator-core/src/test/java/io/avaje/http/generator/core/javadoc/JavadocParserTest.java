@@ -249,6 +249,22 @@ public class JavadocParserTest {
   }
 
   @Test
+  public void parse_summary_skips_periods_inside_words() {
+
+    var doc = Javadoc.parse("Contact admin@example.com for v1.2 help. More detail.\n");
+    assertEquals("Contact admin@example.com for v1.2 help", doc.getSummary());
+    assertEquals("More detail.", doc.getDescription());
+
+    var noSpace = Javadoc.parse("Uses the foo.bar package\n");
+    assertEquals("Uses the foo.bar package", noSpace.getSummary());
+    assertEquals("", noSpace.getDescription());
+
+    var endOnly = Javadoc.parse("Ends here.\n");
+    assertEquals("Ends here", endOnly.getSummary());
+    assertEquals("", endOnly.getDescription());
+  }
+
+  @Test
   public void inline_html() {
     assertEquals("a bold word", inlined("a <b>bold</b> word"));
     assertEquals("a link", inlined("a <a href=\"https://avaje.io\">link</a>"));
