@@ -102,7 +102,7 @@ class JavadocParser {
         String content = ws < 0 ? "" : tag.substring(ws + 1);
         sb.append(inlineTag(tagName, content));
         i = end;
-      } else if (c == '<') {
+      } else if (c == '<' && isTagStart(text, i + 1)) {
         int end = text.indexOf('>', i);
         if (end < 0) {
           sb.append(c);
@@ -114,6 +114,14 @@ class JavadocParser {
       }
     }
     return sb.toString();
+  }
+
+  private static boolean isTagStart(String text, int pos) {
+    if (pos >= text.length()) {
+      return false;
+    }
+    char c = text.charAt(pos);
+    return Character.isLetter(c) || c == '/' || c == '!';
   }
 
   private static String inlineTag(String tagName, String content) {

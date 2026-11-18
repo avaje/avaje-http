@@ -253,6 +253,10 @@ public class JavadocParserTest {
     assertEquals("a bold word", inlined("a <b>bold</b> word"));
     assertEquals("a link", inlined("a <a href=\"https://avaje.io\">link</a>"));
     assertEquals("a < b", inlined("a < b"));
+    assertEquals("a < b and c > d", inlined("a < b and c > d"));
+    assertEquals("1<2 and 3>2", inlined("1<2 and 3>2"));
+    assertEquals("a  b", inlined("a <!-- comment --> b"));
+    assertEquals("end tag", inlined("end</p> tag"));
   }
 
   @Test
