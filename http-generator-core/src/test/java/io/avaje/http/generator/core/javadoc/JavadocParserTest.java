@@ -187,4 +187,120 @@ public class JavadocParserTest {
     assertEquals("the second parameter", doc.getParams().get("param2"));
     assertEquals("the result", doc.getReturnDescription());
   }
+
+  @Test
+  public void parse_throws_description_on_next_line() {
+
+    var parser = new JavadocParser();
+    var doc =
+        parser.parse(
+            " Summary. A detailed description.\n"
+                + "\n"
+                + " @param param1\n"
+                + "         the first parameter\n"
+                + " @param param2\n"
+                + "         the second parameter\n"
+                + "\n"
+                + " @return the result\n"
+                + "\n"
+                + " @throws IOException\n"
+                + "         if something bad happens\n"
+                + " @throws FormatException\n"
+                + "         if something other bad happens\n");
+
+    assertEquals("Summary", doc.getSummary());
+    assertEquals("A detailed description.", doc.getDescription());
+    assertThat(doc.getParams()).containsOnlyKeys("param1", "param2");
+    assertEquals("the first parameter", doc.getParams().get("param1"));
+    assertEquals("the second parameter", doc.getParams().get("param2"));
+    assertEquals("the result", doc.getReturnDescription());
+  }
+
+  @Test
+  public void parse_multiline_return_and_trailing_tags() {
+
+    var doc =
+        Javadoc.parse(
+            "Summary. Description.\n"
+                + "@return the\n"
+                + "   result {@link Foo#bar() bar}\n"
+                + "@see Other\n"
+                + "@apiNote some note\n"
+                + "   continued\n");
+
+    assertEquals("Summary", doc.getSummary());
+    assertEquals("Description.", doc.getDescription());
+    assertEquals("the result bar", doc.getReturnDescription());
+  }
+
+  @Test
+  public void parse_code_with_annotation_at_line_start() {
+
+    var doc = Javadoc.parse("Summary. Use like {@code\n@Get\n}\n@return the result\n");
+
+    assertEquals("Summary", doc.getSummary());
+    assertEquals("Use like @Get\\n", doc.getDescription());
+    assertEquals("the result", doc.getReturnDescription());
+  }
+
+  /** Parse the text as a return description to observe the inline tag output. */
+  private static String inlined(String text) {
+    return Javadoc.parse("Summary\n@return " + text).getReturnDescription();
+  }
+
+  @Test
+  public void parse_summary_skips_periods_inside_words() {
+
+    var doc = Javadoc.parse("Contact admin@example.com for v1.2 help. More detail.\n");
+    assertEquals("Contact admin@example.com for v1.2 help", doc.getSummary());
+    assertEquals("More detail.", doc.getDescription());
+
+    var noSpace = Javadoc.parse("Uses the foo.bar package\n");
+    assertEquals("Uses the foo.bar package", noSpace.getSummary());
+    assertEquals("", noSpace.getDescription());
+
+    var endOnly = Javadoc.parse("Ends here.\n");
+    assertEquals("Ends here", endOnly.getSummary());
+    assertEquals("", endOnly.getDescription());
+  }
+
+  @Test
+  public void inline_html() {
+    assertEquals("a bold word", inlined("a <b>bold</b> word"));
+    assertEquals("a link", inlined("a <a href=\"https://avaje.io\">link</a>"));
+    assertEquals("a < b", inlined("a < b"));
+    assertEquals("a < b and c > d", inlined("a < b and c > d"));
+    assertEquals("1<2 and 3>2", inlined("1<2 and 3>2"));
+    assertEquals("a  b", inlined("a <!-- comment --> b"));
+    assertEquals("end tag", inlined("end</p> tag"));
+  }
+
+  @Test
+  public void inline_code() {
+    assertEquals("use foo()", inlined("use {@code foo()}"));
+    assertEquals("a < b", inlined("{@code a < b}"));
+    assertEquals("List<String>", inlined("{@code List<String>}"));
+    assertEquals("new int[]{1, 2}", inlined("{@code new int[]{1, 2}}"));
+    assertEquals("<T>", inlined("{@literal <T>}"));
+    assertEquals("@Get", inlined("{@code @Get}"));
+  }
+
+  @Test
+  public void inline_link() {
+    assertEquals("see Foo", inlined("see {@link Foo}"));
+    assertEquals("see Foo#bar()", inlined("see {@link Foo#bar()}"));
+    assertEquals("see the bar", inlined("see {@link Foo#bar() the bar}"));
+    assertEquals("see bar", inlined("see {@linkplain Foo#bar() bar}"));
+    assertEquals("see Foo#bar(String, int)", inlined("see {@link Foo#bar(String, int)}"));
+    assertEquals("see the bar", inlined("see {@link Foo#bar(String, int) the bar}"));
+    assertEquals("see nested x", inlined("see {@link Foo nested {@code x}}"));
+  }
+
+  @Test
+  public void inline_other() {
+    assertEquals("max Foo#MAX", inlined("max {@value Foo#MAX}"));
+    assertEquals("inherited", inlined("{@inheritDoc}inherited"));
+    assertEquals("unclosed code", inlined("unclosed {@code code"));
+    assertEquals("plain {braces}", inlined("plain {braces}"));
+  }
 }
