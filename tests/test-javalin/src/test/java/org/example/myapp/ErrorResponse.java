@@ -1,9 +1,11 @@
 package org.example.myapp;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.avaje.http.api.ValidationException;
 
 import java.util.*;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ErrorResponse {
 
   private String message;

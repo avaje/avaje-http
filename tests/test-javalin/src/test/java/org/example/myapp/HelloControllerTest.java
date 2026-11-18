@@ -209,7 +209,7 @@ class HelloControllerTest extends BaseWebTest {
       .as(ErrorResponse.class);
 
     assertNotNull(res);
-    assertThat(res.getMessage()).contains("must not be null");
+    assertThat(res.get("name")).isEqualTo("must not be null");
 
     try {
       client.request()
@@ -228,7 +228,7 @@ class HelloControllerTest extends BaseWebTest {
 
       final ErrorResponse errorResponse = e.bean(ErrorResponse.class);
 
-      assertThat(res.getMessage()).contains("must not be null");
+      assertThat(res.get("name")).isEqualTo("must not be null");
       assertThat(errorResponse.get("name")).isEqualTo("must not be null");
     }
   }
