@@ -1,34 +1,12 @@
 package io.avaje.http.generator.core.javadoc;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringJoiner;
 
-import static java.util.Arrays.asList;
-
 class JavadocParser {
-
-  private static final Set<String> IGNORED = new HashSet<>(asList("see", "since", "author", "version", "deprecated", "throws"));
-
-  private static final int TEXT = 1;
-  private static final int TAG_START = 2;
-  private static final int DOCLET_START = 4;
-  private static final int PARAM_NAME = 6;
-  private static final int PARAM_DESC = 7;
-  private static final int RETURN_DESC = 8;
-  private static final int IGNORE = 9;
-  private static final int CODE = 10;
-  private static final String DEPRECATED = "deprecated";
-
-  private int previousState = TEXT;
-
-  private final StringBuilder currentParam = new StringBuilder();
-  private final StringBuilder currentDoclet = new StringBuilder();
-  private StringBuilder currentContent;
-
-  private int state = TEXT;
 
   private String returnDesc = "";
 
@@ -36,161 +14,201 @@ class JavadocParser {
 
   private boolean deprecated;
 
-private boolean hasReturn;
-
-  /**
-   * Parse the javadoc.
-   */
+  /** Parse the javadoc. */
   Javadoc parse(String text) {
-
     if (isEmpty(text)) {
       return Javadoc.EMPTY;
     }
-
     StringBuilder mainContent = new StringBuilder();
-    currentContent = mainContent;
+    List<StringBuilder> blocks = splitBlocks(text, mainContent);
+    for (StringBuilder block : blocks) {
+      processBlock(block.toString());
+    }
+    return splitMain(mergeLines(inline(mainContent.toString())));
+  }
 
-    for (char c : text.toCharArray()) {
-
-      switch (state) {
-        case RETURN_DESC:
-          if (c == '\n') {
-            processReturnDesc(mainContent);
-          }
-        case PARAM_DESC:
-          if (state == PARAM_DESC) {
-            processSetParam();
-          }
-        case CODE:
-          if (state == CODE && c == '}') {
-            state = previousState;
-            break;
-          }
-        case TEXT:
-          processText(c);
-          continue;
-        case IGNORE:
-          processIgnore(mainContent, c);
-          continue;
-        case DOCLET_START:
-          processDocletStart(c);
-          continue;
-        case PARAM_NAME:
-          processParamName(c);
-          continue;
-        case TAG_START:
-          if (c == '>') {
-            state = TEXT;
-          }
-        default:
+  /** Split the text into the main content and the block tags (without the leading {@code @}). */
+  private static List<StringBuilder> splitBlocks(String text, StringBuilder mainContent) {
+    List<StringBuilder> blocks = new ArrayList<>();
+    StringBuilder current = mainContent;
+    boolean lineStart = true;
+    int depth = 0;
+    for (int i = 0; i < text.length(); i++) {
+      char c = text.charAt(i);
+      if (c == '\n') {
+        lineStart = true;
+        current.append(c);
+        continue;
       }
+      if (lineStart && Character.isWhitespace(c)) {
+        current.append(c);
+        continue;
+      }
+      if (lineStart && depth == 0 && c == '@') {
+        current = new StringBuilder();
+        blocks.add(current);
+        lineStart = false;
+        continue;
+      }
+      lineStart = false;
+      if (c == '{') {
+        depth++;
+      } else if (c == '}' && depth > 0) {
+        depth--;
+      }
+      current.append(c);
     }
-
-    if (hasReturn) {
-      returnDesc = mergeLines(currentContent.toString());
-    }
-
-    return splitMain(mainContent.toString().trim());
+    return blocks;
   }
 
-  private void processSetParam() {
-    params.put(currentParam.toString(), mergeLines(currentContent.toString().trim()));
-  }
-
-  private void processReturnDesc(StringBuilder mainContent) {
-    state = TEXT;
-    previousState = TEXT;
-    returnDesc = currentContent.toString();
-    currentContent = new StringBuilder(returnDesc);
-  }
-
-  private void processText(char c) {
-    switch (c) {
-      case '{':
-      case '@':
-        currentDoclet.delete(0, currentDoclet.length());
-        state = DOCLET_START;
-        break;
-      case '<':
-        state = TAG_START;
-        break;
-      case '\n':
-        if (state == CODE) {
-          currentContent.append("\\n");
-          return;
+  private void processBlock(String block) {
+    int ws = indexOfWhitespace(block);
+    String tagName = ws < 0 ? block : block.substring(0, ws);
+    String content = ws < 0 ? "" : block.substring(ws + 1).trim();
+    switch (tagName) {
+      case "param":
+        int nameEnd = indexOfWhitespace(content);
+        if (nameEnd < 0) {
+          if (!content.isEmpty()) {
+            params.put(content, "");
+          }
+        } else {
+          params.put(
+              content.substring(0, nameEnd), mergeLines(inline(content.substring(nameEnd + 1))));
         }
+        break;
+      case "return":
+        returnDesc = mergeLines(inline(content));
+        break;
+      case "deprecated":
+        deprecated = true;
+        break;
       default:
-        if (c != '}' && c != '>') {
-          currentContent.append(c);
+        // ignore other block tags such as throws, exception, see, since, author, version
+    }
+  }
+
+  /** Process inline tags and strip html tags. */
+  private static String inline(String text) {
+    StringBuilder sb = new StringBuilder(text.length());
+    int len = text.length();
+    for (int i = 0; i < len; i++) {
+      char c = text.charAt(i);
+      if (c == '{' && i + 1 < len && text.charAt(i + 1) == '@') {
+        int end = closingBrace(text, i);
+        String tag = text.substring(i + 2, end);
+        int ws = indexOfWhitespace(tag);
+        String tagName = ws < 0 ? tag : tag.substring(0, ws);
+        String content = ws < 0 ? "" : tag.substring(ws + 1);
+        sb.append(inlineTag(tagName, content));
+        i = end;
+      } else if (c == '<' && isTagStart(text, i + 1)) {
+        int end = text.indexOf('>', i);
+        if (end < 0) {
+          sb.append(c);
+        } else {
+          i = end;
         }
-        break;
-    }
-  }
-
-  private void processIgnore(StringBuilder mainContent, char c) {
-    if (c == '\n') {
-      state = previousState;
-      currentContent = mainContent;
-    }
-  }
-
-  private void processParamName(char c) {
-    if (Character.isWhitespace(c)) {
-      if (currentParam.length() == 0) {
-        // skip whitespace before the parameter name
-        return;
+      } else {
+        sb.append(c);
       }
-      currentContent = new StringBuilder();
-      state = PARAM_DESC;
-      previousState = PARAM_DESC;
-    } else {
-      currentParam.append(c);
+    }
+    return sb.toString();
+  }
+
+  private static boolean isTagStart(String text, int pos) {
+    if (pos >= text.length()) {
+      return false;
+    }
+    char c = text.charAt(pos);
+    return Character.isLetter(c) || c == '/' || c == '!';
+  }
+
+  private static String inlineTag(String tagName, String content) {
+    switch (tagName) {
+      case "code":
+      case "literal":
+        return content.replace("\n", "\\n");
+      case "link":
+      case "linkplain":
+        String ref = content.trim();
+        int ws = labelStart(ref);
+        return ws < 0 ? ref : inline(ref.substring(ws + 1).trim());
+      default:
+        return inline(content);
     }
   }
 
-  private void processDocletStart(char c) {
-    if (c == ' ' || c == '\n') {
-      state = previousState;
-      String docletName = currentDoclet.toString();
-      if (IGNORED.contains(docletName)) {
-        if (DEPRECATED.equals(docletName)) {
-          deprecated = true;
-        }
-        state = IGNORE;
-      } else if ("param".equals(docletName)) {
-        currentParam.delete(0, currentParam.length());
-        state = PARAM_NAME;
-      } else if ("return".equals(docletName)) {
-        currentContent = new StringBuilder();
-        state = RETURN_DESC;
-        previousState = RETURN_DESC;
-        hasReturn=true;
-      } else if ("@code".equals(docletName)) {
-        state = CODE;
+  /**
+   * Return the index of the brace closing the inline tag starting at the given position, or the
+   * text length when not closed.
+   */
+  private static int closingBrace(String text, int start) {
+    int depth = 0;
+    for (int i = start; i < text.length(); i++) {
+      char c = text.charAt(i);
+      if (c == '{') {
+        depth++;
+      } else if (c == '}' && --depth == 0) {
+        return i;
       }
-    } else {
-      currentDoclet.append(c);
     }
+    return text.length();
+  }
+
+  /**
+   * Return the index of the whitespace separating a link reference from its label, ignoring
+   * whitespace inside the method parameter list (e.g. {@code Foo#bar(String, int) label}).
+   */
+  private static int labelStart(String ref) {
+    int depth = 0;
+    for (int i = 0; i < ref.length(); i++) {
+      char c = ref.charAt(i);
+      if (c == '(') {
+        depth++;
+      } else if (c == ')' && depth > 0) {
+        depth--;
+      } else if (depth == 0 && Character.isWhitespace(c)) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  private static int indexOfWhitespace(String text) {
+    for (int i = 0; i < text.length(); i++) {
+      if (Character.isWhitespace(text.charAt(i))) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   private Javadoc splitMain(String mainText) {
-
     String desc = "";
     String summary = mainText;
 
-    int pos = mainText.indexOf('.');
+    int pos = sentenceEnd(mainText);
     if (pos > -1) {
       summary = mainText.substring(0, pos);
-      desc = mergeLines(mainText.substring(pos + 1).trim());
+      desc = mainText.substring(pos + 1).trim();
     }
-
     return new Javadoc(summary, desc, params, returnDesc, deprecated);
   }
 
+  private static int sentenceEnd(String text) {
+    int pos = text.indexOf('.');
+    while (pos > -1) {
+      if (pos + 1 == text.length() || Character.isWhitespace(text.charAt(pos + 1))) {
+        return pos;
+      }
+      pos = text.indexOf('.', pos + 1);
+    }
+    return -1;
+  }
+
   String mergeLines(String multiline) {
-
     StringJoiner joiner = new StringJoiner(" ");
-
     for (String line : multiline.split("\n")) {
       line = line.trim();
       if (!line.isEmpty()) {
@@ -200,7 +218,7 @@ private boolean hasReturn;
     return joiner.toString();
   }
 
-  private boolean isEmpty(String text) {
+  private static boolean isEmpty(String text) {
     return text == null || text.isEmpty();
   }
 }

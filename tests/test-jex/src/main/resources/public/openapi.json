@@ -4,12 +4,6 @@
 		"title" : "",
 		"version" : ""
 	},
-	"servers" : [
-		{
-			"url" : "localhost:8080",
-			"description" : "local testing"
-		}
-	],
 	"paths" : {
 		"" : {
 			"get" : {
@@ -1108,7 +1102,7 @@
 				],
 				"responses" : {
 					"200" : {
-						"description" : "Return the Hello DTO.",
+						"description" : "The Hello DTO given the id and name.",
 						"content" : {
 							"application/json" : {
 								"schema" : {
