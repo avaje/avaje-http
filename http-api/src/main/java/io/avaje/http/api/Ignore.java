@@ -1,7 +1,7 @@
 package io.avaje.http.api;
 
 import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
  * Mark a field on a BeanParam/FormParam class as not a request parameter of any kind.
  */
 @Target(FIELD)
-@Retention(SOURCE)
+@Retention(CLASS)
 public @interface Ignore {
 }
