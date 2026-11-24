@@ -208,6 +208,8 @@ class SchemaDocBuilder {
       var schema = new StringSchema();
       e.getEnclosedElements().stream()
         .filter(ec -> ElementKind.ENUM_CONSTANT.equals(ec.getKind()))
+        .map(VariableElement.class::cast)
+        .filter(ec -> !isJsonIgnored(ec))
         .forEach(ec -> schema.addEnumItem(ec.getSimpleName().toString()));
 
       var doc = Javadoc.parse(elements.getDocComment(e));
@@ -533,7 +535,9 @@ class SchemaDocBuilder {
     }
     final var name = field.getSimpleName();
     return mixin.getEnclosedElements().stream()
-        .filter(e -> e.getKind() == ElementKind.FIELD || e.getKind() == ElementKind.METHOD)
+        .filter(e -> e.getKind() == ElementKind.FIELD
+          || e.getKind() == ElementKind.METHOD
+          || e.getKind() == ElementKind.ENUM_CONSTANT)
         .filter(e -> e.getSimpleName().contentEquals(name))
         .map(this::readJsonIgnore)
         .flatMap(Optional::stream)

@@ -2319,6 +2319,16 @@
       "Data2_String_?": {
         "type": "object"
       },
+      "ExternalEnum": {
+        "type": "string",
+        "enum": ["GOOD_CONSTANT_1","GOOD_CONSTANT_2"
+        ]
+      },
+      "DirectEnum": {
+        "type": "string",
+        "enum": ["VISIBLE","INPUT_ONLY"
+        ]
+      },
       "StreamingOutput": {
         "type": "object"
       },
@@ -2384,8 +2394,14 @@
       "MixinDto": {
         "type": "object",
         "properties": {
+          "externalEnum": {
+            "$ref": "#/components/schemas/ExternalEnum"
+          },
           "data": {
             "$ref": "#/components/schemas/External"
+          },
+          "directEnum": {
+            "$ref": "#/components/schemas/DirectEnum"
           }
         }
       },

@@ -7,6 +7,10 @@ public class MixinDto {
 
   public External data;
 
+  public ExternalEnum externalEnum;
+
+  public DirectEnum directEnum;
+
   @Json.Ignore
   public String hidden;
 }
