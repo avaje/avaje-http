@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.avaje</groupId>
     <artifactId>avaje-http-parent</artifactId>
-    <version>3.13-RC3</version>
+    <version>3.13-RC4</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -14,7 +14,7 @@
   <url>https://avaje.io/http</url>
 
   <properties>
-    <project.build.outputTimestamp>2026-11-18T20:59:10Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-11-27T04:23:47Z</project.build.outputTimestamp>
     <!-- Dependency Versions -->
     <avaje.jsonb.version>3.16</avaje.jsonb.version>
     <maven-api.version>3.10.2</maven-api.version>
